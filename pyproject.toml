@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "otarchguard"
+version = "1.0.1"
+description = "Offline declared IT/OT architecture validation, reachability and comparison"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "Apache-2.0"
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md"]
+dependencies = ["typer>=0.16,<1", "PyYAML>=6,<7", "pydantic>=2.12,<3"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8,<10",
+    "types-PyYAML>=6,<7",
+    "ruff>=0.11,<1",
+    "mypy>=1.15,<2",
+]
+
+[project.scripts]
+otarchguard = "otarchguard.cli:app"
+
+[tool.setuptools]
+include-package-data = false
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers --strict-config"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src", "tests", "benchmarks", "tools"]

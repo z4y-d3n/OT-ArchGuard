@@ -1,0 +1,56 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+/.venv-*/
+.pytest_cache/
+.pytest_tmp/
+.mypy_cache/
+.ruff_cache/
+/.cache/
+.coverage
+htmlcov/
+
+# Editor / OS
+.sublime-workspace
+.DS_Store
+Thumbs.db
+
+# Local environment
+.env
+.env.*
+!.env.example
+
+# Private documentation safeguards
+references/
+private/
+*.pdf
+
+# Generated results
+output/
+reports/generated/
+
+# Additional Python environments and tools
+venv/
+env/
+.tox/
+.nox/
+.hypothesis/
+.pyright/
+
+# Offline dependency storage
+wheelhouse/
+
+# Temporary development files
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# Local editor settings
+.idea/
+.vscode/

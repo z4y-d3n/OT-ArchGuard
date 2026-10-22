@@ -1,0 +1,437 @@
+schema_version: 1
+architecture_id: segmented_plant
+revision: phase_01_1_baseline
+suc:
+  id: demo_cell
+  name: Synthetic segmented manufacturing plant
+  purpose: Demonstrate controlled remote maintenance initiation and PLC supervision
+    using declared network paths.
+  controlled_process: Imaginary supervisory station, historian and cell controller.
+  boundary_description: External enterprise workstation it; internal DMZ firewall
+    and historian, supervisory SCADA, and cell engineer/PLC. Firewall interfaces attach
+    to all four placements. Declared IT-to-DMZ perimeter forwarding is f_it_dmz. A
+    separate explicitly declared direct IT/control crossing is also present at f_it_ot.
+  completeness_assertion: The example owner asserts this finite teaching inventory
+    and listener set; physical access, return traffic, authentication, external services
+    and deployed configurations are not verified. No real plant completeness is claimed.
+  access_points:
+  - id: ap_it_dmz
+    kind: modeled_network
+    description: Directed firewall IT-to-DMZ perimeter crossing.
+    external_interface_id: fw_it
+    internal_interface_id: fw_dmz
+    edge_ids:
+    - f_it_dmz
+  - id: ap_cabinet
+    kind: unmodeled
+    description: Synthetic cabinet/service access; unevaluated.
+  - id: ap_it_ot
+    kind: modeled_network
+    description: Explicit direct IT-to-control transition, separate from DMZ crossing.
+    external_interface_id: fw_it
+    internal_interface_id: fw_ot
+    edge_ids:
+    - f_it_ot
+  external_dependencies:
+  - id: dep_support
+    description: Enterprise support origin required for this declared remote-maintenance
+      use case.
+    external_asset_ids:
+    - it
+    required_intent_ids:
+    - req_it_hist
+zones:
+- id: enterprise
+  name: Enterprise IT
+  purpose: Support origin.
+  scope: external
+  grouping_rationale: Business workstation under enterprise administration; outside
+    the assessed cell.
+  safety_designation: non_safety
+- id: dmz
+  name: Industrial DMZ
+  purpose: Managed access and boundary administration.
+  scope: internal
+  grouping_rationale: Historian service and firewall administrative ownership grouped
+    for this simplified teaching model; not all firewall interfaces are placed here.
+  safety_designation: non_safety
+- id: control
+  name: OT control
+  purpose: Supervisory and controller functions.
+  scope: internal
+  grouping_rationale: SCADA and PLC share declared cell supervision needs; narrow
+    required flows are independently authored.
+  safety_designation: non_safety
+- id: supervisory
+  name: Supervisory
+  purpose: Declared supervisory station.
+  scope: internal
+  grouping_rationale: Separate synthetic supervisory administration.
+  safety_designation: non_safety
+assets:
+- id: it
+  name: Enterprise support workstation
+  role: Enterprise support workstation
+  kind: endpoint
+  zone_id: enterprise
+  scope: external
+  domain_classification: business
+  safety_classification: non_safety
+  criticality: medium
+- id: fw
+  name: Firewall gateway
+  role: Three-interface firewall/gateway
+  kind: boundary_device
+  zone_id: dmz
+  scope: internal
+  domain_classification: iacs
+  safety_classification: non_safety
+  criticality: high
+- id: hist
+  name: Historian server
+  role: Historian server
+  kind: endpoint
+  zone_id: dmz
+  scope: internal
+  domain_classification: iacs
+  safety_classification: non_safety
+  criticality: high
+- id: scada
+  name: SCADA server
+  role: SCADA server
+  kind: endpoint
+  zone_id: supervisory
+  scope: internal
+  domain_classification: iacs
+  safety_classification: non_safety
+  criticality: high
+- id: plc
+  name: Controller
+  role: Controller
+  kind: endpoint
+  zone_id: control
+  scope: internal
+  domain_classification: iacs
+  safety_classification: non_safety
+  criticality: critical
+- id: eng
+  name: Cell engineering workstation
+  role: Engineering
+  zone_id: control
+  kind: endpoint
+  scope: internal
+  domain_classification: iacs
+  safety_classification: non_safety
+  criticality: medium
+interfaces:
+- id: it_net
+  asset_id: it
+  placement_zone_id: enterprise
+  ipv4: 192.0.2.10/24
+- id: fw_it
+  asset_id: fw
+  placement_zone_id: enterprise
+  ipv4: 192.0.2.1/24
+- id: fw_dmz
+  asset_id: fw
+  placement_zone_id: dmz
+  ipv4: 198.51.100.1/24
+- id: fw_ot
+  asset_id: fw
+  placement_zone_id: control
+  ipv4: 203.0.113.1/24
+- id: hist_net
+  asset_id: hist
+  placement_zone_id: dmz
+  ipv4: 198.51.100.10/24
+- id: scada_net
+  asset_id: scada
+  placement_zone_id: supervisory
+  ipv4: 198.51.100.130/25
+- id: plc_net
+  asset_id: plc
+  placement_zone_id: control
+  ipv4: 203.0.113.20/24
+- id: fw_sup
+  asset_id: fw
+  placement_zone_id: supervisory
+  ipv4: 198.51.100.129/25
+- id: eng_net
+  asset_id: eng
+  placement_zone_id: control
+  ipv4: 203.0.113.30/24
+conduits:
+- id: c_it_dmz
+  zone_ids:
+  - enterprise
+  - dmz
+  name: Enterprise DMZ channel group
+  purpose: Restrict enterprise maintenance initiation to the declared hist listener.
+  common_security_needs: No implied management access or onward initiation.
+- id: c_dmz_ot
+  zone_ids:
+  - dmz
+  - control
+  name: DMZ OT channel group
+  purpose: Restrict DMZ-origin maintenance initiation to the SCADA listener.
+  common_security_needs: No implicit direct hist-to-PLC access.
+- id: c_dmz_sup
+  zone_ids:
+  - dmz
+  - supervisory
+  name: DMZ supervisory
+  purpose: Explicit historian to supervisory maintenance.
+  common_security_needs: Narrow declarations only.
+- id: c_sup_cell
+  zone_ids:
+  - supervisory
+  - control
+  name: Supervisory cell
+  purpose: Selected controller initiation.
+  common_security_needs: Explicit TCP listener only.
+- id: c_it_ot
+  zone_ids:
+  - enterprise
+  - control
+  name: Synthetic direct enterprise cell channel
+  purpose: Demonstrate an explicitly declared bypass candidate.
+  common_security_needs: No permission inferred from the conduit.
+transport_edges:
+- id: t_it_fw
+  source_interface_id: it_net
+  destination_interface_id: fw_it
+- id: t_fw_hist
+  source_interface_id: fw_dmz
+  destination_interface_id: hist_net
+- id: t_hist_fw
+  source_interface_id: hist_net
+  destination_interface_id: fw_dmz
+- id: t_fw_scada
+  source_interface_id: fw_sup
+  destination_interface_id: scada_net
+- id: t_fw_plc
+  source_interface_id: fw_ot
+  destination_interface_id: plc_net
+- id: t_scada_plc
+  source_interface_id: scada_net
+  destination_interface_id: plc_net
+  conduit_id: c_sup_cell
+- id: t_eng_plc
+  source_interface_id: eng_net
+  destination_interface_id: plc_net
+forwarding_edges:
+- id: f_it_dmz
+  ingress_interface_id: fw_it
+  egress_interface_id: fw_dmz
+  conduit_id: c_it_dmz
+- id: f_dmz_ot
+  ingress_interface_id: fw_dmz
+  egress_interface_id: fw_ot
+  conduit_id: c_dmz_ot
+- id: f_dmz_sup
+  ingress_interface_id: fw_dmz
+  egress_interface_id: fw_sup
+  conduit_id: c_dmz_sup
+- id: f_it_ot
+  ingress_interface_id: fw_it
+  egress_interface_id: fw_ot
+  conduit_id: c_it_ot
+services:
+- id: svc_hist
+  asset_id: hist
+  interface_id: hist_net
+  protocol: tcp
+  destination_ports:
+  - start: 3389
+    end: 3389
+- id: svc_scada
+  asset_id: scada
+  interface_id: scada_net
+  protocol: tcp
+  destination_ports:
+  - start: 3389
+    end: 3389
+- id: svc_plc
+  asset_id: plc
+  interface_id: plc_net
+  protocol: tcp
+  destination_ports:
+  - start: 502
+    end: 502
+- id: svc_fw
+  asset_id: fw
+  interface_id: fw_dmz
+  protocol: tcp
+  destination_ports:
+  - start: 443
+    end: 443
+rules:
+- id: allow_it_hist
+  effect: allow
+  source:
+    asset_ids:
+    - it
+  destination:
+    asset_ids:
+    - hist
+  protocol: tcp
+  destination_ports:
+  - start: 3389
+    end: 3389
+  edge_ids:
+  - t_it_fw
+  - f_it_dmz
+  - t_fw_hist
+- id: allow_hist_scada
+  effect: allow
+  source:
+    asset_ids:
+    - hist
+  destination:
+    asset_ids:
+    - scada
+  protocol: tcp
+  destination_ports:
+  - start: 3389
+    end: 3389
+  edge_ids:
+  - t_hist_fw
+  - f_dmz_sup
+  - t_fw_scada
+- id: allow_scada_plc
+  effect: allow
+  source:
+    asset_ids:
+    - scada
+  destination:
+    asset_ids:
+    - plc
+  protocol: tcp
+  destination_ports:
+  - start: 502
+    end: 502
+  edge_ids:
+  - t_scada_plc
+- id: allow_hist_fw
+  effect: allow
+  source:
+    asset_ids:
+    - hist
+  destination:
+    asset_ids:
+    - fw
+  protocol: tcp
+  destination_ports:
+  - start: 443
+    end: 443
+  edge_ids:
+  - t_hist_fw
+- id: deny_it_plc
+  effect: deny
+  source:
+    asset_ids:
+    - it
+  destination:
+    asset_ids:
+    - plc
+  protocol: tcp
+  destination_ports:
+  - start: 502
+    end: 502
+  edge_ids:
+  - t_it_fw
+  - f_it_dmz
+  - f_dmz_ot
+  - t_fw_plc
+- id: allow_eng_plc
+  effect: allow
+  source:
+    asset_ids:
+    - eng
+  destination:
+    asset_ids:
+    - plc
+  protocol: tcp
+  destination_ports:
+  - start: 502
+    end: 502
+  edge_ids:
+  - t_eng_plc
+intents:
+- id: req_it_hist
+  kind: required
+  source:
+    asset_ids:
+    - it
+  destination_service_ids:
+  - svc_hist
+- id: req_hist_scada
+  kind: required
+  source:
+    asset_ids:
+    - hist
+  destination_service_ids:
+  - svc_scada
+- id: req_scada_plc
+  kind: required
+  source:
+    asset_ids:
+    - scada
+  destination_service_ids:
+  - svc_plc
+- id: req_hist_fw
+  kind: required
+  source:
+    asset_ids:
+    - hist
+  destination_service_ids:
+  - svc_fw
+- id: prohibit_it_ot
+  kind: prohibited
+  source:
+    asset_ids:
+    - it
+  destination_service_ids:
+  - svc_scada
+  - svc_plc
+- id: prohibit_it_fw
+  kind: prohibited
+  source:
+    asset_ids:
+    - it
+  destination_service_ids:
+  - svc_fw
+- id: prohibit_hist_plc
+  kind: prohibited
+  source:
+    asset_ids:
+    - hist
+  destination_service_ids:
+  - svc_plc
+- id: prohibit_scada_dmz
+  kind: prohibited
+  source:
+    asset_ids:
+    - scada
+  destination_service_ids:
+  - svc_hist
+  - svc_fw
+- id: req_eng_plc
+  kind: required
+  source:
+    asset_ids:
+    - eng
+  destination_service_ids:
+  - svc_plc
+scenarios:
+- id: plant_scope
+  origin_asset_ids:
+  - it
+  - hist
+  - eng
+  - scada
+  destination_service_ids:
+  - svc_hist
+  - svc_scada
+  - svc_plc
+  - svc_fw

@@ -1,0 +1,126 @@
+schema_version: 1
+architecture_id: flat_plant
+revision: narrowed_with_operational_regression
+suc:
+  id: demo_minimal
+  name: Synthetic flat permissive plant
+  purpose: Demonstrate a small declared schema contract.
+  controlled_process: Imaginary HMI, engineer and critical controller.
+  boundary_description: Both assets are internal in one zone; no perimeter edge.
+  completeness_assertion: Finite synthetic inventory only; physical access and actual
+    configuration omitted.
+  access_points: []
+  external_dependencies: []
+zones:
+- id: control
+  name: Control
+  purpose: Synthetic supervision.
+  scope: internal
+  grouping_rationale: Two non-safety IACS assets grouped for this teaching case.
+  safety_designation: non_safety
+assets:
+- id: eng
+  name: Engineering workstation
+  role: Engineering
+  zone_id: control
+  kind: endpoint
+  scope: internal
+  domain_classification: iacs
+  safety_classification: non_safety
+  criticality: medium
+- id: plc
+  name: Synthetic controller
+  role: Controller
+  zone_id: control
+  kind: endpoint
+  scope: internal
+  domain_classification: iacs
+  safety_classification: non_safety
+  criticality: critical
+- id: hmi
+  name: Operator HMI
+  role: HMI
+  zone_id: control
+  kind: endpoint
+  scope: internal
+  domain_classification: iacs
+  safety_classification: non_safety
+  criticality: high
+interfaces:
+- id: eng_net
+  asset_id: eng
+  placement_zone_id: control
+  ipv4: 192.0.2.10/24
+- id: plc_net
+  asset_id: plc
+  placement_zone_id: control
+  ipv4: 192.0.2.20/24
+- id: hmi_net
+  asset_id: hmi
+  placement_zone_id: control
+  ipv4: 192.0.2.30/24
+conduits: []
+transport_edges:
+- id: t_eng_plc
+  source_interface_id: eng_net
+  destination_interface_id: plc_net
+- id: t_hmi_plc
+  source_interface_id: hmi_net
+  destination_interface_id: plc_net
+- id: t_eng_hmi
+  source_interface_id: eng_net
+  destination_interface_id: hmi_net
+forwarding_edges: []
+services:
+- id: svc_plc
+  asset_id: plc
+  interface_id: plc_net
+  protocol: tcp
+  destination_ports:
+  - start: 502
+    end: 502
+- id: svc_hmi
+  asset_id: hmi
+  interface_id: hmi_net
+  protocol: tcp
+  destination_ports:
+  - start: 443
+    end: 443
+rules:
+- id: only_eng_plc
+  effect: allow
+  source:
+    asset_ids:
+    - eng
+  destination:
+    asset_ids:
+    - plc
+  protocol: tcp
+  destination_ports:
+  - start: 502
+    end: 502
+  edge_ids:
+  - t_eng_plc
+intents:
+- id: req_eng_plc
+  kind: required
+  source:
+    asset_ids:
+    - eng
+  destination_service_ids:
+  - svc_plc
+- id: req_hmi_plc
+  kind: required
+  source:
+    asset_ids:
+    - hmi
+  destination_service_ids:
+  - svc_plc
+scenarios:
+- id: plant_scope
+  origin_asset_ids:
+  - eng
+  - hmi
+  destination_service_ids:
+  - svc_plc
+  - svc_hmi

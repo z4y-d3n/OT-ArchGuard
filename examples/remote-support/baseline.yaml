@@ -1,0 +1,352 @@
+schema_version: 1
+architecture_id: boundary_device
+revision: phase_01_1_baseline
+suc:
+  id: demo_cell
+  name: Synthetic packaging control cell
+  purpose: Demonstrate controlled remote maintenance initiation and PLC supervision
+    using declared network paths.
+  controlled_process: Imaginary packaging conveyor with one PLC and supervisory SCADA;
+    no actual process or hardware.
+  boundary_description: 'Internal inventory: fw, jump, scada, plc. External context:
+    enterprise workstation it. The perimeter crossing is the firewall IT-to-DMZ forwarding
+    transition.'
+  completeness_assertion: The example owner asserts this finite teaching inventory
+    and listener set; physical access, return traffic, authentication, external services
+    and deployed configurations are not verified. No real plant completeness is claimed.
+  access_points:
+  - id: ap_it_dmz
+    kind: modeled_network
+    description: Directed firewall IT-to-DMZ perimeter crossing.
+    external_interface_id: fw_it
+    internal_interface_id: fw_dmz
+    edge_ids:
+    - f_it_dmz
+  - id: ap_cabinet
+    kind: unmodeled
+    description: Synthetic cabinet/service access; unevaluated.
+  external_dependencies:
+  - id: dep_support
+    description: Enterprise support origin required for this declared remote-maintenance
+      use case.
+    external_asset_ids:
+    - it
+    required_intent_ids:
+    - req_it_jump
+zones:
+- id: enterprise
+  name: Enterprise IT
+  purpose: Support origin.
+  scope: external
+  grouping_rationale: Business workstation under enterprise administration; outside
+    the assessed cell.
+  safety_designation: non_safety
+- id: dmz
+  name: Industrial DMZ
+  purpose: Managed access and boundary administration.
+  scope: internal
+  grouping_rationale: Jump service and firewall administrative ownership grouped for
+    this simplified teaching model; not all firewall interfaces are placed here.
+  safety_designation: non_safety
+- id: control
+  name: OT control
+  purpose: Supervisory and controller functions.
+  scope: internal
+  grouping_rationale: SCADA and PLC share declared cell supervision needs; narrow
+    required flows are independently authored.
+  safety_designation: non_safety
+assets:
+- id: it
+  name: Enterprise support workstation
+  role: Enterprise support workstation
+  kind: endpoint
+  zone_id: enterprise
+  scope: external
+  domain_classification: business
+  safety_classification: non_safety
+  criticality: medium
+- id: fw
+  name: Firewall gateway
+  role: Three-interface firewall/gateway
+  kind: boundary_device
+  zone_id: dmz
+  scope: internal
+  domain_classification: iacs
+  safety_classification: non_safety
+  criticality: high
+- id: jump
+  name: Jump server
+  role: Jump server
+  kind: endpoint
+  zone_id: dmz
+  scope: internal
+  domain_classification: iacs
+  safety_classification: non_safety
+  criticality: high
+- id: scada
+  name: SCADA server
+  role: SCADA server
+  kind: endpoint
+  zone_id: control
+  scope: internal
+  domain_classification: iacs
+  safety_classification: non_safety
+  criticality: high
+- id: plc
+  name: Controller
+  role: Controller
+  kind: endpoint
+  zone_id: control
+  scope: internal
+  domain_classification: iacs
+  safety_classification: non_safety
+  criticality: critical
+interfaces:
+- id: it_net
+  asset_id: it
+  placement_zone_id: enterprise
+  ipv4: 192.0.2.10/24
+- id: fw_it
+  asset_id: fw
+  placement_zone_id: enterprise
+  ipv4: 192.0.2.1/24
+- id: fw_dmz
+  asset_id: fw
+  placement_zone_id: dmz
+  ipv4: 198.51.100.1/24
+- id: fw_ot
+  asset_id: fw
+  placement_zone_id: control
+  ipv4: 203.0.113.1/24
+- id: jump_net
+  asset_id: jump
+  placement_zone_id: dmz
+  ipv4: 198.51.100.10/24
+- id: scada_net
+  asset_id: scada
+  placement_zone_id: control
+  ipv4: 203.0.113.10/24
+- id: plc_net
+  asset_id: plc
+  placement_zone_id: control
+  ipv4: 203.0.113.20/24
+conduits:
+- id: c_it_dmz
+  zone_ids:
+  - enterprise
+  - dmz
+  name: Enterprise DMZ channel group
+  purpose: Restrict enterprise maintenance initiation to the declared jump listener.
+  common_security_needs: No implied management access or onward initiation.
+- id: c_dmz_ot
+  zone_ids:
+  - dmz
+  - control
+  name: DMZ OT channel group
+  purpose: Restrict DMZ-origin maintenance initiation to the SCADA listener.
+  common_security_needs: No implicit direct jump-to-PLC access.
+transport_edges:
+- id: t_it_fw
+  source_interface_id: it_net
+  destination_interface_id: fw_it
+- id: t_fw_jump
+  source_interface_id: fw_dmz
+  destination_interface_id: jump_net
+- id: t_jump_fw
+  source_interface_id: jump_net
+  destination_interface_id: fw_dmz
+- id: t_fw_scada
+  source_interface_id: fw_ot
+  destination_interface_id: scada_net
+- id: t_fw_plc
+  source_interface_id: fw_ot
+  destination_interface_id: plc_net
+- id: t_scada_plc
+  source_interface_id: scada_net
+  destination_interface_id: plc_net
+forwarding_edges:
+- id: f_it_dmz
+  ingress_interface_id: fw_it
+  egress_interface_id: fw_dmz
+  conduit_id: c_it_dmz
+- id: f_dmz_ot
+  ingress_interface_id: fw_dmz
+  egress_interface_id: fw_ot
+  conduit_id: c_dmz_ot
+services:
+- id: svc_jump
+  asset_id: jump
+  interface_id: jump_net
+  protocol: tcp
+  destination_ports:
+  - start: 3389
+    end: 3389
+- id: svc_scada
+  asset_id: scada
+  interface_id: scada_net
+  protocol: tcp
+  destination_ports:
+  - start: 3389
+    end: 3389
+- id: svc_plc
+  asset_id: plc
+  interface_id: plc_net
+  protocol: tcp
+  destination_ports:
+  - start: 502
+    end: 502
+- id: svc_fw
+  asset_id: fw
+  interface_id: fw_dmz
+  protocol: tcp
+  destination_ports:
+  - start: 443
+    end: 443
+rules:
+- id: allow_it_jump
+  effect: allow
+  source:
+    asset_ids:
+    - it
+  destination:
+    asset_ids:
+    - jump
+  protocol: tcp
+  destination_ports:
+  - start: 3389
+    end: 3389
+  edge_ids:
+  - t_it_fw
+  - f_it_dmz
+  - t_fw_jump
+- id: allow_jump_scada
+  effect: allow
+  source:
+    asset_ids:
+    - jump
+  destination:
+    asset_ids:
+    - scada
+  protocol: tcp
+  destination_ports:
+  - start: 3389
+    end: 3389
+  edge_ids:
+  - t_jump_fw
+  - f_dmz_ot
+  - t_fw_scada
+- id: allow_scada_plc
+  effect: allow
+  source:
+    asset_ids:
+    - scada
+  destination:
+    asset_ids:
+    - plc
+  protocol: tcp
+  destination_ports:
+  - start: 502
+    end: 502
+  edge_ids:
+  - t_scada_plc
+- id: allow_jump_fw
+  effect: allow
+  source:
+    asset_ids:
+    - jump
+  destination:
+    asset_ids:
+    - fw
+  protocol: tcp
+  destination_ports:
+  - start: 443
+    end: 443
+  edge_ids:
+  - t_jump_fw
+- id: deny_it_plc
+  effect: deny
+  source:
+    asset_ids:
+    - it
+  destination:
+    asset_ids:
+    - plc
+  protocol: tcp
+  destination_ports:
+  - start: 502
+    end: 502
+  edge_ids:
+  - t_it_fw
+  - f_it_dmz
+  - f_dmz_ot
+  - t_fw_plc
+intents:
+- id: req_it_jump
+  kind: required
+  source:
+    asset_ids:
+    - it
+  destination_service_ids:
+  - svc_jump
+- id: req_jump_scada
+  kind: required
+  source:
+    asset_ids:
+    - jump
+  destination_service_ids:
+  - svc_scada
+- id: req_scada_plc
+  kind: required
+  source:
+    asset_ids:
+    - scada
+  destination_service_ids:
+  - svc_plc
+- id: req_jump_fw
+  kind: required
+  source:
+    asset_ids:
+    - jump
+  destination_service_ids:
+  - svc_fw
+- id: prohibit_it_ot
+  kind: prohibited
+  source:
+    asset_ids:
+    - it
+  destination_service_ids:
+  - svc_scada
+  - svc_plc
+- id: prohibit_it_fw
+  kind: prohibited
+  source:
+    asset_ids:
+    - it
+  destination_service_ids:
+  - svc_fw
+- id: prohibit_jump_plc
+  kind: prohibited
+  source:
+    asset_ids:
+    - jump
+  destination_service_ids:
+  - svc_plc
+- id: prohibit_scada_dmz
+  kind: prohibited
+  source:
+    asset_ids:
+    - scada
+  destination_service_ids:
+  - svc_jump
+  - svc_fw
+scenarios:
+- id: support_scope
+  origin_asset_ids:
+  - it
+  - jump
+  - scada
+  destination_service_ids:
+  - svc_jump
+  - svc_scada
+  - svc_plc
+  - svc_fw
