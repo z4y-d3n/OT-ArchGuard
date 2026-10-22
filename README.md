@@ -65,9 +65,15 @@ separate from inputs. Fatal errors preserve existing reports; check the native e
 
 ![Remote support architecture](docs/images/remote-support-proposed.png)
 
-These generated previews show invented models. Boundary attachment cards sharing
+These version 1.0.1 previews show invented models. Boundary attachment cards sharing
 one ID represent one device. Arrows represent declared transitions; they do not
 establish permitted communication or physical connectivity.
+
+The v1.1 development renderer adds topology-informed deterministic zone order,
+repeatable HTML `--zone-order` preferences, numbered orthogonal routes and local
+report navigation. See [report options](docs/reporting.md) and
+[Gate V11-2 evidence](docs/v1.1/gate-v11-2.md). Its six native OS/Python CI
+combinations are defined and pending remote verification.
 
 Read the [schema](docs/yaml-schema-v1.md), [domain model](docs/domain-model.md),
 [algorithms](docs/algorithms.md), [requirements](docs/requirements.md),

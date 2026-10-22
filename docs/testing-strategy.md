@@ -3,6 +3,20 @@
 Use matching regular installed wheel environments on Windows Python 3.12/3.14.
 Version 1.0.1 results are in the [verification summary](verification.md).
 
+The v1.1 workflow defines native Windows, Ubuntu and macOS runners with Python
+3.12/3.14, `fail-fast: false` and no exclusions. Hosted Gate V11-2 outcomes are
+**pending remote verification**. Job ID `verify` is retained; expanded displayed
+check names need owner review in branch-protection settings after the first run.
+PowerShell Core is explicit on every runner; offline paths use forward slashes.
+Artifacts include OS/Python identity and expire in seven days. No release upload
+is performed. See [Gate V11-2](v1.1/gate-v11-2.md).
+
+After a regular install, run `python tools/verify_environment.py --output
+output/environment.json` to verify distribution metadata, actual import location,
+all production module hashes and the console from `sysconfig.get_path("scripts")`.
+POSIX uses `otarchguard`, Windows uses `otarchguard.exe`; neither assumes it is
+beside `sys.executable`.
+
 ~~~powershell
 .\.venv\Scripts\python.exe -m pip install -r tools/verification-requirements.txt
 .\.venv\Scripts\python.exe -m pip install --no-build-isolation --no-deps .
@@ -41,3 +55,10 @@ state anchors. Parsing/rasterization is distinct from browser rendering.
 Release audits compare every allowed packaged source/test/document byte against
 the candidate, check metadata/entry points/licenses, and rebuild from the sdist.
 Packaging regressions cover unexpected, missing and stale archive contents.
+
+Independent SVG oracles compare parsed geometry with raw declarations: containment,
+intersections, bounds, phases/endpoints, direction and parallel/reverse identity.
+Fixed-seed graphs, exact summary boundaries and deliberate corrupt-SVG checks
+exercise these oracles. HTML checks unique IDs, resolving local links/markers/clips,
+captioned tables, escaped hostile labels and prominent critical findings.
+Record raster observations separately from actual browser/print verification.

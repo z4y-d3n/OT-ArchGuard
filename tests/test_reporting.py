@@ -1,6 +1,7 @@
 """T18/T21 and reporting T22/T24: offline, escaped, deterministic evidence."""
 
 import json
+import re
 import socket
 import xml.etree.ElementTree as ET
 from copy import deepcopy
@@ -41,9 +42,15 @@ class OfflineHTML(HTMLParser):
         assert tag not in {"script", "iframe", "object", "embed", "img", "link", "base", "form"}
         for key, value in attrs:
             assert not key.startswith("on")
-            assert key not in {"href", "src", "srcset", "action"}
+            assert key not in {"src", "srcset", "action"}
+            if key == "href":
+                assert tag == "a" and re.fullmatch(r"#[a-z][a-z0-9_-]*", value or "")
             if key == "marker-end":
-                assert value in {"url(#transport)", "url(#forward)"}
+                assert re.fullmatch(
+                    r"url\(#(?:snapshot-[01]-)?(?:transport|forward)\)", value or ""
+                )
+            if key == "clip-path":
+                assert re.fullmatch(r"url\(#(?:snapshot-[01]-)?label-[0-9]+\)", value or "")
         if tag == "svg":
             self.svgs += 1
         if ("http-equiv", "Content-Security-Policy") in attrs:

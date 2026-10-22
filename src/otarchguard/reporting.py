@@ -13,6 +13,12 @@ from otarchguard.api import ValidatedArchitecture
 from otarchguard.comparison import ComparisonResult
 from otarchguard.contract import RESOURCE_LIMITS, DiagnosticCategory, ResourceLimits
 from otarchguard.diagnostics import Diagnostic, ModelError
+from otarchguard.diagrams import (
+    INTERPRETATION,
+    calculate_layout,
+    serialize_svg,
+    validate_zone_order,
+)
 from otarchguard.exposure import ExposureResult
 from otarchguard.intents import CheckResult
 
@@ -60,8 +66,29 @@ font-size:.85rem}details{margin:1rem 0}summary{cursor:pointer;font-weight:bold;p
 background:#e8f0f5}figure{margin:1rem 0}figcaption{font-weight:bold;padding:.6rem 0}
 .finding{padding:1rem;border-left:5px solid #a12121}.alert{border:3px solid
 #a12121;background:#fff1ed}.note{border-left:5px solid #426784;padding-left:1rem}
-.architecture-canvas{overflow-x:auto}svg{width:100%;height:auto;min-width:1000px}
+.architecture-canvas{overflow-x:auto}svg{width:auto;height:auto;min-width:1000px;max-width:none}
 caption{text-align:left;font-weight:bold;padding:.5rem 0}
+html{scroll-behavior:auto}body{line-height:1.5}h1{font-size:2rem}h2{font-size:1.45rem}
+a{color:#124d79;text-underline-offset:.2em}a:focus-visible,summary:focus-visible,
+[tabindex]:focus-visible{outline:3px solid #784300;outline-offset:4px}
+.skip-link{position:absolute;left:-9999px}.skip-link:focus{position:static}
+nav{border:1px solid #6b879b;padding:1rem;background:white}nav ul{display:flex;
+flex-wrap:wrap;gap:.5rem 1.5rem;list-style:none;margin:0;padding:0}
+.snapshot{border-top:2px solid #6b879b;margin-top:1.5rem;padding-top:1rem}
+code{overflow-wrap:anywhere}.critical-list{padding-left:1.4rem}.critical-list li{margin:.6rem 0}
+.architecture-canvas{border:1px solid #6b879b}summary{border:1px solid #6b879b}
+@media(max-width:640px){body{margin:1rem auto;padding:0 .6rem}section{padding:.7rem}
+nav ul{display:block}nav li{margin:.5rem 0}h1{font-size:1.6rem}}
+@media print{@page{margin:15mm}body{background:white;color:black;font:10pt sans-serif;
+max-width:none;margin:0;padding:0}nav,.skip-link{display:none}section{border:0;
+padding:0;margin:1rem 0}h1,h2,h3,summary,figcaption{break-after:avoid;color:black}
+.alert,.finding{border:2px solid black;padding:.6rem;background:white}
+.table-scroll,td pre,pre{overflow:visible;max-height:none}table{width:100%;min-width:0;
+table-layout:fixed}th,td{min-width:0;overflow-wrap:anywhere;font-size:8pt}
+thead{display:table-header-group}tr{break-inside:avoid}summary{background:white}
+details::details-content{content-visibility:visible}.architecture-canvas{overflow:visible}
+svg{width:100%;min-width:0;height:auto}figure{break-inside:avoid}
+a{color:black}a::after{content:""}}
 """
 
 
@@ -173,11 +200,13 @@ def diagram_summary(snapshot: ValidatedArchitecture) -> dict[str, Any]:
     }
 
 
-def architecture_svg(snapshot: ValidatedArchitecture) -> str:
+def architecture_svg(snapshot: ValidatedArchitecture, *, zone_order: tuple[str, ...] = ()) -> str:
     """Spatial placement schematic; only declared edges become routed arrows."""
-    from otarchguard.diagrams import spatial_svg
-
-    return spatial_svg(snapshot, diagram_summary(snapshot)["mode"] == "summary", escape)
+    validate_zone_order((snapshot,), zone_order)
+    return serialize_svg(
+        calculate_layout(snapshot, diagram_summary(snapshot)["mode"] == "summary", zone_order),
+        escape,
+    )
 
 
 def _value(value: Any) -> str:
@@ -198,7 +227,7 @@ def _table(caption: str, rows: list[dict[str, Any]]) -> str:
         '<div class="table-scroll" role="region" tabindex="0" '
         f'aria-label="{escape(caption)} — scroll horizontally for all columns">'
         f"<table><caption>{escape(caption)}</caption><thead><tr>"
-        + "".join(f"<th>{escape(key)}</th>" for key in keys)
+        + "".join(f'<th scope="col">{escape(key)}</th>' for key in keys)
         + "</tr></thead><tbody>"
         + "".join(
             "<tr>" + "".join(f"<td>{cell(row.get(key))}</td>" for key in keys) + "</tr>"
@@ -297,8 +326,6 @@ def _analysis_summary(result: dict[str, Any]) -> str:
         "entity_changes",
         "suc_definition_changes",
         "intent_changes",
-        "introduced_prohibited_violations",
-        "resolved_prohibited_violations",
     ):
         if key in result:
             parts.append(_table(key, result[key]))
@@ -348,18 +375,48 @@ def _query_evidence(rows: list[dict[str, Any]]) -> str:
     return "".join(parts)
 
 
-def html_report(report: dict[str, Any], snapshots: tuple[ValidatedArchitecture, ...]) -> bytes:
+def html_report(
+    report: dict[str, Any],
+    snapshots: tuple[ValidatedArchitecture, ...],
+    *,
+    zone_order: tuple[str, ...] = (),
+) -> bytes:
     """All model/evidence text is escaped; only generated SVG/CSS are trusted markup."""
     if [s.sha256 for s in snapshots] != [s["model_sha256"] for s in report["snapshots"]]:
         raise ValueError("HTML snapshot hashes do not match report")
+    validate_zone_order(snapshots, zone_order)
     intents = _intent_rows(report["result"])
     failed_required = [
         row for row in intents if row["kind"] == "required" and row["outcome"] == "FAILED"
     ]
+    changes = report["result"]
+    introduced = changes.get("introduced_prohibited_violations", [])
+    resolved = changes.get("resolved_prohibited_violations", [])
+    failed_prohibited = [
+        row for row in intents if row["kind"] == "prohibited" and row["outcome"] == "FAILED"
+    ]
+    links = (
+        ("critical", "Critical communications"),
+        ("diagrams", "Architecture"),
+        ("findings", "Intent and comparison findings"),
+        ("witnesses", "Interval witnesses"),
+        ("inventory", "Full declarations"),
+        ("omissions", "Diagram limitations"),
+        ("interpretation", "Unassessed evidence"),
+        ("json-evidence", "JSON appendix"),
+    )
+    finding_class = "alert" if failed_required or introduced or failed_prohibited else "note"
     body = [
+        '<a class="skip-link" href="#critical">Skip to critical findings</a><header>',
         f"<h1>OT-ArchGuard · {escape(report['kind'])}</h1>",
         f"<p>Status: <strong>{escape(report['status'])}</strong>. {escape(report['scope'])}</p>",
-        f'<section class="{"alert" if failed_required else "note"}">'
+        f'<p class="note"><strong>{INTERPRETATION}</strong></p>',
+        "<p>Model-based initiation only; no conformity or physical-risk-reduction claim. "
+        "SL-T, SL-C and SL-A: unassessed.</p></header>",
+        '<nav aria-label="Report contents"><ul>',
+        *(f'<li><a href="#{identity}">{title}</a></li>' for identity, title in links),
+        "</ul></nav><main>",
+        f'<section id="critical" class="{finding_class}">'
         "<h2>Operational communication findings</h2>",
         "<p>Review required communications independently of any exposure decrease.</p>",
         (
@@ -368,18 +425,51 @@ def html_report(report: dict[str, Any], snapshots: tuple[ValidatedArchitecture, 
             else ""
         ),
         _required_findings(failed_required) if report["kind"] != "validation" else "",
+        '<ul class="critical-list">',
+        '<li><a href="#findings">Failed required communications: '
+        f"{len(failed_required)} intent outcomes</a>"
+        + (
+            " (unassessed).</li>"
+            if report["kind"] == "validation"
+            else " in the evaluated evidence.</li>"
+        ),
+        '<li><a href="#prohibited-changes">Introduced prohibited communication violations: '
+        f"{len(introduced)} interval records</a>"
+        + (".</li>" if report["kind"] == "comparison" else " (change not assessed).</li>"),
+        '<li><a href="#prohibited-changes">Resolved prohibited violations: '
+        f"{len(resolved)} interval records</a>"
+        + (".</li>" if report["kind"] == "comparison" else " (change not assessed).</li>"),
+        f'<li><a href="#findings">Failed prohibited intent outcomes: {len(failed_prohibited)}</a>; '
+        f"other evaluated intent outcomes: "
+        f"{len(intents) - len(failed_required) - len(failed_prohibited)}.</li>",
+        "</ul><p>Counts describe evaluated records only. Absence of findings does not establish "
+        "universal security. Baseline and proposed outcomes remain independent.</p>",
+        *(
+            f"<p><strong>INTRODUCED prohibited violation</strong> · {escape(item['intent_id'])}: "
+            f"{escape(_value(item['flow']))} · "
+            '<a href="#prohibited-changes">Full interval evidence</a></p>'
+            for item in introduced
+        ),
         "</section>",
-        "<p>Model-based initiation only; no conformity or physical-risk-reduction claim. "
-        "SL-T, SL-C and SL-A: unassessed.</p>",
-        "<section><h2>Architecture diagrams</h2><p>Visible diagrams follow immediately. "
+        '<section id="diagrams"><h2>Architecture diagrams</h2>'
+        "<p>Visible diagrams follow immediately. "
         "Each arrow is an explicit declaration, not an assertion of permission.</p>",
     ]
     inventories: list[str] = []
-    for entry, snapshot in zip(report["snapshots"], snapshots, strict=True):
+    omissions: list[str] = []
+    for index, (entry, snapshot) in enumerate(zip(report["snapshots"], snapshots, strict=True)):
         model = entry["model"]
+        layout = calculate_layout(snapshot, entry["diagram"]["mode"] == "summary", zone_order)
         body += [
+            f'<article class="snapshot" id="snapshot-{index}">',
             f"<h3>{escape(entry['role'])}: {escape(model['architecture_id'])}</h3>",
             f"<p>SHA-256: <code>{escape(snapshot.sha256)}</code></p>",
+            f"<p>Presentation preference: {escape(_value(zone_order))}. "
+            f"Effective zone order: {escape(_value(layout.effective_order))}. "
+            f"Visible order: {escape(_value(tuple(z.zone_id for z in layout.zones)))}. "
+            f'<a href="#inventory-{index}">Full {escape(entry["role"])} '
+            "declarations and attachments</a>; "
+            f'<a href="#omissions-{index}">omissions and limitations</a>.</p>',
             '<p class="note">Administrative ownership is asset.zone_id. Interface attachment '
             "is interface.placement_zone_id. Neither establishes connectivity. Business/IACS "
             "and safety classifications are displayed for human review; no level is inferred.</p>",
@@ -390,17 +480,40 @@ def html_report(report: dict[str, Any], snapshots: tuple[ValidatedArchitecture, 
             "</figcaption>",
             '<div class="architecture-canvas" role="region" tabindex="0" '
             'aria-label="Architecture schematic — scroll horizontally if needed">',
-            architecture_svg(snapshot),
-            "</div></figure>",
+            serialize_svg(layout, escape, f"snapshot-{index}"),
+            "</div></figure></article>",
+            "<p>Wide diagrams scroll at their intrinsic size. Printing may shrink wide diagrams; "
+            "use the full inventory for readable identifiers.</p>",
         ]
         inventories += [
-            "<details><summary>Full SUC declaration and inventory: "
+            f'<details id="inventory-{index}" open><summary>Full SUC declaration and inventory: '
             f"{escape(entry['role'])}</summary>",
+            f'<p><a href="#snapshot-{index}">Return to {escape(entry["role"])} '
+            "diagram and model hash</a></p>",
             _table(
                 "SUC declarations (owner assertions)",
                 [{"field": k, "value": v} for k, v in model["suc"].items()],
             ),
             f"<p>Diagram omissions: {escape(_value(entry['diagram']['omitted_from_diagram']))}</p>",
+            _table(
+                "Device-to-interface attachment map (same asset ID = one logical device)",
+                [asdict(item) for item in layout.device_map],
+            ),
+        ]
+        omissions += [
+            f'<article id="omissions-{index}"><h3>{escape(entry["role"])} diagram visibility</h3>',
+            f"<p>Mode: <strong>{layout.mode}</strong>. Omitted attachment cards: "
+            f"{layout.omissions.attachment_cards}; assets: {len(layout.omissions.asset_ids)}; "
+            f"interfaces: {len(layout.omissions.interface_ids)}; transitions: "
+            f"{len(layout.omissions.edge_ids)}; zones: {len(layout.omissions.zone_ids)}.</p>",
+            f"<p>Exact omissions: {escape(_value(entry['diagram']['omitted_from_diagram']))}</p>",
+            "<p>Summary membership retains the first 12 canonical zone IDs; presentation "
+            "preferences reorder that subset only. Omitted connections are not absent connections. "
+            "All declarations and findings remain in full inventory and JSON; "
+            "analysis scope is unchanged.</p>",
+            "<ul>",
+            *(f"<li>{escape(item)}</li>" for item in layout.limitations),
+            "</ul></article>",
         ]
         if any(entry["diagram"]["omitted_from_diagram"].values()):
             body.append(
@@ -423,7 +536,35 @@ def html_report(report: dict[str, Any], snapshots: tuple[ValidatedArchitecture, 
             inventories.append(_table(collection, model[collection]))
         inventories.append("</details>")
     body += [
-        "</section><section><h2>Interpretation and unassessed evidence</h2><ul>",
+        '</section><section id="findings"><h2>Findings and witness provenance</h2>',
+        "<p>Wide tables scroll horizontally without compressing text into narrow columns.</p>",
+        _table("Independent intent outcomes", intents),
+        _table(
+            "Newly broken required intervals", changes.get("broken_required_communications", [])
+        ),
+        '<div id="prohibited-changes"><h3>Prohibited communication changes</h3>',
+        _table("Introduced prohibited communication violations", introduced),
+        _table("Resolved prohibited violations", resolved),
+        "</div>",
+        _analysis_summary(changes),
+        '</section><section id="witnesses">'
+        "<h2>Exact interval findings and replayable witnesses</h2>",
+        "<p>Expand a query to see original endpoints, states, edges, conduits and matching allows. "
+        "Unreachable diagnostics are bounded explanations, not proof of a minimal cut.</p>",
+        _query_evidence(_query_rows(changes)),
+        "</section>",
+        '<section id="inventory"><h2>SUC declarations and full inventory</h2>',
+        *inventories,
+        "</section>",
+        '<section id="omissions"><h2>Diagram omissions and layout limitations</h2>',
+        *omissions,
+        "</section>",
+        '<section id="interpretation"><h2>Interpretation and unassessed evidence</h2>',
+        f"<p><strong>{INTERPRETATION}</strong></p>",
+        "<p>Diagram proximity does not imply connectivity. Administrative ownership is not "
+        "interface placement. Structural declarations do not establish deployed connectivity. "
+        "Reachability is confined to the declared analytical model. No conformity, safety or "
+        "actual physical-network verification is claimed.</p><ul>",
         *(f"<li>{escape(item)}</li>" for item in report["limitations"]),
         "</ul><p>SL-T: unassessed; SL-C: unassessed; SL-A: unassessed. "
         "External security-level assessment evidence has not been evaluated.</p>",
@@ -434,27 +575,11 @@ def html_report(report: dict[str, Any], snapshots: tuple[ValidatedArchitecture, 
         ),
         "<p>Unmodeled access points and dependencies remain unevaluated; expand SUC evidence "
         "for exact records. Assessment and approval evidence stays external.</p></section>",
-        "<section><h2>Findings and witness provenance</h2>",
-        "<p>Wide tables scroll horizontally without compressing text into narrow columns.</p>",
-        _table("Independent intent outcomes", intents),
-        _table(
-            "Newly broken required intervals",
-            report["result"].get("broken_required_communications", []),
-        ),
-        _analysis_summary(report["result"]),
-        "<h3>Exact interval findings and replayable witnesses</h3><p>Expand a query to see "
-        "original endpoints, states, edges, conduits and matching allows. Unreachable diagnostics "
-        "are bounded explanations, not proof of a minimal cut.</p>",
-        _query_evidence(_query_rows(report["result"])),
-        "</section>",
-        "<section><h2>SUC declarations and full inventory</h2>",
-        *inventories,
-        "</section>",
-        "<section><h2>Complete reproducible report evidence</h2>",
+        '<section id="json-evidence"><h2>Complete reproducible report evidence</h2>',
         "<p>Report version 1; engine and schema versions, finite query scope, completeness "
         "assertions and provisional resource ceilings are included below. No timestamps.</p>",
         "<details><summary>Machine-readable JSON appendix (not an architecture diagram)</summary>",
-        f"<pre>{escape(json_report(report).decode())}</pre></details></section>",
+        f"<pre>{escape(json_report(report).decode())}</pre></details></section></main>",
     ]
     return (
         '<!doctype html><html lang="en"><head><meta charset="utf-8">'

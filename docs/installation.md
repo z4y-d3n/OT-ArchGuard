@@ -18,3 +18,9 @@ No wheelhouse or environment is included in the source project.
 Native dependency wheels must match Python/OS/CPU. Installation may need acquired
 dependencies; runtime analysis/reports remain offline. See [README](../README.md),
 [reporting](reporting.md) and [testing](testing-strategy.md).
+
+The v1.1 CI matrix targets native Windows, Ubuntu and macOS with Python 3.12/3.14.
+Linux/macOS hosted verification is pending; these are targets, not completed
+compatibility claims. POSIX virtual environments use `.venv/bin/python` and
+`.venv/bin/otarchguard`. Tooling resolves the active interpreter's console through
+`sysconfig.get_path("scripts")`.
