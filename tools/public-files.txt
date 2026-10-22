@@ -24,6 +24,7 @@ docs/reporting.md
 docs/requirements.md
 docs/testing-strategy.md
 docs/verification.md
+docs/v1.1/gate-v11-1.md
 docs/yaml-schema-v1.md
 examples/README.md
 examples/flat-plant/baseline.yaml
@@ -83,6 +84,8 @@ tests/test_reporting.py
 tests/test_resource_envelope.py
 tests/test_validate_cli.py
 tests/test_validation.py
+tests/test_unicode.py
+tests/test_unicode_cli.py
 tools/__init__.py
 tools/audit_release.py
 tools/offline/sitecustomize.py
