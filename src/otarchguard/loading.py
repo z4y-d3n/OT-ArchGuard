@@ -5,6 +5,7 @@ from collections.abc import Iterator
 from pathlib import Path
 
 import yaml
+from yaml.error import Mark
 from yaml.events import (
     AliasEvent,
     DocumentStartEvent,
@@ -15,6 +16,7 @@ from yaml.events import (
     SequenceEndEvent,
     SequenceStartEvent,
 )
+from yaml.scanner import ScannerError
 from yaml.tokens import DirectiveToken
 
 from otarchguard.contract import RESOURCE_LIMITS, DiagnosticCategory, ResourceLimits
@@ -29,14 +31,45 @@ _FLOAT = re.compile(
 _SPECIAL_FLOAT = re.compile(r"[-+]?\.(?:inf|nan)", re.IGNORECASE | re.ASCII)
 
 
+class _StrictLoader(yaml.SafeLoader):
+    def scan_flow_scalar_non_spaces(self, double: bool, start_mark: Mark) -> list[str]:
+        try:
+            return super().scan_flow_scalar_non_spaces(double, start_mark)
+        except (ValueError, OverflowError):
+            # PyYAML leaves the reader at the first hex digit when chr() fails.
+            # Translate only this exact out-of-range, double-quoted escape state.
+            mark = self.get_mark()
+            if double and mark.buffer is not None and mark.pointer >= 2:
+                escape = mark.buffer[mark.pointer - 2 : mark.pointer + 8]
+                if re.fullmatch(r"\\U[0-9A-Fa-f]{8}", escape) and int(escape[2:], 16) > 0x10FFFF:
+                    raise ScannerError(
+                        "while scanning a double-quoted scalar",
+                        start_mark,
+                        "Unicode escape is outside the Unicode range.",
+                        mark,
+                    ) from None
+            raise
+
+
 def _reject_directives(source: str) -> None:
-    for token in yaml.scan(source, Loader=yaml.SafeLoader):
+    for token in yaml.scan(source, Loader=_StrictLoader):
         if isinstance(token, DirectiveToken):
             fail("YAML_FEATURE", "$", "YAML directives are forbidden.")
 
 
 def _scalar(event: ScalarEvent, path: str) -> YamlValue:
     value = event.value
+    # YAML escapes can produce surrogates even though strict UTF-8 cannot.
+    # Check keys before constructing a child path, and values before schema parsing.
+    if any("\ud800" <= character <= "\udfff" for character in value):
+        mark = event.start_mark
+        fail(
+            "INVALID_TEXT",
+            path,
+            "Text must contain only Unicode scalar values; surrogate code points are forbidden.",
+            line=mark.line + 1 if mark is not None else None,
+            column=mark.column + 1 if mark is not None else None,
+        )
     if event.style is not None:
         return value
     if value in ("true", "false"):
@@ -91,7 +124,7 @@ def load_bytes(data: bytes, limits: ResourceLimits = RESOURCE_LIMITS) -> YamlVal
         fail("YAML_SYNTAX", "$", "Input must be UTF-8.")
     try:
         depth = documents = 0
-        for count, event in enumerate(yaml.parse(source, Loader=yaml.SafeLoader), 1):
+        for count, event in enumerate(yaml.parse(source, Loader=_StrictLoader), 1):
             check_limit("parser_events", count, limits.parser_events)
             if isinstance(event, DocumentStartEvent):
                 documents += 1
@@ -111,7 +144,7 @@ def load_bytes(data: bytes, limits: ResourceLimits = RESOURCE_LIMITS) -> YamlVal
         # Also catches unknown directives that the YAML parser would otherwise ignore.
         # Scan only after depth/event checks; no complete token collection is retained.
         _reject_directives(source)
-        events = iter(yaml.parse(source, Loader=yaml.SafeLoader))
+        events = iter(yaml.parse(source, Loader=_StrictLoader))
         for event in events:
             if isinstance(event, DocumentStartEvent):
                 return _build(next(events), events, "$")

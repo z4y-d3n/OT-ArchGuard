@@ -24,6 +24,7 @@ include docs/reporting.md
 include docs/requirements.md
 include docs/testing-strategy.md
 include docs/verification.md
+include docs/v1.1/gate-v11-1.md
 include docs/yaml-schema-v1.md
 include examples/README.md
 include examples/flat-plant/baseline.yaml
@@ -83,6 +84,8 @@ include tests/test_reporting.py
 include tests/test_resource_envelope.py
 include tests/test_validate_cli.py
 include tests/test_validation.py
+include tests/test_unicode.py
+include tests/test_unicode_cli.py
 include tools/__init__.py
 include tools/audit_release.py
 include tools/offline/sitecustomize.py

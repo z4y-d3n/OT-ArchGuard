@@ -25,6 +25,20 @@ hexadecimal, underscore-digit or sexagesimal numeric conversion is performed.
 Use quoted strings for these forms when intended as text. Null is never a valid
 field value. No type coercion or stripping of supplied text is permitted.
 
+Keys and string values must contain only Unicode scalar values. Escaped surrogate
+code points U+D800 through U+DFFF are rejected as `invalid_input` / `INVALID_TEXT`
+before schema parsing or canonical serialization. The diagnostic locates a value
+at its model path, or an invalid key at its containing mapping, with the scalar's
+one-based YAML line and column. Malformed raw UTF-8 or characters rejected by the
+YAML parser retain `YAML_SYNTAX`. Text is never Unicode-normalized, replaced or
+stripped: supplementary characters, combining characters and otherwise accepted
+Unicode scalars retain their exact canonical bytes and identity.
+Double-quoted numeric escapes above U+10FFFF, such as `\U00110000` and
+`\UFFFFFFFF`, are malformed YAML and produce `invalid_input` / `YAML_SYNTAX`
+at the first hexadecimal digit. Literal backslash text in plain, single-quoted
+or block scalars, and escaped backslashes in double-quoted scalars, retain their
+existing meaning.
+
 | Notation | Exact type / constraint |
 | --- | --- |
 | `id` | String matching the entire ASCII pattern `[a-z][a-z0-9_-]{0,63}`. Case-sensitive. |
