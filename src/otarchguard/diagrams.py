@@ -1,85 +1,222 @@
-"""Deterministic spatial SVG layout of declared placements and explicit transitions."""
+"""Bounded presentation geometry; never builds or changes the analytical graph."""
 
+import heapq
+import re
 from collections.abc import Callable
+from dataclasses import dataclass
 from textwrap import wrap
+from typing import Literal
 
 from otarchguard.api import ValidatedArchitecture
-from otarchguard.domain import Asset, Interface
+from otarchguard.diagnostics import fail
+
+INTERPRETATION = (
+    "Arrows represent declared transitions, not necessarily permitted communication "
+    "or verified physical connectivity."
+)
+type Phase = Literal["ingress", "egress"]
+type Kind = Literal["transport", "forwarding"]
 
 
-def spatial_svg(
-    snapshot: ValidatedArchitecture, summarized: bool, escape: Callable[[str], str]
-) -> str:
-    """Draw placement containers, asset attachments and state-specific routed arrows.
+@dataclass(frozen=True, slots=True)
+class Point:
+    x: int
+    y: int
 
-    Attachment copies of a boundary asset are not separate assets. No line is
-    generated for common ownership, shared placement, addresses or conduits.
+
+@dataclass(frozen=True, slots=True)
+class Rect:
+    x: int
+    y: int
+    width: int
+    height: int
+
+    @property
+    def right(self) -> int:
+        return self.x + self.width
+
+    @property
+    def bottom(self) -> int:
+        return self.y + self.height
+
+
+@dataclass(frozen=True, slots=True)
+class Label:
+    bounds: Rect
+    full_text: str
+    visible_text: str
+    size: int = 13
+
+
+@dataclass(frozen=True, slots=True)
+class Anchor:
+    interface_id: str
+    phase: Phase
+    point: Point
+
+
+@dataclass(frozen=True, slots=True)
+class InterfaceRow:
+    interface_id: str
+    bounds: Rect
+    labels: tuple[Label, ...]
+    ingress: Anchor
+    egress: Anchor
+
+
+@dataclass(frozen=True, slots=True)
+class Attachment:
+    asset_id: str
+    owner_zone_id: str
+    placement_zone_id: str
+    boundary: bool
+    bounds: Rect
+    labels: tuple[Label, ...]
+    interfaces: tuple[InterfaceRow, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class ZoneBox:
+    zone_id: str
+    scope: str
+    bounds: Rect
+    labels: tuple[Label, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class Transition:
+    edge_id: str
+    kind: Kind
+    source: Anchor
+    target: Anchor
+    conduit_id: str | None
+    points: tuple[Point, ...]
+    label: Label
+    key: Label
+
+
+@dataclass(frozen=True, slots=True)
+class DevicePlacement:
+    asset_id: str
+    owner_zone_id: str
+    placement_zone_id: str
+    interface_ids: tuple[str, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class Omissions:
+    zone_ids: tuple[str, ...]
+    asset_ids: tuple[str, ...]
+    interface_ids: tuple[str, ...]
+    edge_ids: tuple[str, ...]
+    attachment_cards: int
+
+
+@dataclass(frozen=True, slots=True)
+class Layout:
+    bounds: Rect
+    mode: str
+    requested_order: tuple[str, ...]
+    effective_order: tuple[str, ...]
+    zones: tuple[ZoneBox, ...]
+    attachments: tuple[Attachment, ...]
+    transitions: tuple[Transition, ...]
+    device_map: tuple[DevicePlacement, ...]
+    labels: tuple[Label, ...]
+    omissions: Omissions
+    limitations: tuple[str, ...]
+
+
+def validate_zone_order(
+    snapshots: tuple[ValidatedArchitecture, ...], requested: tuple[str, ...]
+) -> None:
+    """Comparison preferences use the union, with existing controlled diagnostics."""
+    if len(set(requested)) != len(requested):
+        fail("INVALID_VALUE", "$.zone_order", "Duplicate presentation zone IDs are not allowed.")
+    known = {z.id for s in snapshots for z in s.model.zones}
+    if any(identity not in known for identity in requested):
+        fail("INVALID_REFERENCE", "$.zone_order", "Unknown presentation zone ID.")
+
+
+def zone_order(snapshot: ValidatedArchitecture, requested: tuple[str, ...] = ()) -> tuple[str, ...]:
+    """Kahn order; minimum stable ID breaks cycles and ties, including components.
+
+    Only explicit cross-placement transitions affect this heuristic. Breaking a
+    cycle is a drawing choice, never a declaration of reachability or trust.
     """
     model = snapshot.model
-    zones = sorted(model.zones[:12], key=lambda zone: (zone.scope != "external", zone.id))
-    width = max(1100, len(zones) * 360 + 40)
-    zone_width = 1020 if len(zones) == 1 else 320
-    # Each port has distinct ingress/egress anchors; neither connects implicitly.
-    anchors: dict[tuple[str, str], tuple[int, int, int]] = {}
-    zone_shapes: list[str] = []
-    nodes: list[str] = []
-    zone_bottoms: dict[str, int] = {}
+    adjacency: dict[str, set[str]] = {z.id: set() for z in model.zones}
+    interfaces = {i.id: i.placement_zone_id for i in model.interfaces}
+    pairs = [(e.source_interface_id, e.destination_interface_id) for e in model.transport_edges]
+    pairs += [(e.ingress_interface_id, e.egress_interface_id) for e in model.forwarding_edges]
+    for source, target in pairs:
+        a, b = interfaces[source], interfaces[target]
+        if a != b:
+            adjacency[a].add(b)
+    indegree = dict.fromkeys(adjacency, 0)
+    for targets in adjacency.values():
+        for target in targets:
+            indegree[target] += 1
+    remaining = set(adjacency)
+    all_ids = sorted(remaining)
+    heapq.heapify(all_ids)
+    ready = sorted(z for z, degree in indegree.items() if degree == 0)
+    heapq.heapify(ready)
+    ordered: list[str] = []
+    while remaining:
+        identity = heapq.heappop(ready if ready else all_ids)
+        if identity not in remaining:
+            continue
+        remaining.remove(identity)
+        ordered.append(identity)
+        for target in sorted(adjacency[identity]):
+            indegree[target] -= 1
+            if indegree[target] == 0 and target in remaining:
+                heapq.heappush(ready, target)
+    return tuple(z for z in requested if z in adjacency) + tuple(
+        z for z in ordered if z not in requested
+    )
 
-    def text(x: int, y: int, value: str, *, size: int = 14, color: str = "#17334a") -> str:
-        return (
-            f'<text x="{x}" y="{y}" font-size="{size}" fill="{color}">'
-            f"<title>{escape(value)}</title>{escape(value)}</text>"
-        )
 
-    def label(x: int, y: int, value: str, *, limit: int = 29, lines: int = 2) -> str:
-        segments = wrap(value, width=limit, break_long_words=True, break_on_hyphens=False) or [""]
-        visible = segments[:lines]
-        if len(segments) > lines:
-            visible[-1] = visible[-1][: limit - 1] + "…"
-        return (
-            f"<g><title>{escape(value)}</title>"
-            + "".join(text(x, y + index * 17, segment) for index, segment in enumerate(visible))
-            + "</g>"
-        )
+def _label(x: int, y: int, width: int, value: str, size: int = 13) -> Label:
+    # A conservative code-point budget, NOT measured glyph widths. No runtime
+    # Unicode database: Python versions can classify the same scalar differently.
+    # Clipping enforces the finite region with platform-dependent fallback fonts.
+    budget = max(1, width // size)
+    clean = " ".join(value.split())
+    visible = clean if len(clean) <= budget else clean[: budget - 1] + "…"
+    return Label(Rect(x, y, width, size + 8), value, visible, size)
 
-    def icon(x: int, y: int, boundary: bool) -> str:
-        if boundary:
-            return (
-                f'<path d="M{x}, {y} l24,0 l0,17 l-12,10 l-12,-10 z" '
-                'fill="#eee4fb" stroke="#7946a0" stroke-width="2"/>'
-                f'<path d="M{x + 6},{y + 8} h12 m-12,7 h12" stroke="#7946a0"/>'
-            )
-        return (
-            f'<rect x="{x}" y="{y}" width="26" height="18" rx="2" '
-            'fill="#dfeff8" stroke="#246c98" stroke-width="2"/>'
-            f'<path d="M{x + 13},{y + 18} v7 m-9,0 h18" stroke="#246c98" stroke-width="2"/>'
-        )
 
-    # Group by placement first, then owning asset. An interface-free asset remains
-    # visible in its owner zone without a network attachment or generated port.
-    groups: dict[str, list[tuple[Asset, tuple[Interface, ...]]]] = {}
-    for zone in zones:
-        groups[zone.id] = []
-        for asset in () if summarized else model.assets:
-            placed = tuple(
-                i
-                for i in model.interfaces
-                if i.asset_id == asset.id and i.placement_zone_id == zone.id
-            )
-            if placed or (
-                asset.zone_id == zone.id
-                and not any(i.asset_id == asset.id for i in model.interfaces)
-            ):
-                groups[zone.id].append((asset, placed))
-            elif asset.zone_id == zone.id and not any(
-                i.asset_id == asset.id and i.placement_zone_id == zone.id for i in model.interfaces
-            ):
-                # Administrative owner with all interfaces elsewhere: no phantom port.
-                groups[zone.id].append((asset, ()))
+def calculate_layout(
+    snapshot: ValidatedArchitecture, summarized: bool, requested: tuple[str, ...] = ()
+) -> Layout:
+    """Calculate placement, anchors, routes, labels and bounds before serialization.
 
-    same_zone_counts = {z.id: 0 for z in zones}
+    Detailed routing is limited to the existing <=12/24/24/48 envelope. Each
+    transition has separate vertical side tracks and a horizontal shelf below
+    all cards in its zone interval. First-fit shelves conflict only when their
+    spans overlap. There is no search through the analytical graph.
+    """
+    model = snapshot.model
+    order = zone_order(snapshot, requested)
+    visible_ids = {z.id for z in model.zones[:12]}
+    visible = [z for z in order if z in visible_ids]
+    zone_models = {z.id: z for z in model.zones}
+    assets = {a.id: a for a in model.assets}
     interfaces = {i.id: i for i in model.interfaces}
-    transitions = (
+    placements: dict[tuple[str, str], list[str]] = {}
+    for interface in model.interfaces:
+        placements.setdefault((interface.placement_zone_id, interface.asset_id), []).append(
+            interface.id
+        )
+    for asset in model.assets:
+        placements.setdefault((asset.zone_id, asset.id), [])
+    devices = tuple(
+        DevicePlacement(asset_id, assets[asset_id].zone_id, zone, tuple(sorted(ids)))
+        for (zone, asset_id), ids in sorted(placements.items())
+    )
+    declared: list[tuple[str, Kind, str, str, str | None]] = (
         sorted(
             [
                 (e.id, "transport", e.source_interface_id, e.destination_interface_id, e.conduit_id)
@@ -93,175 +230,349 @@ def spatial_svg(
         if not summarized
         else []
     )
-    for _, _, source, target, _ in transitions:
-        zone_id = interfaces[source].placement_zone_id
-        if zone_id == interfaces[target].placement_zone_id:
-            same_zone_counts[zone_id] += 1
-
-    for zone_index, zone in enumerate(zones):
-        x = 40 + zone_index * 360
-        columns = 3 if len(zones) == 1 else 1
-        bottoms = [170] * columns
-        if not summarized:
-            for index, (asset, placed) in enumerate(groups[zone.id]):
-                col = index % columns
-                nx = x + 40 + col * 320
-                ny = bottoms[col]
-                height = 116 + max(1, len(placed)) * 47
-                bottom = ny + height
-                bottoms[col] = bottom + 36
-                attachment = asset.kind == "boundary_device"
-                nodes.append(
-                    f'<g data-asset-id="{escape(asset.id)}" '
-                    f'data-placement-zone-id="{escape(zone.id)}" '
-                    f'data-owner-zone-id="{escape(asset.zone_id)}">'
-                    f"<title>{escape(asset.name)}; owner {escape(asset.zone_id)}; "
-                    f"attachment placement {escape(zone.id)}</title>"
-                    f'<rect x="{nx}" y="{ny}" width="240" height="{height}" rx="10" '
-                    f'fill="white" stroke="{"#7946a0" if attachment else "#246c98"}" '
-                    f'stroke-width="2"{(' stroke-dasharray="6 3"' if attachment else "")}/>'
-                )
-                nodes += [
-                    icon(nx + 12, ny + 14, attachment),
-                    label(nx + 49, ny + 27, asset.name, limit=22),
-                    label(nx + 12, ny + 68, asset.id, limit=25, lines=1),
-                    label(nx + 12, ny + 87, f"Owner: {asset.zone_id}", limit=27, lines=1),
-                    text(
-                        nx + 12,
-                        ny + 104,
-                        "Boundary attachment (same asset ID)" if attachment else "Endpoint",
-                        size=11,
-                    ),
-                ]
-                if not placed:
-                    nodes.append(text(nx + 12, ny + 136, "No interface placed here", size=12))
-                for port_index, interface in enumerate(placed):
-                    py = ny + 128 + port_index * 47
-                    nodes.append(f'<g data-interface-id="{escape(interface.id)}">')
-                    nodes += [
-                        label(nx + 20, py, interface.id, limit=24, lines=1),
-                        text(nx + 20, py + 17, interface.ipv4, size=11),
-                    ]
-                    for phase, px, gutter in (
-                        ("ingress", nx, nx - 20),
-                        ("egress", nx + 240, nx + 260),
-                    ):
-                        anchors[interface.id, phase] = (px, py - 4, gutter)
-                        nodes.append(
-                            f'<circle cx="{px}" cy="{py - 4}" r="5" '
-                            f'data-interface-id="{escape(interface.id)}" data-phase="{phase}" '
-                            'fill="white" stroke="#246c98" stroke-width="2">'
-                            f"<title>{escape(interface.id)} {phase}</title></circle>"
-                        )
-                    nodes.append("</g>")
-                nodes.append("</g>")
-        content_bottom = max(bottoms) if not summarized else 210
-        zone_bottom = content_bottom + same_zone_counts[zone.id] * 34 + 45
-        zone_bottoms[zone.id] = zone_bottom
-        zone_shapes.append(
-            f'<g data-zone-id="{escape(zone.id)}">'
-            f"<title>{escape(zone.name)} — interface placement boundary</title>"
-            f'<rect x="{x}" y="90" width="{zone_width}" height="{zone_bottom - 90}" '
-            f'rx="16" fill="{"#fff7ec" if zone.scope == "external" else "#edf5fa"}" '
-            'stroke="#6b879b" stroke-width="2"/>'
-            + label(x + 16, 118, zone.name, limit=32, lines=1)
-            + label(x + 16, 143, f"{zone.id} · {zone.scope.upper()}", limit=34, lines=1)
-            + (text(x + 16, 185, "SUMMARY — attachments omitted", size=12) if summarized else "")
-        )
-        # Nodes are true SVG descendants of their placement zone container.
-        zone_shapes.extend(nodes)
-        nodes = []
-        zone_shapes.append("</g>")
-
-    max_bottom = max(zone_bottoms.values(), default=280)
-    cross_index = 0
-    local_indices = dict.fromkeys(zone_bottoms, 0)
-    wires: list[str] = []
-    for identifier, kind, source, target, conduit in transitions:
-        source_phase, target_phase = (
+    sides: dict[tuple[str, Phase], int] = {}
+    for _, kind, source, target, _ in declared:
+        phases: tuple[Phase, Phase] = (
             ("egress", "ingress") if kind == "transport" else ("ingress", "egress")
         )
-        sx, sy, sg = anchors[source, source_phase]
-        tx, ty, tg = anchors[target, target_phase]
-        source_zone = interfaces[source].placement_zone_id
-        target_zone = interfaces[target].placement_zone_id
-        if source_zone == target_zone:
-            local_indices[source_zone] += 1
-            lane_y = zone_bottoms[source_zone] - 30 - (local_indices[source_zone] - 1) * 34
-        else:
-            cross_index += 1
-            lane_y = max_bottom + cross_index * 38
-        color = "#7946a0" if kind == "forwarding" else "#246c98"
-        dash = ' stroke-dasharray="8 4"' if kind == "forwarding" else ""
-        marker = "forward" if kind == "forwarding" else "transport"
-        wires.append(
-            f'<g data-edge-id="{escape(identifier)}" data-kind="{kind}" '
-            f'data-source-interface-id="{escape(source)}" '
-            f'data-target-interface-id="{escape(target)}">'
-            f"<title>{escape(identifier)}: {escape(source)} {source_phase} → "
-            f"{escape(target)} {target_phase}; {kind}; conduit {escape(conduit or 'none')}; "
-            "declaration only, not a permitted-path assertion</title>"
-            f'<path d="M{sx},{sy} H{sg} V{lane_y} H{tg} V{ty} H{tx}" '
-            f'fill="none" stroke="{color}" stroke-width="2"{dash} '
-            f'marker-end="url(#{marker})"/>'
+        for identity, phase in zip((source, target), phases, strict=True):
+            key = (interfaces[identity].placement_zone_id, phase)
+            sides[key] = sides.get(key, 0) + 1
+    zones: list[ZoneBox] = []
+    cards: list[Attachment] = []
+    anchors: dict[tuple[str, Phase], Anchor] = {}
+    content_bottom: dict[str, int] = {}
+    card_x: dict[str, int] = {}
+    x = 40
+    for identity in visible:
+        zone = zone_models[identity]
+        left = 40 + 8 * sides.get((identity, "ingress"), 0)
+        right = 40 + 8 * sides.get((identity, "egress"), 0)
+        zw = left + 280 + right
+        card_x[identity] = x + left
+        y = 242
+        if not summarized:
+            for placement in devices:
+                if placement.placement_zone_id != identity:
+                    continue
+                asset = assets[placement.asset_id]
+                cx = card_x[identity]
+                height = 124 + max(1, len(placement.interface_ids)) * 48
+                rows: list[InterfaceRow] = []
+                for index, iid in enumerate(placement.interface_ids):
+                    ry = y + 122 + index * 48
+                    ingress = Anchor(iid, "ingress", Point(cx, ry + 16))
+                    egress = Anchor(iid, "egress", Point(cx + 280, ry + 16))
+                    anchors[iid, "ingress"], anchors[iid, "egress"] = ingress, egress
+                    rows.append(
+                        InterfaceRow(
+                            iid,
+                            Rect(cx + 10, ry, 260, 44),
+                            (
+                                _label(cx + 18, ry, 244, iid),
+                                _label(cx + 18, ry + 21, 244, interfaces[iid].ipv4, 11),
+                            ),
+                            ingress,
+                            egress,
+                        )
+                    )
+                labels = [
+                    _label(cx + 14, y + 12, 252, asset.name, 15),
+                    _label(cx + 14, y + 39, 252, asset.id),
+                    _label(cx + 14, y + 63, 252, f"Owner: {asset.zone_id}", 12),
+                    _label(
+                        cx + 14,
+                        y + 87,
+                        252,
+                        "Same boundary asset" if asset.kind == "boundary_device" else "Endpoint",
+                        11,
+                    ),
+                ]
+                if not rows:
+                    labels.append(_label(cx + 14, y + 128, 252, "No interface placed here", 12))
+                cards.append(
+                    Attachment(
+                        asset.id,
+                        asset.zone_id,
+                        identity,
+                        asset.kind == "boundary_device",
+                        Rect(cx, y, 280, height),
+                        tuple(labels),
+                        tuple(rows),
+                    )
+                )
+                y += height + 24
+        content_bottom[identity] = y
+        zones.append(
+            ZoneBox(
+                identity,
+                zone.scope,
+                Rect(x, 158, zw, y - 158 + 32),
+                (
+                    _label(x + 16, 172, zw - 32, zone.name, 16),
+                    _label(x + 16, 205, zw - 32, f"{identity} · {zone.scope.upper()}", 12),
+                ),
+            )
         )
-        lx = min(sg, tg) + 8
-        caption = identifier + (f" · {conduit}" if conduit else "")
-        wires.append(
-            f'<rect x="{lx - 3}" y="{lane_y - 18}" width="{min(440, len(caption) * 7 + 12)}" '
-            'height="19" rx="3" fill="white" fill-opacity="0.95"/>'
+        x += zw + 36
+    width = max(1100, x + 4)
+    tracks: dict[tuple[str, Phase], int] = {}
+    shelves: list[tuple[int, int, int]] = []
+    routes: list[tuple[tuple[str, Kind, str, str, str | None], tuple[Point, ...], Label]] = []
+    for number, edge in enumerate(declared, 1):
+        _, kind, source, target, _ = edge
+        sp: Phase = "egress" if kind == "transport" else "ingress"
+        tp: Phase = "ingress" if kind == "transport" else "egress"
+        a, b = anchors[source, sp], anchors[target, tp]
+        gutters: list[int] = []
+        for anchor in (a, b):
+            placement_id = interfaces[anchor.interface_id].placement_zone_id
+            key = placement_id, anchor.phase
+            tracks[key] = tracks.get(key, 0) + 1
+            direction = -1 if anchor.phase == "ingress" else 1
+            gutters.append(anchor.point.x + direction * (16 + tracks[key] * 8))
+        sg, tg = gutters
+        lo, hi = sorted(
+            (
+                visible.index(interfaces[source].placement_zone_id),
+                visible.index(interfaces[target].placement_zone_id),
+            )
         )
-        wires.append(label(lx, lane_y - 4, caption, limit=60, lines=1))
-        wires.append("</g>")
-    height = max_bottom + cross_index * 38 + 150
-    parts = [
-        f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
-        f'viewBox="0 0 {width} {height}" font-family="Arial, sans-serif" '
-        'role="img" aria-label="Spatial architecture schematic with zone placement containers">',
-        "<title>Architecture schematic: zones, assets, interfaces and declared edges</title>",
-        '<defs><marker id="transport" markerWidth="9" markerHeight="8" refX="8" refY="4" '
-        'orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#246c98"/></marker>'
-        '<marker id="forward" markerWidth="9" markerHeight="8" refX="8" refY="4" '
-        'orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#7946a0"/></marker></defs>',
-        f'<rect x="0" y="0" width="{width}" height="{height}" fill="white"/>',
-        text(
+        base = max(content_bottom[z] for z in visible[lo : hi + 1]) + 56
+        lane = ((base + 35) // 36) * 36
+        xmin, xmax = sorted(gutters)
+        occupied = {ly for lx, rx, ly in shelves if not (xmax + 36 < lx or rx + 36 < xmin)}
+        while lane in occupied:
+            lane += 36
+        shelves.append((xmin, xmax, lane))
+        points: tuple[Point, ...] = (
+            a.point,
+            Point(sg, a.point.y),
+            Point(sg, lane),
+            Point(tg, lane),
+            Point(tg, b.point.y),
+            b.point,
+        )
+        routes.append(
+            (edge, points, _label((xmin + xmax) // 2 - 14, lane - 25, 30, f"{number:02}", 11))
+        )
+    route_bottom = max([z.bounds.bottom for z in zones] + [y for _, _, y in shelves] + [280])
+    key_top = route_bottom + 48
+    transitions: list[Transition] = []
+    for index, (edge, points, label) in enumerate(routes):
+        identifier, kind, source, target, conduit = edge
+        sp = "egress" if kind == "transport" else "ingress"
+        tp = "ingress" if kind == "transport" else "egress"
+        caption = f"{index + 1:02} · {kind} · {identifier}" + (
+            f" · conduit {conduit}" if conduit else ""
+        )
+        key_label = _label(
+            40 + index % 2 * ((width - 80) // 2),
+            key_top + index // 2 * 28,
+            (width - 100) // 2,
+            caption,
+            12,
+        )
+        transitions.append(
+            Transition(
+                identifier,
+                kind,
+                anchors[source, sp],
+                anchors[target, tp],
+                conduit,
+                points,
+                label,
+                key_label,
+            )
+        )
+    omissions = Omissions(
+        tuple(z.id for z in model.zones[12:]) if summarized else (),
+        tuple(a.id for a in model.assets) if summarized else (),
+        tuple(i.id for i in model.interfaces) if summarized else (),
+        tuple(
+            sorted([e.id for e in model.transport_edges] + [e.id for e in model.forwarding_edges])
+        )
+        if summarized
+        else (),
+        len(devices) if summarized else 0,
+    )
+    limitations = (
+        "Crossings and shared endpoint strokes are not junctions; routes may cross or overlap.",
+        "Numbered routes use the edge key. Labels are shortened and clipped; "
+        "full text is in titles and HTML evidence.",
+        "Diagram proximity does not imply connectivity. "
+        "Administrative ownership is not interface placement.",
+    )
+    footer = key_top + ((len(routes) + 1) // 2) * 28 + 12
+    labels = [
+        _label(
             40,
-            28,
-            f"{'SUMMARY' if summarized else 'FULL'} schematic — {model.architecture_id}",
-            size=20,
+            14,
+            width - 80,
+            f"{'SUMMARY' if summarized else 'FULL'} schematic · {model.architecture_id}",
+            20,
         ),
-        text(
+        _label(
             40,
-            53,
-            "Zones enclose interface placements. Owner zone is labeled on each asset.",
-            size=13,
+            51,
+            width - 80,
+            "Arrows represent declared transitions, not necessarily permitted",
+            12,
         ),
-        *zone_shapes,
-        *wires,
-        text(
+        _label(40, 73, width - 80, "communication or verified physical connectivity.", 12),
+        _label(
             40,
-            height - 95,
-            "Blue solid arrows: transport · Purple dashed arrows: explicit internal forwarding.",
-            size=13,
+            99,
+            width - 80,
+            "Declared placement only. Ports: ingress left, egress right. No implicit links.",
+            12,
         ),
-        text(
-            40,
-            height - 73,
-            "Ports: ingress left, egress right. Crossings are not junctions. No implicit links.",
-            size=13,
-        ),
-        text(
-            40,
-            height - 51,
-            "Dashed shield cards: attachments of one boundary asset, with the same owner label.",
-            size=13,
-        ),
-        text(
-            40,
-            height - 29,
-            "Conduits label edges only; full pairwise declarations and omissions are in evidence.",
-            size=13,
-        ),
-        "</svg>",
+        _label(40, 125, width - 80, "Visible zone order: " + ", ".join(visible), 11),
     ]
-    return "".join(parts)
+    footer_values = [
+        "Blue solid: transport. Purple dashed: explicit forwarding. "
+        "Boundary cards reuse one asset ID.",
+        f"Omitted: {omissions.attachment_cards} attachment cards; "
+        f"{len(omissions.asset_ids)} assets; {len(omissions.interface_ids)} interfaces; "
+        f"{len(omissions.edge_ids)} transitions; {len(omissions.zone_ids)} zones.",
+        *limitations,
+        "Structural declarations do not verify deployed connectivity. "
+        "Finite model only; Security Levels unassessed.",
+        "No conformity, safety or actual physical-network verification is claimed.",
+    ]
+    footer_y = footer
+    for value in footer_values:
+        for line in wrap(value, width=(width - 80) // 11):
+            labels.append(_label(40, footer_y, width - 80, line, 11))
+            footer_y += 26
+    return Layout(
+        Rect(0, 0, width, footer_y + 20),
+        "summary" if summarized else "full",
+        requested,
+        order,
+        tuple(zones),
+        tuple(cards),
+        tuple(transitions),
+        devices,
+        tuple(labels),
+        omissions,
+        limitations,
+    )
+
+
+def serialize_svg(layout: Layout, escape: Callable[[str], str], namespace: str = "") -> str:
+    """Serialize frozen geometry only; namespaces isolate SVGs in comparisons."""
+    if namespace and re.fullmatch(r"[a-z][a-z0-9_-]*", namespace) is None:
+        raise ValueError("Invalid SVG namespace")
+    prefix = namespace + "-" if namespace else ""
+    parts: list[str] = []
+    clips: list[str] = []
+    label_index = 0
+
+    def rect(r: Rect, attrs: str) -> str:
+        return f'<rect x="{r.x}" y="{r.y}" width="{r.width}" height="{r.height}" {attrs}/>'
+
+    def label(value: Label) -> str:
+        nonlocal label_index
+        label_index += 1
+        clip_id = f"{prefix}label-{label_index}"
+        clips.append(f'<clipPath id="{clip_id}">{rect(value.bounds, "")}</clipPath>')
+        return (
+            f'<g><title>{escape(value.full_text)}</title><text x="{value.bounds.x}" '
+            f'y="{value.bounds.y + value.size + 2}" font-size="{value.size}" '
+            f'clip-path="url(#{clip_id})">{escape(value.visible_text)}</text></g>'
+        )
+
+    parts.extend(label(value) for value in layout.labels)
+    for zone in layout.zones:
+        parts.append(
+            f'<g data-zone-id="{escape(zone.zone_id)}"><title>Interface placement zone '
+            f"{escape(zone.zone_id)}</title>"
+        )
+        fill = "#fff7ec" if zone.scope == "external" else "#edf5fa"
+        parts.append(rect(zone.bounds, f'rx="12" fill="{fill}" stroke="#6b879b" stroke-width="2"'))
+        parts.extend(label(value) for value in zone.labels)
+        for card in layout.attachments:
+            if card.placement_zone_id != zone.zone_id:
+                continue
+            parts.append(
+                f'<g data-asset-id="{escape(card.asset_id)}" '
+                f'data-placement-zone-id="{escape(card.placement_zone_id)}" '
+                f'data-owner-zone-id="{escape(card.owner_zone_id)}">'
+            )
+            color = "#7946a0" if card.boundary else "#246c98"
+            dash = 'stroke-dasharray="6 3"' if card.boundary else ""
+            parts.append(
+                rect(card.bounds, f'rx="8" fill="white" stroke="{color}" stroke-width="2" {dash}')
+            )
+            parts.extend(label(value) for value in card.labels)
+            for row in card.interfaces:
+                parts.append(f'<g data-interface-id="{escape(row.interface_id)}">')
+                parts.extend(label(value) for value in row.labels)
+                for anchor in (row.ingress, row.egress):
+                    parts.append(
+                        f'<circle cx="{anchor.point.x}" cy="{anchor.point.y}" r="5" '
+                        f'data-interface-id="{escape(anchor.interface_id)}" '
+                        f'data-phase="{anchor.phase}" fill="white" stroke="#246c98" '
+                        f'stroke-width="2"><title>{escape(anchor.interface_id)} '
+                        f"{anchor.phase}</title></circle>"
+                    )
+                parts.append("</g>")
+            parts.append("</g>")
+        parts.append("</g>")
+    for edge in layout.transitions:
+        points = edge.points
+        commands = f"M{points[0].x},{points[0].y}" + "".join(
+            f" H{b.x}" if a.y == b.y else f" V{b.y}"
+            for a, b in zip(points, points[1:], strict=False)
+        )
+        marker = "forward" if edge.kind == "forwarding" else "transport"
+        color = "#7946a0" if edge.kind == "forwarding" else "#246c98"
+        dash = ' stroke-dasharray="8 4"' if edge.kind == "forwarding" else ""
+        title = (
+            f"{edge.edge_id}: {edge.source.interface_id} {edge.source.phase} → "
+            f"{edge.target.interface_id} {edge.target.phase}; {edge.kind}; "
+            f"conduit {edge.conduit_id or 'none'}"
+        )
+        parts.append(
+            f'<g data-edge-id="{escape(edge.edge_id)}" data-kind="{edge.kind}" '
+            f'data-source-interface-id="{escape(edge.source.interface_id)}" '
+            f'data-target-interface-id="{escape(edge.target.interface_id)}" '
+            f'data-source-phase="{edge.source.phase}" data-target-phase="{edge.target.phase}" '
+            f'data-conduit-id="{escape(edge.conduit_id or "")}"><title>{escape(title)}</title>'
+            f'<path d="{commands}" fill="none" stroke="{color}" stroke-width="2"{dash} '
+            f'marker-end="url(#{prefix}{marker})"/>'
+        )
+        parts.extend((label(edge.label), label(edge.key), "</g>"))
+    r = layout.bounds
+    markers = "".join(
+        f'<marker id="{prefix}{name}" markerWidth="9" markerHeight="8" refX="8" refY="4" '
+        f'orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="{color}"/></marker>'
+        for name, color in (("transport", "#246c98"), ("forward", "#7946a0"))
+    )
+    return (
+        f'<svg xmlns="http://www.w3.org/2000/svg" width="{r.width}" height="{r.height}" '
+        f'viewBox="0 0 {r.width} {r.height}" font-family="Arial, sans-serif" fill="#17334a" '
+        'role="img" aria-label="Spatial architecture schematic with zone placement containers">'
+        f"<title>Declared architecture. {escape(INTERPRETATION)}</title>"
+        "<desc>Zone rectangles contain interface placements. Same asset ID means one device. "
+        "Crossings are not junctions. "
+        "Full declarations and omissions are in the report.</desc><defs>"
+        + markers
+        + "".join(clips)
+        + "</defs>"
+        + rect(r, 'fill="white"')
+        + "".join(parts)
+        + "</svg>"
+    )
+
+
+def spatial_svg(
+    snapshot: ValidatedArchitecture,
+    summarized: bool,
+    escape: Callable[[str], str],
+    *,
+    requested: tuple[str, ...] = (),
+    namespace: str = "",
+) -> str:
+    return serialize_svg(calculate_layout(snapshot, summarized, requested), escape, namespace)

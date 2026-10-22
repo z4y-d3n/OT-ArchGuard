@@ -1,5 +1,8 @@
 # Offline evidence reports, version 1
 
+For current presentation design and observed verification, see
+[Gate V11-2](v1.1/gate-v11-2.md). Analytical report JSON remains version 1.
+
 All four commands retain their existing deterministic JSON stdout and native exit
 codes. Add `--report PATH` to write a fully offline HTML artifact, or add
 `--report-format json` for the richer JSON report envelope. The filename extension
@@ -36,7 +39,7 @@ are added. Evidence hashes must match the supplied validated models. The CLI
 revalidates report metadata and checks those hashes before writing, rejecting
 evidence if the input changed between analysis and reporting.
 
-HTML presents failed requirements as readable findings first, then expanded SVG
+HTML presents failed requirements and introduced prohibited violations first, then expanded SVG
 diagrams before any detailed table. Interpretation, independent intent outcomes,
 per-side observations/criticality and connectivity/inventory/definition changes
 follow. Wide tables scroll horizontally with minimum readable column widths;
@@ -86,6 +89,59 @@ bytes; `architecture_svg(snapshot)` returns standalone SVG text. These helpers d
 not run analyses or infer paths. The default rendering retains all detailed
 evidence in memory, with no separate report-size budget or streaming renderer;
 large reports can be lengthy. Resource ceilings remain provisional.
+
+## Presentation ordering (v1.1 development)
+
+All four commands accept repeatable `--zone-order ZONE_ID` with an HTML `--report`:
+
+```powershell
+.\.venv\Scripts\otarchguard.exe compare examples/remote-support/baseline.yaml examples/remote-support/proposed.yaml --scenario support_scope --report output/ordered.html --zone-order enterprise --zone-order dmz --zone-order control
+```
+
+Unknown or repeated IDs produce controlled invalid-input diagnostics and exit 2,
+preserving prior output. An order without a report, or with a JSON report, is
+rejected. Comparisons validate against both snapshots' union of zone IDs and apply
+each ID only where it exists. Requested IDs come first; remaining IDs use the
+default order. Preferences, effective orders and visible subsets appear in HTML.
+No membership, model hash, JSON envelope, analysis stdout or outcome changes.
+
+The default builds a presentation-only zone relation from explicit cross-placement
+transport/forwarding declarations. Kahn ordering chooses the smallest ready ID;
+when a cycle leaves none, the smallest remaining ID breaks the cycle for drawing.
+Disconnected and isolated zones use the same ID tie break. Names, trust, security
+levels and subnet proximity do not influence placement.
+
+Immutable geometry records hold rectangles, interface rows, state anchors, labels,
+attachments, omissions and polylines. Every transition has separate side tracks
+and a numbered shelf below cards in the affected zone span; disjoint spans may
+reuse a shelf. An edge key retains IDs and conduits. Parallel/reverse declarations
+stay distinct. Crossings/shared endpoint strokes are not junctions. This bounded
+router does not promise crossing-free drawings; dense layouts can be tall.
+
+Summary thresholds remain **more than** 12 zones, 24 assets, 24 interfaces or 48
+edges. Membership retains the first 12 canonical zone IDs, keeping the existing
+JSON omission manifest exact; preferences reorder that subset. HTML/SVG disclose
+omitted cards, assets, interfaces, transitions and zones. Full declarations and a
+deterministic device-to-interface map remain in HTML. No simplified synthetic
+edges are generated, and summary mode never reduces analytical scope.
+
+Labels use conservative code-point budgets and finite SVG clipping regions,
+not measured pixel widths. Full values remain in SVG titles, tables and JSON.
+The budget avoids runtime Unicode classification tables that differ by Python
+version. Combining sequences may be shortened visually; their original text stays
+in the full evidence.
+Local font rasterization can vary by OS without changing SVG bytes. Scroll regions
+retain intrinsic SVG dimensions. Print styles preserve findings and inventory;
+wide diagrams may shrink, so use inventory for exact printed identifiers.
+
+HTML includes a local table of contents, skip link, snapshot references, visible
+focus styles, captioned tables and keyboard-focusable scroll regions. Comparison
+SVG IDs are separately namespaced. Generated links use local fragments without
+JavaScript. The JSON appendix remains the unchanged version-1 report envelope.
+For Python use keyword-only `architecture_svg(snapshot, zone_order=("control",))`
+or `html_report(report, snapshots, zone_order=("control",))`.
+Browser focus, responsive and print behavior require the manual review listed in
+the gate report; static tests and raster images do not establish those properties.
 
 All criticality, safety/business/IACS classifications, scope and completeness are
 owner assertions. SL-T, SL-C and SL-A remain **unassessed, not zero**. Assessment

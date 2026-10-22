@@ -12,7 +12,7 @@ from otarchguard import __version__
 from otarchguard.api import validate_file
 from otarchguard.comparison import compare_files
 from otarchguard.contract import DiagnosticCategory, ExitCode
-from otarchguard.diagnostics import Diagnostic, ModelError
+from otarchguard.diagnostics import Diagnostic, ModelError, fail
 from otarchguard.exposure import QueryScope, exposure_file
 from otarchguard.intents import check_file
 from otarchguard.reporting import (
@@ -30,18 +30,31 @@ class ReportFormat(StrEnum):
     HTML = "html"
 
 
+def _presentation_options(
+    output: Path | None, format: ReportFormat, zone_order: tuple[str, ...]
+) -> None:
+    if zone_order and (output is None or format != ReportFormat.HTML):
+        fail("INVALID_VALUE", "$.zone_order", "--zone-order requires an HTML --report.")
+
+
 def _report(
     output: Path | None,
     format: ReportFormat,
     kind: ReportKind,
     inputs: tuple[Path, ...],
     result: Analysis = None,
+    zone_order: tuple[str, ...] = (),
 ) -> None:
+    _presentation_options(output, format, zone_order)
     if output is None:
         return
     snapshots = tuple(validate_file(path) for path in inputs)
     report = build_report(kind, snapshots, result)
-    data = json_report(report) if format == ReportFormat.JSON else html_report(report, snapshots)
+    data = (
+        json_report(report)
+        if format == ReportFormat.JSON
+        else html_report(report, snapshots, zone_order=zone_order)
+    )
     write_report(output, data, inputs)
 
 
@@ -71,16 +84,21 @@ def validate(
         Path | None, typer.Option("--report", help="Local report output path.")
     ] = None,
     report_format: Annotated[ReportFormat, typer.Option("--report-format")] = ReportFormat.HTML,
+    zone_order: Annotated[
+        list[str] | None,
+        typer.Option("--zone-order", help="HTML presentation zone ID; repeat in preferred order."),
+    ] = None,
 ) -> None:
     """Validate schema, references and structural declarations; print a model hash."""
     try:
+        _presentation_options(report, report_format, tuple(zone_order or ()))
         result = validate_file(architecture)
         if report is not None:
             envelope = build_report("validation", (result,))
             data = (
                 json_report(envelope)
                 if report_format == ReportFormat.JSON
-                else html_report(envelope, (result,))
+                else html_report(envelope, (result,), zone_order=tuple(zone_order or ()))
             )
             write_report(report, data, (architecture,))
     except ModelError as error:
@@ -117,13 +135,17 @@ def check(
         Path | None, typer.Option("--report", help="Local report output path.")
     ] = None,
     report_format: Annotated[ReportFormat, typer.Option("--report-format")] = ReportFormat.HTML,
+    zone_order: Annotated[
+        list[str] | None,
+        typer.Option("--zone-order", help="HTML presentation zone ID; repeat in preferred order."),
+    ] = None,
 ) -> None:
     """Check required/prohibited initiation intents with interval and path evidence."""
     try:
         result = check_file(architecture)
         payload = {"engine_version": __version__, "schema_version": 1, **asdict(result)}
         serialized = json.dumps(payload, sort_keys=True)
-        _report(report, report_format, "check", (architecture,), result)
+        _report(report, report_format, "check", (architecture,), result, tuple(zone_order or ()))
     except ModelError as error:
         for diagnostic in error.diagnostics:
             typer.echo(json.dumps(asdict(diagnostic), sort_keys=True, ensure_ascii=True), err=True)
@@ -149,6 +171,10 @@ def exposure(
         Path | None, typer.Option("--report", help="Local report output path.")
     ] = None,
     report_format: Annotated[ReportFormat, typer.Option("--report-format")] = ReportFormat.HTML,
+    zone_order: Annotated[
+        list[str] | None,
+        typer.Option("--zone-order", help="HTML presentation zone ID; repeat in preferred order."),
+    ] = None,
 ) -> None:
     """Evaluate a declared finite exposure scenario and all communication intents."""
     try:
@@ -156,7 +182,7 @@ def exposure(
         serialized = json.dumps(
             {"engine_version": __version__, "schema_version": 1, **asdict(result)}, sort_keys=True
         )
-        _report(report, report_format, "exposure", (architecture,), result)
+        _report(report, report_format, "exposure", (architecture,), result, tuple(zone_order or ()))
     except ModelError as error:
         for diagnostic in error.diagnostics:
             typer.echo(json.dumps(asdict(diagnostic), sort_keys=True), err=True)
@@ -193,6 +219,10 @@ def compare(
         Path | None, typer.Option("--report", help="Local report output path.")
     ] = None,
     report_format: Annotated[ReportFormat, typer.Option("--report-format")] = ReportFormat.HTML,
+    zone_order: Annotated[
+        list[str] | None,
+        typer.Option("--zone-order", help="HTML presentation zone ID; repeat in preferred order."),
+    ] = None,
 ) -> None:
     """Compare common stable definitions; keep inventory and intent changes separate."""
     try:
@@ -205,7 +235,14 @@ def compare(
         serialized = json.dumps(
             {"engine_version": __version__, "schema_version": 1, **asdict(result)}, sort_keys=True
         )
-        _report(report, report_format, "comparison", (baseline, proposed), result)
+        _report(
+            report,
+            report_format,
+            "comparison",
+            (baseline, proposed),
+            result,
+            tuple(zone_order or ()),
+        )
     except ModelError as error:
         for diagnostic in error.diagnostics:
             typer.echo(json.dumps(asdict(diagnostic), sort_keys=True), err=True)

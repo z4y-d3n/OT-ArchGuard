@@ -25,6 +25,7 @@ include docs/requirements.md
 include docs/testing-strategy.md
 include docs/verification.md
 include docs/v1.1/gate-v11-1.md
+include docs/v1.1/gate-v11-2.md
 include docs/yaml-schema-v1.md
 include examples/README.md
 include examples/flat-plant/baseline.yaml
@@ -69,6 +70,7 @@ include tests/test_check_cli.py
 include tests/test_cli.py
 include tests/test_comparison_properties.py
 include tests/test_console_resolution.py
+include tests/test_diagram_geometry.py
 include tests/test_contract.py
 include tests/test_exposure_compare_cli.py
 include tests/test_exposure_comparison.py
@@ -76,6 +78,7 @@ include tests/test_fixtures.py
 include tests/test_integration.py
 include tests/test_loading.py
 include tests/test_normalization.py
+include tests/test_presentation.py
 include tests/test_reachability.py
 include tests/test_reachability_oracle.py
 include tests/test_release_audit.py
@@ -91,3 +94,4 @@ include tools/audit_release.py
 include tools/offline/sitecustomize.py
 include tools/public-files.txt
 include tools/verification-requirements.txt
+include tools/verify_environment.py

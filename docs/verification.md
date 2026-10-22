@@ -1,5 +1,11 @@
 # Version 1.0.1 verification
 
+This page records published-release history. See [Gate V11-1](v1.1/gate-v11-1.md)
+for accepted Unicode/parser fixes and [Gate V11-2](v1.1/gate-v11-2.md) for current
+presentation changes and actual local evidence. Its six native OS/Python hosted
+jobs remain **pending remote verification**; Windows evidence does not establish
+Linux/macOS acceptance.
+
 Local verification uses regular installed wheels on Windows with CPython 3.12.14
 and 3.14.5. Python 3.12 is the declared minimum. These results describe the tested
 environments and finite fixtures; they do not establish compatibility with every

@@ -1,4 +1,4 @@
-name: Windows Python verification
+name: Python verification
 
 on:
   push:
@@ -10,10 +10,17 @@ permissions:
 
 jobs:
   verify:
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      PYTHONUTF8: '1'
+      PYTHONIOENCODING: utf-8
     strategy:
       fail-fast: false
       matrix:
+        os: ['windows-latest', 'ubuntu-latest', 'macos-latest']
         python: ['3.12', '3.14']
     steps:
       - uses: actions/checkout@v7.0.1
@@ -36,6 +43,8 @@ jobs:
           python -m pip install -r tools/verification-requirements.txt
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python -m pip install --no-build-isolation --no-deps .
+      - name: Verify installed distribution, imports and native console
+        run: python tools/verify_environment.py --output output/environment-${{ matrix.os }}-${{ matrix.python }}.json
       - name: Ruff lint
         run: python -m ruff check .
       - name: Ruff formatting
@@ -47,12 +56,12 @@ jobs:
       - name: Full suite with Python network operations denied in child processes
         env:
           OTARCHGUARD_OFFLINE_CHECK: '1'
-          PYTHONPATH: '${{ github.workspace }}\tools\offline'
+          PYTHONPATH: '${{ github.workspace }}/tools/offline'
         run: python -m pytest --basetemp=.pytest_tmp --tb=short
       - name: Execute documented synthetic walkthroughs offline
         env:
           OTARCHGUARD_OFFLINE_CHECK: '1'
-          PYTHONPATH: '${{ github.workspace }}\tools\offline'
+          PYTHONPATH: '${{ github.workspace }}/tools/offline'
         run: python examples/run_examples.py
       - name: Build and audit exact candidate distributions
         run: |
@@ -62,19 +71,22 @@ jobs:
       - name: Retain candidate integrity evidence
         uses: actions/upload-artifact@v7.0.2
         with:
-          name: candidate-integrity-${{ matrix.python }}
+          name: candidate-integrity-${{ matrix.os }}-${{ matrix.python }}
+          retention-days: 7
           path: |
             output/artifacts/*
             output/archive-audit.json
+            output/environment-${{ matrix.os }}-${{ matrix.python }}.json
       - name: Measure fixed NFR-05 workloads offline
         env:
           OTARCHGUARD_OFFLINE_CHECK: '1'
-          PYTHONPATH: '${{ github.workspace }}\tools\offline'
-        run: python -m benchmarks.run --output output/benchmark-${{ matrix.python }}.json
+          PYTHONPATH: '${{ github.workspace }}/tools/offline'
+        run: python -m benchmarks.run --output output/benchmark-${{ matrix.os }}-${{ matrix.python }}.json
       - name: Retain benchmark evidence
         if: always()
         uses: actions/upload-artifact@v7.0.2
         with:
-          name: benchmark-${{ matrix.python }}
-          path: output/benchmark-${{ matrix.python }}.json
+          name: benchmark-${{ matrix.os }}-${{ matrix.python }}
+          path: output/benchmark-${{ matrix.os }}-${{ matrix.python }}.json
+          retention-days: 7
           if-no-files-found: warn
