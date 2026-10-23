@@ -9,6 +9,12 @@ record for availability, exact source tag and audited asset checksums.
 See [release notes](docs/release-notes-1.1.0.md)
 and [Gate V11-6 verification](docs/v1.1/gate-v11-6.md).
 
+This development branch adds an evidence-first CSV/TSV Import Studio. See the
+[reviewed import walkthrough](docs/import-studio.md) and
+[v1.2 roadmap](docs/development/v1.2-roadmap.md). The published v1.1.0 baseline
+remains immutable. Development builds currently retain baseline version metadata
+and must not be published as the stable release.
+
 OT-ArchGuard is an independent industrial network architecture analysis tool inspired by general OT cybersecurity good practices, including those addressed by the IEC 62443 series. It does not provide certification, establish normative conformity or imply institutional endorsement.
 
 ## What it analyzes
@@ -111,4 +117,5 @@ owner-published release record for available assets, source tag and checksums.
 For v1.2, easier architecture authoring is a required future adoption goal:
 guided creation, industrial templates, spreadsheet/CSV import, schema-1 YAML
 generation, understandable validation and progressive visual editing. These
-capabilities are planned and are absent from v1.1.0.
+capabilities are absent from published v1.1.0; see the development walkthrough
+above for the initial CSV/TSV implementation on this branch.

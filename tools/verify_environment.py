@@ -29,11 +29,14 @@ def main() -> None:
     if direct.get("dir_info", {}).get("editable", False):
         raise RuntimeError("Editable installations are not acceptance evidence")
     source_hashes = {
-        p.name: hashlib.sha256(p.read_bytes()).hexdigest()
-        for p in (ROOT / "src/otarchguard").glob("*.py")
+        p.relative_to(ROOT / "src/otarchguard").as_posix(): hashlib.sha256(
+            p.read_bytes()
+        ).hexdigest()
+        for p in (ROOT / "src/otarchguard").rglob("*.py")
     }
     installed_hashes = {
-        p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in module.glob("*.py")
+        p.relative_to(module).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+        for p in module.rglob("*.py")
     }
     if installed_hashes != source_hashes:
         raise RuntimeError("Installed production modules differ from reviewed source")

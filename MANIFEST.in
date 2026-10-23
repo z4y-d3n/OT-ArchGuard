@@ -14,10 +14,16 @@ include docs/benchmarks/README.md
 include docs/benchmarks/performance.md
 include docs/boundary-device-example.md
 include docs/dependencies.md
+include docs/development/gate-v12-01.md
+include docs/development/v1.2-architecture.md
+include docs/development/v1.2-design-decisions.md
+include docs/development/v1.2-import-formats.md
+include docs/development/v1.2-roadmap.md
 include docs/domain-model.md
 include docs/images/README.md
 include docs/images/flat-plant-proposed.png
 include docs/images/remote-support-proposed.png
+include docs/import-studio.md
 include docs/installation.md
 include docs/limitations.md
 include docs/release-checklist.md
@@ -41,6 +47,9 @@ include examples/README.md
 include examples/flat-plant/baseline.yaml
 include examples/flat-plant/proposed.yaml
 include examples/generate_examples.py
+include examples/import-studio/assets-profile.yaml
+include examples/import-studio/assets.csv
+include examples/import-studio/model-context.yaml
 include examples/remote-support/application-only.yaml
 include examples/remote-support/baseline.yaml
 include examples/remote-support/proposed.yaml
@@ -61,6 +70,11 @@ include src/otarchguard/domain.py
 include src/otarchguard/exposure.py
 include src/otarchguard/flows.py
 include src/otarchguard/graph.py
+include src/otarchguard/ingestion/__init__.py
+include src/otarchguard/ingestion/cli.py
+include src/otarchguard/ingestion/records.py
+include src/otarchguard/ingestion/tabular.py
+include src/otarchguard/ingestion/workflow.py
 include src/otarchguard/intents.py
 include src/otarchguard/intervals.py
 include src/otarchguard/loading.py
@@ -90,6 +104,8 @@ include tests/test_diagram_geometry.py
 include tests/test_exposure_compare_cli.py
 include tests/test_exposure_comparison.py
 include tests/test_fixtures.py
+include tests/test_ingestion.py
+include tests/test_ingestion_cli.py
 include tests/test_integration.py
 include tests/test_loading.py
 include tests/test_normalization.py

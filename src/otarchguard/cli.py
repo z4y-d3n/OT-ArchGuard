@@ -15,6 +15,7 @@ from otarchguard.comparison import compare_architectures, compare_files
 from otarchguard.contract import DiagnosticCategory, ExitCode
 from otarchguard.diagnostics import Diagnostic, ModelError, fail
 from otarchguard.exposure import QueryScope, exposure_architecture, exposure_file
+from otarchguard.ingestion.cli import app as import_app
 from otarchguard.intents import check_architecture, check_file
 from otarchguard.reporting import (
     Analysis,
@@ -92,6 +93,7 @@ app = typer.Typer(
     pretty_exceptions_enable=False,
     add_completion=False,
 )
+app.add_typer(import_app, name="import")
 
 
 @app.command(cls=TraceCommand)

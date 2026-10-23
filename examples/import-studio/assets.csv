@@ -1,0 +1,3 @@
+Asset ID,Display Name,Role,Zone,Inventory note
+eng,Engineering workstation,Engineering,control,Synthetic inventory only
+plc,Synthetic controller,Controller,control,"Label, with quoted comma"
