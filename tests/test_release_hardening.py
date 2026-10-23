@@ -193,7 +193,10 @@ def test_installed_help_and_repeated_scalar_option(
     command: str, installed_console: Path, tmp_path: Path
 ) -> None:
     help_result = subprocess.run(
-        [str(installed_console), command, "--help"], capture_output=True, timeout=30
+        [str(installed_console), command, "--help"],
+        env={**os.environ, "NO_COLOR": "1", "TERM": "dumb"},
+        capture_output=True,
+        timeout=30,
     )
     assert help_result.returncode == 0 and not help_result.stderr
     assert b"--report" in help_result.stdout

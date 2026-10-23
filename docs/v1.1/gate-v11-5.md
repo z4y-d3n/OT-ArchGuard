@@ -418,8 +418,37 @@ read-only permissions, protected checkout/root checks, regular install/provenanc
 Ruff/format/mypy/pip check, offline full suite/examples, archive audit, fixed
 benchmarks and unique per-matrix artifacts. push, pull_request and manual triggers
 remain: a branch push plus PR can independently run two six-way matrices. That is
-an accepted coverage/cost tradeoff, not silently optimized here. New V11-5 hosted
-results are PENDING because no commit/push/dispatch is authorized.
+an accepted coverage/cost tradeoff, not silently optimized here. At the original
+local handoff, new hosted results were pending. The owner subsequently supplied
+Ubuntu and macOS Python 3.12 failure evidence from the V11-5 PR. Each supplied
+log reports exactly five failures, one per command, in
+`test_installed_help_and_repeated_scalar_option`: help exits 0 but the assertion
+`b"--report" in help_result.stdout` fails against ANSI-styled Rich/Typer help.
+These are supplied hosted failure results, not successful cross-platform evidence;
+no GitHub integration, remote API or remote Git operation was used to inspect them
+for this correction.
+
+**Minimal Unix help-test correction.** This follow-up began on the clean existing
+`codex/gate-v11-5` branch at local HEAD
+`ea375fedef031cb1d7e019dfa8b61d71e38dc550`. Inspection of the installed Typer/Rich
+sources confirms CI variables can force terminal styling despite captured stdout.
+ANSI controls between styled option fragments interrupt a contiguous byte match.
+NO_COLOR can remove colors while retaining non-color style attributes; TERM=dumb
+also selects plain terminal rendering. The test now passes a copied child
+environment with `NO_COLOR=1` and `TERM=dumb` only to the help subprocess.
+The exit/stderr assertions, literal --report assertion, repeated html/json scalar
+options and resulting JSON/version assertions remain intact. No ANSI stripping,
+skip, dependency, production CLI, public-contract or CI configuration change was
+needed; the test count remains 1,336.
+
+Local Windows probes retain plain help even when GITHUB_ACTIONS/FORCE_COLOR/
+PY_COLORS request styling, so they do not reproduce native Unix formatting.
+Focused checks explicitly run all five installed-console cases with these forcing
+variables inherited by the parent and TERM=xterm-256color, exercising the child's
+plain-output override. Receipts for the probes, focused/full suites, static checks
+and installed-module provenance are retained separately under
+output/gate-v11-5/unix-help-fix. Successful hosted Ubuntu/macOS reruns remain
+**PENDING**; local Windows success must not be reported as hosted acceptance.
 
 ## 35. Performance-regression verification
 
@@ -484,8 +513,14 @@ five-case rerun passed before the final complete suites.
 
 | Interpreter | Current full installed pytest | Status |
 | --- | --- | --- |
-| Python 312 | 1336 passed in 555.04s | PASS |
-| Python 314 | 1336 passed in 589.96s | PASS |
+| Python 312 | 1336 passed in 587.96s | PASS |
+| Python 314 | 1336 passed in 612.09s | PASS |
+
+The preceding independent-port-oracle correction passed 1,336 tests in 555.04 s
+(3.12) and 589.96 s (3.14). Those receipts remain unchanged under final-review.
+The Unix help-fix rerun uses separate output/gate-v11-5/unix-help-fix/312 and /314
+receipts. Focused installed-console checks retain all five command cases and their
+repeated scalar/report JSON assertions, including a forced-color parent environment.
 
 Before these two final-review corrections, the full installed suites passed 1,329
 tests in 351.76 s (3.12) and 366.66 s (3.14). Those historical results are retained
@@ -522,6 +557,15 @@ captures match all 123 accepted artifacts per interpreter, and all 2,320 existin
 golden/evidence files retain identical hashes. Example and benchmark rows retain
 the earlier executed measurements of unchanged production code; those operations
 were not repeated for this test/documentation-only correction.
+For the subsequent Unix help-test fix, both local interpreters again pass installed
+provenance, Ruff lint/format, strict mypy and dependency consistency. All **five
+focused cases** pass with a forced-color parent environment (13.75 s on 3.12,
+20.35 s on 3.14), including every repeated-option JSON assertion. Full-suite
+results are the current rows in section 38. Exact commands/logs and the final
+source/diff receipt are in output/gate-v11-5/unix-help-fix, including results.json.
+Earlier golden, example, benchmark and package evidence was not regenerated for
+this minimal test-only fix; native Linux/macOS successful hosted reruns remain
+PENDING.
 
 ## 40. Wheel/sdist provenance
 
@@ -563,15 +607,19 @@ No production fix was needed. The gate adds evidence and documentation only.
 New-harness formatting/type issues were fixed and checked; they are not counted
 as resolved application vulnerabilities. No existing failing assertion was
 weakened and no baseline was regenerated to absorb an unexplained difference.
+The subsequent Unix help-test correction controls only the help child's terminal
+environment; the supplied hosted failure is test-level, and its hosted resolution
+is not claimed before successful reruns.
 
 ## 43. Unresolved findings
 
 | ID | Severity/type | Evidence / root cause | Disposition / residual action |
 | --- | --- | --- | --- |
 | V5-E01 | verification gap | GitHub connector requires reauthentication; historical runs unavailable | owner may review prior hosted runs; fetched ancestry is verified |
-| V5-E02 | required future acceptance | new V11-5 branch not committed/pushed | execute six-way hosted CI after owner authorization |
+| V5-E02 | required hosted acceptance | owner subsequently supplied PR failure evidence; successful hosted acceptance is not established | corrected local test awaits separately authorized hosted reruns |
 | V5-E03 | known presentation limitation | no actual browser/zoom/print session executed | optional owner smoke review; unchanged bytes, static checks pass |
 | V5-E04 | external assessment boundary | no online advisory or fresh-OS dependency review | no vulnerability-free or universal installation claim |
+| V5-T01 | test-level Unix CI compatibility | supplied Ubuntu/macOS Python 3.12 logs each report five help-byte assertion failures caused by ANSI styling | help subprocess environment corrected locally; successful hosted reruns remain PENDING |
 
 These are evidence/acceptance limits, not newly confirmed Critical/High product
 defects with invented reproducers. No approval was requested to alter semantics.
@@ -605,7 +653,7 @@ filesystem/concurrency/durability assumptions remain those in section 19.
 | Confirmed High defects | PASS | zero found in exercised scope |
 | Unauthorized production/contract change | PASS | no production bytes changed |
 | Current local acceptance | PASS | see executed checks, compatibility and integrity |
-| New six-way hosted CI | PENDING | owner-authorized commit/push/PR/check review |
+| Six-way hosted CI | FAIL | supplied Ubuntu/macOS Python 3.12 runs failed; successful corrected hosted reruns PENDING |
 | Owner independent acceptance | PENDING | review dossier, tests, capture tool and evidence |
 | Public RC/version transition | NOT_APPLICABLE | outside V11-5 authorization |
 
@@ -628,7 +676,7 @@ filesystem/concurrency/durability assumptions remain those in section 19.
 | Documentation | Supported claims accurate | PASS | sections 3-7, 31-36, 41-43 | Local path links; historical reports labeled | Owner review |
 | Python 3.12 | Local verification green | PASS | sections 38-40; per-interpreter logs | Windows only | Hosted native combinations |
 | Python 3.14 | Local verification green | PASS | sections 38-40; per-interpreter logs | Windows only | Hosted native combinations |
-| Six-way CI | Configuration preserved; hosted results required | PENDING | section 34; owner handoff | No new hosted execution | Authorized push/CI review |
+| Six-way CI | Configuration preserved; successful hosted results required | FAIL | section 34; supplied Ubuntu/macOS Python 3.12 failures | Only supplied failure evidence; successful reruns PENDING | Separately authorized hosted reruns and review |
 | Critical findings | Zero unresolved | PASS | sections 3-7, 31-36, 41-43 | Within exercised scope | Owner independent review |
 | High findings | Zero unresolved or owner-accepted | PASS | sections 3-7, 31-36, 41-43 | Within exercised scope | Owner independent review |
 | Owner approval | Separate review | PENDING | section 34; owner handoff | Uncommitted local work | Explicit acceptance |
@@ -710,6 +758,11 @@ python tools/audit_release.py output/artifacts/otarchguard-1.0.1.dev5+gate.v11.5
 
 Production modules, pyproject.toml, CI, licenses, examples and existing oracles are
 unchanged. Generated builds/evidence remain ignored, not public payload files.
+The later minimal Unix compatibility fix changes exactly two tracked files:
+tests/test_release_hardening.py (one help-subprocess environment argument plus
+formatting) and docs/v1.1/gate-v11-5.md (failure/cause/fix/local-results and pending
+hosted-rerun evidence). It adds/removes no tests or assertions and preserves the
+repeated scalar option and JSON/version checks.
 
 ## 50. Owner-facing acceptance recommendation
 
