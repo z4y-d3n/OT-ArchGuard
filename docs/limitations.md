@@ -24,11 +24,11 @@ responsive layout and printing remain unverified in Gate V11-2, as does hosted
 Linux/macOS acceptance. See its [manual checklist](v1.1/gate-v11-2.md) and
 [report options](reporting.md).
 
-A known invalid-text issue remains: escaped unpaired Unicode surrogates can cause
+A historical v1.0.1 invalid-text issue remains in that release: escaped unpaired Unicode surrogates can cause
 UnicodeEncodeError in the validation API. The CLI returns a generic exit-2 execution
 diagnostic and preserves existing output. This issue remains in version 1.0.1.
 
-Gate V11-1 corrected this issue and out-of-range escape diagnostics in development;
+Gate V11-1 corrected this issue and out-of-range escape diagnostics; the v1.1.0 candidate includes that correction;
 the historical release was not replaced.
 
 Ceilings are rejection limits, not capacity promises. Reports retain evidence in

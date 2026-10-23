@@ -1,5 +1,9 @@
 # Verification strategy
 
+For current unpublished 1.1.0 candidate acceptance, see
+[Gate V11-6](v1.1/gate-v11-6.md). Earlier version/gate outcomes below remain
+historical evidence, not current hosted CI results.
+
 Use matching regular installed wheel environments on Windows Python 3.12/3.14.
 Version 1.0.1 results are in the [verification summary](verification.md).
 
@@ -86,6 +90,21 @@ input/model, exit and artifact records; interpreter/platform provenance stays
 separate. It never updates a baseline to accommodate a failure. Use fixed
 `PYTHONHASHSEED` values 0 and 12345 for separate deterministic process captures.
 The earlier 197-artifact corpus remains separate local historical evidence.
+
+For the intentional 1.0.1 to 1.1.0 transition, use the separate narrow comparator:
+
+~~~powershell
+python tools/compare_versioned_contract.py output/gate-v11-6/baseline123 output/gate-v11-6/candidate123-312 --output output/gate-v11-6/compatibility123-312.json
+~~~
+
+`capture_contract.py --compare` remains an exact same-version comparison. The
+version-aware tool permits only root `/engine_version`, that field in the exact
+HTML JSON appendix and the exact trace header engine value. It compares all
+remaining bytes, including canonical JSON/SVG, and verifies capture hashes,
+input/model identities and exits. Interpreter/platform and the central version
+module hash are provenance fields checked separately by the gate's source and
+installed audits. It never rewrites baseline files or drops arbitrary version
+keys. V11-6 preserves a fresh pre-version baseline separately from candidates.
 
 The added hardening tests use bounded inputs and precise report faults; the
 metamorphic seeds are 104729, 130363, 155921 and 196613. Their raw-declaration

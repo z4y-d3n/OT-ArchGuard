@@ -1,5 +1,9 @@
 # Gate V11-5 public contract inventory
 
+Historical inventory: version values below describe accepted V11-5. The
+[V11-6 addendum](gate-v11-6.md) records the local 1.1.0 candidate transition;
+analytical APIs and schema/report/trace version 1 remain unchanged.
+
 Review snapshot of accepted main `8c6d46dd0dea127044232d2b44e6bd11d2af3f53`.
 Derived from source, native commands and existing documentation. This inventory
 does not supersede [schema 1](../yaml-schema-v1.md), [report version 1](../reporting.md)

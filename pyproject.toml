@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "otarchguard"
-version = "1.0.1"
+version = "1.1.0"
 description = "Offline declared IT/OT architecture validation, reachability and comparison"
 readme = "README.md"
 requires-python = ">=3.12"

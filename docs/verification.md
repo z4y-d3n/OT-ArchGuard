@@ -6,6 +6,10 @@ presentation changes and actual local evidence. Its six native OS/Python hosted
 jobs remain **pending remote verification**; Windows evidence does not establish
 Linux/macOS acceptance.
 
+For the unpublished 1.1.0 candidate, use the separate
+[Gate V11-6 dossier](v1.1/gate-v11-6.md). Measurements below remain historical
+v1.0.1 results; its invalid-Unicode issue is corrected in the candidate.
+
 Local verification uses regular installed wheels on Windows with CPython 3.12.14
 and 3.14.5. Python 3.12 is the declared minimum. These results describe the tested
 environments and finite fixtures; they do not establish compatibility with every
