@@ -62,3 +62,36 @@ Fixed-seed graphs, exact summary boundaries and deliberate corrupt-SVG checks
 exercise these oracles. HTML checks unique IDs, resolving local links/markers/clips,
 captioned tables, escaped hostile labels and prominent critical findings.
 Record raster observations separately from actual browser/print verification.
+
+## Gate V11-5 contract captures
+
+The [public inventory](v1.1/public-contract-inventory.md) records the accepted
+module signatures, native options, result fields and diagnostic differences.
+The [hardening dossier](v1.1/gate-v11-5.md) records current local evidence and
+the separate hosted/owner acceptance boundary.
+
+After `tools/verify_environment.py` confirms the regular installed package, capture
+the bounded additional corpus with a fresh output directory:
+
+~~~powershell
+python tools/capture_contract.py output/contracts-before
+python tools/capture_contract.py output/contracts-after --compare output/contracts-before/manifest.json
+~~~
+
+The tool captures 45 native cases, including help/parser misuse, all five report
+commands, exact trace outcomes, optional policy evidence and preserved failure
+sentinels. It records input/model/module identities, exits and artifact hashes.
+Existing captures are never overwritten. Comparison requires equal source-module,
+input/model, exit and artifact records; interpreter/platform provenance stays
+separate. It never updates a baseline to accommodate a failure. Use fixed
+`PYTHONHASHSEED` values 0 and 12345 for separate deterministic process captures.
+The earlier 197-artifact corpus remains separate local historical evidence.
+
+The added hardening tests use bounded inputs and precise report faults; the
+metamorphic seeds are 104729, 130363, 155921 and 196613. Their raw-declaration
+oracle enumerates only ports 1..8, or six selected boundary ports. Equivalent
+rule splitting, isolated additions and display changes preserve concrete truth;
+they need not preserve hashes, work, evidence groups or atom boundaries.
+Each new seeded relation includes a controlled permit/deny path with both
+reachable and unreachable ports, so an entirely blocked random graph cannot
+make every transformation pass without exercising permitted communication.

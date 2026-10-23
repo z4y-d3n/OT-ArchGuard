@@ -30,6 +30,8 @@ docs/v1.1/gate-v11-1.md
 docs/v1.1/gate-v11-2.md
 docs/v1.1/gate-v11-3.md
 docs/v1.1/gate-v11-4.md
+docs/v1.1/gate-v11-5.md
+docs/v1.1/public-contract-inventory.md
 docs/verification.md
 docs/yaml-schema-v1.md
 examples/README.md
@@ -94,7 +96,9 @@ tests/test_presentation.py
 tests/test_reachability.py
 tests/test_reachability_oracle.py
 tests/test_release_audit.py
+tests/test_release_hardening.py
 tests/test_release_integrity.py
+tests/test_release_metamorphic.py
 tests/test_reporting.py
 tests/test_resource_envelope.py
 tests/test_summaries.py
@@ -106,6 +110,7 @@ tests/test_validate_cli.py
 tests/test_validation.py
 tools/__init__.py
 tools/audit_release.py
+tools/capture_contract.py
 tools/offline/sitecustomize.py
 tools/public-files.txt
 tools/verification-requirements.txt
