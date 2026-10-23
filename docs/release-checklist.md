@@ -1,5 +1,12 @@
 # Release verification checklist
 
+For candidate 1.1.0, use the [V11-6 dossier](v1.1/gate-v11-6.md) and
+[owner-only publication/recovery runbook](release-publication-1.1.0.md).
+Preparation does not authorize commit, remote operations, tagging or publication.
+
+- [ ] Distinguish unpublished candidate 1.1.0 from published stable v1.0.1.
+- [ ] Compare preserved 197/123-artifact baselines with exact engine-only exceptions.
+- [ ] Preserve canonical hashes, analytical semantics, counters and ceilings.
 - [ ] Confirm package version, schema compatibility and documented changes.
 - [ ] Review the explicit public file manifest and documentation links.
 - [ ] Retain Apache-2.0 and all required dependency notices.
@@ -12,6 +19,12 @@
 - [ ] Rebuild from the source distribution and compare wheel payload bytes.
 - [ ] Verify Markdown links and document unsupported or unverified behavior.
 - [ ] Calculate SHA-256 checksums for the final distribution files.
+- [ ] Record working-tree content hashes as well as starting commit provenance.
+- [ ] Obtain six current hosted OS/interpreter results on the approved commit.
+- [ ] Rebuild/audit accepted post-merge source before separate tagging approval.
+- [ ] Obtain separate owner approval for publication destination and exact assets.
+- [ ] Verify public tag, downloaded assets and installed behavior after publication.
+- [ ] Preserve v1.0.1 assets and the immutable-release recovery procedure.
 
 The [verification summary](verification.md) records the tested environments and
 scope. Use the [testing strategy](testing-strategy.md) for reproducible checks.

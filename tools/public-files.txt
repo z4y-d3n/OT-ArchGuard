@@ -22,6 +22,8 @@ docs/installation.md
 docs/limitations.md
 docs/release-checklist.md
 docs/release-notes-1.0.1.md
+docs/release-notes-1.1.0.md
+docs/release-publication-1.1.0.md
 docs/reporting.md
 docs/requirements.md
 docs/testing-strategy.md
@@ -31,6 +33,7 @@ docs/v1.1/gate-v11-2.md
 docs/v1.1/gate-v11-3.md
 docs/v1.1/gate-v11-4.md
 docs/v1.1/gate-v11-5.md
+docs/v1.1/gate-v11-6.md
 docs/v1.1/public-contract-inventory.md
 docs/verification.md
 docs/yaml-schema-v1.md
@@ -96,6 +99,7 @@ tests/test_presentation.py
 tests/test_reachability.py
 tests/test_reachability_oracle.py
 tests/test_release_audit.py
+tests/test_release_candidate.py
 tests/test_release_hardening.py
 tests/test_release_integrity.py
 tests/test_release_metamorphic.py
@@ -111,6 +115,7 @@ tests/test_validation.py
 tools/__init__.py
 tools/audit_release.py
 tools/capture_contract.py
+tools/compare_versioned_contract.py
 tools/offline/sitecustomize.py
 tools/public-files.txt
 tools/verification-requirements.txt

@@ -4,7 +4,9 @@ OT-ArchGuard is an offline Python CLI for reviewing declared IT/OT network
 architectures. It validates architecture models, checks communication requirements
 and compares TCP/UDP listener reachability between proposed configurations.
 
-Version: 1.0.1. YAML schema: 1.
+Local candidate: **1.1.0, prepared but unpublished**. Published stable: **v1.0.1**.
+YAML schema: **1**. See [candidate release notes](docs/release-notes-1.1.0.md)
+and [Gate V11-6 verification](docs/v1.1/gate-v11-6.md).
 
 OT-ArchGuard is an independent industrial network architecture analysis tool inspired by general OT cybersecurity good practices, including those addressed by the IEC 62443 series. It does not provide certification, establish normative conformity or imply institutional endorsement.
 
@@ -24,7 +26,7 @@ Reduced exposure does not cancel a failed operational requirement.
 ## Install and run
 
 Python 3.12 or later is required. Local verification covers Windows with Python
-3.12.14 and 3.14.5; see [verification results](docs/verification.md).
+3.12.14 and 3.14.5; see [candidate verification](docs/v1.1/gate-v11-6.md).
 From a checkout or extracted source distribution:
 
 ~~~powershell
@@ -69,11 +71,11 @@ These version 1.0.1 previews show invented models. Boundary attachment cards sha
 one ID represent one device. Arrows represent declared transitions; they do not
 establish permitted communication or physical connectivity.
 
-The v1.1 development renderer adds topology-informed deterministic zone order,
+The v1.1.0 candidate renderer adds topology-informed deterministic zone order,
 repeatable HTML `--zone-order` preferences, numbered orthogonal routes and local
 report navigation. See [report options](docs/reporting.md) and
 [Gate V11-2 evidence](docs/v1.1/gate-v11-2.md). Its six native OS/Python CI
-combinations are defined and pending remote verification.
+combinations are defined; new candidate hosted verification awaits owner push/PR.
 
 Read the [schema](docs/yaml-schema-v1.md), [domain model](docs/domain-model.md),
 [algorithms](docs/algorithms.md), [requirements](docs/requirements.md),
@@ -87,17 +89,25 @@ The tool evaluates finite declared initiation paths. It does not verify deployed
 inventory, sessions, return traffic, authentication, vulnerabilities, compromise,
 availability, physical risk or process safety. Completeness, classification and
 criticality are user assertions; security-level evidence remains unassessed.
-See [known limitations](docs/limitations.md), including the invalid-Unicode
-diagnostic issue.
+See [known limitations](docs/limitations.md). The candidate corrects the historical
+v1.0.1 invalid-Unicode diagnostic issue.
 
 Project code and documentation use [Apache-2.0](LICENSE). Dependencies retain
 their own [licenses and notices](THIRD_PARTY_NOTICES.md).
-# Development: exact communication trace
+## Candidate: exact communication trace
 
-The v1.1 development line adds
+The v1.1.0 candidate adds
 `otarchguard trace MODEL --source ASSET --service SERVICE [--destination ASSET]`
 with optional `--policy-evidence`, `--report PATH` and `--report-format html|json`.
 Exit 0 means the exact declared query completed, including unreachable or mixed
 port outcomes. Intents remain unassessed by trace. See the [trace contract](docs/trace.md)
 and [synthetic trace examples](examples/README.md#exact-communication-trace).
-The application and stable release version remain 1.0.1.
+Application and distribution versions are 1.1.0 in this local candidate; v1.0.1
+remains the published stable release. Use a parallel environment for evaluation;
+see [installation and upgrade](docs/installation.md). No public v1.1.0 download,
+tag or publication is implied.
+
+For v1.2, easier architecture authoring is a required future adoption goal:
+guided creation, industrial templates, spreadsheet/CSV import, schema-1 YAML
+generation, understandable validation and progressive visual editing. These
+capabilities are planned and are absent from v1.1.0.

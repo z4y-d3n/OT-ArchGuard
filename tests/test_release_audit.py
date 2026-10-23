@@ -31,6 +31,6 @@ def test_wheel_rejects_nonruntime_payload() -> None:
     with pytest.raises(ValueError):
         check_member("tests/test_loading.py", wheel=True)
     check_member("otarchguard/loading.py", wheel=True)
-    check_member("otarchguard-1.0.1.dist-info/licenses/LICENSE", wheel=True)
+    check_member("otarchguard-1.1.0.dist-info/licenses/LICENSE", wheel=True)
     check_member("tests/fixtures/minimal-valid.yaml", wheel=False)
     check_member("docs/images/flat-plant-proposed.png", wheel=False)

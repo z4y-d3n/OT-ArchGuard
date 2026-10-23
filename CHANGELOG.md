@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.1.0 — local candidate, unpublished
+
+- Reject escaped Unicode surrogates and out-of-range YAML escapes with controlled
+  diagnostics while preserving valid declared text and canonical identities.
+- Improve deterministic offline HTML/SVG layout, zone presentation ordering,
+  bounded labels, report navigation and explicit omission evidence.
+- Add exact communication trace, optional finite policy evidence, completed
+  scenario summaries and conservative comparison change descriptions.
+- Reuse validated snapshots for report-enabled check, exposure and comparison.
+  Historical measurements and their scope are in the V11-4 dossier.
+- Expand independent graph/policy/per-port oracles, metamorphic verification,
+  adverse-input and atomic-report failure coverage; normalize test help rendering.
+- Prepare consistent 1.1.0 runtime/distribution identity, version-aware historical
+  comparisons, audited packages and owner-controlled publication/rollback steps.
+
+Schema 1, report version 1, trace version 1, default deny, deny precedence, exact
+TCP/UDP initiation semantics and resource ceilings are retained. Trace is new
+since v1.0.1; completed unreachable trace queries exit 0 without assessing intents.
+The candidate is not a published release and has no final release date.
+See [candidate release notes](docs/release-notes-1.1.0.md).
+
 ## 1.0.1
 
 - Restrict source distributions to an explicit public file manifest.
