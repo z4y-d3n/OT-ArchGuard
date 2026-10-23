@@ -6,10 +6,12 @@ MANIFEST.in
 README.md
 THIRD_PARTY_NOTICES.md
 benchmarks/__init__.py
+benchmarks/profile.py
 benchmarks/run.py
 benchmarks/workloads.py
 docs/algorithms.md
 docs/benchmarks/README.md
+docs/benchmarks/performance.md
 docs/boundary-device-example.md
 docs/dependencies.md
 docs/domain-model.md
@@ -27,6 +29,7 @@ docs/trace.md
 docs/v1.1/gate-v11-1.md
 docs/v1.1/gate-v11-2.md
 docs/v1.1/gate-v11-3.md
+docs/v1.1/gate-v11-4.md
 docs/verification.md
 docs/yaml-schema-v1.md
 examples/README.md
@@ -86,6 +89,7 @@ tests/test_integration.py
 tests/test_loading.py
 tests/test_normalization.py
 tests/test_policy_evidence.py
+tests/test_preparation.py
 tests/test_presentation.py
 tests/test_reachability.py
 tests/test_reachability_oracle.py

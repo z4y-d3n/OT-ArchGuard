@@ -10,12 +10,12 @@ import typer
 from typer.core import TyperCommand
 
 from otarchguard import __version__
-from otarchguard.api import validate_file
-from otarchguard.comparison import compare_files
+from otarchguard.api import ValidatedArchitecture, validate_file
+from otarchguard.comparison import compare_architectures, compare_files
 from otarchguard.contract import DiagnosticCategory, ExitCode
 from otarchguard.diagnostics import Diagnostic, ModelError, fail
-from otarchguard.exposure import QueryScope, exposure_file
-from otarchguard.intents import check_file
+from otarchguard.exposure import QueryScope, exposure_architecture, exposure_file
+from otarchguard.intents import check_architecture, check_file
 from otarchguard.reporting import (
     Analysis,
     ReportKind,
@@ -68,11 +68,14 @@ def _report(
     inputs: tuple[Path, ...],
     result: Analysis = None,
     zone_order: tuple[str, ...] = (),
+    *,
+    snapshots: tuple[ValidatedArchitecture, ...] = (),
 ) -> None:
     _presentation_options(output, format, zone_order)
     if output is None:
         return
-    snapshots = tuple(validate_file(path) for path in inputs)
+    # Reuse the completed immutable inputs actually evaluated by this invocation.
+    # build_report still checks kind, arity and every result/model hash binding.
     report = build_report(kind, snapshots, result)
     data = (
         json_report(report)
@@ -213,10 +216,19 @@ def check(
 ) -> None:
     """Check required/prohibited initiation intents with interval and path evidence."""
     try:
-        result = check_file(architecture)
+        snapshots = (validate_file(architecture),) if report is not None else ()
+        result = check_architecture(snapshots[0]) if snapshots else check_file(architecture)
         payload = {"engine_version": __version__, "schema_version": 1, **asdict(result)}
         serialized = json.dumps(payload, sort_keys=True)
-        _report(report, report_format, "check", (architecture,), result, tuple(zone_order or ()))
+        _report(
+            report,
+            report_format,
+            "check",
+            (architecture,),
+            result,
+            tuple(zone_order or ()),
+            snapshots=snapshots,
+        )
     except ModelError as error:
         for diagnostic in error.diagnostics:
             typer.echo(json.dumps(asdict(diagnostic), sort_keys=True, ensure_ascii=True), err=True)
@@ -249,11 +261,24 @@ def exposure(
 ) -> None:
     """Evaluate a declared finite exposure scenario and all communication intents."""
     try:
-        result = exposure_file(architecture, scenario)
+        snapshots = (validate_file(architecture),) if report is not None else ()
+        result = (
+            exposure_architecture(snapshots[0], scenario)
+            if snapshots
+            else exposure_file(architecture, scenario)
+        )
         serialized = json.dumps(
             {"engine_version": __version__, "schema_version": 1, **asdict(result)}, sort_keys=True
         )
-        _report(report, report_format, "exposure", (architecture,), result, tuple(zone_order or ()))
+        _report(
+            report,
+            report_format,
+            "exposure",
+            (architecture,),
+            result,
+            tuple(zone_order or ()),
+            snapshots=snapshots,
+        )
     except ModelError as error:
         for diagnostic in error.diagnostics:
             typer.echo(json.dumps(asdict(diagnostic), sort_keys=True), err=True)
@@ -302,7 +327,16 @@ def compare(
             if origin is not None or service is not None
             else None
         )
-        result = compare_files(baseline, proposed, scenario, scope=scope)
+        snapshots = (
+            tuple(validate_file(path) for path in (baseline, proposed))
+            if report is not None
+            else ()
+        )
+        result = (
+            compare_architectures(snapshots[0], snapshots[1], scenario, scope=scope)
+            if snapshots
+            else compare_files(baseline, proposed, scenario, scope=scope)
+        )
         serialized = json.dumps(
             {"engine_version": __version__, "schema_version": 1, **asdict(result)}, sort_keys=True
         )
@@ -313,6 +347,7 @@ def compare(
             (baseline, proposed),
             result,
             tuple(zone_order or ()),
+            snapshots=snapshots,
         )
     except ModelError as error:
         for diagnostic in error.diagnostics:

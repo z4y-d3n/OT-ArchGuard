@@ -186,7 +186,7 @@ def test_failed_render_or_resource_limit_preserves_existing_report(
     def bounded_check(*args: Any, **kwargs: Any) -> Any:
         return check_file(path, replace(RESOURCE_LIMITS, state_edge_visits=1))
 
-    monkeypatch.setattr(cli, "check_file", bounded_check)
+    monkeypatch.setattr(cli, "check_architecture", bounded_check)
     failed = runner.invoke(cli.app, ["check", str(path), "--report", str(output)])
     assert failed.exit_code == 2 and not failed.stdout
     assert json.loads(failed.stderr)["category"] == "resource_limit"

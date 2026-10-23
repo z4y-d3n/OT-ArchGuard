@@ -6,10 +6,12 @@ include MANIFEST.in
 include README.md
 include THIRD_PARTY_NOTICES.md
 include benchmarks/__init__.py
+include benchmarks/profile.py
 include benchmarks/run.py
 include benchmarks/workloads.py
 include docs/algorithms.md
 include docs/benchmarks/README.md
+include docs/benchmarks/performance.md
 include docs/boundary-device-example.md
 include docs/dependencies.md
 include docs/domain-model.md
@@ -27,6 +29,7 @@ include docs/trace.md
 include docs/v1.1/gate-v11-1.md
 include docs/v1.1/gate-v11-2.md
 include docs/v1.1/gate-v11-3.md
+include docs/v1.1/gate-v11-4.md
 include docs/verification.md
 include docs/yaml-schema-v1.md
 include examples/README.md
@@ -86,6 +89,7 @@ include tests/test_integration.py
 include tests/test_loading.py
 include tests/test_normalization.py
 include tests/test_policy_evidence.py
+include tests/test_preparation.py
 include tests/test_presentation.py
 include tests/test_reachability.py
 include tests/test_reachability_oracle.py
