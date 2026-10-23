@@ -148,3 +148,8 @@ owner assertions. SL-T, SL-C and SL-A remain **unassessed, not zero**. Assessmen
 and approval evidence stays external. A report is neither a full cybersecurity
 requirements specification nor verified deployed inventory. It makes no external standards conformity/certification, exploitability, compromise-probability or
 physical-risk-reduction claim. See [the synthetic walkthroughs](../examples/README.md).
+The v1.1 development trace uses a separate `trace_version: 1` envelope and static
+HTML entry points. See [trace evidence and finite summaries](trace.md). Native
+exposure/comparison HTML adds summaries of completed scenario queries and
+conservative declaration-change references. Existing report-version-1 JSON is
+unchanged. Python HTML callers opt in with `analysis=completed_result`.
