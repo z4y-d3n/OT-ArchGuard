@@ -1,16 +1,17 @@
 # Verification strategy
 
-For current unpublished 1.1.0 candidate acceptance, see
-[Gate V11-6](v1.1/gate-v11-6.md). Earlier version/gate outcomes below remain
-historical evidence, not current hosted CI results.
+For source version 1.1.0, [Gate V11-6](v1.1/gate-v11-6.md) records candidate
+history. Final acceptance requires local and hosted receipts for the exact
+reviewed commit. Earlier version/gate outcomes below remain historical evidence.
 
 Use matching regular installed wheel environments on Windows Python 3.12/3.14.
 Version 1.0.1 results are in the [verification summary](verification.md).
 
 The v1.1 workflow defines native Windows, Ubuntu and macOS runners with Python
-3.12/3.14, `fail-fast: false` and no exclusions. Hosted Gate V11-2 outcomes are
-**pending remote verification**. Job ID `verify` is retained; expanded displayed
-check names need owner review in branch-protection settings after the first run.
+3.12/3.14, `fail-fast: false` and no exclusions. The Gate V11-2 dossier records
+then-pending hosted verification; use current-commit receipts for acceptance.
+Job ID `verify` is retained; expanded displayed check names need owner review
+in branch-protection settings against the required current checks.
 PowerShell Core is explicit on every runner; offline paths use forward slashes.
 Artifacts include OS/Python identity and expire in seven days. No release upload
 is performed. See [Gate V11-2](v1.1/gate-v11-2.md).
@@ -71,7 +72,7 @@ Record raster observations separately from actual browser/print verification.
 
 The [public inventory](v1.1/public-contract-inventory.md) records the accepted
 module signatures, native options, result fields and diagnostic differences.
-The [hardening dossier](v1.1/gate-v11-5.md) records current local evidence and
+The [hardening dossier](v1.1/gate-v11-5.md) records historical local evidence and
 the separate hosted/owner acceptance boundary.
 
 After `tools/verify_environment.py` confirms the regular installed package, capture
@@ -91,7 +92,8 @@ separate. It never updates a baseline to accommodate a failure. Use fixed
 `PYTHONHASHSEED` values 0 and 12345 for separate deterministic process captures.
 The earlier 197-artifact corpus remains separate local historical evidence.
 
-For the intentional 1.0.1 to 1.1.0 transition, use the separate narrow comparator:
+For the intentional 1.0.1 to 1.1.0 transition, the historical developer capture
+example below uses retained gate-local artifacts and the separate narrow comparator:
 
 ~~~powershell
 python tools/compare_versioned_contract.py output/gate-v11-6/baseline123 output/gate-v11-6/candidate123-312 --output output/gate-v11-6/compatibility123-312.json

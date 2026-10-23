@@ -1,13 +1,12 @@
-# OT-ArchGuard 1.1.0 candidate release notes
+# OT-ArchGuard 1.1.0 release notes
 
-**Prepared locally; unpublished. Owner review and new hosted CI are pending.**
-No release date, public tag, downloadable release or package-index publication is
-announced. The existing published stable release remains v1.0.1.
+These notes describe source version 1.1.0. Consult the owner-published release
+record for publication status, exact source tag and audited asset checksums.
 
 ## Changes since v1.0.1
 
-OT-ArchGuard analyzes finite owner-declared IT/OT architectures offline. This
-candidate includes the accepted V11-1 through V11-5 implementation and V11-6
+OT-ArchGuard analyzes finite owner-declared IT/OT architectures offline. Version
+1.1.0 includes the accepted V11-1 through V11-5 implementation and V11-6
 release preparation:
 
 - Strict YAML/Unicode diagnostics reject escaped surrogates and out-of-range
@@ -29,8 +28,8 @@ release preparation:
 - Independent graph, raw-policy and concrete-port oracles, witness replay,
   metamorphic tests, bounded adverse inputs and atomic-report fault checks extend
   verification. The installed-help test uses a controlled plain terminal.
-- Runtime, CLI, engine and distribution metadata now consistently identify the
-  local 1.1.0 candidate. V11-6 compares historical artifacts with a narrow version
+- Runtime, CLI, engine and distribution metadata now consistently identify
+  version 1.1.0. V11-6 compares historical artifacts with a narrow version
   allowlist and audits real wheel/source packages and installed module bytes.
 
 ## Compatibility
@@ -53,21 +52,23 @@ See the [public contract inventory](v1.1/public-contract-inventory.md) and its
 
 Use a separate environment and an owner-reviewed local
 `otarchguard-1.1.0-py3-none-any.whl` or `otarchguard-1.1.0.tar.gz` following
-[installation and upgrade instructions](installation.md). Candidate hashes are
-local evidence, not signatures from a public release channel. Compatible
+[installation and upgrade instructions](installation.md). Compare obtained archives
+with the checksums in their owner-published release record when available; a
+checksum alone does not authenticate provenance. Compatible
 dependencies must already be available for offline installation.
 
-Local acceptance uses Windows CPython 3.12.14 and 3.14.5; see actual outcomes in
-the [V11-6 dossier](v1.1/gate-v11-6.md). The retained hosted matrix targets Windows,
-Ubuntu and macOS with Python 3.12/3.14. New V11-6 hosted results are
-`PENDING_OWNER_PUSH_AND_PR`; Windows testing establishes no Ubuntu/macOS result.
+The historical [V11-6 dossier](v1.1/gate-v11-6.md) records local Windows CPython
+3.12.14 and 3.14.5 outcomes. The required hosted matrix targets Windows, Ubuntu
+and macOS with Python 3.12/3.14. Final acceptance requires local and hosted
+receipts identifying the exact reviewed commit; historical Windows testing
+establishes no current Ubuntu/macOS result.
 
 ## Limitations, security and provenance
 
 This is an independent Apache-2.0 project with root commit
 `8e6a5bca41a00eb0454e6efdd9a9558e1a7017b2`; the published v1.0.1 identity is
 preserved. [Dependency notices](../THIRD_PARTY_NOTICES.md) remain applicable.
-The candidate has no new runtime dependency or network integration.
+Version 1.1.0 adds no runtime dependency or network integration.
 
 The tool evaluates what declarations describe. It does not establish that a live
 industrial network matches them. It is not a live scanner, packet/session
@@ -79,8 +80,9 @@ keyboard, print or font behavior. See [limitations](limitations.md).
 
 ## Publication and recovery
 
-The owner must review, commit, push, obtain six-way CI, merge, rebuild/audit the
-accepted source, approve an annotated tag and separately approve publication.
+Before publication, the owner must review and integrate any required corrections,
+obtain current six-way CI, rebuild/audit the exact accepted source, approve an
+annotated tag and separately approve publication.
 GitHub Release and package-index publication are separate decisions. Follow the
 [owner-only runbook and rollback plan](release-publication-1.1.0.md).
 

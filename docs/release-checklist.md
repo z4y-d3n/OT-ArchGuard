@@ -1,10 +1,11 @@
 # Release verification checklist
 
-For candidate 1.1.0, use the [V11-6 dossier](v1.1/gate-v11-6.md) and
+For source version 1.1.0, use the dated [V11-6 dossier](v1.1/gate-v11-6.md)
+as historical evidence and the
 [owner-only publication/recovery runbook](release-publication-1.1.0.md).
 Preparation does not authorize commit, remote operations, tagging or publication.
 
-- [ ] Distinguish unpublished candidate 1.1.0 from published stable v1.0.1.
+- [ ] Distinguish source version 1.1.0, historical v1.0.1 and actual publication records.
 - [ ] Compare preserved 197/123-artifact baselines with exact engine-only exceptions.
 - [ ] Preserve canonical hashes, analytical semantics, counters and ceilings.
 - [ ] Confirm package version, schema compatibility and documented changes.

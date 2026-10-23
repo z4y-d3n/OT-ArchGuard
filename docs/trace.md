@@ -19,7 +19,7 @@ optional top-level fields, timestamps, source paths or overall `passed` flag.
 | Field | Type / meaning |
 | --- | --- |
 | trace_version | integer 1 |
-| engine_version | application version string (1.1.0 candidate) |
+| engine_version | application version string (1.1.0) |
 | schema_version | integer 1 |
 | status | literal `complete`; does not assert reachability |
 | model_sha256 | canonical validated snapshot SHA-256 string |

@@ -5,7 +5,15 @@ does not authorize Codex to commit, contact remotes, merge, tag, upload, publish
 or deploy. GitHub Release is the existing documented destination; package-index
 publication is a separate decision. Version 1.1.0 metadata does not publish it.
 
-## A. Local acceptance
+Phases A–D below preserve the **historical Gate V11-6 integration procedure**;
+do not repeat them as pending work. Candidate commit
+`cca018ef585b056424f534b937f125be2d21d838` was integrated into local main at
+`ee6436277c364803eea7f5be8b956131705f77e4`. Neither SHA automatically identifies
+a later corrected release. For subsequent corrections, the owner reviews, commits
+and integrates the approved branch with current six-way CI before phase E. Record
+the actual accepted release SHA after all required corrections are integrated.
+
+## A. Local acceptance (historical)
 
 Review `codex/gate-v11-6` against accepted main
 `bfa94942c185ad8ba677ea0ca567dc1672c836dd`: the [dossier](v1.1/gate-v11-6.md),
@@ -16,7 +24,7 @@ content requires file hashes as well as HEAD. Confirm version 1.1.0, contracts 1
 unchanged analytical modules, root, stable tag, licenses and notices. Resolve all
 local Critical/High blockers before advancing.
 
-## B. Owner commit, push and PR
+## B. Owner commit, push and PR (historical)
 
 After explicit owner acceptance, the owner can run these commands outside this
 gate. Review every staged file; the explicit manifest excludes ignored evidence.
@@ -37,7 +45,7 @@ production change, actual local results, strict compatibility, provenance and
 pending hosted checks. Bind results to the exact committed source. Candidate
 archives are not automatically the final post-merge assets.
 
-## C. Current hosted verification
+## C. Hosted verification (historical integration requirements)
 
 Require all six unique Windows/Ubuntu/macOS × Python 3.12/3.14 combinations on
 the reviewed current PR commit. Duplicate push/PR runs are acceptable. Inspect
@@ -47,7 +55,7 @@ Unix child help environment `NO_COLOR=1`, `TERM=dumb`. Never disable a failing
 job, assertion or network-isolation check. Earlier V11-5 results do not accept
 V11-6. Any executable correction requires applicable tests/current hosted CI.
 
-## D. Owner merge and synchronization
+## D. Owner merge and synchronization (historical)
 
 After approval and required checks, merge through the GitHub interface. On a
 clean authoritative checkout the owner may switch to main and use their reviewed
@@ -60,11 +68,13 @@ No merge or pull is performed during this gate.
 Build from the exact clean accepted main in a new ignored directory; preserve
 this gate's evidence. Record backend, interpreter/dependencies and public-source
 hashes. Re-run installed provenance, package audit and extracted-sdist rebuild.
-With the approved build backend already installed:
+From the clean accepted checkout, set `$BuildPython` to the absolute path of an
+approved build environment interpreter with `setuptools>=77` already installed.
+The following commands require that environment; they acquire no dependencies:
 
 ```powershell
-.\.venv-verify312\Scripts\python.exe -c "from setuptools import build_meta; build_meta.build_wheel('output/release-1.1.0'); build_meta.build_sdist('output/release-1.1.0')"
-.\.venv-verify312\Scripts\python.exe tools/audit_release.py output/release-1.1.0/otarchguard-1.1.0-py3-none-any.whl output/release-1.1.0/otarchguard-1.1.0.tar.gz --source-root . --output output/release-1.1.0/archive-audit.json
+& $BuildPython -c "from setuptools import build_meta; build_meta.build_wheel('output/release-1.1.0'); build_meta.build_sdist('output/release-1.1.0')"
+& $BuildPython tools/audit_release.py output/release-1.1.0/otarchguard-1.1.0-py3-none-any.whl output/release-1.1.0/otarchguard-1.1.0.tar.gz --source-root . --output output/release-1.1.0/archive-audit.json
 Get-FileHash output/release-1.1.0/otarchguard-1.1.0-py3-none-any.whl -Algorithm SHA256
 Get-FileHash output/release-1.1.0/otarchguard-1.1.0.tar.gz -Algorithm SHA256
 ```
@@ -98,9 +108,9 @@ Never tag uncommitted source or assume a future tag identifies this candidate.
 The owner approves destination and exact files. In the GitHub interface for
 `z4y-d3n/OT-ArchGuard`, select the verified v1.1.0 tag, review release notes,
 attach only audited wheel/sdist and the reviewed checksum file, then approve
-publication. Exclude local paths/logs/credentials. Keep unpublished wording
-honest until an owner-reviewed status change is appropriate; do not invent a
-release date or URL. PyPI publication needs an independent decision, registry
+publication. Exclude local paths/logs/credentials. Use publication-state-neutral
+source documentation and the actual release record for availability; do not invent
+a release date or URL. PyPI publication needs an independent decision, registry
 identity/credentials review and procedure; no index upload is assumed.
 
 ## H. Post-publication verification

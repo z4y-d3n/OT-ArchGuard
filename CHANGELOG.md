@@ -1,6 +1,9 @@
 # Changelog
 
-## 1.1.0 — local candidate, unpublished
+## 1.1.0
+
+This entry describes source version 1.1.0. Consult the owner-published release
+record for publication status and exact audited asset checksums.
 
 - Reject escaped Unicode surrogates and out-of-range YAML escapes with controlled
   diagnostics while preserving valid declared text and canonical identities.
@@ -18,8 +21,7 @@
 Schema 1, report version 1, trace version 1, default deny, deny precedence, exact
 TCP/UDP initiation semantics and resource ceilings are retained. Trace is new
 since v1.0.1; completed unreachable trace queries exit 0 without assessing intents.
-The candidate is not a published release and has no final release date.
-See [candidate release notes](docs/release-notes-1.1.0.md).
+See [release notes](docs/release-notes-1.1.0.md).
 
 ## 1.0.1
 
