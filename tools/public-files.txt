@@ -17,12 +17,14 @@ docs/dependencies.md
 docs/development/gate-v12-01.md
 docs/development/gate-v12-02.md
 docs/development/gate-v12-02r.md
+docs/development/gate-v12-03.md
 docs/development/v1.2-architecture.md
 docs/development/v1.2-design-decisions.md
 docs/development/v1.2-import-formats.md
 docs/development/v1.2-roadmap.md
 docs/development/v12-02-parser-decision.md
 docs/development/v12-02r-numeric-policy.md
+docs/development/v12-03-graphical-formats.md
 docs/domain-model.md
 docs/images/README.md
 docs/images/flat-plant-proposed.png
@@ -53,7 +55,12 @@ examples/flat-plant/proposed.yaml
 examples/generate_examples.py
 examples/import-studio/assets-profile.yaml
 examples/import-studio/assets.csv
+examples/import-studio/directed.graphml
+examples/import-studio/drawio-profile.json
+examples/import-studio/graphml-profile.json
+examples/import-studio/industrial.drawio
 examples/import-studio/model-context.yaml
+examples/import-studio/multipage.drawio
 examples/import-studio/netbox-context.yaml
 examples/import-studio/netbox-inventory.json
 examples/import-studio/netbox-profile.json
@@ -61,6 +68,7 @@ examples/import-studio/structured-context.yaml
 examples/import-studio/structured-inventory.json
 examples/import-studio/structured-inventory.xlsx
 examples/import-studio/structured-profile.json
+examples/import-studio/undirected.graphml
 examples/import-studio/workbook-profile.json
 examples/remote-support/application-only.yaml
 examples/remote-support/baseline.yaml
@@ -84,6 +92,9 @@ src/otarchguard/flows.py
 src/otarchguard/graph.py
 src/otarchguard/ingestion/__init__.py
 src/otarchguard/ingestion/cli.py
+src/otarchguard/ingestion/drawio.py
+src/otarchguard/ingestion/graphical.py
+src/otarchguard/ingestion/graphml.py
 src/otarchguard/ingestion/json_inventory.py
 src/otarchguard/ingestion/netbox.py
 src/otarchguard/ingestion/numbers.py
@@ -92,6 +103,7 @@ src/otarchguard/ingestion/structured.py
 src/otarchguard/ingestion/tabular.py
 src/otarchguard/ingestion/workflow.py
 src/otarchguard/ingestion/xlsx.py
+src/otarchguard/ingestion/xml_safe.py
 src/otarchguard/intents.py
 src/otarchguard/intervals.py
 src/otarchguard/loading.py
@@ -123,6 +135,8 @@ tests/test_exposure_comparison.py
 tests/test_fixtures.py
 tests/test_ingestion.py
 tests/test_ingestion_cli.py
+tests/test_ingestion_graphical.py
+tests/test_ingestion_graphical_security.py
 tests/test_ingestion_numbers.py
 tests/test_ingestion_structured.py
 tests/test_ingestion_xlsx_security.py
@@ -156,6 +170,7 @@ tools/compare_versioned_contract.py
 tools/offline/sitecustomize.py
 tools/public-files.txt
 tools/review_bundle.py
+tools/synthetic_graphs.py
 tools/synthetic_inventories.py
 tools/verification-requirements.txt
 tools/verify_environment.py

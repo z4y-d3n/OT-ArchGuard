@@ -13,7 +13,6 @@ import zipfile
 from dataclasses import asdict, dataclass
 from pathlib import Path, PurePosixPath
 from xml.etree import ElementTree as ET
-from xml.parsers import expat
 
 from otarchguard.diagnostics import check_limit, fail
 from otarchguard.ingestion.numbers import excel_magnitude_ambiguous, parse_number
@@ -26,7 +25,8 @@ from otarchguard.ingestion.records import (
 )
 from otarchguard.ingestion.records import InventoryValue as YamlValue
 from otarchguard.ingestion.structured import ExtractedRow, Value, map_extracted, validate_profile
-from otarchguard.ingestion.tabular import _safe_text, read_regular
+from otarchguard.ingestion.tabular import read_regular
+from otarchguard.ingestion.xml_safe import XmlBudget
 
 _S = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
 _R = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
@@ -61,81 +61,9 @@ class WorkbookLimits:
 WORKBOOK_LIMITS = WorkbookLimits()
 
 
-class _XmlBudget:
+class _XmlBudget(XmlBudget):
     def __init__(self, limits: WorkbookLimits) -> None:
-        self.limits = limits
-        self.elements = 0
-        self.characters = 0
-
-    def parse(self, data: bytes) -> ET.Element:
-        # UTF-8 only prevents alternate-encoding bypasses of lexical security checks.
-        try:
-            text = data.decode("utf-8-sig")
-        except UnicodeDecodeError:
-            fail("IMPORT_XLSX_XML", "$", "OOXML parts must use UTF-8.")
-        declaration = re.match(r"<\?xml\s+[^?]*encoding=['\"]([^'\"]+)", text)
-        if declaration and declaration[1].lower() not in {"utf-8", "utf8"}:
-            fail("IMPORT_XLSX_XML", "$", "Only UTF-8 XML is supported.")
-        _safe_text(text)
-        builder = ET.TreeBuilder()
-        parser = expat.ParserCreate(namespace_separator="}")
-        depth = 0
-
-        def name(value: str) -> str:
-            return "{" + value if "}" in value else value
-
-        def start(tag: str, attributes: dict[str, str]) -> None:
-            nonlocal depth
-            depth += 1
-            self.elements += 1
-            check_limit("xlsx_xml_depth", depth, self.limits.xml_depth)
-            check_limit("xlsx_xml_elements", self.elements, self.limits.xml_elements)
-            check_limit("xlsx_xml_attributes", len(attributes), 64)
-            check_limit("xlsx_xml_name", len(tag), self.limits.text)
-            self.characters += len(tag)
-            for key, value in attributes.items():
-                _safe_text(value)
-                check_limit("xlsx_xml_name", len(key), self.limits.text)
-                check_limit("xlsx_text", len(value), self.limits.text)
-                self.characters += len(key) + len(value)
-            check_limit("xlsx_xml_text", self.characters, self.limits.xml_text)
-            builder.start(name(tag), {name(k): v for k, v in attributes.items()})
-
-        def namespace(prefix: str | None, uri: str | None) -> None:
-            prefix, uri = prefix or "", uri or ""
-            _safe_text(uri)
-            check_limit("xlsx_xml_name", len(prefix), self.limits.text)
-            check_limit("xlsx_xml_name", len(uri), self.limits.text)
-            self.characters += len(prefix) + len(uri)
-            check_limit("xlsx_xml_text", self.characters, self.limits.xml_text)
-
-        def end(tag: str) -> None:
-            nonlocal depth
-            builder.end(name(tag))
-            depth -= 1
-
-        def characters(value: str) -> None:
-            _safe_text(value)
-            self.characters += len(value)
-            check_limit("xlsx_xml_text", self.characters, self.limits.xml_text)
-            builder.data(value)
-
-        def forbidden(*args: object) -> None:
-            fail("IMPORT_XLSX_XML", "$", "DTD, entities and processing instructions are forbidden.")
-
-        parser.StartElementHandler = start
-        parser.StartNamespaceDeclHandler = namespace
-        parser.EndElementHandler = end
-        parser.CharacterDataHandler = characters
-        parser.StartDoctypeDeclHandler = forbidden
-        parser.EntityDeclHandler = forbidden
-        parser.ExternalEntityRefHandler = lambda *args: 0
-        parser.ProcessingInstructionHandler = forbidden
-        try:
-            parser.Parse(text, True)
-            return builder.close()
-        except (expat.ExpatError, ValueError):
-            fail("IMPORT_XLSX_XML", "$", "Malformed or unsupported OOXML XML part.")
+        super().__init__(limits, prefix="xlsx", code="IMPORT_XLSX_XML")
 
 
 def _coordinate(value: str, limits: WorkbookLimits) -> tuple[int, int]:

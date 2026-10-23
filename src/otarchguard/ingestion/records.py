@@ -72,11 +72,20 @@ class StructuredProfile(ImportRecord):
     tables: tuple[TableMapping, ...] = Field(min_length=1, max_length=16)
 
 
+class GraphProfile(ImportRecord):
+    profile_version: Literal[3]
+    adapter: Literal["graphml", "drawio"]
+    scopes: tuple[str, ...] = Field(min_length=1, max_length=16)
+    tables: tuple[TableMapping, ...] = Field(min_length=1, max_length=3)
+    connections: Literal["evidence_only"]
+    unknown_policy: Literal["diagnose"]
+
+
 class SourceDocument(ImportRecord):
     source_id: str
     sha256: str
     name: str
-    format: Literal["csv", "tsv", "json", "xlsx"]
+    format: Literal["csv", "tsv", "json", "xlsx", "graphml", "drawio"]
     byte_count: int
     encoding: str
     delimiter: str
@@ -182,6 +191,46 @@ class ImportCandidate(ImportRecord):
     ambiguities: tuple[str, ...]
 
 
+class GraphPage(ImportRecord):
+    scope_id: str
+    name: str
+    compression: Literal["none", "raw-deflate"]
+
+
+class GraphNode(ImportRecord):
+    scope_id: str
+    element_id: str
+    kind: Literal["node", "group", "text", "layer"]
+    label: str
+    parent: str | None = None
+    geometry: dict[str, str] = Field(default_factory=dict, max_length=8)
+    styles: dict[str, str] = Field(default_factory=dict, max_length=16)
+
+
+class GraphEdge(ImportRecord):
+    scope_id: str
+    element_id: str
+    source: str | None
+    destination: str | None
+    label: str
+    direction: str
+    direction_origin: Literal["graph_default", "edge_override", "arrowheads"]
+    parent: str | None = None
+    unresolved: tuple[str, ...] = ()
+    relationship: Literal["diagram_evidence_only"] = "diagram_evidence_only"
+
+
+class GraphEvidence(ImportRecord):
+    adapter: Literal["graphml", "drawio"]
+    subset_version: Literal[1] = 1
+    pages: tuple[GraphPage, ...] = Field(max_length=16)
+    nodes: tuple[GraphNode, ...] = Field(max_length=1000)
+    edges: tuple[GraphEdge, ...] = Field(max_length=1000)
+    keys: tuple[str, ...] = Field(max_length=64)
+    expanded_bytes: int
+    selected_scopes: tuple[str, ...]
+
+
 class ImportConflict(ImportRecord):
     code: Literal["DUPLICATE_IDENTITY", "DUPLICATE_NAME", "REUSED_ADDRESS"] = "DUPLICATE_IDENTITY"
     identity: str
@@ -189,13 +238,22 @@ class ImportConflict(ImportRecord):
 
 
 class ImportDraft(ImportRecord):
-    import_version: Literal[1, 2, 3]
+    import_version: Literal[1, 2, 3, 4]
     source: SourceDocument
-    profile: MappingProfile | StructuredProfile
+    profile: MappingProfile | StructuredProfile | GraphProfile
     headers: tuple[str, ...]
     candidates: tuple[ImportCandidate | StructuredCandidate, ...] = Field(max_length=1000)
     conflicts: tuple[ImportConflict, ...] = Field(max_length=1000)
     diagnostics: tuple[ImportDiagnostic, ...] = Field(max_length=200)
+    graph: GraphEvidence | None = Field(default=None, exclude_if=lambda value: value is None)
+
+    @model_validator(mode="after")
+    def graph_contract(self) -> Self:
+        if (self.import_version == 4) != isinstance(self.profile, GraphProfile):
+            raise ValueError("Graph profiles require draft version 4")
+        if (self.import_version == 4) != (self.graph is not None):
+            raise ValueError("Graph drafts require graphical evidence")
+        return self
 
 
 class OwnerResolution(ImportRecord):

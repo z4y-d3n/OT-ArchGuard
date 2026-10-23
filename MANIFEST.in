@@ -17,12 +17,14 @@ include docs/dependencies.md
 include docs/development/gate-v12-01.md
 include docs/development/gate-v12-02.md
 include docs/development/gate-v12-02r.md
+include docs/development/gate-v12-03.md
 include docs/development/v1.2-architecture.md
 include docs/development/v1.2-design-decisions.md
 include docs/development/v1.2-import-formats.md
 include docs/development/v1.2-roadmap.md
 include docs/development/v12-02-parser-decision.md
 include docs/development/v12-02r-numeric-policy.md
+include docs/development/v12-03-graphical-formats.md
 include docs/domain-model.md
 include docs/images/README.md
 include docs/images/flat-plant-proposed.png
@@ -53,7 +55,12 @@ include examples/flat-plant/proposed.yaml
 include examples/generate_examples.py
 include examples/import-studio/assets-profile.yaml
 include examples/import-studio/assets.csv
+include examples/import-studio/directed.graphml
+include examples/import-studio/drawio-profile.json
+include examples/import-studio/graphml-profile.json
+include examples/import-studio/industrial.drawio
 include examples/import-studio/model-context.yaml
+include examples/import-studio/multipage.drawio
 include examples/import-studio/netbox-context.yaml
 include examples/import-studio/netbox-inventory.json
 include examples/import-studio/netbox-profile.json
@@ -61,6 +68,7 @@ include examples/import-studio/structured-context.yaml
 include examples/import-studio/structured-inventory.json
 include examples/import-studio/structured-inventory.xlsx
 include examples/import-studio/structured-profile.json
+include examples/import-studio/undirected.graphml
 include examples/import-studio/workbook-profile.json
 include examples/remote-support/application-only.yaml
 include examples/remote-support/baseline.yaml
@@ -84,6 +92,9 @@ include src/otarchguard/flows.py
 include src/otarchguard/graph.py
 include src/otarchguard/ingestion/__init__.py
 include src/otarchguard/ingestion/cli.py
+include src/otarchguard/ingestion/drawio.py
+include src/otarchguard/ingestion/graphical.py
+include src/otarchguard/ingestion/graphml.py
 include src/otarchguard/ingestion/json_inventory.py
 include src/otarchguard/ingestion/netbox.py
 include src/otarchguard/ingestion/numbers.py
@@ -92,6 +103,7 @@ include src/otarchguard/ingestion/structured.py
 include src/otarchguard/ingestion/tabular.py
 include src/otarchguard/ingestion/workflow.py
 include src/otarchguard/ingestion/xlsx.py
+include src/otarchguard/ingestion/xml_safe.py
 include src/otarchguard/intents.py
 include src/otarchguard/intervals.py
 include src/otarchguard/loading.py
@@ -123,6 +135,8 @@ include tests/test_exposure_comparison.py
 include tests/test_fixtures.py
 include tests/test_ingestion.py
 include tests/test_ingestion_cli.py
+include tests/test_ingestion_graphical.py
+include tests/test_ingestion_graphical_security.py
 include tests/test_ingestion_numbers.py
 include tests/test_ingestion_structured.py
 include tests/test_ingestion_xlsx_security.py
@@ -156,6 +170,7 @@ include tools/compare_versioned_contract.py
 include tools/offline/sitecustomize.py
 include tools/public-files.txt
 include tools/review_bundle.py
+include tools/synthetic_graphs.py
 include tools/synthetic_inventories.py
 include tools/verification-requirements.txt
 include tools/verify_environment.py

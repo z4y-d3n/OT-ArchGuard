@@ -18,6 +18,7 @@ from otarchguard.domain import Asset, Interface, Record, Zone
 from otarchguard.ingestion.records import (
     EntityKind,
     EvidenceField,
+    GraphProfile,
     ImportCandidate,
     ImportConflict,
     ImportDiagnostic,
@@ -92,11 +93,17 @@ def load_record[T: Record](path: Path, record_type: type[T]) -> T:
         fail("IMPORT_CONTROL", "$", "Invalid versioned import control document; see import docs.")
 
 
-def load_profile(path: Path) -> MappingProfile | StructuredProfile:
+def load_profile(path: Path) -> MappingProfile | StructuredProfile | GraphProfile:
     value = load_bytes(read_regular(path, RESOURCE_LIMITS.input_bytes))
     if not isinstance(value, dict):
         fail("IMPORT_MAPPING", "$", "Mapping profile must be an object.")
-    model = StructuredProfile if value.get("profile_version") == 2 else MappingProfile
+    model = (
+        GraphProfile
+        if value.get("profile_version") == 3
+        else StructuredProfile
+        if value.get("profile_version") == 2
+        else MappingProfile
+    )
     try:
         return model.model_validate(value)
     except ValidationError as error:
@@ -267,7 +274,13 @@ def map_table(table: SourceTable, profile: MappingProfile) -> ImportDraft:
     return draft
 
 
-def create_draft(source: Path, profile: MappingProfile | StructuredProfile) -> ImportDraft:
+def create_draft(
+    source: Path, profile: MappingProfile | StructuredProfile | GraphProfile
+) -> ImportDraft:
+    if isinstance(profile, GraphProfile):
+        from otarchguard.ingestion.graphical import create_graph_draft
+
+        return create_graph_draft(source, profile)
     if isinstance(profile, StructuredProfile):
         if profile.adapter == "xlsx":
             from otarchguard.ingestion.xlsx import create_xlsx_draft
@@ -330,6 +343,7 @@ def review_summary(draft: ImportDraft) -> dict[str, object]:
         "candidates": [c.model_dump(mode="json") for c in draft.candidates],
         "conflicts": [c.model_dump() for c in draft.conflicts],
         "diagnostics": [d.model_dump() for d in draft.diagnostics],
+        **({"graph": draft.graph.model_dump(mode="json")} if draft.graph is not None else {}),
         "coverage": {
             "rows": len(draft.candidates),
             **(
@@ -471,6 +485,7 @@ def emit_artifacts(draft: ImportDraft, decisions: OwnerDecisions, source: Path) 
         "records": provenance,
         "conflicts": [c.model_dump() for c in draft.conflicts],
         "diagnostics": [d.model_dump() for d in draft.diagnostics],
+        **({"graph": draft.graph.model_dump(mode="json")} if draft.graph is not None else {}),
         "scope": "Owner-declared architecture only; no deployed completeness or discovery claim.",
     }
     sidecar_bytes = serialize(sidecar)

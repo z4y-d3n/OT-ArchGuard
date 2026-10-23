@@ -59,17 +59,26 @@ def _execute(operation: Callable[[], dict[str, object]]) -> None:
 
 @app.command("inspect")
 def inspect_source(
-    source: Annotated[Path, typer.Argument(help="Local CSV/TSV, JSON or restricted XLSX source.")],
+    source: Annotated[Path, typer.Argument(help="Local inventory, drawio or GraphML source.")],
     delimiter: Annotated[str | None, typer.Option("--delimiter")] = None,
     encoding: Annotated[str, typer.Option("--encoding")] = "utf-8-sig",
     adapter: Annotated[
-        str | None, typer.Option("--adapter", help="json, xlsx, or netbox-offline-v1.")
+        str | None,
+        typer.Option("--adapter", help="json, xlsx, netbox-offline-v1, drawio or graphml."),
     ] = None,
 ) -> None:
     """Report bounded table structure and limits; never generate a model."""
 
     def run() -> dict[str, object]:
         selected = adapter or source.suffix.lower().lstrip(".")
+        if selected in {"graphml", "drawio"}:
+            if delimiter is not None or encoding != "utf-8-sig":
+                fail("IMPORT_OPTIONS", "$", "Text-table options do not apply to graphical sources.")
+            from otarchguard.ingestion.graphical import inspect_graph
+
+            return inspect_graph(source, selected)
+        if selected == "xml":
+            fail("IMPORT_OPTIONS", "$", "Compatible XML requires --adapter drawio or graphml.")
         if selected in {"json", "netbox-offline-v1", "xlsx"}:
             if delimiter is not None or encoding != "utf-8-sig":
                 fail(
@@ -94,7 +103,10 @@ def inspect_source(
 def preview(
     source: Annotated[Path, typer.Argument()],
     profile: Annotated[
-        Path, typer.Option("--profile", help="Explicit version-1 or version-2 mapping.")
+        Path,
+        typer.Option(
+            "--profile", help="Explicit version-1, version-2 or graphical version-3 mapping."
+        ),
     ],
 ) -> None:
     """Show candidates, unmapped values, conflicts and required review without writing."""

@@ -9,6 +9,8 @@ from typing import cast
 from otarchguard.diagnostics import check_limit, fail
 from otarchguard.ingestion.numbers import NumericToken, numeric_text
 from otarchguard.ingestion.records import (
+    GraphEvidence,
+    GraphProfile,
     ImportCandidate,
     ImportConflict,
     ImportDiagnostic,
@@ -90,7 +92,7 @@ def lookup(value: YamlValue, pointer: str) -> tuple[YamlValue, bool]:
     return current, False
 
 
-def validate_profile(profile: StructuredProfile) -> None:
+def validate_profile(profile: StructuredProfile | GraphProfile) -> None:
     from otarchguard.ingestion.workflow import _allowed
 
     names = [t.name for t in profile.tables]
@@ -107,7 +109,7 @@ def validate_profile(profile: StructuredProfile) -> None:
             fail("IMPORT_MAPPING", table.name, "A mapped field cannot also be a constant.")
         if len({f.path for f in table.fields.values()}) != len(table.fields):
             fail("IMPORT_MAPPING", table.name, "Duplicate mapped source fields are forbidden.")
-        if profile.adapter != "xlsx":
+        if profile.adapter not in {"xlsx", "drawio", "graphml"}:
             pointer_parts(table.collection)
         for field in table.fields.values():
             if profile.adapter != "xlsx":
@@ -143,9 +145,11 @@ def validate_profile(profile: StructuredProfile) -> None:
 
 def map_extracted(
     source: SourceDocument,
-    profile: StructuredProfile,
+    profile: StructuredProfile | GraphProfile,
     tables: dict[str, tuple[ExtractedRow, ...]],
     diagnostics: list[ImportDiagnostic],
+    *,
+    graph: GraphEvidence | None = None,
 ) -> ImportDraft:
     from otarchguard.ingestion.workflow import _check_draft_envelope, _field_problems
 
@@ -253,7 +257,11 @@ def map_extracted(
             # included: this contract does not assert that arbitrary array order is irrelevant.
             semantic = {
                 "table": table.name,
-                "record": row.location.record if profile.adapter != "xlsx" else None,
+                "record": [row.location.collection, row.location.record]
+                if isinstance(profile, GraphProfile)
+                else row.location.record
+                if profile.adapter != "xlsx"
+                else None,
                 "fields": [f.model_dump(exclude={"location"}) for f in fields],
                 "profile": table.model_dump(mode="json"),
             }
@@ -358,7 +366,8 @@ def map_extracted(
                 )
     check_limit("import_diagnostics", len(diagnostics), STRUCTURED_LIMITS.diagnostics)
     draft = ImportDraft(
-        import_version=3,
+        import_version=4 if graph is not None else 3,
+        graph=graph,
         source=source,
         profile=profile,
         headers=tuple(sorted(t.collection for t in profile.tables)),

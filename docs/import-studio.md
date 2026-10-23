@@ -1,7 +1,8 @@
-# Import Studio — unreleased v1.2 foundation
+# Import Studio â€” unreleased v1.2 foundation
 
 V12-01 preserves the CSV/TSV workflow; V12-02 adds restricted XLSX, explicit
-JSON inventories and a versioned offline NetBox export subset. Each draft takes
+JSON inventories and a versioned offline NetBox export subset. V12-03 adds bounded
+GraphML and diagrams.net evidence. Each draft takes
 one source file; structured profiles can select several collections or sheets.
 Imports remain evidence until the owner confirms declarations. No connectivity or
 permission is inferred. Development builds identify themselves as `1.2.0.dev0`;
@@ -84,7 +85,7 @@ constants:
   criticality: unspecified
 ```
 
-`fields` maps native field name → exact source header. A source ID column is
+`fields` maps native field name â†’ exact source header. A source ID column is
 mandatory; it is never replaced with a slug derived from a display name. One
 column maps to one field. `constants` are explicit profile proposals, labeled
 `CANDIDATE_INFERENCE` until the owner confirms each whole candidate. A field cannot
@@ -163,7 +164,7 @@ hidden staging directory; its contents are not a published validated bundle.
 
 - Excel/JSON-to-first-architecture: the structured workflow below is implemented
   in V12-02, with explicit sheet/collection selection and literal formula corrections.
-- draw.io-to-draft: V12-03 will extract shapes/groups/connectors as evidence, without
+- draw.io-to-draft: V12-03 extracts shapes/groups/connectors as evidence, without
   translating diagram arrows into forwarding or permissions.
 - Several documentation sources: V12-04 will reconcile source identities and
   contradictions using owner decisions; current mapping takes one file.
@@ -172,7 +173,7 @@ hidden staging directory; its contents are not a published validated bundle.
 - Before/after: existing `compare` evaluates two native declared models. A source
   document change does not itself establish a physical or analytical change.
 
-These are planned scenarios, not claims of current format support. See the
+The later gates remain planned scenarios. See the
 [architecture](development/v1.2-architecture.md),
 [decision record](development/v1.2-design-decisions.md) and
 [roadmap](development/v1.2-roadmap.md).
@@ -303,7 +304,7 @@ JSON decimals/exponents retain their exact source lexeme and numeric category in
 a tagged raw record. `0.10000000000000001`, `1.00`, `1e-400` and `-0` retain that
 spelling as proposed text when explicitly mapped as numbers. Numeric fields do
 not accept numeric strings or booleans. Decimal/exponent tokens do not satisfy an
-integer-only mapping. Exponents are bounded to ±9999, tokens to 64 characters.
+integer-only mapping. Exponents are bounded to Â±9999, tokens to 64 characters.
 No automatic rounding, truncation or permissions result from these values.
 
 XLSX preserves the number stored in OOXML, which may already differ from what a
@@ -327,3 +328,63 @@ a sanitizer for arbitrary owner documents or an independently installable projec
 The complete source distribution has its separate public-file audit. Review mapped
 values before sharing drafts/provenance: path-name filtering cannot identify every
 secret concealed in an otherwise allowed scalar.
+
+## GraphML and diagrams.net (V12-03)
+
+The shipped `industrial.drawio`, compressed two-page `multipage.drawio`,
+`directed.graphml` and `undirected.graphml` are synthetic industrial topologies.
+Copy the source, matching profile and `model-context.yaml` into a working folder
+outside the checkout. With an installed development distribution:
+
+```text
+otarchguard import inspect industrial.drawio
+otarchguard import inspect directed.graphml
+otarchguard import preview industrial.drawio --profile drawio-profile.json
+otarchguard import map industrial.drawio --profile drawio-profile.json --output draft.json
+otarchguard import review draft.json --context model-context.yaml --decisions decisions.json
+```
+
+Review each proposed asset, its exact source fields, classifications and zone
+proposal, plus the graph evidence and complete context. Supply reviewer, model
+confirmation/rationale and an explicit decision/rationale for every candidate as
+above. The profile constants are owner proposals, not parser discoveries.
+
+```text
+otarchguard import emit draft.json --source industrial.drawio --decisions decisions.json --output accepted
+otarchguard validate accepted/architecture.yaml
+```
+
+For GraphML, use `directed.graphml` with `graphml-profile.json` in the same commands.
+For multipage draw.io, copy the profile and explicitly set `scopes` to
+`["page1", "page2"]`. For compatible XML inspection, use
+`otarchguard import inspect topology.xml --adapter drawio` (or `graphml`).
+Standalone mxGraphModel uses explicit scope `standalone`.
+
+Graph profiles use `profile_version: 3`, exact `scopes`, `connections: evidence_only`,
+`unknown_policy: diagnose` and the existing named tables/typed fields/constants.
+Example node fields are `/scoped_id`, `/label` (draw.io), `/attributes/label`
+(GraphML key ID), `/attributes/role`. Only these explicit selections propose
+native fields. Use `/id` only when source IDs are suitable native IDs and unique
+across selected pages. No expressions, XPath, role guessing or fuzzy matching.
+
+Connectors remain in `graph.edges` even if the profile has no edges table, as in
+the shipped profiles. This explicit evidence-retention policy avoids generating
+hundreds of rejection-only candidates. The model review covers retained evidence;
+no edge becomes a native declaration. An optional `edges` table with entity
+`connection` adds individually reviewed candidates that must be explicitly
+rejected before emission. Trying to confirm one returns `IMPORT_RELATIONSHIP`:
+"Evidence-only connections cannot be promoted."
+
+Groups/layers and parent IDs remain evidence; only an explicit `groups` mapping
+can propose zones, with missing native fields corrected and owner confirmed.
+GraphML directed/undirected/override values and draw.io arrowheads retain their
+own meaning. Neither supplies communication direction or effective reachability.
+The synthetic context declares no interfaces, services, rules or transport.
+Every emitted model still passes the original schema-1 validator.
+
+Version-4 graph drafts/sidecars retain source bytes/digest, scope, element IDs,
+locations, selected attributes, exact numeric tokens, transformation records,
+candidates/conflicts and owner resolutions. Serialization reorder/geometry changes
+can retain candidate IDs, but every source-byte change invalidates old review.
+Limits, unsupported formats and diagnostics are in the
+[graphical reference](development/v12-03-graphical-formats.md).

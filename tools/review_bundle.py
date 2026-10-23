@@ -19,7 +19,13 @@ from tools.audit_release import PUBLIC_FILES
 
 ROOT = Path(__file__).resolve().parents[1]
 REVIEW_FILES = frozenset(
-    {"LICENSE", "tools/review_bundle.py", "tools/synthetic_inventories.py", "tests/conftest.py"}
+    {
+        "LICENSE",
+        "tools/review_bundle.py",
+        "tools/synthetic_inventories.py",
+        "tests/conftest.py",
+        "tools/synthetic_graphs.py",
+    }
     | {
         f"src/otarchguard/ingestion/{name}.py"
         for name in (
@@ -33,6 +39,10 @@ REVIEW_FILES = frozenset(
             "netbox",
             "xlsx",
             "numbers",
+            "xml_safe",
+            "graphical",
+            "graphml",
+            "drawio",
         )
     }
     | {
@@ -44,6 +54,8 @@ REVIEW_FILES = frozenset(
             "test_ingestion_xlsx_security",
             "test_ingestion_numbers",
             "test_review_bundle",
+            "test_ingestion_graphical",
+            "test_ingestion_graphical_security",
         )
     }
 )

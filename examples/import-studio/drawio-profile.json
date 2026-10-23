@@ -1,0 +1,52 @@
+{
+  "profile_version": 3,
+  "adapter": "drawio",
+  "scopes": [
+    "page1"
+  ],
+  "tables": [
+    {
+      "name": "assets",
+      "collection": "nodes",
+      "entity": "asset",
+      "header_row": 1,
+      "fields": {
+        "id": {
+          "path": "/scoped_id",
+          "value_type": "string",
+          "normalize": "exact",
+          "missing": "review",
+          "prefix": "",
+          "reference": null
+        },
+        "name": {
+          "path": "/label",
+          "value_type": "string",
+          "normalize": "exact",
+          "missing": "review",
+          "prefix": "",
+          "reference": null
+        },
+        "role": {
+          "path": "/attributes/role",
+          "value_type": "string",
+          "normalize": "exact",
+          "missing": "review",
+          "prefix": "",
+          "reference": null
+        }
+      },
+      "constants": {
+        "zone_id": "control",
+        "kind": "endpoint",
+        "scope": "internal",
+        "domain_classification": "iacs",
+        "safety_classification": "unassessed",
+        "criticality": "unspecified"
+      },
+      "formula_policy": "require_correction"
+    }
+  ],
+  "connections": "evidence_only",
+  "unknown_policy": "diagnose"
+}
