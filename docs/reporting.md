@@ -35,9 +35,14 @@ record, including finite query scope, exact intervals, independent intent result
 bounded unreachable diagnostics and replayable permitted witnesses. Validation
 reports explicitly leave intents and reachability unassessed. JSON uses sorted
 keys, ASCII escapes, UTF-8 and one terminal LF. No clock values or machine paths
-are added. Evidence hashes must match the supplied validated models. The CLI
-revalidates report metadata and checks those hashes before writing, rejecting
-evidence if the input changed between analysis and reporting.
+are added. Evidence hashes must match the supplied validated models. The native
+CLI retains the completed immutable snapshots used for evaluation and verifies
+their result/hash bindings before writing. Report-enabled check, exposure and
+comparison validate each input once; comparison retains its two independent
+snapshots. A later file change cannot substitute a different model into the
+report. Independent CLI invocations and public file/bytes APIs still validate
+their inputs afresh. There is no filename cache or persistent analytical state.
+See [performance methodology](benchmarks/performance.md).
 
 HTML presents failed requirements and introduced prohibited violations first, then expanded SVG
 diagrams before any detailed table. Interpretation, independent intent outcomes,

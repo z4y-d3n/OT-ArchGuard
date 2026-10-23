@@ -14,3 +14,7 @@ exposure target. Rejections retain explicit limit diagnostics, not unreachable.
 
 The 30 s / 512 MiB target applies to the documented routine workload only.
 See [verification results](../verification.md); no universal capacity claim.
+
+For opt-in per-phase wall/CPU/allocation attribution, installed command timings
+and finite capacity sweeps, see [performance methodology](performance.md).
+These exploratory runs are separate from the unchanged fixed CI benchmark.
