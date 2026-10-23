@@ -1,0 +1,36 @@
+{
+  "assets": [
+    {
+      "id": "eng",
+      "name": "Engineering",
+      "role": "Workstation",
+      "zone": "control"
+    },
+    {
+      "id": "plc",
+      "name": "PLC",
+      "role": "Control",
+      "zone": "control"
+    }
+  ],
+  "zones": [
+    {
+      "id": "control",
+      "name": "Control"
+    }
+  ],
+  "interfaces": [
+    {
+      "id": "if_eng",
+      "asset": "eng",
+      "zone": "control",
+      "ip": "10.0.0.1/24"
+    },
+    {
+      "id": "if_plc",
+      "asset": "plc",
+      "zone": "control",
+      "ip": "10.0.0.2/24"
+    }
+  ]
+}

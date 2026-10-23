@@ -67,7 +67,7 @@ jobs:
         run: |
           python -c "from setuptools import build_meta; build_meta.build_wheel('output/artifacts'); build_meta.build_sdist('output/artifacts')"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python tools/audit_release.py output/artifacts/otarchguard-1.1.0-py3-none-any.whl output/artifacts/otarchguard-1.1.0.tar.gz --source-root . --output output/archive-audit.json
+          python tools/audit_release.py output/artifacts/otarchguard-1.2.0.dev0-py3-none-any.whl output/artifacts/otarchguard-1.2.0.dev0.tar.gz --source-root . --output output/archive-audit.json
       - name: Retain candidate integrity evidence
         uses: actions/upload-artifact@v7.0.2
         with:

@@ -19,24 +19,25 @@ from otarchguard.trace import trace_file
 from tools.compare_versioned_contract import compare_artifact, compare_captures
 
 ROOT = Path(__file__).resolve().parents[1]
+DEVELOPMENT_VERSION = "1.2.0.dev0"
 
 
 def test_exact_candidate_identity_and_frozen_contracts(installed_console: Path) -> None:
-    assert __version__ == "1.1.0"
-    assert importlib.metadata.version("otarchguard") == "1.1.0"
+    assert __version__ == DEVELOPMENT_VERSION
+    assert importlib.metadata.version("otarchguard") == DEVELOPMENT_VERSION
     project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]
-    assert project["version"] == "1.1.0"
+    assert project["version"] == DEVELOPMENT_VERSION
     result = subprocess.run([str(installed_console), "--version"], capture_output=True, timeout=30)
     assert result.returncode == 0 and not result.stderr
-    assert result.stdout.splitlines() == [b"1.1.0"]
+    assert result.stdout.splitlines() == [DEVELOPMENT_VERSION.encode()]
     source = ROOT / "tests/fixtures/minimal-valid.yaml"
     snapshot = validate_file(source)
     assert snapshot.model.schema_version == 1
     legacy = build_report("validation", (snapshot,))
-    assert legacy["engine_version"] == "1.1.0"
+    assert legacy["engine_version"] == DEVELOPMENT_VERSION
     assert legacy["report_version"] == legacy["schema_version"] == 1
     trace = trace_file(source, "eng", "svc_plc", policy_evidence=True)
-    assert trace.engine_version == "1.1.0"
+    assert trace.engine_version == DEVELOPMENT_VERSION
     assert trace.trace_version == trace.schema_version == 1
 
 
@@ -61,7 +62,7 @@ def test_installed_candidate_report_versions(
     )
     assert result.returncode == 0 and not result.stderr
     for payload in (json.loads(result.stdout), json.loads(output.read_bytes())):
-        assert payload["engine_version"] == "1.1.0"
+        assert payload["engine_version"] == DEVELOPMENT_VERSION
         assert payload["schema_version"] == 1
     report = json.loads(output.read_bytes())
     assert report["trace_version" if command == "trace" else "report_version"] == 1

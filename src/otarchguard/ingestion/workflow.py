@@ -25,6 +25,8 @@ from otarchguard.ingestion.records import (
     MappingProfile,
     OwnerDecisions,
     SourceLocation,
+    StructuredCandidate,
+    StructuredProfile,
 )
 from otarchguard.ingestion.tabular import (
     IMPORT_LIMITS,
@@ -40,17 +42,66 @@ _COLLECTIONS = {"asset": "assets", "zone": "zones", "interface": "interfaces"}
 _CONNECTION_FIELDS = {"id", "source", "destination", "direction", "label", "protocol"}
 
 
+class _DeclarationDumper(yaml.SafeDumper):
+    """Quote declared text even when PyYAML and the native resolver disagree."""
+
+
+def _quoted_text(dumper: yaml.SafeDumper, value: str) -> yaml.ScalarNode:
+    return dumper.represent_scalar("tag:yaml.org,2002:str", value, style='"')
+
+
+_DeclarationDumper.add_representer(str, _quoted_text)
+
+
+def _declaration_yaml(value: object) -> bytes:
+    return yaml.dump(value, Dumper=_DeclarationDumper, allow_unicode=True, sort_keys=True).encode(
+        "utf-8"
+    )
+
+
 def serialize(value: Record | dict[str, object]) -> bytes:
     payload = value.model_dump(mode="json") if isinstance(value, Record) else value
     return (json.dumps(payload, sort_keys=True, indent=2, ensure_ascii=True) + "\n").encode()
 
 
 def load_record[T: Record](path: Path, record_type: type[T]) -> T:
-    value = load_bytes(read_regular(path, RESOURCE_LIMITS.input_bytes))
+    data = read_regular(path, RESOURCE_LIMITS.input_bytes)
+    value: object
+    if data.lstrip().startswith((b"{", b"[")):
+        from otarchguard.ingestion.json_inventory import parse_json
+        from otarchguard.ingestion.structured import StructuredLimits
+
+        value = parse_json(
+            data,
+            StructuredLimits(
+                source_bytes=RESOURCE_LIMITS.input_bytes,
+                depth=RESOURCE_LIMITS.nesting_depth,
+                records=RESOURCE_LIMITS.parser_events,
+                scalars=RESOURCE_LIMITS.parser_events,
+                text=RESOURCE_LIMITS.input_bytes,
+            ),
+        )
+        _check_control_events(value)
+    else:
+        value = load_bytes(data)
+    if record_type is ImportDraft and isinstance(value, dict) and value.get("import_version") == 2:
+        _legacy_draft_error()
     try:
         return record_type.model_validate(value)
     except (ValidationError, ValueError):
         fail("IMPORT_CONTROL", "$", "Invalid versioned import control document; see import docs.")
+
+
+def load_profile(path: Path) -> MappingProfile | StructuredProfile:
+    value = load_bytes(read_regular(path, RESOURCE_LIMITS.input_bytes))
+    if not isinstance(value, dict):
+        fail("IMPORT_MAPPING", "$", "Mapping profile must be an object.")
+    model = StructuredProfile if value.get("profile_version") == 2 else MappingProfile
+    try:
+        return model.model_validate(value)
+    except ValidationError as error:
+        locations = sorted({".".join(str(p) for p in e["loc"]) for e in error.errors()})
+        fail("IMPORT_MAPPING", "$", "Invalid profile fields: " + ", ".join(locations)[:500])
 
 
 def _allowed(entity: EntityKind) -> set[str]:
@@ -89,6 +140,10 @@ def _field_problems(entity: EntityKind, fields: dict[str, str]) -> tuple[str, ..
 def _check_draft_envelope(draft: ImportDraft) -> None:
     """Generated JSON must fit the exact YAML loader budgets used by review/emit."""
     check_limit("import_draft_bytes", len(serialize(draft)), RESOURCE_LIMITS.input_bytes)
+    _check_control_events(draft.model_dump(mode="json"))
+
+
+def _check_control_events(payload: object) -> None:
 
     def event_count(value: object, depth: int = 0) -> int:
         # JSON has one YAML scalar per key/value and two events per collection.
@@ -104,7 +159,7 @@ def _check_draft_envelope(draft: ImportDraft) -> None:
 
     check_limit(
         "parser_events",
-        4 + event_count(draft.model_dump(mode="json")),
+        4 + event_count(payload),
         RESOURCE_LIMITS.parser_events,
     )
 
@@ -212,7 +267,15 @@ def map_table(table: SourceTable, profile: MappingProfile) -> ImportDraft:
     return draft
 
 
-def create_draft(source: Path, profile: MappingProfile) -> ImportDraft:
+def create_draft(source: Path, profile: MappingProfile | StructuredProfile) -> ImportDraft:
+    if isinstance(profile, StructuredProfile):
+        if profile.adapter == "xlsx":
+            from otarchguard.ingestion.xlsx import create_xlsx_draft
+
+            return create_xlsx_draft(source, profile)
+        from otarchguard.ingestion.json_inventory import create_json_draft
+
+        return create_json_draft(source, profile)
     table = DelimitedAdapter().read(source, delimiter=profile.delimiter, encoding=profile.encoding)
     return map_table(table, profile)
 
@@ -221,7 +284,21 @@ def draft_sha256(draft: ImportDraft) -> str:
     return digest(draft.model_dump(mode="json"))
 
 
+def _legacy_draft_error() -> None:
+    fail(
+        "IMPORT_LEGACY_DRAFT",
+        "$",
+        "Version-2 drafts predate exact numbers; remap the original source and review again.",
+    )
+
+
+def _current_draft(draft: ImportDraft) -> None:
+    if draft.import_version == 2:
+        _legacy_draft_error()
+
+
 def review_template(draft: ImportDraft) -> OwnerDecisions:
+    _current_draft(draft)
     return OwnerDecisions.model_validate(
         {
             "decisions_version": 1,
@@ -244,8 +321,9 @@ def review_template(draft: ImportDraft) -> OwnerDecisions:
 
 
 def review_summary(draft: ImportDraft) -> dict[str, object]:
+    _current_draft(draft)
     return {
-        "import_version": 1,
+        "import_version": draft.import_version,
         "draft_sha256": draft_sha256(draft),
         "state": "UNRESOLVED",
         "source": draft.source.model_dump(),
@@ -254,8 +332,23 @@ def review_summary(draft: ImportDraft) -> dict[str, object]:
         "diagnostics": [d.model_dump() for d in draft.diagnostics],
         "coverage": {
             "rows": len(draft.candidates),
-            "mapped_fields_per_row": len(draft.profile.fields),
-            "unmapped_columns": sorted(set(draft.headers) - set(draft.profile.fields.values())),
+            **(
+                {
+                    "mapped_fields_per_row": len(draft.profile.fields),
+                    "unmapped_columns": sorted(
+                        set(draft.headers) - set(draft.profile.fields.values())
+                    ),
+                }
+                if isinstance(draft.profile, MappingProfile)
+                else {
+                    "tables": len(draft.profile.tables),
+                    "entities": {
+                        kind: sum(c.entity == kind for c in draft.candidates)
+                        for kind in sorted({c.entity for c in draft.candidates})
+                    },
+                    "unmapped_values": "excluded; counts only",
+                }
+            ),
         },
         "required_actions": [
             "Confirm or reject every candidate, giving a rationale; correct incomplete fields.",
@@ -269,6 +362,7 @@ def review_summary(draft: ImportDraft) -> dict[str, object]:
 
 def emit_artifacts(draft: ImportDraft, decisions: OwnerDecisions, source: Path) -> dict[str, bytes]:
     """No writes until the original source, all decisions and the entire model validate."""
+    _current_draft(draft)
     reproduced = create_draft(source, draft.profile)
     if serialize(reproduced) != serialize(draft):
         fail("IMPORT_SOURCE_CHANGED", "$", "Source and draft disagree; map and review again.")
@@ -285,10 +379,16 @@ def emit_artifacts(draft: ImportDraft, decisions: OwnerDecisions, source: Path) 
         c.candidate_id for c in draft.candidates
     }:
         fail("IMPORT_REVIEW", "$", "Exactly one decision is required for every candidate.")
-    accepted: list[dict[str, str]] = []
+    accepted: dict[str, list[dict[str, str]]] = defaultdict(list)
+    accepted_by_candidate: dict[str, dict[str, str]] = {}
     provenance: list[dict[str, object]] = []
-    collection = _COLLECTIONS.get(draft.profile.entity)
-    if collection is not None and collection in decisions.model:
+    entities = (
+        {draft.profile.entity}
+        if isinstance(draft.profile, MappingProfile)
+        else {t.entity for t in draft.profile.tables}
+    )
+    collections = {_COLLECTIONS[e] for e in entities if e in _COLLECTIONS}
+    if collections & decisions.model.keys():
         fail("IMPORT_REVIEW", "$", "Owner model context must omit the imported collection.")
     for candidate in draft.candidates:
         resolution = resolutions[candidate.candidate_id]
@@ -307,7 +407,16 @@ def emit_artifacts(draft: ImportDraft, decisions: OwnerDecisions, source: Path) 
                 fail("IMPORT_RELATIONSHIP", "$", "Evidence-only connections cannot be promoted.")
             if _field_problems(candidate.entity, values):
                 fail("IMPORT_CORRECTION", "$", "Confirmed entity still has missing/invalid fields.")
-            accepted.append(values)
+            if isinstance(candidate, StructuredCandidate):
+                if not set(candidate.required_corrections) <= resolution.corrections.keys():
+                    fail(
+                        "IMPORT_CORRECTION",
+                        "$",
+                        "Formula/type/missing/reference issues require literal corrections.",
+                    )
+            accepted[_COLLECTIONS[candidate.entity]].append(values)
+            accepted_by_candidate[candidate.candidate_id] = values
+        collection = _COLLECTIONS.get(candidate.entity)
         provenance.append(
             {
                 "candidate": candidate.model_dump(mode="json"),
@@ -318,25 +427,39 @@ def emit_artifacts(draft: ImportDraft, decisions: OwnerDecisions, source: Path) 
                 "model_id": values.get("id") if resolution.decision == "OWNER_CONFIRMED" else None,
             }
         )
-    if len({item["id"] for item in accepted}) != len(accepted):
-        fail("IMPORT_CONFLICT", "$", "Confirmed identities still conflict; correct or reject.")
+    for items in accepted.values():
+        if len({item["id"] for item in items}) != len(items):
+            fail("IMPORT_CONFLICT", "$", "Confirmed identities still conflict; correct or reject.")
+    for candidate in draft.candidates:
+        if (
+            not isinstance(candidate, StructuredCandidate)
+            or candidate.candidate_id not in accepted_by_candidate
+        ):
+            continue
+        for reference in candidate.references:
+            if reference.field in resolutions[candidate.candidate_id].corrections:
+                continue
+            target = accepted_by_candidate.get(reference.target_candidate_id or "")
+            values = accepted_by_candidate[candidate.candidate_id]
+            if target is None or values[reference.field] != target["id"]:
+                fail(
+                    "IMPORT_REFERENCE",
+                    "$",
+                    "Reference target rejected/renamed; correct the dependent field explicitly.",
+                )
     model = dict(decisions.model)
-    if collection is not None:
-        model[collection] = cast(YamlValue, sorted(accepted, key=lambda a: a["id"]))
-    data = yaml.safe_dump(model, allow_unicode=True, sort_keys=True).encode("utf-8")
+    for collection in sorted(collections):
+        model[collection] = cast(YamlValue, sorted(accepted[collection], key=lambda a: a["id"]))
+    data = _declaration_yaml(model)
     validated = validate_bytes(data)
-    normalized_yaml = yaml.safe_dump(
-        json.loads(validated.canonical_json),
-        allow_unicode=True,
-        sort_keys=True,
-    ).encode("utf-8")
+    normalized_yaml = _declaration_yaml(json.loads(validated.canonical_json))
     # Verify the exact published bytes, not merely the pre-normalization structure.
     if validate_bytes(normalized_yaml).sha256 != validated.sha256:
         fail(
             "IMPORT_INTERNAL", "$", "Emitted model identity does not match validated declarations."
         )
     sidecar: dict[str, object] = {
-        "import_version": 1,
+        "import_version": draft.import_version,
         "draft_sha256": draft_sha256(draft),
         "source": draft.source.model_dump(),
         "profile": draft.profile.model_dump(mode="json"),
@@ -350,9 +473,11 @@ def emit_artifacts(draft: ImportDraft, decisions: OwnerDecisions, source: Path) 
         "diagnostics": [d.model_dump() for d in draft.diagnostics],
         "scope": "Owner-declared architecture only; no deployed completeness or discovery claim.",
     }
+    sidecar_bytes = serialize(sidecar)
+    check_limit("import_sidecar_bytes", len(sidecar_bytes), RESOURCE_LIMITS.input_bytes)
     return {
         "architecture.yaml": normalized_yaml,
-        "architecture.provenance.json": serialize(sidecar),
+        "architecture.provenance.json": sidecar_bytes,
     }
 
 

@@ -1,0 +1,20 @@
+architecture_id: synthetic_import
+conduits: []
+forwarding_edges: []
+intents: []
+revision: inventory_review_1
+rules: []
+scenarios: []
+schema_version: 1
+services: []
+suc:
+  access_points: []
+  boundary_description: Two synthetic internal assets; connectivity not documented.
+  completeness_assertion: Inventory-only exercise; interfaces, communications and
+    policies unmodeled.
+  controlled_process: Imaginary controller and engineering workstation.
+  external_dependencies: []
+  id: synthetic_cell
+  name: Synthetic import tutorial
+  purpose: Teach evidence-based inventory assembly.
+transport_edges: []

@@ -10,11 +10,12 @@ import typer
 
 from otarchguard.contract import RESOURCE_LIMITS, ExitCode
 from otarchguard.diagnostics import ModelError, fail
-from otarchguard.ingestion.records import ImportDraft, MappingProfile, OwnerDecisions
+from otarchguard.ingestion.records import ImportDraft, OwnerDecisions
 from otarchguard.ingestion.tabular import DelimitedAdapter, read_regular
 from otarchguard.ingestion.workflow import (
     create_draft,
     emit_artifacts,
+    load_profile,
     load_record,
     review_summary,
     review_template,
@@ -58,22 +59,46 @@ def _execute(operation: Callable[[], dict[str, object]]) -> None:
 
 @app.command("inspect")
 def inspect_source(
-    source: Annotated[Path, typer.Argument(help="Local CSV/TSV source.")],
+    source: Annotated[Path, typer.Argument(help="Local CSV/TSV, JSON or restricted XLSX source.")],
     delimiter: Annotated[str | None, typer.Option("--delimiter")] = None,
     encoding: Annotated[str, typer.Option("--encoding")] = "utf-8-sig",
+    adapter: Annotated[
+        str | None, typer.Option("--adapter", help="json, xlsx, or netbox-offline-v1.")
+    ] = None,
 ) -> None:
     """Report bounded table structure and limits; never generate a model."""
-    adapter = DelimitedAdapter()
-    _execute(lambda: adapter.inspect(adapter.read(source, delimiter=delimiter, encoding=encoding)))
+
+    def run() -> dict[str, object]:
+        selected = adapter or source.suffix.lower().lstrip(".")
+        if selected in {"json", "netbox-offline-v1", "xlsx"}:
+            if delimiter is not None or encoding != "utf-8-sig":
+                fail(
+                    "IMPORT_OPTIONS", "$", "Text-table options do not apply to structured sources."
+                )
+            if selected == "xlsx":
+                from otarchguard.ingestion.xlsx import inspect_xlsx
+
+                return inspect_xlsx(source)
+            from otarchguard.ingestion.json_inventory import inspect_json
+
+            return inspect_json(source, selected)
+        if adapter is not None:
+            fail("IMPORT_OPTIONS", "$", "Unknown structured adapter.")
+        delimited = DelimitedAdapter()
+        return delimited.inspect(delimited.read(source, delimiter=delimiter, encoding=encoding))
+
+    _execute(run)
 
 
 @app.command("preview")
 def preview(
     source: Annotated[Path, typer.Argument()],
-    profile: Annotated[Path, typer.Option("--profile", help="Explicit version-1 field mapping.")],
+    profile: Annotated[
+        Path, typer.Option("--profile", help="Explicit version-1 or version-2 mapping.")
+    ],
 ) -> None:
     """Show candidates, unmapped values, conflicts and required review without writing."""
-    _execute(lambda: review_summary(create_draft(source, load_record(profile, MappingProfile))))
+    _execute(lambda: review_summary(create_draft(source, load_profile(profile))))
 
 
 @app.command("map")
@@ -85,7 +110,7 @@ def map_source(
     """Apply exact mappings and create a versioned evidence draft; refuse overwrite."""
 
     def run() -> dict[str, object]:
-        draft = create_draft(source, load_record(profile, MappingProfile))
+        draft = create_draft(source, load_profile(profile))
         write_new_file(output, serialize(draft))
         return review_summary(draft)
 

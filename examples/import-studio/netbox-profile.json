@@ -1,0 +1,85 @@
+{
+  "profile_version": 2,
+  "adapter": "netbox-offline-v1",
+  "tables": [
+    {
+      "name": "assets",
+      "collection": "/devices",
+      "entity": "asset",
+      "header_row": 1,
+      "fields": {
+        "id": {
+          "path": "/id",
+          "value_type": "integer",
+          "normalize": "exact",
+          "missing": "review",
+          "prefix": "dev_",
+          "reference": null
+        },
+        "name": {
+          "path": "/name",
+          "value_type": "string",
+          "normalize": "exact",
+          "missing": "review",
+          "prefix": "",
+          "reference": null
+        },
+        "role": {
+          "path": "/role/name",
+          "value_type": "string",
+          "normalize": "exact",
+          "missing": "review",
+          "prefix": "",
+          "reference": null
+        }
+      },
+      "constants": {
+        "kind": "endpoint",
+        "scope": "internal",
+        "domain_classification": "iacs",
+        "safety_classification": "unassessed",
+        "criticality": "unspecified",
+        "zone_id": "control"
+      },
+      "formula_policy": "require_correction"
+    },
+    {
+      "name": "interfaces",
+      "collection": "/interfaces",
+      "entity": "interface",
+      "header_row": 1,
+      "fields": {
+        "id": {
+          "path": "/id",
+          "value_type": "integer",
+          "normalize": "exact",
+          "missing": "review",
+          "prefix": "if_",
+          "reference": null
+        },
+        "asset_id": {
+          "path": "/device/id",
+          "value_type": "integer",
+          "normalize": "exact",
+          "missing": "review",
+          "prefix": "dev_",
+          "reference": {
+            "table": "assets"
+          }
+        },
+        "ipv4": {
+          "path": "/@assigned_ipv4",
+          "value_type": "string",
+          "normalize": "ipv4_interface",
+          "missing": "review",
+          "prefix": "",
+          "reference": null
+        }
+      },
+      "constants": {
+        "placement_zone_id": "control"
+      },
+      "formula_policy": "require_correction"
+    }
+  ]
+}

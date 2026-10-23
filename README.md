@@ -4,16 +4,16 @@ OT-ArchGuard is an offline Python CLI for reviewing declared IT/OT network
 architectures. It validates architecture models, checks communication requirements
 and compares TCP/UDP listener reachability between proposed configurations.
 
-Source version: **1.1.0**. YAML schema: **1**. Consult the owner-published release
+Source version: **1.2.0.dev0** (unreleased development). YAML schema: **1**. Consult the owner-published release
 record for availability, exact source tag and audited asset checksums.
 See [release notes](docs/release-notes-1.1.0.md)
 and [Gate V11-6 verification](docs/v1.1/gate-v11-6.md).
 
-This development branch adds an evidence-first CSV/TSV Import Studio. See the
+This development branch adds owner-reviewed CSV/TSV, restricted XLSX and JSON inventories. See the
 [reviewed import walkthrough](docs/import-studio.md) and
 [v1.2 roadmap](docs/development/v1.2-roadmap.md). The published v1.1.0 baseline
-remains immutable. Development builds currently retain baseline version metadata
-and must not be published as the stable release.
+remains immutable. Development builds use 1.2.0.dev0 and must not be published
+as the stable release.
 
 OT-ArchGuard is an independent industrial network architecture analysis tool inspired by general OT cybersecurity good practices, including those addressed by the IEC 62443 series. It does not provide certification, establish normative conformity or imply institutional endorsement.
 
@@ -110,7 +110,7 @@ with optional `--policy-evidence`, `--report PATH` and `--report-format html|jso
 Exit 0 means the exact declared query completed, including unreachable or mixed
 port outcomes. Intents remain unassessed by trace. See the [trace contract](docs/trace.md)
 and [synthetic trace examples](examples/README.md#exact-communication-trace).
-Application and distribution versions are 1.1.0. Evaluate upgrades in a parallel
+Current development application and distribution versions are 1.2.0.dev0. Evaluate upgrades in a parallel
 environment; see [installation and upgrade](docs/installation.md). Consult the
 owner-published release record for available assets, source tag and checksums.
 
@@ -118,4 +118,4 @@ For v1.2, easier architecture authoring is a required future adoption goal:
 guided creation, industrial templates, spreadsheet/CSV import, schema-1 YAML
 generation, understandable validation and progressive visual editing. These
 capabilities are absent from published v1.1.0; see the development walkthrough
-above for the initial CSV/TSV implementation on this branch.
+above for implemented CSV/TSV, restricted XLSX and JSON/NetBox import subsets.

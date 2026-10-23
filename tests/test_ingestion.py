@@ -12,7 +12,12 @@ from pydantic import ValidationError
 
 from otarchguard.api import validate_bytes
 from otarchguard.diagnostics import ModelError
-from otarchguard.ingestion.records import ImportDraft, MappingProfile, OwnerDecisions
+from otarchguard.ingestion.records import (
+    ImportDraft,
+    MappingProfile,
+    OwnerDecisions,
+    SourceLocation,
+)
 from otarchguard.ingestion.tabular import DelimitedAdapter, ImportLimits
 from otarchguard.ingestion.workflow import (
     create_draft,
@@ -76,7 +81,7 @@ def test_actual_inventory_and_provenance(source: Path, profile: MappingProfile) 
     field = next(f for f in controller.fields if f.field == "id")
     assert field.raw_value == field.normalized_value == "plc"
     assert field.state == "EXPLICIT_SOURCE_VALUE"
-    assert field.location is not None
+    assert isinstance(field.location, SourceLocation)
     assert (field.location.row, field.location.column, field.location.line_start) == (2, 1, 3)
     constant = next(f for f in controller.fields if f.field == "kind")
     assert constant.state == "CANDIDATE_INFERENCE" and constant.location is None
@@ -408,7 +413,8 @@ def test_formula_like_text_stays_inert_and_diagnostic_overflow_is_bounded(tmp_pa
     profile = MappingProfile(profile_version=1, entity="asset", fields={"id": "id", "name": "name"})
     draft = create_draft(source, profile)
     assert any(d.code == "FORMULA_LIKE_TEXT" for d in draft.diagnostics)
-    assert "HYPERLINK" in draft.candidates[0].fields[1].raw_value
+    raw_value = draft.candidates[0].fields[1].raw_value
+    assert isinstance(raw_value, str) and "HYPERLINK" in raw_value
     source.write_text("id\n" + "\n".join(f"a{i}" for i in range(201)), encoding="utf-8")
     profile = MappingProfile(profile_version=1, entity="asset", fields={"id": "id"})
     with pytest.raises(ModelError) as error:
