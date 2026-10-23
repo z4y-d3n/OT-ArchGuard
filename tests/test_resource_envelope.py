@@ -42,6 +42,7 @@ def test_exact_declaration_ceiling_and_one_over(
     else:
         count = len(boundary[collection])
     validate_bytes(source, replace(RESOURCE_LIMITS, **{field: count}))
+    validate_bytes(source, replace(RESOURCE_LIMITS, **{field: count + 1}))
     with pytest.raises(ModelError) as caught:
         validate_bytes(source, replace(RESOURCE_LIMITS, **{field: count - 1}))
     assert caught.value.diagnostics[0].category == "resource_limit"
