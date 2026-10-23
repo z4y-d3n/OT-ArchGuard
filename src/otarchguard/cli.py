@@ -4,9 +4,10 @@ import json
 from dataclasses import asdict
 from enum import StrEnum
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Any
 
 import typer
+from typer.core import TyperCommand
 
 from otarchguard import __version__
 from otarchguard.api import validate_file
@@ -23,11 +24,34 @@ from otarchguard.reporting import (
     json_report,
     write_report,
 )
+from otarchguard.trace import trace_file
+from otarchguard.trace_reporting import trace_html, trace_json
 
 
 class ReportFormat(StrEnum):
     JSON = "json"
     HTML = "html"
+
+
+class TraceCommand(TyperCommand):
+    """Keep expected trace parser errors inside the structured diagnostic boundary."""
+
+    def parse_args(self, ctx: Any, args: list[str]) -> list[str]:
+        try:
+            return super().parse_args(ctx, args)
+        except Exception as error:
+            # Typer versions may vendor their parser. Usage errors consistently
+            # carry native exit 2; help/interrupt/internal exceptions propagate.
+            if getattr(error, "exit_code", None) != ExitCode.ERROR:
+                raise
+            diagnostic = Diagnostic(
+                DiagnosticCategory.INVALID_INPUT,
+                "INVALID_VALUE",
+                "$.trace_options",
+                "Invalid trace options; see otarchguard trace --help.",
+            )
+            typer.echo(json.dumps(asdict(diagnostic), sort_keys=True), err=True)
+            raise typer.Exit(ExitCode.ERROR) from None
 
 
 def _presentation_options(
@@ -53,7 +77,7 @@ def _report(
     data = (
         json_report(report)
         if format == ReportFormat.JSON
-        else html_report(report, snapshots, zone_order=zone_order)
+        else html_report(report, snapshots, zone_order=zone_order, analysis=result)
     )
     write_report(output, data, inputs)
 
@@ -65,6 +89,53 @@ app = typer.Typer(
     pretty_exceptions_enable=False,
     add_completion=False,
 )
+
+
+@app.command(cls=TraceCommand)
+def trace(
+    ctx: typer.Context,
+    architecture: Annotated[Path, typer.Argument(help="Local schema-1 architecture YAML.")],
+    source: Annotated[str, typer.Option("--source", help="Original source asset ID.")],
+    service: Annotated[str, typer.Option("--service", help="Declared destination service ID.")],
+    destination: Annotated[
+        str | None, typer.Option("--destination", help="Assert the service's destination asset.")
+    ] = None,
+    policy_evidence: Annotated[bool, typer.Option("--policy-evidence")] = False,
+    report: Annotated[Path | None, typer.Option("--report")] = None,
+    report_format: Annotated[ReportFormat, typer.Option("--report-format")] = ReportFormat.HTML,
+) -> None:
+    """Trace one exact service-port union; completed unreachable queries also exit 0."""
+    try:
+        if (
+            report is None
+            and getattr(ctx.get_parameter_source("report_format"), "name", None) == "COMMANDLINE"
+        ):
+            fail("INVALID_VALUE", "$.trace_options", "--report-format requires --report.")
+        result = trace_file(
+            architecture,
+            source,
+            service,
+            destination_asset_id=destination,
+            policy_evidence=policy_evidence,
+        )
+        serialized = trace_json(result)
+        if report is not None:
+            data = serialized if report_format == ReportFormat.JSON else trace_html(result)
+            write_report(report, data, (architecture,))
+    except ModelError as error:
+        for diagnostic in error.diagnostics:
+            typer.echo(json.dumps(asdict(diagnostic), sort_keys=True, ensure_ascii=True), err=True)
+        raise typer.Exit(ExitCode.ERROR) from None
+    except Exception:
+        diagnostic = Diagnostic(
+            DiagnosticCategory.EXECUTION_ERROR,
+            "INTERNAL_ERROR",
+            "$",
+            "Trace could not complete; no result is available.",
+        )
+        typer.echo(json.dumps(asdict(diagnostic), sort_keys=True), err=True)
+        raise typer.Exit(ExitCode.ERROR) from None
+    typer.echo(serialized, nl=False)
 
 
 @app.callback()

@@ -30,6 +30,30 @@ def run(arguments: list[str], expected: int) -> dict[str, object]:
 def main() -> None:
     output = ROOT / "output/examples"
     output.mkdir(parents=True, exist_ok=True)
+    trace_model = ROOT / "examples/trace/communication.yaml"
+    for listener, outcomes in (
+        ("svc_allowed", {True}),
+        ("svc_blocked", {False}),
+        ("svc_absent", {False}),
+        ("svc_plc", {True, False}),
+    ):
+        result = run(
+            [
+                "trace",
+                str(trace_model),
+                "--source",
+                "eng",
+                "--service",
+                listener,
+                "--policy-evidence",
+                "--report",
+                str(output / f"trace-{listener}.html"),
+            ],
+            0,
+        )
+        intervals = result["intervals"]
+        assert isinstance(intervals, list)
+        assert {item["reachable"] for item in intervals} == outcomes
     for family, scenario in (
         ("segmented-plant", "plant_scope"),
         ("flat-plant", "plant_scope"),

@@ -1,0 +1,143 @@
+schema_version: 1
+architecture_id: trace_cell
+revision: synthetic_trace
+suc:
+  id: demo_minimal
+  name: Synthetic finite trace cell
+  purpose: Demonstrate a small declared schema contract.
+  controlled_process: Imaginary controller and engineering workstation.
+  boundary_description: Both assets are internal in one zone; no perimeter edge.
+  completeness_assertion: Finite synthetic inventory only; physical access and actual
+    configuration omitted.
+  access_points: []
+  external_dependencies: []
+zones:
+- id: control
+  name: Control
+  purpose: Synthetic supervision.
+  scope: internal
+  grouping_rationale: Two non-safety IACS assets grouped for this teaching case.
+  safety_designation: non_safety
+assets:
+- id: eng
+  name: Engineering workstation
+  role: Engineering
+  zone_id: control
+  kind: endpoint
+  scope: internal
+  domain_classification: iacs
+  safety_classification: non_safety
+  criticality: medium
+- id: plc
+  name: Synthetic controller
+  role: Controller
+  zone_id: control
+  kind: endpoint
+  scope: internal
+  domain_classification: iacs
+  safety_classification: non_safety
+  criticality: critical
+- id: island
+  name: Disconnected declared listener
+  role: Controller
+  zone_id: control
+  kind: endpoint
+  scope: internal
+  domain_classification: iacs
+  safety_classification: non_safety
+  criticality: critical
+interfaces:
+- id: eng_net
+  asset_id: eng
+  placement_zone_id: control
+  ipv4: 192.0.2.10/24
+- id: plc_net
+  asset_id: plc
+  placement_zone_id: control
+  ipv4: 192.0.2.20/24
+- id: island_net
+  asset_id: island
+  placement_zone_id: control
+  ipv4: 192.0.2.30/24
+conduits: []
+transport_edges:
+- id: t_eng_plc
+  source_interface_id: eng_net
+  destination_interface_id: plc_net
+forwarding_edges: []
+services:
+- id: svc_plc
+  asset_id: plc
+  interface_id: plc_net
+  protocol: tcp
+  destination_ports:
+  - start: 500
+    end: 504
+  - start: 510
+    end: 511
+- id: svc_allowed
+  asset_id: plc
+  interface_id: plc_net
+  protocol: tcp
+  destination_ports:
+  - start: 500
+    end: 500
+- id: svc_blocked
+  asset_id: plc
+  interface_id: plc_net
+  protocol: tcp
+  destination_ports:
+  - start: 502
+    end: 502
+- id: svc_absent
+  asset_id: island
+  interface_id: island_net
+  protocol: tcp
+  destination_ports:
+  - start: 500
+    end: 500
+rules:
+- id: allow_eng_plc
+  edge_ids:
+  - t_eng_plc
+  source:
+    asset_ids:
+    - eng
+  destination:
+    asset_ids:
+    - plc
+  protocol: tcp
+  destination_ports:
+  - start: 500
+    end: 504
+  effect: allow
+- id: allow_same_scoped
+  edge_ids:
+  - t_eng_plc
+  source:
+    asset_ids:
+    - eng
+  destination:
+    asset_ids:
+    - plc
+  protocol: tcp
+  destination_ports:
+  - start: 500
+    end: 504
+  effect: allow
+- id: deny_subrange
+  edge_ids:
+  - t_eng_plc
+  source:
+    asset_ids:
+    - eng
+  destination:
+    asset_ids:
+    - plc
+  protocol: tcp
+  destination_ports:
+  - start: 502
+    end: 503
+  effect: deny
+intents: []
+scenarios: []

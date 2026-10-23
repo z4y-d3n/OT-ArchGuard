@@ -21,6 +21,7 @@ from otarchguard.diagrams import (
 )
 from otarchguard.exposure import ExposureResult
 from otarchguard.intents import CheckResult
+from otarchguard.summaries import explain_comparison, summarize_exposure
 
 type ReportKind = Literal["validation", "check", "exposure", "comparison"]
 type Analysis = CheckResult | ExposureResult | ComparisonResult | None
@@ -380,11 +381,51 @@ def html_report(
     snapshots: tuple[ValidatedArchitecture, ...],
     *,
     zone_order: tuple[str, ...] = (),
+    analysis: Analysis = None,
 ) -> bytes:
     """All model/evidence text is escaped; only generated SVG/CSS are trusted markup."""
     if [s.sha256 for s in snapshots] != [s["model_sha256"] for s in report["snapshots"]]:
         raise ValueError("HTML snapshot hashes do not match report")
     validate_zone_order(snapshots, zone_order)
+    finite_summary = ""
+    if isinstance(analysis, (ExposureResult, ComparisonResult)):
+        # The typed completed result must identify exactly the same serialized
+        # evidence. These additive HTML sections never change report-version-1 JSON.
+        if asdict(analysis) != report["result"]:
+            raise ValueError("HTML analysis does not match report evidence")
+        if isinstance(analysis, ExposureResult):
+            finite_summary = _table(
+                "Finite scenario summary (explicit count units)",
+                [asdict(summarize_exposure(snapshots[0], analysis))],
+            )
+        else:
+            finite_summary = "".join(
+                _table(
+                    f"{side} finite scenario summary (explicit count units)",
+                    [
+                        asdict(
+                            summarize_exposure(
+                                snapshot,
+                                exposure,
+                                noncomparable_service_ids=analysis.noncomparable_service_ids,
+                            )
+                        )
+                    ],
+                )
+                for side, snapshot, exposure in (
+                    ("baseline", snapshots[0], analysis.baseline),
+                    ("proposed", snapshots[1], analysis.proposed),
+                )
+            )
+            finite_summary += _table(
+                "Observed changes; no unique causal attribution",
+                [asdict(explain_comparison(analysis))],
+            )
+        finite_summary = (
+            '<div id="finite-summary"><h3>Completed finite-scope evidence</h3>'
+            + finite_summary
+            + "</div>"
+        )
     intents = _intent_rows(report["result"])
     failed_required = [
         row for row in intents if row["kind"] == "required" and row["outcome"] == "FAILED"
@@ -547,6 +588,7 @@ def html_report(
         _table("Resolved prohibited violations", resolved),
         "</div>",
         _analysis_summary(changes),
+        finite_summary,
         '</section><section id="witnesses">'
         "<h2>Exact interval findings and replayable witnesses</h2>",
         "<p>Expand a query to see original endpoints, states, edges, conduits and matching allows. "

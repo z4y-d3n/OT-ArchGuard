@@ -92,3 +92,12 @@ diagnostic issue.
 
 Project code and documentation use [Apache-2.0](LICENSE). Dependencies retain
 their own [licenses and notices](THIRD_PARTY_NOTICES.md).
+# Development: exact communication trace
+
+The v1.1 development line adds
+`otarchguard trace MODEL --source ASSET --service SERVICE [--destination ASSET]`
+with optional `--policy-evidence`, `--report PATH` and `--report-format html|json`.
+Exit 0 means the exact declared query completed, including unreachable or mixed
+port outcomes. Intents remain unassessed by trace. See the [trace contract](docs/trace.md)
+and [synthetic trace examples](examples/README.md#exact-communication-trace).
+The application and stable release version remain 1.0.1.

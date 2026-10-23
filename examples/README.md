@@ -100,3 +100,24 @@ are tested byte-for-byte. See [report format and limitations](../docs/reporting.
 Open generated HTML directly from disk; the application requires no server,
 scripts, external styles/fonts or images. Automated parser/XML and network-blocked
 runtime tests complement, but do not replace, human offline visual review.
+## Exact communication trace
+
+The original synthetic [trace cell](trace/communication.yaml) declares one
+directed transition and a disconnected listener. Run these with the installed
+development console:
+
+```console
+otarchguard trace examples/trace/communication.yaml --source eng --service svc_allowed
+otarchguard trace examples/trace/communication.yaml --source eng --service svc_blocked
+otarchguard trace examples/trace/communication.yaml --source eng --service svc_absent
+otarchguard trace examples/trace/communication.yaml --source eng --service svc_plc --policy-evidence --report output/trace.html
+```
+
+The first service is reachable; the second is blocked by explicit deny; the
+third has no structural route. The fourth covers 500–504 and 510–511 exactly:
+500–501 and 504 are permitted, 502–503 denied, and 510–511 lack a permit.
+Other declared service boundaries may split these into smaller exact atoms.
+Two allows have identical matching effects inside this scope; their allow/deny
+overlap is reported on 502–503 under unordered deny precedence. All four commands
+exit 0 on successful completion. No application session or live connectivity is
+proved. `run_examples.py` includes these offline installed-console checks.
