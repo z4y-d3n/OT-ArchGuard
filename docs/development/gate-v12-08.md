@@ -23,6 +23,8 @@ No existing public file is renormalized and real owner inputs remain byte-bound.
 A pre-build check compares every allowlisted working file with its committed blob;
 it fails on drift instead of normalizing it. Real Git regressions exercise true,
 false and input autocrlf modes, retained CRLF source and deliberate byte mutation.
+Verification provisioning pins the already locally validated pip 26.2.2 installer;
+each installed-environment receipt records package versions and license metadata.
 
 Current instructions and examples consistently name the candidate. See
 [release notes](../release-notes-1.2.0.md) and

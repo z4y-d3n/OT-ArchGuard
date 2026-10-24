@@ -128,6 +128,7 @@ def test_native_ci_matrix_preserves_verification_safeguards() -> None:
         "-m pytest",
         "examples/run_examples.py",
         "audit_release.py",
+        "verify_source_checkout.py",
         "-m benchmarks.run",
     ):
         assert required in runs
@@ -142,6 +143,7 @@ def test_native_ci_matrix_preserves_verification_safeguards() -> None:
             assert step["with"]["retention-days"] == (30 if required else 7)
             if required:
                 assert step["with"]["if-no-files-found"] == "error"
+                assert "output/source-checkout.json" in step["with"]["path"]
     assert "-m pytest tests --basetemp=output/sdist-tmp" in runs
 
 
