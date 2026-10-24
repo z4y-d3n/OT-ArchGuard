@@ -66,6 +66,9 @@ NOT_APPLICABLE coverage and denominator zero. Without a profile, completeness is
 NOT_ASSESSED and no percentage is invented. Different profile contexts,
 requirements, external notes or requested analyses invalidate cross-version
 quality comparability. Stopping a rule never resolves a finding.
+Different SUC identities or any nonempty version-identity mapping also make
+quality deltas NOT_COMPARABLE. This deliberately conservative boundary prevents
+old findings being reported resolved by a different entity that reuses its ID.
 
 ## ADR V12-07C — Exact native and documentary changes
 

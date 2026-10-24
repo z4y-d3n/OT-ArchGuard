@@ -412,7 +412,11 @@ def compare_architecture_versions(
         scope = report["scope"]
         return {k: v for k, v in scope.items() if k != "model_sha256"} if scope else None
 
-    same_scope = quality_scope(quality_left) == quality_scope(quality_right)
+    same_scope = (
+        quality_scope(quality_left) == quality_scope(quality_right)
+        and left.model.suc.id == right.model.suc.id
+        and not (owner and (owner.correspondences or owner.reused_identifiers))
+    )
     ql = {f["finding_id"]: f for f in quality_left["findings"]}
     qr = {f["finding_id"]: f for f in quality_right["findings"]}
     quality_changes = []

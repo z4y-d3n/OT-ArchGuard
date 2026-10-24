@@ -623,6 +623,8 @@ def test_reused_destination_cannot_claim_comparable_connectivity(
     )
     assert report["analytical_results"][0]["classification"] == "NOT_COMPARABLE"
 
+    assert {c["classification"] for c in report["quality_changes"]} == {"NOT_COMPARABLE"}
+
 
 def test_interval_partition_changes_preserve_exact_port_semantics(
     minimal: dict[str, Any], tmp_path: Path
