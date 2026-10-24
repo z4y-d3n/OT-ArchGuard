@@ -492,6 +492,40 @@ def test_quality_cli_does_not_require_a_site(model: Path) -> None:
     assert json.loads(result.stdout)["quality_version"] == 1
 
 
+@pytest.mark.parametrize("command", ["quality", "compare-architecture"])
+def test_option_diagnostics_name_the_actual_command(model: Path, command: str) -> None:
+    result = CliRunner().invoke(app, [command, str(model), "--unknown-option"])
+    assert result.exit_code == 2
+    assert "Invalid " + command + " options" in result.stderr
+
+
+def test_empty_collection_still_rejects_unknown_native_field(
+    minimal: dict[str, Any],
+    tmp_path: Path,
+) -> None:
+    for collection in (
+        "interfaces",
+        "services",
+        "rules",
+        "transport_edges",
+        "intents",
+        "scenarios",
+    ):
+        minimal[collection] = []
+    model = native(tmp_path / "empty.yaml", minimal)
+    p = profile(
+        tmp_path / "p.json",
+        model,
+        [requirement("DECLARED_VALUE", entity_kind="interfaces", field="invented")],
+    )
+    with pytest.raises(ModelError):
+        assess_quality(model, profile=p)
+    profile(p, model, [requirement("DECLARED_VALUE", entity_kind="interfaces", field="ipv4")])
+    report = assess_quality(model, profile=p)
+    assert report["coverage"][0]["required"] == 0
+    assert report["coverage"][0]["state"] == "NOT_APPLICABLE"
+
+
 @pytest.mark.parametrize(
     "mutation",
     [

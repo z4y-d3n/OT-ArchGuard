@@ -47,7 +47,11 @@ class TraceCommand(TyperCommand):
             # carry native exit 2; help/interrupt/internal exceptions propagate.
             if getattr(error, "exit_code", None) != ExitCode.ERROR:
                 raise
-            command = "explore" if ctx.info_name == "explore" else "trace"
+            command = (
+                ctx.info_name
+                if ctx.info_name in {"trace", "explore", "quality", "compare-architecture"}
+                else "trace"
+            )
             diagnostic = Diagnostic(
                 DiagnosticCategory.INVALID_INPUT,
                 "INVALID_VALUE",

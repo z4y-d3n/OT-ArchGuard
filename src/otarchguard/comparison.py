@@ -2,12 +2,13 @@
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import cast
+from types import UnionType
+from typing import Annotated, cast, get_args, get_origin
 
 from otarchguard.api import ValidatedArchitecture, validate_bytes, validate_file
 from otarchguard.contract import RESOURCE_LIMITS, ResourceLimits
 from otarchguard.diagnostics import fail
-from otarchguard.domain import CommunicationIntent, Record
+from otarchguard.domain import SUC, ArchitectureSnapshot, CommunicationIntent, Record
 from otarchguard.exposure import (
     ExposureResult,
     QueryScope,
@@ -150,6 +151,23 @@ def declaration_catalogs(validated: ValidatedArchitecture) -> dict[str, dict[str
 def declaration_fields(left: Record, right: Record, kind: str) -> tuple[FieldChange, ...]:
     """Exact native field differences; no reachability is inferred."""
     return _fields(left, right, kind)
+
+
+def declaration_field_names(kind: str) -> frozenset[str]:
+    """Read the native record contract even when a selected collection is empty."""
+    parent = ArchitectureSnapshot if kind in ArchitectureSnapshot.model_fields else SUC
+    annotation = get_args(parent.model_fields[kind].annotation)[0]
+
+    def fields(value: object) -> frozenset[str]:
+        if get_origin(value) is Annotated:
+            return fields(get_args(value)[0])
+        if get_origin(value) is UnionType:
+            return frozenset().union(*(fields(v) for v in get_args(value)))
+        if isinstance(value, type) and issubclass(value, Record):
+            return frozenset(value.model_fields)
+        raise ValueError("Expected a native declaration record type")
+
+    return fields(annotation)
 
 
 def _intent_signature(validated: ValidatedArchitecture, intent: CommunicationIntent) -> object:

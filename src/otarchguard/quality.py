@@ -9,7 +9,7 @@ from typing import Annotated, Any, Literal
 from pydantic import AfterValidator, Field, ValidationError, field_validator
 
 from otarchguard.api import ValidatedArchitecture
-from otarchguard.comparison import declaration_catalogs
+from otarchguard.comparison import declaration_catalogs, declaration_field_names
 from otarchguard.diagnostics import check_limit, fail
 from otarchguard.domain import Id, Record
 from otarchguard.explorer_data import ProjectProvenance, check_text, load_model, load_provenance
@@ -391,7 +391,9 @@ def _assess_snapshot(
                 elif req.field is not None:
                     fail("QUALITY_PROFILE", "$", "Entity provenance does not select a field.")
                 if req.field and req.expectation != "OWNER_INFORMATION":
-                    if any(req.field not in type(entities[i]).model_fields for i in ids):
+                    if req.field not in declaration_field_names(req.entity_kind) or any(
+                        req.field not in type(entities[i]).model_fields for i in ids
+                    ):
                         fail(
                             "QUALITY_PROFILE",
                             "$",
