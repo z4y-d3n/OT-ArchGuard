@@ -49,7 +49,7 @@ a nonblank `rationale`. Supported expectations:
 | Expectation | Evidence needed to satisfy it |
 | --- | --- |
 | DECLARED_VALUE | Existing native field is present and not empty, unassessed or unspecified; an explicit string expected value instead requires exact equality |
-| FIELD_PROVENANCE | Located documentary field selected by the confirmed partition; literal corrections, reference corrections and profile constants do not supply documentary support |
+| FIELD_PROVENANCE | Located documentary field selected explicitly or by owner-confirmed consensus and matching the actual declared value; literal corrections, reference corrections, profile constants and old IDs after an owner rename do not supply documentary support |
 | ENTITY_PROVENANCE | At least one such selected documentary field supports the entity |
 | SOURCE_AVAILABLE | Explicit registered source ID is present in matching verified provenance; wildcard is forbidden |
 | OWNER_INFORMATION | External model-bound note for exact entity/field with value, reviewer and rationale; optional exact string value |
@@ -101,8 +101,10 @@ connectors, conflicts, owner partitions, field selections/corrections and
 acknowledgments have separate change records. Content-dependent candidate IDs can
 produce remove/add records after a changed observation; no undocumented relocation
 or equivalence is inferred. Document observations use exact retained structural
-locations, not text similarity. Reusing a source registration means that declared
-document slot is being revised; hashes still do not authenticate authorship.
+locations, not text similarity. Observation category also qualifies its location
+so distinct retained interpretations cannot overwrite one another. Reusing a source
+registration means that declared document slot is being revised; hashes still do
+not authenticate authorship.
 
 A changed source digest is not a changed native declaration. A new drawn connector
 is DOCUMENTARY, never native transport or analytical permission. A different owner

@@ -20,6 +20,7 @@ from otarchguard.ingestion.project_review import emit_project
 from otarchguard.quality import ReviewQuery, assess_quality, canonical
 from otarchguard.review_explorer import generate_review
 from otarchguard.trace import trace_architecture
+from tools.synthetic_documents import package, pptx_parts
 from tools.synthetic_projects import synthetic_project, tutorial_decisions
 
 
@@ -286,6 +287,20 @@ def test_removed_transport_is_structural_until_query_evaluated(
         for c in report["changes"]
     )
     assert report["analytical_status"] == "NOT_EVALUATED"
+
+
+def test_zone_membership_delta_is_exact_declared_ownership(
+    model: Path,
+    minimal: dict[str, Any],
+    tmp_path: Path,
+) -> None:
+    minimal["assets"].append({**minimal["assets"][0], "id": "new_asset", "name": "Declared only"})
+    other = native(tmp_path / "other.yaml", minimal)
+    result = compare_architecture_versions(model, other)
+    delta = next(c for c in result["changes"] if c["entity_kind"] == "declared_zone_membership")
+    assert delta["baseline"] == ["eng", "plc"]
+    assert delta["proposed"] == ["eng", "new_asset", "plc"]
+    assert result["analytical_status"] == "NOT_EVALUATED"
 
 
 @pytest.mark.parametrize("protocol", ["tcp", "udp"])
@@ -655,6 +670,111 @@ def test_selected_profile_constants_do_not_establish_documentary_support(
     p = profile(tmp_path / "profile.json", model, [requirement("FIELD_PROVENANCE", field="scope")])
     result = assess_quality(model, provenance=sidecar, profile=p)
     assert result["coverage"][0]["satisfied"] == 0
+
+
+def test_confirmed_consensus_fields_retain_all_matching_located_support(
+    evidence: tuple[Path, Path],
+    tmp_path: Path,
+) -> None:
+    model, sidecar = evidence
+    p = profile(tmp_path / "profile.json", model, [requirement("FIELD_PROVENANCE", field="name")])
+    result = assess_quality(model, provenance=sidecar, profile=p)
+    assert result["coverage"][0]["satisfied"] == len(load_model(model).model.assets)
+    findings = [f for f in result["findings"] if f["requirement_id"] == "selected"]
+    assert all(len(f["source_references"]) >= 2 for f in findings)
+
+
+def test_owner_renamed_id_does_not_gain_false_support(tmp_path: Path) -> None:
+    manifest = synthetic_project(tmp_path / "project", count=4, contradictory=False)
+    draft = create_project(manifest)
+    owner = tutorial_decisions(draft)
+    # Rename an interface; it is not referenced by other declarations in this fixture.
+    target = next(d for d in owner.entities if d.canonical_id == "if_n0")
+    owner = owner.model_copy(
+        update={
+            "entities": tuple(
+                d.model_copy(update={"canonical_id": "renamed_interface"}) if d == target else d
+                for d in owner.entities
+            )
+        }
+    )
+    artifacts = emit_project(draft, owner, manifest)
+    model, sidecar = tmp_path / "model.yaml", tmp_path / "sidecar.json"
+    model.write_bytes(artifacts["architecture.yaml"])
+    sidecar.write_bytes(artifacts["architecture.provenance.json"])
+    p = profile(
+        tmp_path / "p.json",
+        model,
+        [
+            requirement(
+                "FIELD_PROVENANCE",
+                entity_kind="interfaces",
+                entity_ids=["renamed_interface"],
+                field="id",
+            )
+        ],
+    )
+    result = assess_quality(model, provenance=sidecar, profile=p)
+    assert result["coverage"][0]["satisfied"] == 0
+
+
+def test_unavailable_queries_are_not_reported_as_evaluated(model: Path) -> None:
+    report = compare_architecture_versions(
+        model, model, queries=(ReviewQuery(source_asset_id="missing", service_id="absent"),)
+    )
+    assert report["analytical_status"] == "NOT_EVALUATED"
+    assert report["analytical_results"][0]["classification"] == "NOT_COMPARABLE"
+
+
+@pytest.mark.parametrize("adapter", ["md", "pptx"])
+def test_document_interpretation_and_changed_observation_are_separate_from_native(
+    tmp_path: Path,
+    adapter: str,
+) -> None:
+    manifest = synthetic_project(tmp_path / "project", count=4, contradictory=False)
+    configuration = json.loads(manifest.read_text())
+    configuration["sources"].append(
+        {
+            "id": "notes",
+            "path": "notes." + adapter,
+            "adapter": adapter,
+            "profile": "notes-profile.json",
+        }
+    )
+    write(manifest, configuration)
+    write(
+        manifest.parent / "notes-profile.json",
+        {"profile_version": 4, "adapter": adapter, "select": ["*"]},
+    )
+    versions = []
+    for index, text in enumerate(("Historical documented claim", "Revised documentary claim")):
+        notes = manifest.parent / ("notes." + adapter)
+        if adapter == "md":
+            notes.write_text("# Notes\n" + text, encoding="utf-8")
+        else:
+            notes.write_bytes(package(pptx_parts(text)))
+        draft = create_project(manifest)
+        artifacts = emit_project(draft, tutorial_decisions(draft), manifest)
+        model, sidecar = tmp_path / f"model-{index}.yaml", tmp_path / f"sidecar-{index}.json"
+        model.write_bytes(artifacts["architecture.yaml"])
+        sidecar.write_bytes(artifacts["architecture.provenance.json"])
+        versions.append((model, sidecar))
+    report = compare_architecture_versions(
+        versions[0][0],
+        versions[1][0],
+        baseline_provenance=versions[0][1],
+        proposed_provenance=versions[1][1],
+    )
+    changed = [c for c in report["changes"] if c["entity_kind"] == "document_observations"]
+    assert changed and all(c["action"] == "MODIFIED" for c in changed)
+    assert not any(c["layer"] == "NATIVE" for c in report["changes"])
+    assert report["analytical_status"] == "NOT_EVALUATED"
+    if adapter == "pptx":
+        quality = assess_quality(versions[1][0], provenance=versions[1][1])
+        assert any(
+            f["rule_id"] == "document-interpretation" and f["entity"] == "notes"
+            for f in quality["findings"]
+        )
 
 
 @pytest.mark.parametrize("kind", ["queries", "requirements"])

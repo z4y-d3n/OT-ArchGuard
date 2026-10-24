@@ -103,6 +103,7 @@ def document(
     body: str,
     model_hash: str,
     navigation: tuple[tuple[str, str], ...] | None = None,
+    model_context: str | None = None,
 ) -> bytes:
     return (
         '<!doctype html><html lang="en"><head><meta charset="utf-8">'
@@ -116,8 +117,10 @@ def document(
         + ' · Architecture Explorer</title></head><body><a class="skip" href="#main">'
         "Skip to main content</a><header><p>OT-ArchGuard · Offline Architecture Explorer</p><h1>"
         + escape(title)
-        + "</h1><p>Model SHA-256: <code>"
-        + escape(model_hash)
+        + "</h1><p>"
+        + ("Baseline and proposed model identities" if model_context else "Model SHA-256")
+        + ": <code>"
+        + escape(model_context or model_hash)
         + '</code></p></header><nav aria-label="Explorer"><ul>'
         + "".join(
             f"<li>{link(path, label)}</li>"
@@ -236,6 +239,7 @@ class SiteWriter:
         model_hash: str,
         navigation: tuple[tuple[str, str], ...] | None = None,
         json_bytes: int = 4 * EXPLORER_LIMITS.page_bytes,
+        model_context: str | None = None,
     ) -> None:
         self.root = root
         self.model_hash = model_hash
@@ -248,6 +252,7 @@ class SiteWriter:
         self.audit_seconds = 0.0
         self.navigation = navigation
         self.json_bytes = json_bytes
+        self.model_context = model_context
 
     def write(self, name: str, data: bytes) -> None:
         if re.fullmatch(r"[a-z0-9-]+\.(html|css|json)", name) is None or name in self.files:
@@ -265,7 +270,7 @@ class SiteWriter:
     def page(self, name: str, title: str, body: str) -> None:
         if re.fullmatch(r"[a-z0-9-]+\.html", name) is None or name in self.pending:
             fail("EXPLORER_OUTPUT", "$", "Unsafe or duplicate generated page identity.")
-        size = len(document(title, body, self.model_hash, self.navigation))
+        size = len(document(title, body, self.model_hash, self.navigation, self.model_context))
         check_limit("explorer_page_bytes", size, EXPLORER_LIMITS.page_bytes)
         check_limit("explorer_total_bytes", self.pending_bytes + size, EXPLORER_LIMITS.total_bytes)
         check_limit("explorer_records", len(self.pending) + 1, EXPLORER_LIMITS.pages)
@@ -339,12 +344,21 @@ class SiteWriter:
         for name, (title, body) in sorted(self.pending.items()):
             if self.locations[name] == name:
                 self.write(
-                    name, document(title, links(body, name), self.model_hash, self.navigation)
+                    name,
+                    document(
+                        title,
+                        links(body, name),
+                        self.model_hash,
+                        self.navigation,
+                        self.model_context,
+                    ),
                 )
         for name, members in sorted(grouped.items()):
+            review_records = name.partition("-")[0] in {"change", "finding", "record"}
             body = (
-                '<p class="notice">This page contains additional local documentary evidence '
-                "and is not a public-safe export.</p>"
+                '<p class="notice">This page contains additional local '
+                + ("engineering records" if review_records else "documentary evidence")
+                + " and is not a public-safe export.</p>"
             )
             body += table(
                 "Records on this page",
@@ -359,10 +373,13 @@ class SiteWriter:
             self.write(
                 name,
                 document(
-                    "Grouped " + name.partition("-")[0] + " evidence",
+                    "Grouped "
+                    + name.partition("-")[0]
+                    + (" records" if review_records else " evidence"),
                     body,
                     self.model_hash,
                     self.navigation,
+                    self.model_context,
                 ),
             )
         self.pending.clear()

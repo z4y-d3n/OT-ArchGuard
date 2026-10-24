@@ -399,7 +399,20 @@ def generate_review(
             dir=output.absolute().parent, prefix=".otarchguard-review-"
         ) as temporary:
             stage = Path(temporary)
-            writer = SiteWriter(stage, model_hash, navigation, json_bytes=32 * 1024 * 1024)
+            writer = SiteWriter(
+                stage,
+                model_hash,
+                navigation,
+                json_bytes=32 * 1024 * 1024,
+                model_context=(
+                    "baseline "
+                    + report["baseline_model_sha256"]
+                    + "; proposed "
+                    + report["proposed_model_sha256"]
+                )
+                if proposed
+                else None,
+            )
             writer.write("assets.css", CSS.encode())
             data = canonical(report)
             writer.write("review.json", data)
@@ -407,7 +420,20 @@ def generate_review(
                 _render_comparison(writer, report, architecture, proposed)
             else:
                 _render_quality(writer, report)
-            result = writer.finish({"review_version": 1, "review_sha256": identity})
+            result = writer.finish(
+                {
+                    "review_version": 1,
+                    "review_sha256": identity,
+                    **(
+                        {
+                            "baseline_model_sha256": report["baseline_model_sha256"],
+                            "proposed_model_sha256": report["proposed_model_sha256"],
+                        }
+                        if proposed
+                        else {}
+                    ),
+                }
+            )
             if output.exists() or output.is_symlink():
                 fail("REVIEW_OUTPUT", "$", "Output appeared during publication; refused.")
             os.rename(stage, output)

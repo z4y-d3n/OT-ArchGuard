@@ -147,52 +147,38 @@ def evidence_support(sidecar: ProjectProvenance | None) -> dict[tuple[str, str, 
         return support
     candidates = catalog(sidecar.catalog.sources)
     kinds = {"asset": "assets", "zone": "zones", "interface": "interfaces"}
+    declarations: dict[tuple[str, str], dict[str, Any]] = {}
+    for declaration in sidecar.declarations:
+        fields = declaration["fields"]
+        assert isinstance(fields, dict)
+        declarations[str(declaration["model_collection"]), str(fields["id"])] = fields
     for decision in sidecar.decisions.entities:
         if decision.decision != "OWNER_CONFIRMED":
             continue
-        for field, key in decision.field_sources.items():
-            if field in decision.corrections or field in decision.references:
-                continue
+        kind = kinds[candidates[decision.members[0]][1].entity]
+        declared = declarations[kind, decision.canonical_id]
+        for key in sorted(decision.members):
             source, candidate = candidates[key]
-            observed = next(f for f in candidate.fields if f.field == field)
-            if observed.location is None or observed.transformation == "profile_constant":
-                continue
-            reference = {
-                "source_id": source,
-                "candidate_id": key,
-                "field": field,
-                "location": observed.model_dump(mode="json"),
-            }
-            support.setdefault((kinds[candidate.entity], decision.canonical_id, field), []).append(
-                reference
-            )
-        # A single-member partition can have implicit unambiguous field selections.
-        if len(decision.members) == 1:
-            key = decision.members[0]
-            source, candidate = candidates[key]
-            for observed in candidate.fields:
-                field = observed.field
-                target = (kinds[candidate.entity], decision.canonical_id, field)
+            for observation in candidate.fields:
+                field = observation.field
                 if (
-                    target in support
-                    or field in decision.corrections
+                    field in decision.corrections
                     or field in decision.references
+                    or (field in decision.field_sources and decision.field_sources[field] != key)
+                    or observation.location is None
+                    or observation.transformation == "profile_constant"
+                    or observation.state in {"UNRESOLVED", "UNSUPPORTED"}
+                    or observation.normalized_value != declared.get(field)
                 ):
                     continue
-                if (
-                    observed.state not in {"UNRESOLVED", "UNSUPPORTED"}
-                    and observed.normalized_value
-                    and observed.location is not None
-                    and observed.transformation != "profile_constant"
-                ):
-                    support[target] = [
-                        {
-                            "source_id": source,
-                            "candidate_id": key,
-                            "field": field,
-                            "location": observed.model_dump(mode="json"),
-                        }
-                    ]
+                support.setdefault((kind, decision.canonical_id, field), []).append(
+                    {
+                        "source_id": source,
+                        "candidate_id": key,
+                        "field": field,
+                        "location": observation.model_dump(mode="json"),
+                    }
+                )
     return support
 
 

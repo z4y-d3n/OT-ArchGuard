@@ -69,7 +69,7 @@ def _evidence(p: ProjectProvenance) -> dict[str, dict[str, Any]]:
             for observation in source.evidence.document.observations:
                 value = observation.model_dump(mode="json")
                 # Content IDs may change; the exact structural source locator is correspondence.
-                key = source.id + "::" + digest(value["location"])
+                key = source.id + "::" + digest([value["location"], value["category"]])
                 result["document_observations"][key] = value
         if source.evidence.graph:
             for collection, values in (
@@ -296,6 +296,22 @@ def compare_architecture_versions(
         targets = {v[0] for v in selected.values()}
         for identity in sorted(new.keys() - targets):
             change("NATIVE", kind, [None, identity], None, new[identity].model_dump(mode="json"))
+    # Exact administrative ownership index; no physical placement or path inference.
+    left_members: dict[str, list[str]] = {z: [] for z in lc["zones"]}
+    right_members: dict[str, list[str]] = {z: [] for z in rc["zones"]}
+    for asset in left.model.assets:
+        left_members[asset.zone_id].append(asset.id)
+    for asset in right.model.assets:
+        right_members[asset.zone_id].append(asset.id)
+    for zone in sorted(left_members.keys() | right_members.keys()):
+        change(
+            "NATIVE",
+            "declared_zone_membership",
+            zone,
+            sorted(left_members[zone]) if zone in left_members else None,
+            sorted(right_members[zone]) if zone in right_members else None,
+            correspondence="Exact asset.zone_id index; not physical placement or permission.",
+        )
     change(
         "NATIVE",
         "suc",
@@ -450,7 +466,13 @@ def compare_architecture_versions(
         "correspondences": correspondences,
         "changes": sorted(changes, key=lambda c: c["change_id"]),
         "analytical_results": analyses,
-        "analytical_status": "EVALUATED" if analyses else "NOT_EVALUATED",
+        "analytical_status": (
+            "EVALUATED"
+            if analyses and all(a["baseline"] and a["proposed"] for a in analyses)
+            else "PARTIALLY_EVALUATED"
+            if any(a["baseline"] or a["proposed"] for a in analyses)
+            else "NOT_EVALUATED"
+        ),
         "documentary_status": "COMPARED" if lp and rp else "NOT_ASSESSED",
         "quality_baseline": quality_left,
         "quality_proposed": quality_right,
