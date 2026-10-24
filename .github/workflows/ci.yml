@@ -2,7 +2,9 @@ name: Python verification
 
 on:
   push:
+    branches: ['v1.2', 'codex/v12-07-quality-comparison', 'main']
   pull_request:
+    branches: ['v1.2', 'main']
   workflow_dispatch:
 
 permissions:
@@ -22,6 +24,7 @@ jobs:
       matrix:
         os: ['windows-latest', 'ubuntu-latest', 'macos-latest']
         python: ['3.12', '3.14']
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -38,11 +41,15 @@ jobs:
           $roots = @(git rev-list --max-parents=0 HEAD)
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           if ($roots.Count -ne 1 -or $roots[0] -ne $env:EXPECTED_ROOT_SHA) { throw "Unexpected repository ancestry" }
-      - name: Install approved verification dependencies and a regular package wheel
+      - name: Install approved verification dependencies
+        run: python -m pip install -r tools/verification-requirements.txt
+      - name: Build and audit exact candidate distributions
         run: |
-          python -m pip install -r tools/verification-requirements.txt
+          python -c "from setuptools import build_meta; build_meta.build_wheel('output/artifacts'); build_meta.build_sdist('output/artifacts')"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python -m pip install --no-build-isolation --no-deps .
+          python tools/audit_release.py output/artifacts/otarchguard-1.2.0.dev0-py3-none-any.whl output/artifacts/otarchguard-1.2.0.dev0.tar.gz --source-root . --output output/archive-audit.json
+      - name: Install the exact audited candidate wheel
+        run: python -m pip install --force-reinstall --no-index --no-deps --no-build-isolation output/artifacts/otarchguard-1.2.0.dev0-py3-none-any.whl
       - name: Verify installed distribution, imports and native console
         run: python tools/verify_environment.py --output output/environment-${{ matrix.os }}-${{ matrix.python }}.json
       - name: Ruff lint
@@ -63,11 +70,6 @@ jobs:
           OTARCHGUARD_OFFLINE_CHECK: '1'
           PYTHONPATH: '${{ github.workspace }}/tools/offline'
         run: python examples/run_examples.py
-      - name: Build and audit exact candidate distributions
-        run: |
-          python -c "from setuptools import build_meta; build_meta.build_wheel('output/artifacts'); build_meta.build_sdist('output/artifacts')"
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python tools/audit_release.py output/artifacts/otarchguard-1.2.0.dev0-py3-none-any.whl output/artifacts/otarchguard-1.2.0.dev0.tar.gz --source-root . --output output/archive-audit.json
       - name: Verify installed sdist and project walkthrough offline
         env:
           OTARCHGUARD_OFFLINE_CHECK: '1'
@@ -82,6 +84,7 @@ jobs:
           $tests += 'tests/test_review_bundle.py'
           $tests += 'tests/test_explorer.py'
           $tests += 'tests/test_explorer_compact.py'
+          $tests += 'tests/test_quality_comparison.py'
           python -m pytest @tests --basetemp=output/sdist-tmp --tb=short --junitxml=output/sdist-suite.xml
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python -m tools.project_walkthrough --output output/project-walkthrough
@@ -91,6 +94,13 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           Copy-Item -LiteralPath (Join-Path $explorerOutput 'walkthrough.json') -Destination output/explorer-walkthrough.json
           python -m tools.document_walkthrough --output output/document-walkthrough
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m tools.quality_walkthrough --output output/quality-walkthrough
+      - name: Record exact revision and candidate source identity
+        run: |
+          python -c "import hashlib,json,os,pathlib,platform,subprocess; r=pathlib.Path('.'); files={n:hashlib.sha256((r/n).read_bytes()).hexdigest() for n in (r/'tools/public-files.txt').read_text().splitlines()}; pathlib.Path('output/ci-revision.json').write_text(json.dumps({'tested_commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'pr_head':os.getenv('PR_HEAD'),'run_id':os.getenv('GITHUB_RUN_ID'),'run_attempt':os.getenv('GITHUB_RUN_ATTEMPT'),'platform':platform.platform(),'python':platform.python_version(),'public_source_sha256':hashlib.sha256(json.dumps(files,sort_keys=True,separators=(',',':')).encode()).hexdigest()},sort_keys=True,indent=2))"
+        env:
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
       - name: Retain candidate integrity evidence
         uses: actions/upload-artifact@v7.0.2
         with:
@@ -105,17 +115,26 @@ jobs:
             output/project-walkthrough/walkthrough.json
             output/explorer-walkthrough.json
             output/document-walkthrough/walkthrough.json
+            output/quality-walkthrough/walkthrough.json
+            output/ci-revision.json
             output/environment-${{ matrix.os }}-${{ matrix.python }}.json
       - name: Measure fixed NFR-05 workloads offline
         env:
           OTARCHGUARD_OFFLINE_CHECK: '1'
           PYTHONPATH: '${{ github.workspace }}/tools/offline'
         run: python -m benchmarks.run --output output/benchmark-${{ matrix.os }}-${{ matrix.python }}.json
+      - name: Measure synthetic quality and comparison workloads offline
+        env:
+          OTARCHGUARD_OFFLINE_CHECK: '1'
+          PYTHONPATH: '${{ github.workspace }}/tools/offline'
+        run: python -m benchmarks.quality_comparison --output output/quality-benchmark.json
       - name: Retain benchmark evidence
         if: always()
         uses: actions/upload-artifact@v7.0.2
         with:
           name: benchmark-${{ matrix.os }}-${{ matrix.python }}
-          path: output/benchmark-${{ matrix.os }}-${{ matrix.python }}.json
+          path: |
+            output/benchmark-${{ matrix.os }}-${{ matrix.python }}.json
+            output/quality-benchmark.json
           retention-days: 7
           if-no-files-found: warn

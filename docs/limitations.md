@@ -56,3 +56,17 @@ Ceilings are rejection limits, not capacity promises. Reports retain evidence in
 memory. Benchmark memory is traced Python allocations, not RSS. Python 3.13,
 other platforms, fresh OS/physical air gap and broader browser coverage remain
 unverified. See the [verification summary](verification.md) for the tested scope.
+
+## V12-07 quality and architecture comparison
+
+The additive `quality` and `compare-architecture` commands assess explicit
+model-bound requirements and native/documentary/owner changes. Exact comparative
+reachability comes only from explicit before/after native trace evaluation.
+Missing evidence is not a vulnerability; changed scope never resolves a finding.
+Selected evidence, external owner information and native declarations remain
+separate. Split/merge and fuzzy identity inference are unsupported.
+See the [seven ADRs](development/v12-07-quality-and-comparison.md) for versioned schemas,
+coverage denominators, query comparability, resource ceilings, compact offline
+views, installed-console tests, reproducible benchmarks and independent local,
+PR, hosted-CI and owner-review acceptance. Actual file-URL browser interaction
+was policy-blocked; static checks do not establish WCAG certification.

@@ -57,6 +57,30 @@ def error_code(operation: Any, code: str) -> None:
     assert caught.value.diagnostics[0].code == code
 
 
+def test_shipped_project_review_matches_exact_checked_out_fixture(tmp_path: Path) -> None:
+    """Exercise the saved review, rather than generate new decisions for the current bytes."""
+    shipped = Path(__file__).resolve().parents[1] / "examples/import-studio/projects/mixed"
+    copied = tmp_path / "project"
+    shutil.copytree(shipped, copied)
+    path = copied / "project.json"
+    draft = create_project(path)
+    owner = load_project_record(copied / "tutorial-decisions.json", ProjectDecisions)
+    assert project_digest(draft) == owner.draft_sha256
+    artifacts = emit_project(draft, owner, path)
+    model = validate_bytes(artifacts["architecture.yaml"]).model
+    assert len(model.assets) == 6
+    assert not model.transport_edges and not model.forwarding_edges and not model.rules
+
+    # Byte changes still invalidate review even when parsed CSV values are identical.
+    source = copied / "metadata.csv"
+    original = source.read_bytes()
+    assert b"\r\n" not in original
+    source.write_bytes(original.replace(b"\n", b"\r\n"))
+    changed = create_project(path)
+    assert project_digest(changed) != owner.draft_sha256
+    error_code(lambda: emit_project(changed, owner, path), "PROJECT_STALE_REVIEW")
+
+
 @pytest.mark.parametrize(
     "graph,formats",
     [

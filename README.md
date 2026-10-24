@@ -139,3 +139,13 @@ guided creation, industrial templates, spreadsheet/CSV import, schema-1 YAML
 generation, understandable validation and progressive visual editing. These
 capabilities are absent from published v1.1.0; see the development walkthrough
 above for implemented CSV/TSV, restricted XLSX and JSON/NetBox import subsets.
+
+## Quality and architecture comparison (development)
+
+`otarchguard quality MODEL` assesses model declarations and explicit optional
+requirements, with canonical JSON output. Add `--output NEW` for a human report.
+`otarchguard compare-architecture BASELINE PROPOSED --output NEW` compares native
+and optional documentary evidence; repeat `--trace SOURCE:SERVICE` for actual exact
+before/after evaluation. Missing documentation never implies a vulnerability.
+See the [offline tutorial](examples/quality-comparison/README.md) and
+[versioned contract](docs/development/v12-07-quality-and-comparison.md).

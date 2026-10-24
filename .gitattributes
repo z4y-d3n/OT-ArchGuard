@@ -1,0 +1,8 @@
+# Saved project reviews bind exact source/profile bytes across checkouts.
+examples/import-studio/projects/** text eol=lf
+
+# Office packages and images must remain byte-for-byte binary fixtures.
+*.xlsx binary
+*.docx binary
+*.pptx binary
+*.png binary

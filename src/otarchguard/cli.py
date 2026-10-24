@@ -26,6 +26,7 @@ from otarchguard.reporting import (
     json_report,
     write_report,
 )
+from otarchguard.review_cli import compare_architecture, quality
 from otarchguard.trace import trace_file
 from otarchguard.trace_reporting import trace_html, trace_json
 
@@ -46,7 +47,11 @@ class TraceCommand(TyperCommand):
             # carry native exit 2; help/interrupt/internal exceptions propagate.
             if getattr(error, "exit_code", None) != ExitCode.ERROR:
                 raise
-            command = "explore" if ctx.info_name == "explore" else "trace"
+            command = (
+                ctx.info_name
+                if ctx.info_name in {"trace", "explore", "quality", "compare-architecture"}
+                else "trace"
+            )
             diagnostic = Diagnostic(
                 DiagnosticCategory.INVALID_INPUT,
                 "INVALID_VALUE",
@@ -96,6 +101,8 @@ app = typer.Typer(
     add_completion=False,
 )
 app.add_typer(import_app, name="import")
+app.command("quality", cls=TraceCommand)(quality)
+app.command("compare-architecture", cls=TraceCommand)(compare_architecture)
 
 
 @app.command(cls=TraceCommand)
