@@ -19,7 +19,7 @@ from otarchguard.trace import trace_file
 from tools.compare_versioned_contract import compare_artifact, compare_captures
 
 ROOT = Path(__file__).resolve().parents[1]
-DEVELOPMENT_VERSION = "1.2.0.dev0"
+DEVELOPMENT_VERSION = "1.2.0rc1"
 
 
 def test_exact_candidate_identity_and_frozen_contracts(installed_console: Path) -> None:

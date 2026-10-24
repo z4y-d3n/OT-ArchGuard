@@ -107,6 +107,15 @@ REVIEW_FILES = frozenset(
         )
     }
 )
+# Final-gate review includes the complete allowlisted textual product, tests and
+# release/build instructions. Approved binary fixtures stay in the audited sdist.
+REVIEW_FILES |= frozenset(
+    name
+    for name in PUBLIC_FILES
+    if Path(name).suffix
+    in {".py", ".md", ".yaml", ".yml", ".json", ".csv", ".drawio", ".graphml", ".txt", ".toml"}
+    or name in {"LICENSE", "MANIFEST.in", ".gitattributes", ".gitignore"}
+)
 _PERSONAL = re.compile(
     rb"(?i)(?:[a-z]:[/\\]+(?:users|documents and settings)[/\\]+|/(?:home|Users)/)"
 )
@@ -147,10 +156,18 @@ def _source_files(root: Path, selection: frozenset[str]) -> dict[str, bytes]:
     files: dict[str, bytes] = {}
     for name in sorted(selection):
         _safe_member(name)
-        if (
-            Path(name).suffix not in {".py", ".md", ".yaml", ".json", ".csv", ".drawio"}
-            and name != "LICENSE"
-        ):
+        if Path(name).suffix not in {
+            ".py",
+            ".md",
+            ".yaml",
+            ".yml",
+            ".json",
+            ".csv",
+            ".drawio",
+            ".graphml",
+            ".txt",
+            ".toml",
+        } and name not in {"LICENSE", "MANIFEST.in", ".gitattributes", ".gitignore"}:
             raise ValueError(
                 "Only selected public source, documents and fixtures belong in this bundle"
             )

@@ -4,7 +4,7 @@ OT-ArchGuard is an offline Python CLI for reviewing declared IT/OT network
 architectures. It validates architecture models, checks communication requirements
 and compares TCP/UDP listener reachability between proposed configurations.
 
-Source version: **1.2.0.dev0** (unreleased development). YAML schema: **1**. Consult the owner-published release
+Source version: **1.2.0rc1** (unpublished release candidate). YAML schema: **1**. Consult the owner-published release
 record for availability, exact source tag and audited asset checksums.
 
 Development Import Studio now supports offline multi-source projects through
@@ -26,13 +26,13 @@ groups evidence into bounded pages with individual anchors. See the
 PDF/VSDX remain deferred. Grouped reports contain additional sensitive evidence.
 Stable v1.2.0 release readiness still requires actual hosted verification on all
 six OS/Python combinations; local development acceptance does not establish it.
-See [release notes](docs/release-notes-1.1.0.md)
+See [v1.2 release notes](docs/release-notes-1.2.0.md)
 and [Gate V11-6 verification](docs/v1.1/gate-v11-6.md).
 
 This development branch adds owner-reviewed CSV/TSV, restricted XLSX and JSON inventories. See the
 [reviewed import walkthrough](docs/import-studio.md) and
 [v1.2 roadmap](docs/development/v1.2-roadmap.md). The published v1.1.0 baseline
-remains immutable. Development builds use 1.2.0.dev0 and must not be published
+remains immutable. Development builds use 1.2.0rc1 and must not be published
 as the stable release.
 
 OT-ArchGuard is an independent industrial network architecture analysis tool inspired by general OT cybersecurity good practices, including those addressed by the IEC 62443 series. It does not provide certification, establish normative conformity or imply institutional endorsement.
@@ -130,7 +130,7 @@ with optional `--policy-evidence`, `--report PATH` and `--report-format html|jso
 Exit 0 means the exact declared query completed, including unreachable or mixed
 port outcomes. Intents remain unassessed by trace. See the [trace contract](docs/trace.md)
 and [synthetic trace examples](examples/README.md#exact-communication-trace).
-Current development application and distribution versions are 1.2.0.dev0. Evaluate upgrades in a parallel
+Current development application and distribution versions are 1.2.0rc1. Evaluate upgrades in a parallel
 environment; see [installation and upgrade](docs/installation.md). Consult the
 owner-published release record for available assets, source tag and checksums.
 

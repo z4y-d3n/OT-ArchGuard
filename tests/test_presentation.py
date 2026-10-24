@@ -138,7 +138,11 @@ def test_native_ci_matrix_preserves_verification_safeguards() -> None:
         if "upload-artifact@" in step.get("uses", ""):
             assert "${{ matrix.os }}" in step["with"]["name"]
             assert "${{ matrix.python }}" in step["with"]["name"]
-            assert step["with"]["retention-days"] == 7
+            required = step["name"] == "Retain candidate integrity evidence"
+            assert step["with"]["retention-days"] == (30 if required else 7)
+            if required:
+                assert step["with"]["if-no-files-found"] == "error"
+    assert "-m pytest tests --basetemp=output/sdist-tmp" in runs
 
 
 @pytest.mark.parametrize("command", ["validate", "check", "exposure", "compare"])
