@@ -1,0 +1,8 @@
+{
+  "adapter": "pptx",
+  "profile_version": 4,
+  "select": [
+    "*"
+  ],
+  "tables": []
+}

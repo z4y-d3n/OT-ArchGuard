@@ -8,7 +8,19 @@ from otarchguard.domain import Id, Record
 from otarchguard.ingestion.records import ImportDraft
 from otarchguard.loading import YamlValue
 
-type Adapter = Literal["csv", "tsv", "json", "xlsx", "netbox-offline-v1", "drawio", "graphml"]
+type Adapter = Literal[
+    "csv",
+    "tsv",
+    "json",
+    "xlsx",
+    "netbox-offline-v1",
+    "drawio",
+    "graphml",
+    "txt",
+    "md",
+    "docx",
+    "pptx",
+]
 
 
 class ProjectRecord(Record):

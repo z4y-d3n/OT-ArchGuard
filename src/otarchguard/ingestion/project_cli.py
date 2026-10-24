@@ -92,6 +92,7 @@ def inspect_project(manifest: Annotated[Path, typer.Argument()]) -> None:
                     ),
                     "sha256": s.evidence.source.sha256,
                     "candidates": len(s.evidence.candidates),
+                    "document": s.evidence.document.summary if s.evidence.document else None,
                     "profile_sha256": s.profile_sha256,
                 }
                 for s in draft.sources
@@ -162,7 +163,7 @@ def acknowledge(
     rationale: Annotated[str, typer.Option("--rationale")],
     output: Annotated[Path, typer.Option("--output")],
 ) -> None:
-    """Explicitly acknowledge one exact source connector set as evidence-only."""
+    """Acknowledge one exact source connector or document observation set as evidence-only."""
 
     def run() -> dict[str, object]:
         evidence = load_project_record(draft, ProjectDraft)

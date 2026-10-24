@@ -11,6 +11,13 @@ The [project reference](development/v12-04-projects-and-reconciliation.md) docum
 manifest/draft/decision contracts, exact CLI commands, explicit owner partitions,
 field conflicts and safe hash-bound connector acknowledgment. Existing commands
 below keep their single-source behavior.
+V12-06 adds restricted UTF-8 TXT/Markdown and transitional DOCX/PPTX text evidence.
+Use profile version 4, explicit `select` collections and optional exact-header
+table mappings; drafts use version 5. Project controls retain version 1. Every
+nonempty document observation set requires evidence-only owner acknowledgment;
+mapped candidates require separate partition/field review and model confirmation.
+See the [document tutorial](../examples/import-studio/documents/README.md) and
+[format/security/review reference](development/v12-06-document-evidence-and-explorer.md).
 Imports remain evidence until the owner confirms declarations. No connectivity or
 permission is inferred. Development builds identify themselves as `1.2.0.dev0`;
 the published v1.1.0 release is unchanged and lacks these commands.
@@ -182,7 +189,7 @@ hidden staging directory; its contents are not a published validated bundle.
 - Before/after: existing `compare` evaluates two native declared models. A source
   document change does not itself establish a physical or analytical change.
 
-Optional document formats and completeness/comparison views remain future work. See the
+PDF/VSDX and completeness/comparison views remain future work. See the
 [architecture](development/v1.2-architecture.md),
 [decision record](development/v1.2-design-decisions.md) and
 [roadmap](development/v1.2-roadmap.md).

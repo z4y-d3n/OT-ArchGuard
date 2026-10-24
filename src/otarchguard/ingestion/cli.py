@@ -64,13 +64,32 @@ def inspect_source(
     encoding: Annotated[str, typer.Option("--encoding")] = "utf-8-sig",
     adapter: Annotated[
         str | None,
-        typer.Option("--adapter", help="json, xlsx, netbox-offline-v1, drawio or graphml."),
+        typer.Option(
+            "--adapter",
+            help="json, xlsx, netbox-offline-v1, drawio, graphml, txt, md, docx or pptx.",
+        ),
     ] = None,
 ) -> None:
     """Report bounded table structure and limits; never generate a model."""
 
     def run() -> dict[str, object]:
         selected = adapter or source.suffix.lower().lstrip(".")
+        if selected in {"txt", "md", "docx", "pptx"}:
+            if delimiter is not None or encoding != "utf-8-sig":
+                fail(
+                    "IMPORT_OPTIONS",
+                    "$",
+                    "Document adapters use restricted UTF-8 structural parsing.",
+                )
+            from otarchguard.ingestion.documents import inspect_document
+
+            return inspect_document(source, selected)
+        if selected in {"pdf", "vsdx"}:
+            fail(
+                "IMPORT_DOCUMENT_UNSUPPORTED",
+                "$",
+                "PDF and VSDX are deferred; no approved runtime parser is configured.",
+            )
         if selected in {"graphml", "drawio"}:
             if delimiter is not None or encoding != "utf-8-sig":
                 fail("IMPORT_OPTIONS", "$", "Text-table options do not apply to graphical sources.")
@@ -111,7 +130,7 @@ def preview(
     profile: Annotated[
         Path,
         typer.Option(
-            "--profile", help="Explicit version-1, version-2 or graphical version-3 mapping."
+            "--profile", help="Explicit version-1/2/3 mapping or documentary version-4 selection."
         ),
     ],
 ) -> None:

@@ -167,3 +167,18 @@ HTML entry points. See [trace evidence and finite summaries](trace.md). Native
 exposure/comparison HTML adds summaries of completed scenario queries and
 conservative declaration-change references. Existing report-version-1 JSON is
 unchanged. Python HTML callers opt in with `analysis=completed_result`.
+
+## Compact Explorer presentation contract 2
+
+V12-06 groups candidate, decision, reconciliation, graphical and document evidence
+records in bounded hash buckets with individual stable digest anchors. Native and
+analytical pages remain separate. The manifest `locations` index maps semantic
+record digest filenames to current relative paths/fragments. Old regenerated-site
+bookmarks are not guaranteed; prior standalone sites remain readable. All conflicts,
+rejected alternatives, source locations and owner choices stay linked.
+
+Document observations link to explicitly mapped candidates by exact field locations.
+No sentence or presentation arrow establishes a native permission. Grouped pages
+contain other local evidence and are not public-safe exports. Share the original
+whole folder, including CSS and all relative paths; browser Save Page As copies
+are not canonical. See the [V12-06 reference](development/v12-06-document-evidence-and-explorer.md).

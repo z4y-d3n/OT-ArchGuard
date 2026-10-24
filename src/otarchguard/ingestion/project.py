@@ -237,6 +237,8 @@ def create_project(path: Path) -> ProjectDraft:
         counts["source_bytes"] += evidence.source.byte_count
         counts["candidates"] += len(evidence.candidates)
         counts["evidence_items"] += sum(len(c.fields) for c in evidence.candidates)
+        if evidence.document:
+            counts["evidence_items"] += len(evidence.document.observations)
         if evidence.graph:
             counts["connectors"] += len(evidence.graph.edges)
             counts["evidence_items"] += len(evidence.graph.edges) + len(evidence.graph.nodes)

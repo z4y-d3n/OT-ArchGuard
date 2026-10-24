@@ -16,6 +16,7 @@ from otarchguard.contract import RESOURCE_LIMITS
 from otarchguard.diagnostics import check_limit, fail
 from otarchguard.domain import Asset, Interface, Record, Zone
 from otarchguard.ingestion.records import (
+    DocumentProfile,
     EntityKind,
     EvidenceField,
     GraphProfile,
@@ -93,12 +94,14 @@ def load_record[T: Record](path: Path, record_type: type[T]) -> T:
         fail("IMPORT_CONTROL", "$", "Invalid versioned import control document; see import docs.")
 
 
-def load_profile(path: Path) -> MappingProfile | StructuredProfile | GraphProfile:
+def load_profile(path: Path) -> MappingProfile | StructuredProfile | GraphProfile | DocumentProfile:
     value = load_bytes(read_regular(path, RESOURCE_LIMITS.input_bytes))
     if not isinstance(value, dict):
         fail("IMPORT_MAPPING", "$", "Mapping profile must be an object.")
     model = (
-        GraphProfile
+        DocumentProfile
+        if value.get("profile_version") == 4
+        else GraphProfile
         if value.get("profile_version") == 3
         else StructuredProfile
         if value.get("profile_version") == 2
@@ -275,8 +278,12 @@ def map_table(table: SourceTable, profile: MappingProfile) -> ImportDraft:
 
 
 def create_draft(
-    source: Path, profile: MappingProfile | StructuredProfile | GraphProfile
+    source: Path, profile: MappingProfile | StructuredProfile | GraphProfile | DocumentProfile
 ) -> ImportDraft:
+    if isinstance(profile, DocumentProfile):
+        from otarchguard.ingestion.documents import create_document_draft
+
+        return create_document_draft(source, profile)
     if isinstance(profile, GraphProfile):
         from otarchguard.ingestion.graphical import create_graph_draft
 
@@ -344,6 +351,21 @@ def review_summary(draft: ImportDraft) -> dict[str, object]:
         "conflicts": [c.model_dump() for c in draft.conflicts],
         "diagnostics": [d.model_dump() for d in draft.diagnostics],
         **({"graph": draft.graph.model_dump(mode="json")} if draft.graph is not None else {}),
+        **(
+            {
+                "document": {
+                    "summary": draft.document.summary,
+                    "preview": [
+                        o.model_dump(mode="json") for o in draft.document.observations[:10]
+                    ],
+                    "selected_locations": [
+                        o.location.model_dump() for o in draft.document.observations[:20]
+                    ],
+                }
+            }
+            if draft.document is not None
+            else {}
+        ),
         "coverage": {
             "rows": len(draft.candidates),
             **(
@@ -482,6 +504,7 @@ def emit_artifacts(draft: ImportDraft, decisions: OwnerDecisions, source: Path) 
         "model_rationale": decisions.model_rationale,
         "model_confirmed": True,
         "owner_declarations": decisions.model,
+        **({"document": draft.document.model_dump(mode="json")} if draft.document else {}),
         "records": provenance,
         "conflicts": [c.model_dump() for c in draft.conflicts],
         "diagnostics": [d.model_dump() for d in draft.diagnostics],

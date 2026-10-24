@@ -45,6 +45,11 @@ def connector_sets(draft: ProjectDraft) -> dict[str, tuple[str, ...]]:
                 ]
                 if source.evidence.graph
                 else [
+                    source.id + "::document::" + o.observation_id
+                    for o in source.evidence.document.observations
+                ]
+                if source.evidence.document
+                else [
                     source.id + "::" + c.candidate_id
                     for c in source.evidence.candidates
                     if c.entity == "connection"
@@ -86,7 +91,7 @@ def acknowledge_connectors(
         fail(
             "PROJECT_ACK",
             "$",
-            "Select a nonempty declared connector source, reviewer and rationale.",
+            "Select a nonempty documentary source, reviewer and rationale.",
         )
     if owner.reviewer and owner.reviewer != reviewer:
         fail("PROJECT_REVIEWER", "$", "Keep the same named reviewer within a decision document.")
@@ -167,6 +172,12 @@ def project_summary(
         "entities": dict(sorted(counts.items())),
         "graphical_nodes": sum(len(g.nodes) for g in graphs),
         "graphical_connectors": sum(len(g.edges) for g in graphs),
+        "documentary_observations": sum(
+            len(s.evidence.document.observations) for s in draft.sources if s.evidence.document
+        ),
+        "document_summaries": {
+            s.id: s.evidence.document.summary for s in draft.sources if s.evidence.document
+        },
         "potential_duplicate_groups": len(draft.proposals),
         "blocking_conflicts": len(draft.conflicts),
         "candidates_requiring_correction": len(missing),
@@ -255,11 +266,11 @@ def review_markdown(draft: ProjectDraft, group_id: str | None = None) -> bytes:
                 + _safe(preferred_source)
                 + "; confirmation still required."
             )
-        lines += ["", "## Evidence-only connector sets", ""]
+        lines += ["", "## Evidence-only documentary sets", ""]
         for connector_source, members in connector_sets(draft).items():
             if members:
                 lines.append(
-                    f"- {_safe(connector_source)}: {len(members)} connectors; "
+                    f"- {_safe(connector_source)}: {len(members)} documentary records; "
                     f"SHA-256 {digest(members)}"
                 )
         lines += [

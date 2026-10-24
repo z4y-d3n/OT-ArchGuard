@@ -24,6 +24,7 @@ from otarchguard.exposure import exposure_architecture
 from otarchguard.ingestion.project import _no_links
 from otarchguard.ingestion.reconciliation import catalog
 from otarchguard.ingestion.records import StructuredCandidate
+from otarchguard.ingestion.tabular import digest
 from otarchguard.intents import check_architecture
 from otarchguard.reporting import diagram_summary
 from otarchguard.trace import trace_architecture
@@ -129,6 +130,25 @@ class Explorer:
         for key, fields in self.native.items():
             self._references(key, fields)
         self.candidates = catalog(provenance.catalog.sources) if provenance else {}
+        self.document_candidates: dict[tuple[str, str], list[str]] = defaultdict(list)
+        self.document_origins: dict[tuple[str, str], tuple[str, str]] = {}
+        if provenance:
+            for candidate_key, (sid, candidate) in self.candidates.items():
+                if isinstance(candidate, StructuredCandidate):
+                    for field in candidate.fields:
+                        if field.location:
+                            self.document_candidates[
+                                sid, digest(field.location.model_dump())
+                            ].append(candidate_key)
+            for source in provenance.catalog.sources:
+                if source.evidence.document:
+                    for observation in source.evidence.document.observations:
+                        self.document_origins[
+                            source.id, digest(observation.location.model_dump())
+                        ] = (
+                            path("observation", [source.id, observation.observation_id]),
+                            observation.location.record,
+                        )
         self.identity = (
             {str(r["candidate_entity_id"]): r for r in provenance.identity_index}
             if provenance
@@ -663,6 +683,16 @@ class Explorer:
                     "ambiguities": candidate.ambiguities,
                 }
             )
+            origins = [
+                self.document_origins[source_id, digest(field.location.model_dump())]
+                for field in candidate.fields
+                if field.location
+                and (source_id, digest(field.location.model_dump())) in self.document_origins
+            ]
+            if origins:
+                body += self.references(
+                    "Original document observations", origins, [candidate_key, "document"]
+                )
             if candidate_key in self.candidate_decision:
                 body += (
                     "<p>"
@@ -723,6 +753,41 @@ class Explorer:
             body += self.references(
                 "Mapped observations and candidates", entries, ["source", source.id, "candidates"]
             )
+            if source.evidence.document:
+                documentary = source.evidence.document
+                body += section("Restricted document coverage", self.value(documentary.summary))
+                body += section(
+                    "Unsupported content diagnostics",
+                    self.value([d.model_dump(mode="json") for d in source.evidence.diagnostics]),
+                )
+                observations = []
+                for observation in documentary.observations:
+                    target = path("observation", [source.id, observation.observation_id])
+                    observations.append(
+                        (
+                            target,
+                            observation.location.collection + " · " + observation.location.record,
+                        )
+                    )
+                    observation_body = "<p>Documented only; text creates no native permissions.</p>"
+                    observation_body += "<p>" + link(name, "Supporting source") + "</p>"
+                    observation_body += self.value(observation.model_dump(mode="json"))
+                    mapped = self.document_candidates[
+                        source.id, digest(observation.location.model_dump())
+                    ]
+                    observation_body += self.references(
+                        "Explicitly mapped candidates",
+                        [(path("candidate", key), key) for key in mapped],
+                        [source.id, observation.observation_id, "mapped"],
+                    )
+                    self.writer.page(
+                        target,
+                        "Document observation · " + observation.observation_id,
+                        observation_body,
+                    )
+                body += self.references(
+                    "Located documentary observations", observations, [source.id, "document"]
+                )
             graph = source.evidence.graph
             if graph:
                 nodes = []
@@ -880,7 +945,7 @@ class Explorer:
             + "</p>"
         )
         body += (
-            "<p>Deterministic generation; Explorer contract 1; OT-ArchGuard "
+            "<p>Deterministic generation; Explorer contract 2; OT-ArchGuard "
             + escape(__version__)
             + ".</p>"
         )
@@ -1001,6 +1066,7 @@ def generate_explorer(
             explorer = Explorer(validated, sidecar, SiteWriter(stage, validated.sha256))
             indexed = time.perf_counter()
             result = explorer.render(options or ExploreOptions())
+            rendered = time.perf_counter()
             if output.exists() or output.is_symlink():
                 fail("EXPLORER_OUTPUT", "$", "Output already exists; publication refused.")
             os.rename(stage, output)
@@ -1009,11 +1075,13 @@ def generate_explorer(
     return {
         "status": "complete",
         "model_sha256": validated.sha256,
-        "site": {k: v for k, v in result.items() if k != "files"},
+        "site": {k: v for k, v in result.items() if k not in {"files", "locations"}},
         "timings_seconds": {
             "input_validation": loaded - started,
             "index_creation": indexed - loaded,
             "render_and_audit": time.perf_counter() - indexed,
+            "site_audit": explorer.writer.audit_seconds,
+            "rendering": rendered - indexed - explorer.writer.audit_seconds,
             "total": time.perf_counter() - started,
         },
     }

@@ -9,6 +9,8 @@ from typing import cast
 from otarchguard.diagnostics import check_limit, fail
 from otarchguard.ingestion.numbers import NumericToken, numeric_text
 from otarchguard.ingestion.records import (
+    DocumentEvidence,
+    DocumentProfile,
     GraphEvidence,
     GraphProfile,
     ImportCandidate,
@@ -92,7 +94,7 @@ def lookup(value: YamlValue, pointer: str) -> tuple[YamlValue, bool]:
     return current, False
 
 
-def validate_profile(profile: StructuredProfile | GraphProfile) -> None:
+def validate_profile(profile: StructuredProfile | GraphProfile | DocumentProfile) -> None:
     from otarchguard.ingestion.workflow import _allowed
 
     names = [t.name for t in profile.tables]
@@ -109,7 +111,7 @@ def validate_profile(profile: StructuredProfile | GraphProfile) -> None:
             fail("IMPORT_MAPPING", table.name, "A mapped field cannot also be a constant.")
         if len({f.path for f in table.fields.values()}) != len(table.fields):
             fail("IMPORT_MAPPING", table.name, "Duplicate mapped source fields are forbidden.")
-        if profile.adapter not in {"xlsx", "drawio", "graphml"}:
+        if profile.adapter not in {"xlsx", "drawio", "graphml", "txt", "md", "docx", "pptx"}:
             pointer_parts(table.collection)
         for field in table.fields.values():
             if profile.adapter != "xlsx":
@@ -145,11 +147,12 @@ def validate_profile(profile: StructuredProfile | GraphProfile) -> None:
 
 def map_extracted(
     source: SourceDocument,
-    profile: StructuredProfile | GraphProfile,
+    profile: StructuredProfile | GraphProfile | DocumentProfile,
     tables: dict[str, tuple[ExtractedRow, ...]],
     diagnostics: list[ImportDiagnostic],
     *,
     graph: GraphEvidence | None = None,
+    document: DocumentEvidence | None = None,
 ) -> ImportDraft:
     from otarchguard.ingestion.workflow import _check_draft_envelope, _field_problems
 
@@ -366,8 +369,9 @@ def map_extracted(
                 )
     check_limit("import_diagnostics", len(diagnostics), STRUCTURED_LIMITS.diagnostics)
     draft = ImportDraft(
-        import_version=4 if graph is not None else 3,
+        import_version=5 if document is not None else 4 if graph is not None else 3,
         graph=graph,
+        document=document,
         source=source,
         profile=profile,
         headers=tuple(sorted(t.collection for t in profile.tables)),

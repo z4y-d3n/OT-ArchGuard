@@ -1,0 +1,25 @@
+{
+  "adapter": "docx",
+  "profile_version": 4,
+  "select": [
+    "*"
+  ],
+  "tables": [
+    {
+      "collection": "word/document.xml/table:1",
+      "entity": "asset",
+      "fields": {
+        "id": {
+          "path": "/id"
+        },
+        "name": {
+          "path": "/name"
+        },
+        "zone_id": {
+          "path": "/zone"
+        }
+      },
+      "name": "assets"
+    }
+  ]
+}

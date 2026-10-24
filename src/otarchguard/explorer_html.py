@@ -4,6 +4,8 @@ import hashlib
 import html
 import json
 import re
+import time
+from collections import defaultdict
 from collections.abc import Sequence
 from html.parser import HTMLParser
 from pathlib import Path, PurePosixPath
@@ -44,7 +46,7 @@ _PATH = re.compile(
 )
 _BIDI = frozenset(range(0x202A, 0x202F)) | frozenset(range(0x2066, 0x206A))
 _ALLOWED_ELEMENTS = frozenset(
-    "html head meta link title body a header p h1 h2 nav ul li main section dl dt dd div "
+    "html head meta link title body a header p h1 h2 h3 nav ul li main section dl dt dd div "
     "table caption thead tr th tbody td aside footer figure figcaption pre code br svg "
     "desc defs marker path clippath rect g text circle".split()
 )
@@ -130,7 +132,7 @@ def document(title: str, body: str, model_hash: str) -> bytes:
         + "</main><footer>Local full-detail engineering report. Review before sharing: "
         "asset names, addresses and selected evidence may be sensitive. Original documents "
         "are not included. Hashes detect changes; they do not authenticate authorship. "
-        "Explorer contract 1; native schema 1. No JavaScript required.</footer></body></html>\n"
+        "Explorer contract 2; native schema 1. No JavaScript required.</footer></body></html>\n"
     ).encode("utf-8")
 
 
@@ -183,6 +185,13 @@ class PageAudit(HTMLParser):
 def audit_site(root: Path) -> dict[str, int]:
     pages: dict[str, PageAudit] = {}
     largest_svg = 0
+    # One bounded directory inventory replaces a filesystem stat for every link.
+    # A compact site can still contain tens of thousands of cross-references.
+    actual_files: set[str] = set()
+    for entry in root.iterdir():
+        if entry.is_symlink() or entry.is_junction() or not entry.is_file():
+            raise ValueError("Nonregular site member")
+        actual_files.add(entry.name)
     for path in sorted(root.glob("*.html")):
         text = path.read_text(encoding="utf-8")
         parser = PageAudit()
@@ -195,7 +204,7 @@ def audit_site(root: Path) -> dict[str, int]:
         for target in parser.links:
             file, _, fragment = target.partition("#")
             file = file or name
-            if PurePosixPath(file).name != file or not (root / file).is_file():
+            if PurePosixPath(file).name != file or file not in actual_files:
                 raise ValueError("Broken local file link")
             if fragment and (file not in pages or fragment not in pages[file].ids):
                 raise ValueError("Broken local anchor")
@@ -203,6 +212,8 @@ def audit_site(root: Path) -> dict[str, int]:
     return {
         "html_pages": len(pages),
         "internal_links": links,
+        "anchors": sum(len(p.ids) for p in pages.values()),
+        "broken_links": 0,
         "largest_svg_bytes": largest_svg,
         "rendered_entity_marks": sum(p.entity_marks for p in pages.values()),
         "rendered_relationship_marks": sum(p.relationship_marks for p in pages.values()),
@@ -216,6 +227,10 @@ class SiteWriter:
         self.files: dict[str, str] = {}
         self.total = 0
         self.largest = 0
+        self.pending: dict[str, tuple[str, str]] = {}
+        self.pending_bytes = 0
+        self.locations: dict[str, str] = {}
+        self.audit_seconds = 0.0
 
     def write(self, name: str, data: bytes) -> None:
         if re.fullmatch(r"[a-z0-9-]+\.(html|css|json)", name) is None or name in self.files:
@@ -233,12 +248,102 @@ class SiteWriter:
             self.largest = max(self.largest, len(data))
 
     def page(self, name: str, title: str, body: str) -> None:
-        self.write(name, document(title, body, self.model_hash))
+        if re.fullmatch(r"[a-z0-9-]+\.html", name) is None or name in self.pending:
+            fail("EXPLORER_OUTPUT", "$", "Unsafe or duplicate generated page identity.")
+        size = len(document(title, body, self.model_hash))
+        check_limit("explorer_page_bytes", size, EXPLORER_LIMITS.page_bytes)
+        check_limit("explorer_total_bytes", self.pending_bytes + size, EXPLORER_LIMITS.total_bytes)
+        check_limit("explorer_records", len(self.pending) + 1, EXPLORER_LIMITS.pages)
+        self.pending_bytes += size
+        self.pending[name] = (title, body)
+
+    def _compact(self) -> None:
+        """Pack low-value detail files in stable hash tries; never truncate evidence.
+
+        Keys retain the contract-1 semantic digest. Physical paths are contract-2
+        locations, not promises that old bookmarks will continue to resolve.
+        """
+        families = {"candidate", "group", "decision", "node", "connector", "observation"}
+        buckets: dict[tuple[str, str], list[str]] = defaultdict(list)
+        grouped: dict[str, list[str]] = {}
+        for name in sorted(self.pending):
+            family, _, identity = name.removesuffix(".html").partition("-")
+            if family in families:
+                buckets[family, identity[:1]].append(name)
+            else:
+                self.locations[name] = name
+
+        def split(family: str, prefix: str, members: list[str]) -> None:
+            size = sum(len(self.pending[n][1].encode("utf-8")) + 1024 for n in members)
+            if len(members) > 24 or (size > 384 * 1024 and len(members) > 1):
+                children: dict[str, list[str]] = defaultdict(list)
+                for name in members:
+                    identity = name.removesuffix(".html").partition("-")[2]
+                    if len(prefix) >= len(identity):
+                        fail("EXPLORER_OUTPUT", "$", "Evidence identity collision.")
+                    children[identity[: len(prefix) + 1]].append(name)
+                for child, values in sorted(children.items()):
+                    split(family, child, values)
+                return
+            destination = family + "-" + prefix + ".html"
+            grouped[destination] = members
+            for name in members:
+                self.locations[name] = destination + "#" + name.removesuffix(".html")
+
+        for (family, prefix), members in sorted(buckets.items()):
+            split(family, prefix, members)
+
+        def links(body: str, origin: str, namespace: str = "") -> str:
+            def destination(match: re.Match[str]) -> str:
+                file, marker, fragment = match[1].partition("#")
+                target = self.locations.get(file or origin, file or origin)
+                if marker:
+                    target += ("-" if "#" in target else "#") + fragment
+                return 'href="' + target + '"'
+
+            body = re.sub(r'href="([a-z0-9.-]*(?:#[a-z0-9-]+)?)"', destination, body)
+            if namespace:
+                body = re.sub(
+                    r'id="([a-z0-9-]+)"', lambda m: 'id="' + namespace + "-" + m[1] + '"', body
+                )
+                body = re.sub(
+                    r"url\(#([a-z0-9-]+)\)", lambda m: "url(#" + namespace + "-" + m[1] + ")", body
+                )
+            return body
+
+        for name, (title, body) in sorted(self.pending.items()):
+            if self.locations[name] == name:
+                self.write(name, document(title, links(body, name), self.model_hash))
+        for name, members in sorted(grouped.items()):
+            body = (
+                '<p class="notice">This page contains additional local documentary evidence '
+                "and is not a public-safe export.</p>"
+            )
+            body += table(
+                "Records on this page",
+                ("Record",),
+                [(link("#" + n.removesuffix(".html"), self.pending[n][0]),) for n in members],
+            )
+            for member in members:
+                title, record = self.pending[member]
+                anchor = member.removesuffix(".html")
+                body += '<section id="' + anchor + '"><h2>' + escape(title) + "</h2>"
+                body += links(record, member, anchor) + "</section>"
+            self.write(
+                name,
+                document("Grouped " + name.partition("-")[0] + " evidence", body, self.model_hash),
+            )
+        self.pending.clear()
 
     def finish(self, metadata: dict[str, object]) -> dict[str, object]:
+        self._compact()
+        started = time.perf_counter()
         audit = audit_site(self.root)
+        self.audit_seconds = time.perf_counter() - started
         manifest = {
-            "explorer_version": 1,
+            "explorer_version": 2,
+            "location_contract": "semantic digest filename to current relative page/anchor",
+            "locations": dict(sorted(self.locations.items())),
             "model_sha256": self.model_hash,
             **metadata,
             **audit,

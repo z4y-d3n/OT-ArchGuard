@@ -18,6 +18,12 @@ zones, assets, interfaces, retained project provenance and explicit analytical
 queries: `otarchguard explore MODEL --provenance SIDECAR --output NEW_DIRECTORY`.
 Its static pages use local CSS and no JavaScript or server. Documentary connectors,
 owner declarations and exact analytical results retain separate trust semantics.
+V12-06 adds restricted TXT/Markdown/DOCX/PPTX documentary observations and explicit
+table mapping, with owner review and source-change rejection. Explorer contract 2
+groups evidence into bounded pages with individual anchors. See the
+[document tutorial](examples/import-studio/documents/README.md) and
+[supported subsets and design decisions](docs/development/v12-06-document-evidence-and-explorer.md).
+PDF/VSDX remain deferred. Grouped reports contain additional sensitive evidence.
 Stable v1.2.0 release readiness still requires actual hosted verification on all
 six OS/Python combinations; local development acceptance does not establish it.
 See [release notes](docs/release-notes-1.1.0.md)

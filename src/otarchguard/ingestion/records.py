@@ -81,11 +81,18 @@ class GraphProfile(ImportRecord):
     unknown_policy: Literal["diagnose"]
 
 
+class DocumentProfile(ImportRecord):
+    profile_version: Literal[4]
+    adapter: Literal["txt", "md", "docx", "pptx"]
+    select: tuple[str, ...] = Field(min_length=1, max_length=64)
+    tables: tuple[TableMapping, ...] = Field(default=(), max_length=16)
+
+
 class SourceDocument(ImportRecord):
     source_id: str
     sha256: str
     name: str
-    format: Literal["csv", "tsv", "json", "xlsx", "graphml", "drawio"]
+    format: Literal["csv", "tsv", "json", "xlsx", "graphml", "drawio", "txt", "md", "docx", "pptx"]
     byte_count: int
     encoding: str
     delimiter: str
@@ -237,18 +244,54 @@ class ImportConflict(ImportRecord):
     candidate_ids: tuple[str, ...]
 
 
+class DocumentObservation(ImportRecord):
+    observation_id: str
+    category: Literal["heading", "paragraph", "list", "fenced_text", "table_cell", "slide_text"]
+    text: str = Field(max_length=4096)
+    location: StructuredLocation
+
+
+class DocumentEvidence(ImportRecord):
+    subset_version: Literal[1] = 1
+    observations: tuple[DocumentObservation, ...] = Field(max_length=4000)
+    summary: dict[str, int] = Field(max_length=16)
+
+    @model_validator(mode="after")
+    def located_identity(self) -> Self:
+        from otarchguard.ingestion.tabular import _safe_text, digest
+
+        identities = [o.observation_id for o in self.observations]
+        if len(set(identities)) != len(identities):
+            raise ValueError("Duplicate document observation identity")
+        if self.summary.get("selected_observations") != len(self.observations):
+            raise ValueError("Document coverage summary differs from retained observations")
+        for observation in self.observations:
+            expected = "observation_" + digest(
+                [observation.location.model_dump(), observation.category]
+            )
+            if observation.observation_id != expected:
+                raise ValueError("Document observation identity and location disagree")
+            _safe_text(observation.text)
+        return self
+
+
 class ImportDraft(ImportRecord):
-    import_version: Literal[1, 2, 3, 4]
+    import_version: Literal[1, 2, 3, 4, 5]
     source: SourceDocument
-    profile: MappingProfile | StructuredProfile | GraphProfile
+    profile: MappingProfile | StructuredProfile | GraphProfile | DocumentProfile
     headers: tuple[str, ...]
     candidates: tuple[ImportCandidate | StructuredCandidate, ...] = Field(max_length=1000)
     conflicts: tuple[ImportConflict, ...] = Field(max_length=1000)
     diagnostics: tuple[ImportDiagnostic, ...] = Field(max_length=200)
     graph: GraphEvidence | None = Field(default=None, exclude_if=lambda value: value is None)
+    document: DocumentEvidence | None = Field(default=None, exclude_if=lambda value: value is None)
 
     @model_validator(mode="after")
     def graph_contract(self) -> Self:
+        if (self.import_version == 5) != isinstance(self.profile, DocumentProfile):
+            raise ValueError("Document profiles require draft version 5")
+        if (self.import_version == 5) != (self.document is not None):
+            raise ValueError("Document drafts require documentary observations")
         if (self.import_version == 4) != isinstance(self.profile, GraphProfile):
             raise ValueError("Graph profiles require draft version 4")
         if (self.import_version == 4) != (self.graph is not None):

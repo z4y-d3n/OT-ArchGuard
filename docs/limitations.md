@@ -1,5 +1,14 @@
 # Scope and known limitations
 
+V12-06 document support is restricted text/structure extraction, without rendered
+page numbers, OCR, inherited presentation text, automatic network inference or
+complete Office coverage. Active/embedded/external structures fail closed or are
+explicitly diagnosed as excluded under the
+[subset policy](development/v12-06-document-evidence-and-explorer.md).
+PDF/VSDX remain unsupported. Explorer contract 2 groups records: sharing a page
+also shares its other evidence, and old physical bookmarks may change after
+regeneration. The manifest location index identifies current record anchors.
+
 The development Architecture Explorer supports native models and matching project
 provenance version 1. Other sidecar versions fail explicitly; model-only mode has
 no documentary origins. It never imports old HTML as analytical truth. Its bounded

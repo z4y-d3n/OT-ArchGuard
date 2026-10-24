@@ -1,0 +1,5 @@
+Engineering Station 10.0.0.1
+TCP 502 allowed
+id=eng
+name=Engineering Station
+zone=alternate

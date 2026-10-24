@@ -5,17 +5,14 @@ Unknown package parts fail closed; this is intentionally not a general Office pa
 """
 
 import hashlib
-import io
 import posixpath
 import re
-import stat
-import zipfile
 from dataclasses import asdict, dataclass
 from pathlib import Path, PurePosixPath
-from xml.etree import ElementTree as ET
 
 from otarchguard.diagnostics import check_limit, fail
 from otarchguard.ingestion.numbers import excel_magnitude_ambiguous, parse_number
+from otarchguard.ingestion.ooxml import read_parts
 from otarchguard.ingestion.records import (
     ImportDiagnostic,
     ImportDraft,
@@ -105,67 +102,22 @@ def read_workbook(path: Path, limits: WorkbookLimits = WORKBOOK_LIMITS) -> Workb
         diagnostics.append(ImportDiagnostic(code=code, message=message, field=location))
         check_limit("import_diagnostics", len(diagnostics), limits.diagnostics)
 
-    parts: dict[str, ET.Element] = {}
-    try:
-        with zipfile.ZipFile(io.BytesIO(data)) as archive:
-            members = archive.infolist()
-            check_limit("xlsx_members", len(members), limits.members)
-            seen: set[str] = set()
-            uncompressed = 0
-            for member in members:
-                member_path = PurePosixPath(member.filename)
-                name = member.filename
-                mode = member.external_attr >> 16
-                if (
-                    name.casefold() in seen
-                    or member.orig_filename != name
-                    or member_path.is_absolute()
-                    or ".." in member_path.parts
-                    or "\\" in name
-                    or ":" in name
-                    or (stat.S_IFMT(mode) not in {0, stat.S_IFREG, stat.S_IFDIR})
-                    or member.flag_bits & 1
-                    or member.compress_type not in {0, 8}
-                ):
-                    fail("IMPORT_XLSX_ARCHIVE", "$", "Unsafe, duplicate or special ZIP member.")
-                seen.add(name.casefold())
-                if member.is_dir():
-                    if member.file_size != 0:
-                        fail("IMPORT_XLSX_ARCHIVE", "$", "Directory entries must be empty.")
-                    if name not in {
-                        "_rels/",
-                        "docProps/",
-                        "xl/",
-                        "xl/_rels/",
-                        "xl/worksheets/",
-                        "xl/worksheets/_rels/",
-                        "xl/theme/",
-                    }:
-                        fail("IMPORT_XLSX_PART", "$", "Unsupported workbook package directory.")
-                    continue
-                if _PART.fullmatch(name) is None:
-                    fail(
-                        "IMPORT_XLSX_PART",
-                        "$",
-                        "Unsupported package part (macros/objects excluded).",
-                    )
-                uncompressed += member.file_size
-                check_limit("xlsx_uncompressed_bytes", uncompressed, limits.uncompressed_bytes)
-                check_limit(
-                    "xlsx_compression_ratio",
-                    member.file_size,
-                    max(1, member.compress_size) * limits.ratio,
-                )
-            # Validate every member, including unselected sheets and unused XML.
-            for member in members:
-                if not member.is_dir():
-                    with archive.open(member) as stream:
-                        payload = stream.read(limits.uncompressed_bytes + 1)
-                    if len(payload) != member.file_size:
-                        fail("IMPORT_XLSX_ARCHIVE", "$", "Archive member size mismatch.")
-                    parts[member.filename] = budget.parse(payload)
-    except (zipfile.BadZipFile, OSError, RuntimeError, NotImplementedError):
-        fail("IMPORT_XLSX_ARCHIVE", "$", "Corrupt or unsupported workbook container.")
+    parts = read_parts(
+        data,
+        limits,
+        budget,
+        _PART,
+        {
+            "_rels/",
+            "docProps/",
+            "xl/",
+            "xl/_rels/",
+            "xl/worksheets/",
+            "xl/worksheets/_rels/",
+            "xl/theme/",
+        },
+        prefix="xlsx",
+    )
     if (
         not {"[Content_Types].xml", "_rels/.rels", "xl/workbook.xml", "xl/_rels/workbook.xml.rels"}
         <= parts.keys()

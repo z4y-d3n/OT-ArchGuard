@@ -127,3 +127,20 @@ they need not preserve hashes, work, evidence groups or atom boundaries.
 Each new seeded relation includes a controlled permit/deny path with both
 reachable and unreachable ports, so an entirely blocked random graph cannot
 make every transformation pass without exercising permitted communication.
+
+## V12-06 documentary and compact-site verification
+
+`tests/test_ingestion_documents.py` covers four restricted formats, exact runs/lines/
+slides/cells, explicit mapping, evidence-only acknowledgment, mixed-source conflicts,
+stale decisions, inert hostile content and ZIP/XML attacks.
+`tests/test_explorer_compact.py` covers grouped record/nested-anchor preservation,
+hash bucket stability, material medium-workload compaction and byte determinism.
+Existing Explorer tests resolve documentary paths through the version-2 location
+index; native analytics and standalone reporting regressions remain unchanged.
+
+`benchmarks.documents` records three timing samples and separate allocation/profile
+measurements. The exact old Explorer workloads are compared against a preserved
+V12-05 installation. Final installed wheel/sdist, module hashes and offline console
+walkthroughs bind the current source; preparation runs cannot accept later changes.
+The browser file-origin request was blocked by tool policy; real browser behavior
+is NOT EXECUTED, distinct from structural accessibility/link/security tests.

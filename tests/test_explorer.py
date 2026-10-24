@@ -51,6 +51,15 @@ def files(root: Path) -> dict[str, bytes]:
     return {p.name: p.read_bytes() for p in root.iterdir()}
 
 
+def location(root: Path, semantic: str) -> str:
+    index = json.loads((root / "manifest.json").read_text(encoding="utf-8"))["locations"]
+    return str(index.get(semantic, semantic))
+
+
+def page_at(root: Path, semantic: str) -> Path:
+    return root / location(root, semantic).partition("#")[0]
+
+
 @pytest.fixture(scope="module")
 def accepted(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, Path]:
     root = tmp_path_factory.mktemp("explorer-project")
@@ -94,13 +103,13 @@ def test_real_multisource_chain_and_owner_conflict(
     # The rejected alternate belongs to documentary field evidence, never native zone_id.
     native = load_model(accepted[0]).model
     assert next(a for a in native.assets if a.id == native_id).zone_id == "control"
-    candidate = evidence_site / path("candidate", key)
+    candidate = page_at(evidence_site, path("candidate", key))
     assert "alternate" in content(candidate)
     page = Document(candidate.read_text(encoding="utf-8"))
     links = [a["href"] for t, a in page.tags if t == "a"]
     decision = next(d for d in sidecar.decisions.entities if key in d.members)
     decision_path = path("decision", sorted(decision.members))
-    assert decision_path in links
+    assert location(evidence_site, decision_path) in links
     assert path("source", "metadata") in links
     assert path("native", ["assets", native_id]) in links
     assert any(p and p.startswith("group-") for p in links)
@@ -113,8 +122,10 @@ def test_real_multisource_chain_and_owner_conflict(
     ]
     assert {r["source_id"] for r in origins} == {"inventory", "metadata", "topology"}
     for origin in origins:
-        assert path("candidate", origin["candidate_entity_id"]) in asset.read_text(encoding="utf-8")
-    assert "inventory zone controls" in content(evidence_site / decision_path)
+        assert location(
+            evidence_site, path("candidate", origin["candidate_entity_id"])
+        ) in asset.read_text(encoding="utf-8")
+    assert "inventory zone controls" in content(page_at(evidence_site, decision_path))
 
 
 def test_documentary_connectors_never_create_native_edges(
@@ -124,7 +135,8 @@ def test_documentary_connectors_never_create_native_edges(
     model = load_model(accepted[0])
     assert not model.model.transport_edges and not model.model.forwarding_edges
     pages = list(evidence_site.glob("connector-*.html"))
-    assert len(pages) == 5
+    index = json.loads((evidence_site / "manifest.json").read_text())["locations"]
+    assert sum(key.startswith("connector-") for key in index) == 5
     for page in pages:
         parsed = Document(page.read_text(encoding="utf-8"))
         assert any(t == "path" and "documentary" in (a.get("class") or "") for t, a in parsed.tags)
@@ -616,10 +628,10 @@ def test_rejected_graphical_origin_stays_documentary(tmp_path: Path) -> None:
         tmp_path / "site",
         provenance=tmp_path / "architecture.provenance.json",
     )
-    text = content(tmp_path / "site" / path("candidate", graph_member))
+    text = content(page_at(tmp_path / "site", path("candidate", graph_member)))
     assert "OWNER_REJECTED" in text and "No native entity accepted" in text
     native = (tmp_path / "site" / path("native", ["assets", "eng"])).read_text(encoding="utf-8")
-    assert path("candidate", graph_member) not in native
+    assert location(tmp_path / "site", path("candidate", graph_member)) not in native
 
 
 def test_native_ordering_preserves_byte_output(tmp_path: Path, minimal: dict[str, Any]) -> None:
