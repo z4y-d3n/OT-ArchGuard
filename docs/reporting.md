@@ -1,5 +1,14 @@
 # Offline evidence reports, version 1
 
+The additive development [Architecture Explorer](../examples/explorer/README.md)
+uses static multipage navigation for native models and project provenance. Run
+`otarchguard explore MODEL --output NEW_DIRECTORY`, optionally with
+`--provenance SIDECAR`, `--trace SOURCE:SERVICE`, `--check` or `--scenario ID`.
+Explicit analyses use the existing engines on the same validated model. No
+arbitrary old HTML/JSON report is imported as analytical authority. Existing
+single-file reports and their version-1 bytes/contracts remain unchanged.
+See [input, security and size contracts](development/v12-05-architecture-explorer.md).
+
 For current presentation design and observed verification, see
 [Gate V11-2](v1.1/gate-v11-2.md). Analytical report JSON remains version 1.
 

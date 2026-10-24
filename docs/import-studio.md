@@ -69,7 +69,9 @@ The owner-declared remaining model fields are recorded separately.
 `check` on this example succeeds over an empty intent set. That is **not evidence
 of any permitted communication**. Add only explicitly reviewed native declarations
 before using existing trace/exposure workflows. Current HTML is the existing report;
-the new provenance is inspected as JSON. Explorer crosslinks are planned V12-05.
+Single-source provenance remains inspectable as JSON. The V12-05
+[Explorer walkthrough](../examples/explorer/README.md) navigates project-version-1
+provenance; other sidecars require model-only output without `--provenance`.
 
 ## Mapping contract
 
@@ -173,14 +175,14 @@ hidden staging directory; its contents are not a published validated bundle.
   in V12-02, with explicit sheet/collection selection and literal formula corrections.
 - draw.io-to-draft: V12-03 extracts shapes/groups/connectors as evidence, without
   translating diagram arrows into forwarding or permissions.
-- Several documentation sources: V12-04 will reconcile source identities and
-  contradictions using owner decisions; current mapping takes one file.
-- Architecture Explorer: V12-05 will add stable source/asset/trace links and explicit
-  legends for source, declaration and analytical evidence.
+- Several documentation sources: V12-04 project reconciliation retains explicit
+  owner partitions, contradictory observations and field selections.
+- Architecture Explorer: V12-05 adds static source/asset/interface navigation,
+  bounded diagrams, owner-decision links and explicit exact-query regeneration.
 - Before/after: existing `compare` evaluates two native declared models. A source
   document change does not itself establish a physical or analytical change.
 
-The later gates remain planned scenarios. See the
+Optional document formats and completeness/comparison views remain future work. See the
 [architecture](development/v1.2-architecture.md),
 [decision record](development/v1.2-design-decisions.md) and
 [roadmap](development/v1.2-roadmap.md).

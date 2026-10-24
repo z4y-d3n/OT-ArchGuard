@@ -80,9 +80,15 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $tests = @(Get-ChildItem tests/test_ingestion*.py | ForEach-Object { $_.FullName })
           $tests += 'tests/test_review_bundle.py'
+          $tests += 'tests/test_explorer.py'
           python -m pytest @tests --basetemp=output/sdist-tmp --tb=short --junitxml=output/sdist-suite.xml
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python -m tools.project_walkthrough --output output/project-walkthrough
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $explorerOutput = Join-Path ([System.IO.Path]::GetTempPath()) ('otarchguard-explorer-' + [guid]::NewGuid().ToString('N'))
+          python -m tools.explorer_walkthrough --output $explorerOutput
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Copy-Item -LiteralPath (Join-Path $explorerOutput 'walkthrough.json') -Destination output/explorer-walkthrough.json
       - name: Retain candidate integrity evidence
         uses: actions/upload-artifact@v7.0.2
         with:
@@ -95,6 +101,7 @@ jobs:
             output/sdist-suite.xml
             output/installed-sdist.json
             output/project-walkthrough/walkthrough.json
+            output/explorer-walkthrough.json
             output/environment-${{ matrix.os }}-${{ matrix.python }}.json
       - name: Measure fixed NFR-05 workloads offline
         env:

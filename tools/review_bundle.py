@@ -28,6 +28,21 @@ REVIEW_FILES = frozenset(
         "tools/synthetic_projects.py",
         "tools/project_walkthrough.py",
         "benchmarks/projects.py",
+        "benchmarks/explorer.py",
+        "tools/synthetic_explorer.py",
+        "tools/explorer_walkthrough.py",
+        "src/otarchguard/cli.py",
+        "src/otarchguard/explorer.py",
+        "src/otarchguard/explorer_data.py",
+        "src/otarchguard/explorer_html.py",
+        "tests/test_explorer.py",
+        "tests/fixtures/boundary-device.yaml",
+        "README.md",
+        "docs/development/gate-v12-05.md",
+        "docs/development/v12-05-architecture-explorer.md",
+        "docs/reporting.md",
+        "docs/import-studio.md",
+        "examples/explorer/README.md",
     }
     | {
         f"src/otarchguard/ingestion/{name}.py"
@@ -108,8 +123,13 @@ def _source_files(root: Path, selection: frozenset[str]) -> dict[str, bytes]:
     files: dict[str, bytes] = {}
     for name in sorted(selection):
         _safe_member(name)
-        if not (name.endswith(".py") or name == "LICENSE"):
-            raise ValueError("Only selected source/tests and license belong in this bundle")
+        if (
+            Path(name).suffix not in {".py", ".md", ".yaml", ".json", ".csv", ".drawio"}
+            and name != "LICENSE"
+        ):
+            raise ValueError(
+                "Only selected public source, documents and fixtures belong in this bundle"
+            )
         source = root / name
         if source.is_symlink() or not stat.S_ISREG(source.stat().st_mode):
             raise ValueError("Review inputs must be regular source files")
@@ -144,7 +164,7 @@ def audit_review(
     manifest = json.loads(files["review-manifest.json"])
     if manifest != {
         "review_version": 1,
-        "scope": "selected ingestion source and tests",
+        "scope": "selected public source, tests, documentation and fixtures",
         "files": hashes,
     }:
         raise ValueError("Review manifest differs from verified source")
@@ -169,7 +189,11 @@ def create_review(
     hashes = {name: hashlib.sha256(data).hexdigest() for name, data in sorted(files.items())}
     files["review-manifest.json"] = (
         json.dumps(
-            {"review_version": 1, "scope": "selected ingestion source and tests", "files": hashes},
+            {
+                "review_version": 1,
+                "scope": "selected public source, tests, documentation and fixtures",
+                "files": hashes,
+            },
             sort_keys=True,
             indent=2,
         )

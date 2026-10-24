@@ -13,6 +13,11 @@ review explicit identity/field conflicts, acknowledge evidence-only connectors,
 and emit one native-validated model with multi-source provenance. See the
 [complete fictional walkthrough](examples/import-studio/projects/README.md) and
 [V12-04 contracts](docs/development/v12-04-projects-and-reconciliation.md).
+The offline [Architecture Explorer](examples/explorer/README.md) adds navigable
+zones, assets, interfaces, retained project provenance and explicit analytical
+queries: `otarchguard explore MODEL --provenance SIDECAR --output NEW_DIRECTORY`.
+Its static pages use local CSS and no JavaScript or server. Documentary connectors,
+owner declarations and exact analytical results retain separate trust semantics.
 Stable v1.2.0 release readiness still requires actual hosted verification on all
 six OS/Python combinations; local development acceptance does not establish it.
 See [release notes](docs/release-notes-1.1.0.md)

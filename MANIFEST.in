@@ -6,6 +6,7 @@ include MANIFEST.in
 include README.md
 include THIRD_PARTY_NOTICES.md
 include benchmarks/__init__.py
+include benchmarks/explorer.py
 include benchmarks/profile.py
 include benchmarks/projects.py
 include benchmarks/run.py
@@ -20,6 +21,7 @@ include docs/development/gate-v12-02.md
 include docs/development/gate-v12-02r.md
 include docs/development/gate-v12-03.md
 include docs/development/gate-v12-04.md
+include docs/development/gate-v12-05.md
 include docs/development/v1.2-architecture.md
 include docs/development/v1.2-design-decisions.md
 include docs/development/v1.2-import-formats.md
@@ -28,6 +30,7 @@ include docs/development/v12-02-parser-decision.md
 include docs/development/v12-02r-numeric-policy.md
 include docs/development/v12-03-graphical-formats.md
 include docs/development/v12-04-projects-and-reconciliation.md
+include docs/development/v12-05-architecture-explorer.md
 include docs/domain-model.md
 include docs/images/README.md
 include docs/images/flat-plant-proposed.png
@@ -53,6 +56,7 @@ include docs/v1.1/public-contract-inventory.md
 include docs/verification.md
 include docs/yaml-schema-v1.md
 include examples/README.md
+include examples/explorer/README.md
 include examples/flat-plant/baseline.yaml
 include examples/flat-plant/proposed.yaml
 include examples/generate_examples.py
@@ -102,6 +106,9 @@ include src/otarchguard/contract.py
 include src/otarchguard/diagnostics.py
 include src/otarchguard/diagrams.py
 include src/otarchguard/domain.py
+include src/otarchguard/explorer.py
+include src/otarchguard/explorer_data.py
+include src/otarchguard/explorer_html.py
 include src/otarchguard/exposure.py
 include src/otarchguard/flows.py
 include src/otarchguard/graph.py
@@ -150,6 +157,7 @@ include tests/test_comparison_properties.py
 include tests/test_console_resolution.py
 include tests/test_contract.py
 include tests/test_diagram_geometry.py
+include tests/test_explorer.py
 include tests/test_exposure_compare_cli.py
 include tests/test_exposure_comparison.py
 include tests/test_fixtures.py
@@ -188,10 +196,12 @@ include tools/__init__.py
 include tools/audit_release.py
 include tools/capture_contract.py
 include tools/compare_versioned_contract.py
+include tools/explorer_walkthrough.py
 include tools/offline/sitecustomize.py
 include tools/project_walkthrough.py
 include tools/public-files.txt
 include tools/review_bundle.py
+include tools/synthetic_explorer.py
 include tools/synthetic_graphs.py
 include tools/synthetic_inventories.py
 include tools/synthetic_projects.py

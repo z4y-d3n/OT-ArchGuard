@@ -353,6 +353,15 @@ def emit_project(
         fail(
             "PROJECT_SOURCE_CHANGED", "$", "Project inputs or draft changed; map and review again."
         )
+    return reviewed_project_artifacts(draft, owner)
+
+
+def reviewed_project_artifacts(draft: ProjectDraft, owner: ProjectDecisions) -> dict[str, bytes]:
+    """Revalidate retained review evidence without reopening original documents.
+
+    This proves internal consistency, not document authenticity. Emission still
+    reproduces original inputs above; offline consumers can verify a saved sidecar.
+    """
     if owner.draft_sha256 != project_digest(draft):
         fail("PROJECT_STALE_REVIEW", "$", "Owner decisions must bind this exact project draft.")
     if not owner.model_confirmed or not owner.reviewer.strip() or not owner.model_rationale.strip():

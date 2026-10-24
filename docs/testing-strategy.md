@@ -1,5 +1,16 @@
 # Verification strategy
 
+V12-05 adds `tests/test_explorer.py`, parsed site/link/resource audits, hostile
+native/documentary labels, strict provenance tampering, output budgets, palette
+contrast, semantic landmarks, deterministic relocation and real installed-console
+cases. `python -m tools.explorer_walkthrough --output NEW` runs the shipped fictional
+example from a regular installed distribution. Select an output outside the checkout
+to verify independent console use. `python -m benchmarks.explorer --output NEW.json`
+measures bounded small/medium/larger and adversarial sites with separate allocation
+samples. The final gate receipt binds fresh wheel/sdist tests and all production
+module hashes to one frozen public-file manifest. Local browser tooling rejects
+`file://`; actual zoom/focus/CSP/network/assistive-technology behavior is unverified.
+
 For source version 1.1.0, [Gate V11-6](v1.1/gate-v11-6.md) records candidate
 history. Final acceptance requires local and hosted receipts for the exact
 reviewed commit. Earlier version/gate outcomes below remain historical evidence.

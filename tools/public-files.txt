@@ -6,6 +6,7 @@ MANIFEST.in
 README.md
 THIRD_PARTY_NOTICES.md
 benchmarks/__init__.py
+benchmarks/explorer.py
 benchmarks/profile.py
 benchmarks/projects.py
 benchmarks/run.py
@@ -20,6 +21,7 @@ docs/development/gate-v12-02.md
 docs/development/gate-v12-02r.md
 docs/development/gate-v12-03.md
 docs/development/gate-v12-04.md
+docs/development/gate-v12-05.md
 docs/development/v1.2-architecture.md
 docs/development/v1.2-design-decisions.md
 docs/development/v1.2-import-formats.md
@@ -28,6 +30,7 @@ docs/development/v12-02-parser-decision.md
 docs/development/v12-02r-numeric-policy.md
 docs/development/v12-03-graphical-formats.md
 docs/development/v12-04-projects-and-reconciliation.md
+docs/development/v12-05-architecture-explorer.md
 docs/domain-model.md
 docs/images/README.md
 docs/images/flat-plant-proposed.png
@@ -53,6 +56,7 @@ docs/v1.1/public-contract-inventory.md
 docs/verification.md
 docs/yaml-schema-v1.md
 examples/README.md
+examples/explorer/README.md
 examples/flat-plant/baseline.yaml
 examples/flat-plant/proposed.yaml
 examples/generate_examples.py
@@ -102,6 +106,9 @@ src/otarchguard/contract.py
 src/otarchguard/diagnostics.py
 src/otarchguard/diagrams.py
 src/otarchguard/domain.py
+src/otarchguard/explorer.py
+src/otarchguard/explorer_data.py
+src/otarchguard/explorer_html.py
 src/otarchguard/exposure.py
 src/otarchguard/flows.py
 src/otarchguard/graph.py
@@ -150,6 +157,7 @@ tests/test_comparison_properties.py
 tests/test_console_resolution.py
 tests/test_contract.py
 tests/test_diagram_geometry.py
+tests/test_explorer.py
 tests/test_exposure_compare_cli.py
 tests/test_exposure_comparison.py
 tests/test_fixtures.py
@@ -188,10 +196,12 @@ tools/__init__.py
 tools/audit_release.py
 tools/capture_contract.py
 tools/compare_versioned_contract.py
+tools/explorer_walkthrough.py
 tools/offline/sitecustomize.py
 tools/project_walkthrough.py
 tools/public-files.txt
 tools/review_bundle.py
+tools/synthetic_explorer.py
 tools/synthetic_graphs.py
 tools/synthetic_inventories.py
 tools/synthetic_projects.py

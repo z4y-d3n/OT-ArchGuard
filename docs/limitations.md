@@ -1,5 +1,17 @@
 # Scope and known limitations
 
+The development Architecture Explorer supports native models and matching project
+provenance version 1. Other sidecar versions fail explicitly; model-only mode has
+no documentary origins. It never imports old HTML as analytical truth. Its bounded
+diagrams disclose omissions and keep complete linked records; exceeding a file,
+text or site budget rejects the complete generation. Default output contains
+sensitive selected architecture/evidence; no public-safe redaction mode or universal
+secret detector exists. Local-file browser behavior, 200% zoom, actual keyboard
+focus and assistive technology remain unverified because the available browser
+tool blocks `file://`. Structural accessibility/resource/link tests do not establish
+WCAG certification or browser network behavior. See the
+[Explorer ADRs](development/v12-05-architecture-explorer.md).
+
 This checks finite owner-declared IPv4 TCP/UDP initiation paths. It does not discover
 deployed inventory, topology, bypasses, listeners, enforcement or vulnerabilities.
 Completeness, classification, criticality and origin assumptions remain declarations.

@@ -1,5 +1,12 @@
 # Exact communication trace
 
+Development Explorer integration uses `otarchguard explore MODEL --output NEW
+--trace SOURCE:SERVICE` (repeatable). It regenerates the same exact engine result,
+retains model binding and port/transport/direction/negative-result qualifications,
+and links the involved native entities. No query runs by default. See the
+[offline tutorial](../examples/explorer/README.md). The trace API and standalone
+report contracts below remain unchanged.
+
 `otarchguard trace MODEL --source ASSET --service SERVICE` evaluates the complete
 declared TCP/UDP destination-port union through the existing exact evaluator.
 `--destination ASSET` asserts the service's binding; it cannot retarget it.
