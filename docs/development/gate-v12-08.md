@@ -15,6 +15,15 @@ noncanonical and case-conflicting archive names are rejected. Permanent adversar
 regressions cover those cases. No analytical algorithm or input trust boundary is
 relaxed. The full sdist suite replaces partial installed-sdist CI selection.
 
+Hosted artifact reconciliation also exposed a source identity gap: default Windows
+checkout conversion changed public code/document bytes even though functional tests
+passed. The final policy preserves exact Git blob bytes with `* -text`, while the
+accepted saved-review fixture LF rule and all explicit binary rules remain intact.
+No existing public file is renormalized and real owner inputs remain byte-bound.
+A pre-build check compares every allowlisted working file with its committed blob;
+it fails on drift instead of normalizing it. Real Git regressions exercise true,
+false and input autocrlf modes, retained CRLF source and deliberate byte mutation.
+
 Current instructions and examples consistently name the candidate. See
 [release notes](../release-notes-1.2.0.md) and
 [publication/recovery](../release-publication-1.2.0.md). Historical records retain

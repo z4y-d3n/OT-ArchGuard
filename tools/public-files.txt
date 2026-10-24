@@ -215,6 +215,7 @@ tests/test_release_metamorphic.py
 tests/test_reporting.py
 tests/test_resource_envelope.py
 tests/test_review_bundle.py
+tests/test_source_checkout.py
 tests/test_summaries.py
 tests/test_trace.py
 tests/test_trace_cli.py
@@ -241,3 +242,4 @@ tools/synthetic_inventories.py
 tools/synthetic_projects.py
 tools/verification-requirements.txt
 tools/verify_environment.py
+tools/verify_source_checkout.py

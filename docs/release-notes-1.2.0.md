@@ -58,6 +58,10 @@ case collisions and source archive entries are checked. This closes a verificati
 gap; it is not a claim that previously accepted distributions contained those entries.
 Installed sdist CI now runs the full regression suite. Required integrity artifacts
 are retained for 30 days, and a missing artifact is a failure.
+Public source checkouts also retain exact Git blob bytes on every OS, including
+existing CRLF files, while the saved-review fixture LF policy remains explicit.
+CI checks the complete public allowlist against committed bytes before building;
+it never normalizes owner documents to obtain matching identities.
 
 ## Installation and first use
 

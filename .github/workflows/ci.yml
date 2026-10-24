@@ -43,6 +43,8 @@ jobs:
           if ($roots.Count -ne 1 -or $roots[0] -ne $env:EXPECTED_ROOT_SHA) { throw "Unexpected repository ancestry" }
       - name: Install approved verification dependencies
         run: python -m pip install -r tools/verification-requirements.txt
+      - name: Verify exact committed public source bytes
+        run: python tools/verify_source_checkout.py --output output/source-checkout.json
       - name: Build and audit exact candidate distributions
         run: |
           python -c "from setuptools import build_meta; build_meta.build_wheel('output/artifacts'); build_meta.build_sdist('output/artifacts')"
@@ -105,6 +107,7 @@ jobs:
           path: |
             output/artifacts/*
             output/archive-audit.json
+            output/source-checkout.json
             output/full-suite.xml
             output/sdist-suite.xml
             output/installed-sdist.json

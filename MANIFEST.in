@@ -215,6 +215,7 @@ include tests/test_release_metamorphic.py
 include tests/test_reporting.py
 include tests/test_resource_envelope.py
 include tests/test_review_bundle.py
+include tests/test_source_checkout.py
 include tests/test_summaries.py
 include tests/test_trace.py
 include tests/test_trace_cli.py
@@ -241,3 +242,4 @@ include tools/synthetic_inventories.py
 include tools/synthetic_projects.py
 include tools/verification-requirements.txt
 include tools/verify_environment.py
+include tools/verify_source_checkout.py
