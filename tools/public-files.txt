@@ -1,4 +1,5 @@
 .github/workflows/ci.yml
+.gitattributes
 .gitignore
 CHANGELOG.md
 LICENSE
