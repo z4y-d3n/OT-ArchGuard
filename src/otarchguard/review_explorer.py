@@ -12,22 +12,88 @@ from otarchguard.comparison import declaration_catalogs
 from otarchguard.diagnostics import fail
 from otarchguard.diagrams import spatial_svg
 from otarchguard.explorer_data import load_model, page_id
-from otarchguard.explorer_html import CSS, SiteWriter, escape, link, table
+from otarchguard.explorer_html import (
+    CSS,
+    SiteWriter,
+    escape,
+    identity_details,
+    link,
+    properties,
+    table,
+)
 from otarchguard.ingestion.project import _no_links
 from otarchguard.quality import ReviewQuery, assess_quality, canonical
 from otarchguard.reporting import diagram_summary
 
 NOTICE = (
-    '<aside class="notice"><h2>Assessment and change legend</h2><p>'
+    '<aside class="notice"><p>Quality findings assess requirements and evidence, '
+    "not deployed security. Missing information is not a vulnerability; documentary "
+    "changes do not establish network permission.</p>"
+    "<details><summary>Assessment and change legend</summary><p>"
     "+ ADDED · − REMOVED from the proposed model · Δ MODIFIED native declarations. "
     "D DOCUMENTARY evidence · O OWNER DECISION · A EXACT ANALYTICAL result. "
     "? NOT ASSESSED / NOT EVALUATED. Labels carry meaning independently of color. "
     "Quality findings assess explicit requirements and supporting evidence; they do not "
-    "measure deployed infrastructure or supply a security score.</p></aside>"
+    "measure deployed infrastructure or supply a security score.</p></details></aside>"
 )
 
+STATE_LABELS = {
+    "ASSESSED": "Assessed",
+    "SATISFIED": "Satisfied",
+    "MISSING_REQUIRED_INFORMATION": "Missing required information",
+    "CONTRADICTORY_EVIDENCE": "Contradictory evidence",
+    "REVIEW_REQUIRED": "Review required",
+    "NOT_DOCUMENTED": "Not documented",
+    "NOT_ASSESSED": "Not assessed",
+    "NOT_APPLICABLE": "Not applicable",
+    "UNSUPPORTED": "Unsupported",
+    "COMPARED": "Compared",
+    "EVALUATED": "Evaluated",
+    "NOT_EVALUATED": "Not evaluated",
+}
+ENTITY_LABELS = {
+    "assets": "Asset",
+    "zones": "Zone",
+    "interfaces": "Interface",
+    "conduits": "Conduit",
+    "transport_edges": "Transport edge",
+    "forwarding_edges": "Forwarding edge",
+    "services": "Service",
+    "rules": "Rule",
+    "intents": "Intent",
+    "scenarios": "Scenario",
+    "sources": "Source",
+    "access_points": "Access point",
+    "external_dependencies": "External dependency",
+}
 
-def _value(value: object) -> str:
+
+def _state_label(value: object) -> str:
+    return STATE_LABELS.get(str(value), "Unrecognized state: " + str(value))
+
+
+def _entity_label(value: object) -> str:
+    if value == "model":
+        return "Model"
+    if isinstance(value, (list, tuple)):
+        if len(value) in {2, 3} and isinstance(value[0], str) and value[0] in ENTITY_LABELS:
+            text = ENTITY_LABELS[value[0]] + ": " + str(value[1])
+            if len(value) == 3 and value[2] is not None:
+                text += " · Field: " + (str(value[2]) if value[2] != "" else '""')
+            return text
+        return canonical(value).decode().strip()
+    return "null" if value is None else str(value)
+
+
+def _query_label(value: object) -> str:
+    if isinstance(value, dict) and "source_asset_id" in value and "service_id" in value:
+        return (
+            "Source: " + str(value["source_asset_id"]) + " · Service: " + str(value["service_id"])
+        )
+    return canonical(value).decode().strip()
+
+
+def _json_value(value: object) -> str:
     # Escape bounded chunks, never interpret source markup or source URLs.
     text = canonical(value).decode()
     return (
@@ -35,6 +101,111 @@ def _value(value: object) -> str:
         + "".join(escape(text[i : i + 3000]) for i in range(0, len(text), 3000))
         + "</code></pre>"
     )
+
+
+def _value(value: object) -> str:
+    """Readable values retain nesting, every item and inert source text."""
+    if isinstance(value, dict):
+        return properties([(k.replace("_", " "), _value(v)) for k, v in sorted(value.items())])
+    if isinstance(value, (list, tuple)):
+        return (
+            "<ul>" + "".join("<li>" + _value(v) + "</li>" for v in value) + "</ul>"
+            if value
+            else '<p class="muted">No values recorded.</p>'
+        )
+    if value is None:
+        return "<code>null</code>"
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    text = str(value)
+    return (
+        "".join(escape(text[i : i + 3000]) for i in range(0, len(text), 3000))
+        if text
+        else '<code>""</code>'
+    )
+
+
+def _technical(value: object) -> str:
+    return "<details><summary>Exact technical details</summary>" + _json_value(value) + "</details>"
+
+
+def _coverage(report: dict[str, Any]) -> str:
+    if not report["coverage"]:
+        return (
+            "<p>No requirement coverage is reported. Only explicit profile requirements "
+            "define denominators; no completeness or security percentage is implied.</p>"
+        )
+    return (
+        table(
+            "Explicit requirement coverage",
+            ("Requirement", "Assessment", "Satisfied", "Required", "Excluded"),
+            [
+                (
+                    escape(c["requirement_id"]),
+                    escape(_state_label(c["state"])),
+                    str(c["satisfied"]),
+                    str(c["required"]),
+                    str(len(c["excluded"])),
+                )
+                for c in report["coverage"]
+            ],
+        )
+        + "<p>Counts apply only to each recorded requirement scope. An empty scope is not "
+        "a satisfied requirement. Coverage is not a security score.</p>"
+    )
+
+
+def _comparison_summary(report: dict[str, Any]) -> list[tuple[str, ...]]:
+    documentary = report.get("documentary_status")
+    analytical = report.get("analytical_status")
+    changes, analyses = report.get("changes"), report.get("analytical_results")
+    if not isinstance(changes, list) or not isinstance(analyses, list):
+        fail("REVIEW_REPORT", "$", "Missing or inconsistent comparison state; no report accepted.")
+    invalid = (
+        not isinstance(documentary, str)
+        or documentary not in {"COMPARED", "NOT_ASSESSED"}
+        or not isinstance(analytical, str)
+        or analytical not in {"EVALUATED", "NOT_EVALUATED"}
+    )
+    if invalid:
+        fail("REVIEW_REPORT", "$", "Missing or inconsistent comparison state; no report accepted.")
+    counts = {"NATIVE": 0, "DOCUMENTARY": 0, "OWNER_DECISION": 0}
+    for change in changes:
+        if (
+            not isinstance(change, dict)
+            or not isinstance(change.get("layer"), str)
+            or change["layer"] not in counts
+        ):
+            fail("REVIEW_REPORT", "$", "Unknown comparison layer; no report accepted.")
+        counts[change["layer"]] += 1
+    if (
+        (documentary == "NOT_ASSESSED" and (counts["DOCUMENTARY"] or counts["OWNER_DECISION"]))
+        or (
+            documentary == "COMPARED"
+            and not all(
+                report.get(side + "_provenance_sha256") for side in ("baseline", "proposed")
+            )
+        )
+        or (analytical == "EVALUATED") != bool(analyses)
+    ):
+        fail(
+            "REVIEW_REPORT",
+            "$",
+            "Inconsistent comparison evidence or evaluation; no report accepted.",
+        )
+    return [
+        ("Native declarations", "Compared", str(counts["NATIVE"])),
+        (
+            "Documentary evidence",
+            _state_label(documentary),
+            str(counts["DOCUMENTARY"]) if documentary == "COMPARED" else "Not assessed",
+        ),
+        (
+            "Owner decisions",
+            _state_label(documentary),
+            str(counts["OWNER_DECISION"]) if documentary == "COMPARED" else "Not assessed",
+        ),
+    ]
 
 
 def _index(
@@ -72,29 +243,39 @@ def _quality_pages(
     rows: list[tuple[str, ...]] = []
     for finding in report["findings"]:
         name = page_id("finding", [prefix, finding["finding_id"]]) + ".html"
-        body = "<h3>" + escape(finding["state"]) + " · " + escape(finding["domain"]) + "</h3>"
+        body = (
+            "<h3>"
+            + escape(_state_label(finding["state"]))
+            + " · "
+            + escape(finding["domain"].replace("_", " ").capitalize())
+            + "</h3>"
+        )
         body += "<p>" + escape(finding["explanation"]) + "</p>"
         body += table(
             "Assessment and owner action",
             ("Item", "Value"),
             [
-                ("Affected declaration or evidence", _value(finding["entity"])),
+                ("Affected declaration or evidence", escape(_entity_label(finding["entity"]))),
                 ("Expected condition", _value(finding["expected"])),
                 ("Observed condition", _value(finding["actual"])),
                 (
                     "Owner action",
                     escape(
-                        finding["owner_action"] or "No additional action required by this check."
+                        finding["owner_action"] or "No owner action is specified by this finding."
                     ),
                 ),
             ],
         )
         body += "<h3>Exact source references</h3>" + _value(finding["source_references"])
-        body += "<h3>Finding identity and limitations</h3>" + _value(
+        body += "<h3>Finding identity and limitations</h3>" + _technical(
             {
                 k: finding[k]
                 for k in (
                     "finding_id",
+                    "state",
+                    "entity",
+                    "scope",
+                    "requirement_id",
                     "rule_id",
                     "rule_version",
                     "model_sha256",
@@ -103,13 +284,13 @@ def _quality_pages(
                 )
             }
         )
-        writer.page(name, finding["rule_id"], body)
+        writer.page(name, finding["rule_id"], body + NOTICE)
         rows.append(
             (
                 link(name, finding["rule_id"]),
-                escape(finding["state"]),
+                escape(_state_label(finding["state"])),
                 escape(finding["domain"]),
-                escape(finding["entity"]),
+                escape(_entity_label(finding["entity"])),
             )
         )
     _index(
@@ -119,26 +300,40 @@ def _quality_pages(
         ("Rule", "State", "Domain", "Entity"),
         rows,
         "<h2>Requirement coverage</h2>"
-        + _value(report["coverage"])
-        + "<p>Model: "
-        + escape(report["model_sha256"])
-        + " · Assessment: "
-        + escape(report["assessment_sha256"])
-        + "</p>",
+        + _coverage(report)
+        + _technical({k: report[k] for k in ("model_sha256", "assessment_sha256")}),
     )
     return rows
 
 
 def _render_quality(writer: SiteWriter, report: dict[str, Any]) -> None:
     _quality_pages(writer, report, "quality", "Quality findings")
+    states = sorted({finding["state"] for finding in report["findings"]})
     writer.page(
         "index.html",
         "Architecture quality assessment",
         "<p>"
         + link("quality.html", "Review quality findings and explicit coverage")
         + "</p>"
+        + "<h2>Reported finding outcomes</h2>"
+        + table(
+            "Finding states",
+            ("State", "Reported findings"),
+            [
+                (
+                    escape(_state_label(state)),
+                    str(sum(f["state"] == state for f in report["findings"])),
+                )
+                for state in states
+            ],
+        )
+        + _coverage(report)
+        + "<p>Explicitly evaluated queries: "
+        + str(len(report["analyses"]))
+        + ". Queries absent from the analytical results are not evaluated.</p>"
         + NOTICE
-        + _value(
+        + '<p><a href="review.json">Canonical assessment JSON</a></p>'
+        + _technical(
             {
                 k: report[k]
                 for k in (
@@ -155,7 +350,7 @@ def _render_quality(writer: SiteWriter, report: dict[str, Any]) -> None:
     for result in report["analyses"]:
         name = page_id("record", ["quality-analysis", result["scope"]]) + ".html"
         writer.page(name, "Exact evaluated query", "<h3>Native engine result</h3>" + _value(result))
-        rows.append((link(name, str(result["scope"])),))
+        rows.append((link(name, _query_label(result["scope"])),))
     _index(
         writer,
         "analysis",
@@ -169,6 +364,7 @@ def _render_quality(writer: SiteWriter, report: dict[str, Any]) -> None:
 def _render_comparison(
     writer: SiteWriter, report: dict[str, Any], baseline: Path, proposed: Path
 ) -> None:
+    layer_summary = _comparison_summary(report)
     change_rows: dict[str, list[tuple[str, ...]]] = {
         k: [] for k in ("native", "evidence", "decisions")
     }
@@ -212,8 +408,14 @@ def _render_comparison(
             ("Action", "Collection", "Identity"),
             rows,
             "<p>Documentary status: "
-            + escape(report["documentary_status"])
-            + ". Documentary lines never establish native transport or permissions.</p>",
+            + escape(_state_label(report["documentary_status"]))
+            + ". "
+            + (
+                "No documentary comparison was performed; zero changes are not verified. "
+                if report["documentary_status"] == "NOT_ASSESSED" and name != "native"
+                else ""
+            )
+            + "Documentary lines never establish native transport or permissions.</p>",
         )
     # Shared record views contain both exact versions. No duplicate complete Explorer sites.
     before_model, after_model = load_model(baseline), load_model(proposed)
@@ -278,10 +480,14 @@ def _render_comparison(
         ("Finding", "Classification", "Baseline", "Proposed"),
         [
             (
-                escape(c["finding_id"]),
-                escape(c["classification"]),
-                escape(c["baseline_state"]),
-                escape(c["proposed_state"]),
+                identity_details("Finding identity", c["finding_id"]),
+                escape(c["classification"].replace("_", " ").capitalize()),
+                escape(_state_label(c["baseline_state"]))
+                if c["baseline_state"] is not None
+                else "Not present",
+                escape(_state_label(c["proposed_state"]))
+                if c["proposed_state"] is not None
+                else "Not present",
             )
             for c in report["quality_changes"]
         ],
@@ -299,7 +505,12 @@ def _render_comparison(
             "Exact analytical comparison",
             "<h3>Query, model bindings, native results and interval deltas</h3>" + _value(result),
         )
-        rows.append((link(name, str(result["query"])), escape(result["classification"])))
+        rows.append(
+            (
+                link(name, _query_label(result["query"])),
+                escape(result["classification"].replace("_", " ").capitalize()),
+            )
+        )
     _index(
         writer,
         "analysis",
@@ -307,15 +518,32 @@ def _render_comparison(
         ("Query", "State"),
         rows,
         "<p>"
-        + escape(report["analytical_status"])
+        + escape(_state_label(report["analytical_status"]))
         + ". Queries absent from this table are unassessed. A new edge "
         "alone establishes no reachability delta.</p>",
     )
     writer.page(
         "index.html",
         "Architecture comparison",
-        NOTICE
-        + _value(
+        "<h2>Comparison scope and outcomes</h2>"
+        + table("Compared layers", ("Layer", "Assessment", "Changes"), layer_summary)
+        + "<p>Exact analysis: "
+        + escape(_state_label(report["analytical_status"]))
+        + (
+            " · " + str(len(report["analytical_results"])) + " explicit queries evaluated."
+            if report["analytical_status"] == "EVALUATED"
+            else ". No analytical comparison was requested."
+        )
+        + " Other queries remain unassessed.</p>"
+        + (
+            "<p>Documentary comparison requires both bound provenance records. "
+            "Not assessed is not a verified zero.</p>"
+            if report["documentary_status"] == "NOT_ASSESSED"
+            else ""
+        )
+        + NOTICE
+        + '<p><a href="review.json">Canonical comparison JSON</a></p>'
+        + _technical(
             {
                 k: report[k]
                 for k in (
@@ -329,12 +557,6 @@ def _render_comparison(
                     "limitations",
                 )
             }
-        )
-        + "<h2>Declared changes and review</h2>"
-        + table(
-            "Change counts",
-            ("Layer", "Changes"),
-            [(escape(k), str(len(v))) for k, v in change_rows.items()],
         ),
     )
 

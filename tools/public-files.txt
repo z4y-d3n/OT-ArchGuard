@@ -204,6 +204,7 @@ tests/test_normalization.py
 tests/test_policy_evidence.py
 tests/test_preparation.py
 tests/test_presentation.py
+tests/test_product_presentation.py
 tests/test_quality_comparison.py
 tests/test_reachability.py
 tests/test_reachability_oracle.py

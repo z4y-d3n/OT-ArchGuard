@@ -19,7 +19,7 @@ from otarchguard.explorer_data import (
     load_provenance,
     page_id,
 )
-from otarchguard.explorer_html import CSS, SiteWriter, escape, link, table
+from otarchguard.explorer_html import CSS, SiteWriter, escape, link, properties, table
 from otarchguard.exposure import exposure_architecture
 from otarchguard.ingestion.project import _no_links
 from otarchguard.ingestion.reconciliation import catalog
@@ -204,14 +204,7 @@ class Explorer:
 
     def value(self, value: object, field: str = "") -> str:
         if isinstance(value, dict):
-            return (
-                "<dl>"
-                + "".join(
-                    f"<dt>{escape(k)}</dt><dd>{self.value(v, k)}</dd>"
-                    for k, v in sorted(value.items())
-                )
-                + "</dl>"
-            )
+            return properties([(k, self.value(v, k)) for k, v in sorted(value.items())])
         if isinstance(value, (tuple, list)):
             return "<ul>" + "".join(f"<li>{self.value(v, field)}</li>" for v in value) + "</ul>"
         target = self.native_paths.get((REFERENCES.get(field, ""), str(value)))

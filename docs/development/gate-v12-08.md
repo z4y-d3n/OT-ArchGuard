@@ -63,3 +63,16 @@ Public branch metadata reported main/v1.2 unprotected and no repository rulesets
 no governance was changed. Push/PR, integration merge, stable merge, tags, Releases
 and PyPI remain separately controlled. A locally verified candidate is not a
 post-merge release candidate and is not a stable release.
+
+The final product-experience continuation preserves the R04 sites and canonical
+reports. New versioned sites provide requirement/finding summaries, distinguish
+unassessed documentary comparisons from verified zero changes, and retain raw
+identities and state codes in exact technical details and canonical JSON.
+Scoped description lists keep nested values and native links; native disclosures
+retain complete trust and sharing warnings beside short visible qualifications.
+Absent owner-action metadata does not assert that no action is required. The
+trace guide and README distinguish query completion from permitted traffic.
+This is HTML/documentation presentation only: no native model, analytical,
+provenance, CLI/JSON or exit-code contract changes. Each new candidate requires
+fresh installed suites, semantic golden comparisons, scale/link audits, exact
+hosted checks after authorized feature publication, and separate browser evidence.

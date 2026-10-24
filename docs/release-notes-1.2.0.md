@@ -42,6 +42,11 @@ old contract-1 physical bookmarks are not a compatibility guarantee.
 Quality assessment uses explicit model-bound requirements, versioned findings
 and defined coverage denominators. Missing and unavailable evidence differ;
 model-only assessment creates no invented completeness or security score.
+Human-facing summaries distinguish an unassessed documentary comparison from
+verified zero changes. Finding labels and entity identities remain readable,
+while exact codes, hashes, source references and canonical JSON remain available.
+Compact nested properties and native disclosures preserve offline navigation and
+complete trust explanations without requiring JavaScript.
 Architecture comparison uses explicit one-to-one correspondence or conservative
 identifier reuse. No fuzzy matching, automatic split/merge inference or global
 vulnerability ranking is implemented. Documentary and owner changes remain

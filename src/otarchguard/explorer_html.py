@@ -35,20 +35,28 @@ svg{display:block;max-width:none}figure{margin:1.5rem 0}figcaption{padding:.5rem
 .documentary{stroke:#505c66;stroke-dasharray:7 5}.declared{stroke:#174f7b}
 .diagram-line{fill:none;stroke-width:3}.analytical{stroke:#653b78;stroke-width:5}
 .muted{color:#40596b}footer{border-top:1px solid #657b8b;font-size:.9rem}
+.properties{display:grid;grid-template-columns:fit-content(35%) minmax(0,1fr);
+gap:.25rem .85rem;margin:.5rem 0}.properties>dt{font-weight:600;min-width:0;
+overflow-wrap:anywhere}.properties>dt::first-letter{text-transform:uppercase}
+.properties>dt::after{content:":"}.properties>dd{margin:0;min-width:0}
+.properties>dd>.properties{margin-top:0}.properties>dd>ul{margin:.2rem 0;padding-left:1.2rem}
+details{margin:.5rem 0}summary{cursor:pointer;font-weight:600}.identity code{font-size:.85em}
 @media(max-width:640px){header,nav,main,footer{padding:1rem}h1{font-size:1.5rem}
 nav ul{gap:1rem}.cards{display:block}.cards li{margin:.6rem 0}}
+@media(max-width:480px){.properties{grid-template-columns:minmax(0,1fr);gap:.1rem}
+.properties>dt{margin-top:.4rem}}
 @media print{html{background:white;color:black}nav,.skip{display:none}a{color:black}
 .scroll{overflow:visible}svg{max-width:100%;height:auto}table{min-width:0}}
 """
 
 _PATH = re.compile(
-    r"(?i)(?:file://\S+|[a-z]:[\\/]\S*|\\\\[^\s<>]+|/(?:home|users|tmp|var|private|etc)/[^\s<>]*)"
+    r"(?i)(?:file://\S+|(?<![a-z0-9_])[a-z]:[\\/]\S*|\\\\[^\s<>]+|/(?:home|users|tmp|var|private|etc)/[^\s<>]*)"
 )
 _BIDI = frozenset(range(0x202A, 0x202F)) | frozenset(range(0x2066, 0x206A))
 _ALLOWED_ELEMENTS = frozenset(
     "html head meta link title body a header p h1 h2 h3 nav ul li main section dl dt dd div "
     "table caption thead tr th tbody td aside footer figure figcaption pre code br svg "
-    "desc defs marker path clippath rect g text circle".split()
+    "desc defs marker path clippath rect g text circle details summary".split()
 )
 
 
@@ -84,8 +92,34 @@ def table(caption: str, headings: tuple[str, ...], rows: Sequence[tuple[str, ...
     )
 
 
+def properties(rows: Sequence[tuple[str, str]]) -> str:
+    """Semantic nested properties; values are already escaped renderer markup."""
+    return (
+        '<dl class="properties">'
+        + "".join(f"<dt>{escape(label)}</dt><dd>{value}</dd>" for label, value in rows)
+        + "</dl>"
+    )
+
+
+def identity_details(label: str, value: str) -> str:
+    """Short display only; exact identities remain keyboard-accessible text."""
+    short = re.sub(r"[a-f0-9]{64}", lambda match: match[0][:12] + "…", value)
+    return (
+        '<details class="identity"><summary>'
+        + escape(label)
+        + ": <code>"
+        + escape(short)
+        + "</code> · Full values</summary><p><code>"
+        + escape(value)
+        + "</code></p></details>"
+    )
+
+
 LEGEND = (
-    '<aside class="legend" aria-label="Trust legend"><h2>Trust legend</h2><ul>'
+    '<aside class="legend" aria-label="Trust legend"><h2>Trust legend</h2>'
+    "<p>Documentary evidence is not permission. Analytical results apply only to the declared "
+    "model and exact evaluated query; not evaluated does not mean denied.</p>"
+    "<details><summary>Full trust and interpretation limits</summary><ul>"
     "<li>Documentary evidence · dashed line · Documented only. Unknown from documentary "
     "evidence alone; drawings do not authorize communication.</li>"
     "<li>Owner-confirmed architecture · solid line · Declared only. Validation establishes "
@@ -94,7 +128,7 @@ LEGEND = (
     "model, direction, transport and ports shown were evaluated.</li></ul>"
     "<p>Not evaluated differs from a negative result. Not modeled paths remain unassessed. "
     "Unsupported input is an error. Layout proximity and missing drawing edges establish "
-    "neither reachability nor isolation.</p></aside>"
+    "neither reachability nor isolation.</p></details></aside>"
 )
 
 
@@ -117,11 +151,12 @@ def document(
         + ' · Architecture Explorer</title></head><body><a class="skip" href="#main">'
         "Skip to main content</a><header><p>OT-ArchGuard · Offline Architecture Explorer</p><h1>"
         + escape(title)
-        + "</h1><p>"
-        + ("Baseline and proposed model identities" if model_context else "Model SHA-256")
-        + ": <code>"
-        + escape(model_context or model_hash)
-        + '</code></p></header><nav aria-label="Explorer"><ul>'
+        + "</h1>"
+        + identity_details(
+            "Baseline and proposed model identities" if model_context else "Model SHA-256",
+            model_context or model_hash,
+        )
+        + '</header><nav aria-label="Explorer"><ul>'
         + "".join(
             f"<li>{link(path, label)}</li>"
             for path, label in (
@@ -141,10 +176,13 @@ def document(
         + '</ul></nav><main id="main">'
         + body
         + LEGEND
-        + "</main><footer>Local full-detail engineering report. Review before sharing: "
+        + "</main><footer><p>Local engineering report; review sensitive details before sharing.</p>"
+        "<details><summary>Sharing and identity limits</summary><p>"
+        "Local full-detail engineering report. Review before sharing: "
         "asset names, addresses and selected evidence may be sensitive. Original documents "
         "are not included. Hashes detect changes; they do not authenticate authorship. "
-        "Explorer contract 2; native schema 1. No JavaScript required.</footer></body></html>\n"
+        "Explorer contract 2; native schema 1. No JavaScript required.</p></details>"
+        "</footer></body></html>\n"
     ).encode("utf-8")
 
 
