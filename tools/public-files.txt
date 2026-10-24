@@ -7,6 +7,7 @@ README.md
 THIRD_PARTY_NOTICES.md
 benchmarks/__init__.py
 benchmarks/profile.py
+benchmarks/projects.py
 benchmarks/run.py
 benchmarks/workloads.py
 docs/algorithms.md
@@ -18,6 +19,7 @@ docs/development/gate-v12-01.md
 docs/development/gate-v12-02.md
 docs/development/gate-v12-02r.md
 docs/development/gate-v12-03.md
+docs/development/gate-v12-04.md
 docs/development/v1.2-architecture.md
 docs/development/v1.2-design-decisions.md
 docs/development/v1.2-import-formats.md
@@ -25,6 +27,7 @@ docs/development/v1.2-roadmap.md
 docs/development/v12-02-parser-decision.md
 docs/development/v12-02r-numeric-policy.md
 docs/development/v12-03-graphical-formats.md
+docs/development/v12-04-projects-and-reconciliation.md
 docs/domain-model.md
 docs/images/README.md
 docs/images/flat-plant-proposed.png
@@ -64,6 +67,18 @@ examples/import-studio/multipage.drawio
 examples/import-studio/netbox-context.yaml
 examples/import-studio/netbox-inventory.json
 examples/import-studio/netbox-profile.json
+examples/import-studio/projects/README.md
+examples/import-studio/projects/mixed/context.json
+examples/import-studio/projects/mixed/interfaces-profile.json
+examples/import-studio/projects/mixed/interfaces.json
+examples/import-studio/projects/mixed/inventory-profile.json
+examples/import-studio/projects/mixed/inventory.xlsx
+examples/import-studio/projects/mixed/metadata-profile.json
+examples/import-studio/projects/mixed/metadata.csv
+examples/import-studio/projects/mixed/project.json
+examples/import-studio/projects/mixed/topology-profile.json
+examples/import-studio/projects/mixed/topology.drawio
+examples/import-studio/projects/mixed/tutorial-decisions.json
 examples/import-studio/structured-context.yaml
 examples/import-studio/structured-inventory.json
 examples/import-studio/structured-inventory.xlsx
@@ -98,6 +113,11 @@ src/otarchguard/ingestion/graphml.py
 src/otarchguard/ingestion/json_inventory.py
 src/otarchguard/ingestion/netbox.py
 src/otarchguard/ingestion/numbers.py
+src/otarchguard/ingestion/project.py
+src/otarchguard/ingestion/project_cli.py
+src/otarchguard/ingestion/project_records.py
+src/otarchguard/ingestion/project_review.py
+src/otarchguard/ingestion/reconciliation.py
 src/otarchguard/ingestion/records.py
 src/otarchguard/ingestion/structured.py
 src/otarchguard/ingestion/tabular.py
@@ -138,6 +158,7 @@ tests/test_ingestion_cli.py
 tests/test_ingestion_graphical.py
 tests/test_ingestion_graphical_security.py
 tests/test_ingestion_numbers.py
+tests/test_ingestion_projects.py
 tests/test_ingestion_structured.py
 tests/test_ingestion_xlsx_security.py
 tests/test_integration.py
@@ -168,9 +189,11 @@ tools/audit_release.py
 tools/capture_contract.py
 tools/compare_versioned_contract.py
 tools/offline/sitecustomize.py
+tools/project_walkthrough.py
 tools/public-files.txt
 tools/review_bundle.py
 tools/synthetic_graphs.py
 tools/synthetic_inventories.py
+tools/synthetic_projects.py
 tools/verification-requirements.txt
 tools/verify_environment.py

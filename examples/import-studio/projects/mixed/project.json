@@ -1,0 +1,34 @@
+{
+  "model_context": "context.json",
+  "preferred_sources": {
+    "asset.zone_id": "inventory"
+  },
+  "project_id": "fictional-control-network",
+  "project_version": 1,
+  "sources": [
+    {
+      "adapter": "csv",
+      "id": "metadata",
+      "path": "metadata.csv",
+      "profile": "metadata-profile.json"
+    },
+    {
+      "adapter": "xlsx",
+      "id": "inventory",
+      "path": "inventory.xlsx",
+      "profile": "inventory-profile.json"
+    },
+    {
+      "adapter": "json",
+      "id": "interfaces",
+      "path": "interfaces.json",
+      "profile": "interfaces-profile.json"
+    },
+    {
+      "adapter": "drawio",
+      "id": "topology",
+      "path": "topology.drawio",
+      "profile": "topology-profile.json"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "constants": {
+    "criticality": "unspecified",
+    "domain_classification": "iacs",
+    "kind": "endpoint",
+    "safety_classification": "unassessed",
+    "scope": "internal"
+  },
+  "entity": "asset",
+  "fields": {
+    "id": "id",
+    "name": "name",
+    "role": "role",
+    "zone_id": "zone"
+  },
+  "profile_version": 1
+}

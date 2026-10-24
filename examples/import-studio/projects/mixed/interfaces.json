@@ -1,0 +1,40 @@
+{
+  "interfaces": [
+    {
+      "asset": "eng",
+      "id": "if_eng",
+      "ip": "10.0.0.1/16",
+      "zone": "control"
+    },
+    {
+      "asset": "fw",
+      "id": "if_fw",
+      "ip": "10.0.0.2/16",
+      "zone": "control"
+    },
+    {
+      "asset": "sw",
+      "id": "if_sw",
+      "ip": "10.0.0.3/16",
+      "zone": "control"
+    },
+    {
+      "asset": "plc",
+      "id": "if_plc",
+      "ip": "10.0.0.4/16",
+      "zone": "control"
+    },
+    {
+      "asset": "hmi",
+      "id": "if_hmi",
+      "ip": "10.0.0.5/16",
+      "zone": "control"
+    },
+    {
+      "asset": "hist",
+      "id": "if_hist",
+      "ip": "10.0.0.6/16",
+      "zone": "control"
+    }
+  ]
+}

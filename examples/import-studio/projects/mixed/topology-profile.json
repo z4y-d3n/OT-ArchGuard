@@ -1,0 +1,25 @@
+{
+  "adapter": "drawio",
+  "connections": "evidence_only",
+  "profile_version": 3,
+  "scopes": [
+    "page1"
+  ],
+  "tables": [
+    {
+      "collection": "nodes",
+      "constants": {},
+      "entity": "asset",
+      "fields": {
+        "id": {
+          "path": "/id"
+        },
+        "name": {
+          "path": "/label"
+        }
+      },
+      "name": "nodes"
+    }
+  ],
+  "unknown_policy": "diagnose"
+}

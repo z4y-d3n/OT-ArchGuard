@@ -2,8 +2,15 @@
 
 V12-01 preserves the CSV/TSV workflow; V12-02 adds restricted XLSX, explicit
 JSON inventories and a versioned offline NetBox export subset. V12-03 adds bounded
-GraphML and diagrams.net evidence. Each draft takes
+GraphML and diagrams.net evidence. Single-source drafts take
 one source file; structured profiles can select several collections or sheets.
+V12-04 adds a separate project workflow that combines multiple documents without
+merging their authoritative YAML by hand. Start with the
+[complete project walkthrough](../examples/import-studio/projects/README.md).
+The [project reference](development/v12-04-projects-and-reconciliation.md) documents
+manifest/draft/decision contracts, exact CLI commands, explicit owner partitions,
+field conflicts and safe hash-bound connector acknowledgment. Existing commands
+below keep their single-source behavior.
 Imports remain evidence until the owner confirms declarations. No connectivity or
 permission is inferred. Development builds identify themselves as `1.2.0.dev0`;
 the published v1.1.0 release is unchanged and lacks these commands.

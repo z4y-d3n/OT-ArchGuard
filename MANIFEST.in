@@ -7,6 +7,7 @@ include README.md
 include THIRD_PARTY_NOTICES.md
 include benchmarks/__init__.py
 include benchmarks/profile.py
+include benchmarks/projects.py
 include benchmarks/run.py
 include benchmarks/workloads.py
 include docs/algorithms.md
@@ -18,6 +19,7 @@ include docs/development/gate-v12-01.md
 include docs/development/gate-v12-02.md
 include docs/development/gate-v12-02r.md
 include docs/development/gate-v12-03.md
+include docs/development/gate-v12-04.md
 include docs/development/v1.2-architecture.md
 include docs/development/v1.2-design-decisions.md
 include docs/development/v1.2-import-formats.md
@@ -25,6 +27,7 @@ include docs/development/v1.2-roadmap.md
 include docs/development/v12-02-parser-decision.md
 include docs/development/v12-02r-numeric-policy.md
 include docs/development/v12-03-graphical-formats.md
+include docs/development/v12-04-projects-and-reconciliation.md
 include docs/domain-model.md
 include docs/images/README.md
 include docs/images/flat-plant-proposed.png
@@ -64,6 +67,18 @@ include examples/import-studio/multipage.drawio
 include examples/import-studio/netbox-context.yaml
 include examples/import-studio/netbox-inventory.json
 include examples/import-studio/netbox-profile.json
+include examples/import-studio/projects/README.md
+include examples/import-studio/projects/mixed/context.json
+include examples/import-studio/projects/mixed/interfaces-profile.json
+include examples/import-studio/projects/mixed/interfaces.json
+include examples/import-studio/projects/mixed/inventory-profile.json
+include examples/import-studio/projects/mixed/inventory.xlsx
+include examples/import-studio/projects/mixed/metadata-profile.json
+include examples/import-studio/projects/mixed/metadata.csv
+include examples/import-studio/projects/mixed/project.json
+include examples/import-studio/projects/mixed/topology-profile.json
+include examples/import-studio/projects/mixed/topology.drawio
+include examples/import-studio/projects/mixed/tutorial-decisions.json
 include examples/import-studio/structured-context.yaml
 include examples/import-studio/structured-inventory.json
 include examples/import-studio/structured-inventory.xlsx
@@ -98,6 +113,11 @@ include src/otarchguard/ingestion/graphml.py
 include src/otarchguard/ingestion/json_inventory.py
 include src/otarchguard/ingestion/netbox.py
 include src/otarchguard/ingestion/numbers.py
+include src/otarchguard/ingestion/project.py
+include src/otarchguard/ingestion/project_cli.py
+include src/otarchguard/ingestion/project_records.py
+include src/otarchguard/ingestion/project_review.py
+include src/otarchguard/ingestion/reconciliation.py
 include src/otarchguard/ingestion/records.py
 include src/otarchguard/ingestion/structured.py
 include src/otarchguard/ingestion/tabular.py
@@ -138,6 +158,7 @@ include tests/test_ingestion_cli.py
 include tests/test_ingestion_graphical.py
 include tests/test_ingestion_graphical_security.py
 include tests/test_ingestion_numbers.py
+include tests/test_ingestion_projects.py
 include tests/test_ingestion_structured.py
 include tests/test_ingestion_xlsx_security.py
 include tests/test_integration.py
@@ -168,9 +189,11 @@ include tools/audit_release.py
 include tools/capture_contract.py
 include tools/compare_versioned_contract.py
 include tools/offline/sitecustomize.py
+include tools/project_walkthrough.py
 include tools/public-files.txt
 include tools/review_bundle.py
 include tools/synthetic_graphs.py
 include tools/synthetic_inventories.py
+include tools/synthetic_projects.py
 include tools/verification-requirements.txt
 include tools/verify_environment.py

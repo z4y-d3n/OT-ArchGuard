@@ -6,6 +6,15 @@ and compares TCP/UDP listener reachability between proposed configurations.
 
 Source version: **1.2.0.dev0** (unreleased development). YAML schema: **1**. Consult the owner-published release
 record for availability, exact source tag and audited asset checksums.
+
+Development Import Studio now supports offline multi-source projects through
+`otarchguard import project`: combine CSV/TSV, XLSX, JSON/NetBox and diagrams,
+review explicit identity/field conflicts, acknowledge evidence-only connectors,
+and emit one native-validated model with multi-source provenance. See the
+[complete fictional walkthrough](examples/import-studio/projects/README.md) and
+[V12-04 contracts](docs/development/v12-04-projects-and-reconciliation.md).
+Stable v1.2.0 release readiness still requires actual hosted verification on all
+six OS/Python combinations; local development acceptance does not establish it.
 See [release notes](docs/release-notes-1.1.0.md)
 and [Gate V11-6 verification](docs/v1.1/gate-v11-6.md).
 

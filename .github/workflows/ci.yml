@@ -57,7 +57,7 @@ jobs:
         env:
           OTARCHGUARD_OFFLINE_CHECK: '1'
           PYTHONPATH: '${{ github.workspace }}/tools/offline'
-        run: python -m pytest --basetemp=.pytest_tmp --tb=short
+        run: python -m pytest --basetemp=.pytest_tmp --tb=short --junitxml=output/full-suite.xml
       - name: Execute documented synthetic walkthroughs offline
         env:
           OTARCHGUARD_OFFLINE_CHECK: '1'
@@ -68,6 +68,21 @@ jobs:
           python -c "from setuptools import build_meta; build_meta.build_wheel('output/artifacts'); build_meta.build_sdist('output/artifacts')"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python tools/audit_release.py output/artifacts/otarchguard-1.2.0.dev0-py3-none-any.whl output/artifacts/otarchguard-1.2.0.dev0.tar.gz --source-root . --output output/archive-audit.json
+      - name: Verify installed sdist and project walkthrough offline
+        env:
+          OTARCHGUARD_OFFLINE_CHECK: '1'
+          PYTHONPATH: '${{ github.workspace }}/tools/offline'
+          PIP_NO_INDEX: '1'
+        run: |
+          python -m pip install --force-reinstall --no-index --no-deps --no-build-isolation output/artifacts/otarchguard-1.2.0.dev0.tar.gz
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tools/verify_environment.py --output output/installed-sdist.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $tests = @(Get-ChildItem tests/test_ingestion*.py | ForEach-Object { $_.FullName })
+          $tests += 'tests/test_review_bundle.py'
+          python -m pytest @tests --basetemp=output/sdist-tmp --tb=short --junitxml=output/sdist-suite.xml
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m tools.project_walkthrough --output output/project-walkthrough
       - name: Retain candidate integrity evidence
         uses: actions/upload-artifact@v7.0.2
         with:
@@ -76,6 +91,10 @@ jobs:
           path: |
             output/artifacts/*
             output/archive-audit.json
+            output/full-suite.xml
+            output/sdist-suite.xml
+            output/installed-sdist.json
+            output/project-walkthrough/walkthrough.json
             output/environment-${{ matrix.os }}-${{ matrix.python }}.json
       - name: Measure fixed NFR-05 workloads offline
         env:

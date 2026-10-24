@@ -25,6 +25,9 @@ REVIEW_FILES = frozenset(
         "tools/synthetic_inventories.py",
         "tests/conftest.py",
         "tools/synthetic_graphs.py",
+        "tools/synthetic_projects.py",
+        "tools/project_walkthrough.py",
+        "benchmarks/projects.py",
     }
     | {
         f"src/otarchguard/ingestion/{name}.py"
@@ -43,6 +46,11 @@ REVIEW_FILES = frozenset(
             "graphical",
             "graphml",
             "drawio",
+            "project",
+            "project_records",
+            "reconciliation",
+            "project_review",
+            "project_cli",
         )
     }
     | {
@@ -56,6 +64,7 @@ REVIEW_FILES = frozenset(
             "test_review_bundle",
             "test_ingestion_graphical",
             "test_ingestion_graphical_security",
+            "test_ingestion_projects",
         )
     }
 )

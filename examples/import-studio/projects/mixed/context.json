@@ -1,0 +1,22 @@
+{
+  "architecture_id": "synthetic_project",
+  "conduits": [],
+  "forwarding_edges": [],
+  "intents": [],
+  "revision": "owner_review_1",
+  "rules": [],
+  "scenarios": [],
+  "schema_version": 1,
+  "services": [],
+  "suc": {
+    "access_points": [],
+    "boundary_description": "Fictional inventory only",
+    "completeness_assertion": "Documentation exercise; no real deployment assertion",
+    "controlled_process": "Imaginary control process",
+    "external_dependencies": [],
+    "id": "synthetic_cell",
+    "name": "Fictional control cell",
+    "purpose": "Import tutorial"
+  },
+  "transport_edges": []
+}

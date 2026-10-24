@@ -1,0 +1,51 @@
+{
+  "adapter": "xlsx",
+  "profile_version": 2,
+  "tables": [
+    {
+      "collection": "Assets",
+      "constants": {
+        "criticality": "unspecified",
+        "domain_classification": "iacs",
+        "kind": "endpoint",
+        "safety_classification": "unassessed",
+        "scope": "internal"
+      },
+      "entity": "asset",
+      "fields": {
+        "id": {
+          "path": "id"
+        },
+        "name": {
+          "path": "name"
+        },
+        "role": {
+          "path": "role"
+        },
+        "zone_id": {
+          "path": "zone"
+        }
+      },
+      "name": "assets"
+    },
+    {
+      "collection": "Zones",
+      "constants": {
+        "grouping_rationale": "Synthetic owner declaration",
+        "purpose": "Fictional control cell",
+        "safety_designation": "unassessed",
+        "scope": "internal"
+      },
+      "entity": "zone",
+      "fields": {
+        "id": {
+          "path": "id"
+        },
+        "name": {
+          "path": "name"
+        }
+      },
+      "name": "zones"
+    }
+  ]
+}

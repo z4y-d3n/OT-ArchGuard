@@ -99,6 +99,12 @@ def inspect_source(
     _execute(run)
 
 
+# Register after defining _execute: project commands share the established error contract.
+from otarchguard.ingestion.project_cli import app as project_app  # noqa: E402
+
+app.add_typer(project_app, name="project")
+
+
 @app.command("preview")
 def preview(
     source: Annotated[Path, typer.Argument()],
