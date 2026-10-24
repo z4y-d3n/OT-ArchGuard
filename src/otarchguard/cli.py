@@ -26,6 +26,7 @@ from otarchguard.reporting import (
     json_report,
     write_report,
 )
+from otarchguard.review_cli import compare_architecture, quality
 from otarchguard.trace import trace_file
 from otarchguard.trace_reporting import trace_html, trace_json
 
@@ -96,6 +97,8 @@ app = typer.Typer(
     add_completion=False,
 )
 app.add_typer(import_app, name="import")
+app.command("quality", cls=TraceCommand)(quality)
+app.command("compare-architecture", cls=TraceCommand)(compare_architecture)
 
 
 @app.command(cls=TraceCommand)

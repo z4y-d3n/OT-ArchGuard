@@ -21,6 +21,17 @@ ROOT = Path(__file__).resolve().parents[1]
 REVIEW_FILES = frozenset(
     {
         "LICENSE",
+        "src/otarchguard/quality.py",
+        "src/otarchguard/architecture_comparison.py",
+        "src/otarchguard/review_explorer.py",
+        "src/otarchguard/review_cli.py",
+        "src/otarchguard/comparison.py",
+        "tests/test_quality_comparison.py",
+        "tools/quality_walkthrough.py",
+        "benchmarks/quality_comparison.py",
+        "docs/development/gate-v12-07.md",
+        "docs/development/v12-07-quality-and-comparison.md",
+        "examples/quality-comparison/README.md",
         "tools/review_bundle.py",
         "tools/synthetic_inventories.py",
         "tests/conftest.py",

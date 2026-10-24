@@ -10,6 +10,7 @@ include benchmarks/documents.py
 include benchmarks/explorer.py
 include benchmarks/profile.py
 include benchmarks/projects.py
+include benchmarks/quality_comparison.py
 include benchmarks/run.py
 include benchmarks/workloads.py
 include docs/algorithms.md
@@ -24,6 +25,7 @@ include docs/development/gate-v12-03.md
 include docs/development/gate-v12-04.md
 include docs/development/gate-v12-05.md
 include docs/development/gate-v12-06.md
+include docs/development/gate-v12-07.md
 include docs/development/v1.2-architecture.md
 include docs/development/v1.2-design-decisions.md
 include docs/development/v1.2-import-formats.md
@@ -34,6 +36,7 @@ include docs/development/v12-03-graphical-formats.md
 include docs/development/v12-04-projects-and-reconciliation.md
 include docs/development/v12-05-architecture-explorer.md
 include docs/development/v12-06-document-evidence-and-explorer.md
+include docs/development/v12-07-quality-and-comparison.md
 include docs/domain-model.md
 include docs/images/README.md
 include docs/images/flat-plant-proposed.png
@@ -101,6 +104,7 @@ include examples/import-studio/structured-inventory.xlsx
 include examples/import-studio/structured-profile.json
 include examples/import-studio/undirected.graphml
 include examples/import-studio/workbook-profile.json
+include examples/quality-comparison/README.md
 include examples/remote-support/application-only.yaml
 include examples/remote-support/baseline.yaml
 include examples/remote-support/proposed.yaml
@@ -112,6 +116,7 @@ include pyproject.toml
 include src/otarchguard/__init__.py
 include src/otarchguard/__main__.py
 include src/otarchguard/api.py
+include src/otarchguard/architecture_comparison.py
 include src/otarchguard/cli.py
 include src/otarchguard/comparison.py
 include src/otarchguard/contract.py
@@ -152,8 +157,11 @@ include src/otarchguard/normalization.py
 include src/otarchguard/parsing.py
 include src/otarchguard/policy.py
 include src/otarchguard/policy_evidence.py
+include src/otarchguard/quality.py
 include src/otarchguard/reachability.py
 include src/otarchguard/reporting.py
+include src/otarchguard/review_cli.py
+include src/otarchguard/review_explorer.py
 include src/otarchguard/summaries.py
 include src/otarchguard/trace.py
 include src/otarchguard/trace_reporting.py
@@ -191,6 +199,7 @@ include tests/test_normalization.py
 include tests/test_policy_evidence.py
 include tests/test_preparation.py
 include tests/test_presentation.py
+include tests/test_quality_comparison.py
 include tests/test_reachability.py
 include tests/test_reachability_oracle.py
 include tests/test_release_audit.py
@@ -218,6 +227,7 @@ include tools/explorer_walkthrough.py
 include tools/offline/sitecustomize.py
 include tools/project_walkthrough.py
 include tools/public-files.txt
+include tools/quality_walkthrough.py
 include tools/review_bundle.py
 include tools/synthetic_documents.py
 include tools/synthetic_explorer.py

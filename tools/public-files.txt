@@ -10,6 +10,7 @@ benchmarks/documents.py
 benchmarks/explorer.py
 benchmarks/profile.py
 benchmarks/projects.py
+benchmarks/quality_comparison.py
 benchmarks/run.py
 benchmarks/workloads.py
 docs/algorithms.md
@@ -24,6 +25,7 @@ docs/development/gate-v12-03.md
 docs/development/gate-v12-04.md
 docs/development/gate-v12-05.md
 docs/development/gate-v12-06.md
+docs/development/gate-v12-07.md
 docs/development/v1.2-architecture.md
 docs/development/v1.2-design-decisions.md
 docs/development/v1.2-import-formats.md
@@ -34,6 +36,7 @@ docs/development/v12-03-graphical-formats.md
 docs/development/v12-04-projects-and-reconciliation.md
 docs/development/v12-05-architecture-explorer.md
 docs/development/v12-06-document-evidence-and-explorer.md
+docs/development/v12-07-quality-and-comparison.md
 docs/domain-model.md
 docs/images/README.md
 docs/images/flat-plant-proposed.png
@@ -101,6 +104,7 @@ examples/import-studio/structured-inventory.xlsx
 examples/import-studio/structured-profile.json
 examples/import-studio/undirected.graphml
 examples/import-studio/workbook-profile.json
+examples/quality-comparison/README.md
 examples/remote-support/application-only.yaml
 examples/remote-support/baseline.yaml
 examples/remote-support/proposed.yaml
@@ -112,6 +116,7 @@ pyproject.toml
 src/otarchguard/__init__.py
 src/otarchguard/__main__.py
 src/otarchguard/api.py
+src/otarchguard/architecture_comparison.py
 src/otarchguard/cli.py
 src/otarchguard/comparison.py
 src/otarchguard/contract.py
@@ -152,8 +157,11 @@ src/otarchguard/normalization.py
 src/otarchguard/parsing.py
 src/otarchguard/policy.py
 src/otarchguard/policy_evidence.py
+src/otarchguard/quality.py
 src/otarchguard/reachability.py
 src/otarchguard/reporting.py
+src/otarchguard/review_cli.py
+src/otarchguard/review_explorer.py
 src/otarchguard/summaries.py
 src/otarchguard/trace.py
 src/otarchguard/trace_reporting.py
@@ -191,6 +199,7 @@ tests/test_normalization.py
 tests/test_policy_evidence.py
 tests/test_preparation.py
 tests/test_presentation.py
+tests/test_quality_comparison.py
 tests/test_reachability.py
 tests/test_reachability_oracle.py
 tests/test_release_audit.py
@@ -218,6 +227,7 @@ tools/explorer_walkthrough.py
 tools/offline/sitecustomize.py
 tools/project_walkthrough.py
 tools/public-files.txt
+tools/quality_walkthrough.py
 tools/review_bundle.py
 tools/synthetic_documents.py
 tools/synthetic_explorer.py

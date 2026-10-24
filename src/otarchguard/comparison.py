@@ -142,6 +142,16 @@ def _catalogs(validated: ValidatedArchitecture) -> dict[str, dict[str, Record]]:
     }
 
 
+def declaration_catalogs(validated: ValidatedArchitecture) -> dict[str, dict[str, Record]]:
+    """Canonical native collections shared by structural and analytical comparison."""
+    return _catalogs(validated)
+
+
+def declaration_fields(left: Record, right: Record, kind: str) -> tuple[FieldChange, ...]:
+    """Exact native field differences; no reachability is inferred."""
+    return _fields(left, right, kind)
+
+
 def _intent_signature(validated: ValidatedArchitecture, intent: CommunicationIntent) -> object:
     model = validated.model
     assets, zones = {a.id: a for a in model.assets}, {z.id: z for z in model.zones}

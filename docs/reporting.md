@@ -182,3 +182,17 @@ No sentence or presentation arrow establishes a native permission. Grouped pages
 contain other local evidence and are not public-safe exports. Share the original
 whole folder, including CSS and all relative paths; browser Save Page As copies
 are not canonical. See the [V12-06 reference](development/v12-06-document-evidence-and-explorer.md).
+
+## V12-07 quality and architecture comparison
+
+The additive `quality` and `compare-architecture` commands assess explicit
+model-bound requirements and native/documentary/owner changes. Exact comparative
+reachability comes only from explicit before/after native trace evaluation.
+Missing evidence is not a vulnerability; changed scope never resolves a finding.
+Selected evidence, external owner information and native declarations remain
+separate. Split/merge and fuzzy identity inference are unsupported.
+See the [seven ADRs](development/v12-07-quality-and-comparison.md) for versioned schemas,
+coverage denominators, query comparability, resource ceilings, compact offline
+views, installed-console tests, reproducible benchmarks and independent local,
+PR, hosted-CI and owner-review acceptance. Actual file-URL browser interaction
+was policy-blocked; static checks do not establish WCAG certification.
