@@ -39,6 +39,26 @@ def test_wheel_audit_accepts_windows_unspecified_file_type(tmp_path: Path) -> No
     assert read_wheel(wheel) == {"otarchguard/loading.py": b"approved"}
 
 
+def test_wheel_audit_rejects_nul_truncated_member_name(tmp_path: Path) -> None:
+    wheel = tmp_path / "hidden-name.whl"
+    name = "otarchguard/loading.pyXhidden"
+    with zipfile.ZipFile(wheel, "w") as archive:
+        archive.writestr(name, b"payload")
+    # Both raw ZIP headers contain a name Python would silently truncate at NUL.
+    wheel.write_bytes(wheel.read_bytes().replace(name.encode(), name.replace("X", "\0").encode()))
+    with pytest.raises(ValueError, match="truncated"):
+        read_wheel(wheel)
+
+
+def test_wheel_audit_rejects_case_colliding_members(tmp_path: Path) -> None:
+    wheel = tmp_path / "case-collision.whl"
+    with zipfile.ZipFile(wheel, "w") as archive:
+        archive.writestr("otarchguard/loading.py", b"payload")
+        archive.writestr("otarchguard/Loading.py", b"payload")
+    with pytest.raises(ValueError, match="case-conflicting"):
+        read_wheel(wheel)
+
+
 @pytest.mark.parametrize("name", ["src//otarchguard/loading.py", "src/./otarchguard/loading.py"])
 def test_release_paths_require_canonical_spelling(name: str) -> None:
     with pytest.raises(ValueError):

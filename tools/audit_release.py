@@ -98,6 +98,8 @@ def read_wheel(wheel: Path) -> dict[str, bytes]:
         if len(names) != len({name.casefold() for name in names}):
             raise ValueError("Duplicate or case-conflicting wheel member")
         for entry in infos:
+            if entry.orig_filename != entry.filename:
+                raise ValueError("Wheel member name was truncated by ZIP decoding")
             check_member(entry.filename, wheel=True)
             kind = stat.S_IFMT(entry.external_attr >> 16)
             if entry.is_dir() or kind not in {0, stat.S_IFREG}:
