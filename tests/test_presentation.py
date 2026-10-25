@@ -119,7 +119,7 @@ def test_native_ci_matrix_preserves_verification_safeguards() -> None:
     for required in (
         "EXPECTED_ROOT_SHA",
         "--max-parents=0",
-        "--force-reinstall --no-index --no-deps --no-build-isolation output/artifacts/",
+        '--force-reinstall --no-index --no-deps --no-build-isolation "output/artifacts/',
         "verify_environment.py",
         "ruff check",
         "ruff format --check",

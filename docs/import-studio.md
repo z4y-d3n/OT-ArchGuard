@@ -19,7 +19,7 @@ mapped candidates require separate partition/field review and model confirmation
 See the [document tutorial](../examples/import-studio/documents/README.md) and
 [format/security/review reference](development/v12-06-document-evidence-and-explorer.md).
 Imports remain evidence until the owner confirms declarations. No connectivity or
-permission is inferred. Development builds identify themselves as `1.2.0rc1`;
+permission is inferred. Development builds identify themselves as `1.2.0`;
 the published v1.1.0 release is unchanged and lacks these commands.
 
 ## First architecture from a synthetic inventory
@@ -198,11 +198,11 @@ PDF/VSDX and completeness/comparison views remain future work. See the
 
 The shipped synthetic examples cover all three new adapters. Copy the relevant
 source, profile and context from `examples/import-studio` into a writable folder.
-Use a regular development installation (`1.2.0rc1`), with no extra dependencies.
+Use a regular development installation (`1.2.0`), with no extra dependencies.
 For an approved local wheel and existing runtime wheels, offline installation is:
 
 ```text
-python -m pip install --no-index --find-links /approved/wheelhouse otarchguard-1.2.0rc1-py3-none-any.whl
+python -m pip install --no-index --find-links /approved/wheelhouse otarchguard-1.2.0-py3-none-any.whl
 ```
 
 The wheelhouse must contain the existing Typer, PyYAML, Pydantic dependencies and

@@ -1,3 +1,12 @@
+# 1.2.0 (stable-release preparation; unpublished)
+
+Prepare the stable version from accepted V12-08 integration without changing
+native schema, analytical semantics, provenance bindings or runtime dependencies.
+CI derives wheel/sdist filenames from the build backend and audits, installs and
+tests those exact artifacts on the release-preparation branch and its PR.
+Publication remains a separate owner decision; this entry is not a release claim.
+See [release notes](docs/release-notes-1.2.0.md).
+
 # 1.2.0rc1 (unpublished candidate)
 
 Final V12-08 candidate: complete integrated Import Studio, offline Explorer, quality and

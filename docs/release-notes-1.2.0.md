@@ -1,7 +1,12 @@
-# OT-ArchGuard 1.2.0 release notes (candidate)
+# OT-ArchGuard 1.2.0 release notes (preparation; unpublished)
 
-The reviewed source identifies itself as **1.2.0rc1**, an unpublished candidate.
-Stable 1.2.0 is reserved for a separately approved, freshly verified source commit.
+The release-preparation source identifies itself as **1.2.0**. It follows accepted
+V12-08 integration `3062f8dab0f9b79beeec9cc7a255663ee98b1e13`; the earlier
+`1.2.0rc1` evidence remains historical and is not relabeled as a stable build.
+The stable preparation needs its own archive, installed-suite and six-cell CI
+acceptance. Its PR targets `v1.2`; after a separately authorized merge, the exact
+resulting integration must be reverified before a subsequent release PR into
+`main`. Tags, GitHub Releases and PyPI remain separate owner-controlled steps.
 Published v1.1.0 and its tag remain the recovery baseline. Python 3.12 or later,
 Apache-2.0, native YAML schema 1 and the existing validate/check/exposure/compare/
 trace commands remain supported. No new runtime dependency is introduced.
@@ -70,7 +75,7 @@ it never normalizes owner documents to obtain matching identities.
 
 ## Installation and first use
 
-Use [parallel installation](installation.md), a reviewed candidate archive and an
+Use [parallel installation](installation.md), a reviewed 1.2.0 archive and an
 approved complete dependency closure. Wheel-only installations do not include
 tutorial source files. From a checkout or extracted sdist, with its native console
 on PATH, the following commands are exercised by installed-distribution acceptance:
