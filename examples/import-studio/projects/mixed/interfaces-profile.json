@@ -1,0 +1,25 @@
+{
+  "adapter": "json",
+  "profile_version": 2,
+  "tables": [
+    {
+      "collection": "/interfaces",
+      "entity": "interface",
+      "fields": {
+        "asset_id": {
+          "path": "/asset"
+        },
+        "id": {
+          "path": "/id"
+        },
+        "ipv4": {
+          "path": "/ip"
+        },
+        "placement_zone_id": {
+          "path": "/zone"
+        }
+      },
+      "name": "interfaces"
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 # Development verification only: reuse the approved installed package versions.
 # Runtime requirements remain defined in pyproject.toml.
+pip==26.2.2
 typer==0.27.3
 PyYAML==6.0.3
 pydantic==2.14.1

@@ -119,7 +119,7 @@ def test_native_ci_matrix_preserves_verification_safeguards() -> None:
     for required in (
         "EXPECTED_ROOT_SHA",
         "--max-parents=0",
-        "--no-build-isolation --no-deps .",
+        '--force-reinstall --no-index --no-deps --no-build-isolation "output/artifacts/',
         "verify_environment.py",
         "ruff check",
         "ruff format --check",
@@ -128,6 +128,7 @@ def test_native_ci_matrix_preserves_verification_safeguards() -> None:
         "-m pytest",
         "examples/run_examples.py",
         "audit_release.py",
+        "verify_source_checkout.py",
         "-m benchmarks.run",
     ):
         assert required in runs
@@ -138,7 +139,12 @@ def test_native_ci_matrix_preserves_verification_safeguards() -> None:
         if "upload-artifact@" in step.get("uses", ""):
             assert "${{ matrix.os }}" in step["with"]["name"]
             assert "${{ matrix.python }}" in step["with"]["name"]
-            assert step["with"]["retention-days"] == 7
+            required = step["name"] == "Retain candidate integrity evidence"
+            assert step["with"]["retention-days"] == (30 if required else 7)
+            if required:
+                assert step["with"]["if-no-files-found"] == "error"
+                assert "output/source-checkout.json" in step["with"]["path"]
+    assert "-m pytest tests --basetemp=output/sdist-tmp" in runs
 
 
 @pytest.mark.parametrize("command", ["validate", "check", "exposure", "compare"])

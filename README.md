@@ -4,10 +4,36 @@ OT-ArchGuard is an offline Python CLI for reviewing declared IT/OT network
 architectures. It validates architecture models, checks communication requirements
 and compares TCP/UDP listener reachability between proposed configurations.
 
-Source version: **1.1.0**. YAML schema: **1**. Consult the owner-published release
+Source version: **1.2.0** (stable-release preparation; unpublished). YAML schema: **1**. Consult the owner-published release
 record for availability, exact source tag and audited asset checksums.
-See [release notes](docs/release-notes-1.1.0.md)
+
+Development Import Studio now supports offline multi-source projects through
+`otarchguard import project`: combine CSV/TSV, XLSX, JSON/NetBox and diagrams,
+review explicit identity/field conflicts, acknowledge evidence-only connectors,
+and emit one native-validated model with multi-source provenance. See the
+[complete fictional walkthrough](examples/import-studio/projects/README.md) and
+[V12-04 contracts](docs/development/v12-04-projects-and-reconciliation.md).
+The offline [Architecture Explorer](examples/explorer/README.md) adds navigable
+zones, assets, interfaces, retained project provenance and explicit analytical
+queries: `otarchguard explore MODEL --provenance SIDECAR --output NEW_DIRECTORY`.
+Its static pages use local CSS and no JavaScript or server. Documentary connectors,
+owner declarations and exact analytical results retain separate trust semantics.
+V12-06 adds restricted TXT/Markdown/DOCX/PPTX documentary observations and explicit
+table mapping, with owner review and source-change rejection. Explorer contract 2
+groups evidence into bounded pages with individual anchors. See the
+[document tutorial](examples/import-studio/documents/README.md) and
+[supported subsets and design decisions](docs/development/v12-06-document-evidence-and-explorer.md).
+PDF/VSDX remain deferred. Grouped reports contain additional sensitive evidence.
+Stable v1.2.0 release readiness still requires actual hosted verification on all
+six OS/Python combinations; local development acceptance does not establish it.
+See [v1.2 release notes](docs/release-notes-1.2.0.md)
 and [Gate V11-6 verification](docs/v1.1/gate-v11-6.md).
+
+This development branch adds owner-reviewed CSV/TSV, restricted XLSX and JSON inventories. See the
+[reviewed import walkthrough](docs/import-studio.md) and
+[v1.2 roadmap](docs/development/v1.2-roadmap.md). The published v1.1.0 baseline
+remains immutable. Current release-preparation builds use 1.2.0; the version
+identity alone does not authorize stable publication.
 
 OT-ArchGuard is an independent industrial network architecture analysis tool inspired by general OT cybersecurity good practices, including those addressed by the IEC 62443 series. It does not provide certification, establish normative conformity or imply institutional endorsement.
 
@@ -51,6 +77,9 @@ JavaScript or external renderer. See [installation](docs/installation.md) and
 | 0 | Valid declaration or completed analysis without failed intents |
 | 1 | Completed analysis with failed intents on either comparison side |
 | 2 | Invalid/unsupported input, resource exhaustion, execution or I/O failure |
+
+Trace exit 0 means the exact query completed, including unreachable or mixed port
+results. It does not mean every flow was permitted; trace does not assess intents.
 
 JSON results go to stdout; fatal diagnostics go to stderr. Specify --report-format
 json for JSON report files. Create report parent directories and keep outputs
@@ -104,11 +133,22 @@ with optional `--policy-evidence`, `--report PATH` and `--report-format html|jso
 Exit 0 means the exact declared query completed, including unreachable or mixed
 port outcomes. Intents remain unassessed by trace. See the [trace contract](docs/trace.md)
 and [synthetic trace examples](examples/README.md#exact-communication-trace).
-Application and distribution versions are 1.1.0. Evaluate upgrades in a parallel
+Current release-preparation application and distribution versions are 1.2.0. Evaluate upgrades in a parallel
 environment; see [installation and upgrade](docs/installation.md). Consult the
 owner-published release record for available assets, source tag and checksums.
 
 For v1.2, easier architecture authoring is a required future adoption goal:
 guided creation, industrial templates, spreadsheet/CSV import, schema-1 YAML
 generation, understandable validation and progressive visual editing. These
-capabilities are planned and are absent from v1.1.0.
+capabilities are absent from published v1.1.0; see the development walkthrough
+above for implemented CSV/TSV, restricted XLSX and JSON/NetBox import subsets.
+
+## Quality and architecture comparison (development)
+
+`otarchguard quality MODEL` assesses model declarations and explicit optional
+requirements, with canonical JSON output. Add `--output NEW` for a human report.
+`otarchguard compare-architecture BASELINE PROPOSED --output NEW` compares native
+and optional documentary evidence; repeat `--trace SOURCE:SERVICE` for actual exact
+before/after evaluation. Missing documentation never implies a vulnerability.
+See the [offline tutorial](examples/quality-comparison/README.md) and
+[versioned contract](docs/development/v12-07-quality-and-comparison.md).

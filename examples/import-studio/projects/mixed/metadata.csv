@@ -1,0 +1,7 @@
+id,name,role,zone
+eng,Engineering workstation,Engineering,alternate
+fw,Industrial firewall,Boundary,control
+sw,Managed switch,Switch,control
+plc,PLC,Controller,control
+hmi,HMI,Operator,control
+hist,Historian,Historian,control

@@ -1,5 +1,14 @@
 # Offline evidence reports, version 1
 
+The additive development [Architecture Explorer](../examples/explorer/README.md)
+uses static multipage navigation for native models and project provenance. Run
+`otarchguard explore MODEL --output NEW_DIRECTORY`, optionally with
+`--provenance SIDECAR`, `--trace SOURCE:SERVICE`, `--check` or `--scenario ID`.
+Explicit analyses use the existing engines on the same validated model. No
+arbitrary old HTML/JSON report is imported as analytical authority. Existing
+single-file reports and their version-1 bytes/contracts remain unchanged.
+See [input, security and size contracts](development/v12-05-architecture-explorer.md).
+
 For current presentation design and observed verification, see
 [Gate V11-2](v1.1/gate-v11-2.md). Analytical report JSON remains version 1.
 
@@ -158,3 +167,32 @@ HTML entry points. See [trace evidence and finite summaries](trace.md). Native
 exposure/comparison HTML adds summaries of completed scenario queries and
 conservative declaration-change references. Existing report-version-1 JSON is
 unchanged. Python HTML callers opt in with `analysis=completed_result`.
+
+## Compact Explorer presentation contract 2
+
+V12-06 groups candidate, decision, reconciliation, graphical and document evidence
+records in bounded hash buckets with individual stable digest anchors. Native and
+analytical pages remain separate. The manifest `locations` index maps semantic
+record digest filenames to current relative paths/fragments. Old regenerated-site
+bookmarks are not guaranteed; prior standalone sites remain readable. All conflicts,
+rejected alternatives, source locations and owner choices stay linked.
+
+Document observations link to explicitly mapped candidates by exact field locations.
+No sentence or presentation arrow establishes a native permission. Grouped pages
+contain other local evidence and are not public-safe exports. Share the original
+whole folder, including CSS and all relative paths; browser Save Page As copies
+are not canonical. See the [V12-06 reference](development/v12-06-document-evidence-and-explorer.md).
+
+## V12-07 quality and architecture comparison
+
+The additive `quality` and `compare-architecture` commands assess explicit
+model-bound requirements and native/documentary/owner changes. Exact comparative
+reachability comes only from explicit before/after native trace evaluation.
+Missing evidence is not a vulnerability; changed scope never resolves a finding.
+Selected evidence, external owner information and native declarations remain
+separate. Split/merge and fuzzy identity inference are unsupported.
+See the [seven ADRs](development/v12-07-quality-and-comparison.md) for versioned schemas,
+coverage denominators, query comparability, resource ceilings, compact offline
+views, installed-console tests, reproducible benchmarks and independent local,
+PR, hosted-CI and owner-review acceptance. Actual file-URL browser interaction
+was policy-blocked; static checks do not establish WCAG certification.

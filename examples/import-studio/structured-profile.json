@@ -1,0 +1,133 @@
+{
+  "profile_version": 2,
+  "adapter": "json",
+  "tables": [
+    {
+      "name": "assets",
+      "collection": "/assets",
+      "entity": "asset",
+      "header_row": 1,
+      "fields": {
+        "id": {
+          "path": "/id",
+          "value_type": "string",
+          "normalize": "exact",
+          "missing": "review",
+          "prefix": "",
+          "reference": null
+        },
+        "name": {
+          "path": "/name",
+          "value_type": "string",
+          "normalize": "exact",
+          "missing": "review",
+          "prefix": "",
+          "reference": null
+        },
+        "role": {
+          "path": "/role",
+          "value_type": "string",
+          "normalize": "exact",
+          "missing": "review",
+          "prefix": "",
+          "reference": null
+        },
+        "zone_id": {
+          "path": "/zone",
+          "value_type": "string",
+          "normalize": "exact",
+          "missing": "review",
+          "prefix": "",
+          "reference": {
+            "table": "zones"
+          }
+        }
+      },
+      "constants": {
+        "kind": "endpoint",
+        "scope": "internal",
+        "domain_classification": "iacs",
+        "safety_classification": "unassessed",
+        "criticality": "unspecified"
+      },
+      "formula_policy": "require_correction"
+    },
+    {
+      "name": "zones",
+      "collection": "/zones",
+      "entity": "zone",
+      "header_row": 1,
+      "fields": {
+        "id": {
+          "path": "/id",
+          "value_type": "string",
+          "normalize": "exact",
+          "missing": "review",
+          "prefix": "",
+          "reference": null
+        },
+        "name": {
+          "path": "/name",
+          "value_type": "string",
+          "normalize": "exact",
+          "missing": "review",
+          "prefix": "",
+          "reference": null
+        }
+      },
+      "constants": {
+        "purpose": "Synthetic",
+        "scope": "internal",
+        "grouping_rationale": "Owner",
+        "safety_designation": "unassessed"
+      },
+      "formula_policy": "require_correction"
+    },
+    {
+      "name": "interfaces",
+      "collection": "/interfaces",
+      "entity": "interface",
+      "header_row": 1,
+      "fields": {
+        "id": {
+          "path": "/id",
+          "value_type": "string",
+          "normalize": "exact",
+          "missing": "review",
+          "prefix": "",
+          "reference": null
+        },
+        "asset_id": {
+          "path": "/asset",
+          "value_type": "string",
+          "normalize": "exact",
+          "missing": "review",
+          "prefix": "",
+          "reference": {
+            "table": "assets"
+          }
+        },
+        "placement_zone_id": {
+          "path": "/zone",
+          "value_type": "string",
+          "normalize": "exact",
+          "missing": "review",
+          "prefix": "",
+          "reference": {
+            "table": "zones"
+          }
+        },
+        "ipv4": {
+          "path": "/ip",
+          "value_type": "string",
+          "normalize": "exact",
+          "missing": "review",
+          "prefix": "",
+          "reference": null
+        }
+      },
+      "constants": {},
+      "formula_policy": "require_correction"
+    }
+  ]
+}

@@ -1,5 +1,16 @@
 # Verification strategy
 
+V12-05 adds `tests/test_explorer.py`, parsed site/link/resource audits, hostile
+native/documentary labels, strict provenance tampering, output budgets, palette
+contrast, semantic landmarks, deterministic relocation and real installed-console
+cases. `python -m tools.explorer_walkthrough --output NEW` runs the shipped fictional
+example from a regular installed distribution. Select an output outside the checkout
+to verify independent console use. `python -m benchmarks.explorer --output NEW.json`
+measures bounded small/medium/larger and adversarial sites with separate allocation
+samples. The final gate receipt binds fresh wheel/sdist tests and all production
+module hashes to one frozen public-file manifest. Local browser tooling rejects
+`file://`; actual zoom/focus/CSP/network/assistive-technology behavior is unverified.
+
 For source version 1.1.0, [Gate V11-6](v1.1/gate-v11-6.md) records candidate
 history. Final acceptance requires local and hosted receipts for the exact
 reviewed commit. Earlier version/gate outcomes below remain historical evidence.
@@ -116,3 +127,34 @@ they need not preserve hashes, work, evidence groups or atom boundaries.
 Each new seeded relation includes a controlled permit/deny path with both
 reachable and unreachable ports, so an entirely blocked random graph cannot
 make every transformation pass without exercising permitted communication.
+
+## V12-06 documentary and compact-site verification
+
+`tests/test_ingestion_documents.py` covers four restricted formats, exact runs/lines/
+slides/cells, explicit mapping, evidence-only acknowledgment, mixed-source conflicts,
+stale decisions, inert hostile content and ZIP/XML attacks.
+`tests/test_explorer_compact.py` covers grouped record/nested-anchor preservation,
+hash bucket stability, material medium-workload compaction and byte determinism.
+Existing Explorer tests resolve documentary paths through the version-2 location
+index; native analytics and standalone reporting regressions remain unchanged.
+
+`benchmarks.documents` records three timing samples and separate allocation/profile
+measurements. The exact old Explorer workloads are compared against a preserved
+V12-05 installation. Final installed wheel/sdist, module hashes and offline console
+walkthroughs bind the current source; preparation runs cannot accept later changes.
+The browser file-origin request was blocked by tool policy; real browser behavior
+is NOT EXECUTED, distinct from structural accessibility/link/security tests.
+
+## V12-07 quality and architecture comparison
+
+The additive `quality` and `compare-architecture` commands assess explicit
+model-bound requirements and native/documentary/owner changes. Exact comparative
+reachability comes only from explicit before/after native trace evaluation.
+Missing evidence is not a vulnerability; changed scope never resolves a finding.
+Selected evidence, external owner information and native declarations remain
+separate. Split/merge and fuzzy identity inference are unsupported.
+See the [seven ADRs](development/v12-07-quality-and-comparison.md) for versioned schemas,
+coverage denominators, query comparability, resource ceilings, compact offline
+views, installed-console tests, reproducible benchmarks and independent local,
+PR, hosted-CI and owner-review acceptance. Actual file-URL browser interaction
+was policy-blocked; static checks do not establish WCAG certification.

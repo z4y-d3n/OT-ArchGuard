@@ -7,6 +7,7 @@ import hashlib
 import io
 import json
 import re
+import stat
 import tarfile
 import tomllib
 import zipfile
@@ -47,7 +48,13 @@ GENERATED = frozenset(
 
 def check_member(name: str, *, wheel: bool) -> None:
     path = PurePosixPath(name)
-    if path.is_absolute() or ".." in path.parts or "\\" in name or ":" in name:
+    if (
+        path.is_absolute()
+        or path.as_posix() != name
+        or ".." in path.parts
+        or "\\" in name
+        or ":" in name
+    ):
         raise ValueError(f"Unsafe archive member: {name}")
     if wheel:
         allowed = {
@@ -83,16 +90,40 @@ def normalize_requirement(value: str) -> tuple[str, tuple[str, ...]]:
     return name, clauses
 
 
+def read_wheel(wheel: Path) -> dict[str, bytes]:
+    """Validate every ZIP entry before reading; no ignored directories or links."""
+    with zipfile.ZipFile(wheel) as archive:
+        infos = archive.infolist()
+        names = [entry.filename for entry in infos]
+        if len(names) != len({name.casefold() for name in names}):
+            raise ValueError("Duplicate or case-conflicting wheel member")
+        for entry in infos:
+            if entry.orig_filename != entry.filename:
+                raise ValueError("Wheel member name was truncated by ZIP decoding")
+            check_member(entry.filename, wheel=True)
+            kind = stat.S_IFMT(entry.external_attr >> 16)
+            if entry.is_dir() or kind not in {0, stat.S_IFREG}:
+                raise ValueError("Wheel contains a link, directory or special file")
+        return {entry.filename: archive.read(entry) for entry in infos}
+
+
 def audit(wheel: Path, sdist: Path, source_root: Path | None = None) -> dict[str, object]:
     source_root = source_root or ROOT
-    with zipfile.ZipFile(wheel) as archive:
-        names = [n for n in archive.namelist() if not n.endswith("/")]
-        if len(names) != len(set(names)):
-            raise ValueError("Duplicate wheel member")
-        wheel_files = {name: archive.read(name) for name in names}
+    wheel_files = read_wheel(wheel)
     source_files: dict[str, bytes] = {}
+    source_names: set[str] = set()
     with tarfile.open(sdist, "r:gz") as archive:
         for member in archive.getmembers():
+            if member.name.casefold() in source_names:
+                raise ValueError("Duplicate or case-conflicting source member")
+            source_names.add(member.name.casefold())
+            if (
+                PurePosixPath(member.name).as_posix() != member.name
+                or ".." in PurePosixPath(member.name).parts
+                or "\\" in member.name
+                or ":" in member.name
+            ):
+                raise ValueError("Unsafe source archive member")
             expected_root = f"otarchguard-{VERSION}"
             if member.name.split("/", 1)[0] != expected_root:
                 raise ValueError("Unexpected source archive root")

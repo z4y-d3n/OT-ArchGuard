@@ -1,5 +1,12 @@
 # Exact communication trace
 
+Development Explorer integration uses `otarchguard explore MODEL --output NEW
+--trace SOURCE:SERVICE` (repeatable). It regenerates the same exact engine result,
+retains model binding and port/transport/direction/negative-result qualifications,
+and links the involved native entities. No query runs by default. See the
+[offline tutorial](../examples/explorer/README.md). The trace API and standalone
+report contracts below remain unchanged.
+
 `otarchguard trace MODEL --source ASSET --service SERVICE` evaluates the complete
 declared TCP/UDP destination-port union through the existing exact evaluator.
 `--destination ASSET` asserts the service's binding; it cannot retarget it.
@@ -19,7 +26,7 @@ optional top-level fields, timestamps, source paths or overall `passed` flag.
 | Field | Type / meaning |
 | --- | --- |
 | trace_version | integer 1 |
-| engine_version | application version string (1.1.0) |
+| engine_version | current application version string (for example, 1.2.0); independent of trace_version |
 | schema_version | integer 1 |
 | status | literal `complete`; does not assert reachability |
 | model_sha256 | canonical validated snapshot SHA-256 string |
@@ -145,3 +152,17 @@ Native exposure/comparison HTML reports include these additive sections. Python
 callers can supply `html_report(envelope, snapshots, analysis=completed_result)`
 to include them; the typed result must match the envelope. Existing JSON
 report-version-1 envelopes and analytical classifications are unchanged.
+
+## V12-07 quality and architecture comparison
+
+The additive `quality` and `compare-architecture` commands assess explicit
+model-bound requirements and native/documentary/owner changes. Exact comparative
+reachability comes only from explicit before/after native trace evaluation.
+Missing evidence is not a vulnerability; changed scope never resolves a finding.
+Selected evidence, external owner information and native declarations remain
+separate. Split/merge and fuzzy identity inference are unsupported.
+See the [seven ADRs](development/v12-07-quality-and-comparison.md) for versioned schemas,
+coverage denominators, query comparability, resource ceilings, compact offline
+views, installed-console tests, reproducible benchmarks and independent local,
+PR, hosted-CI and owner-review acceptance. Actual file-URL browser interaction
+was policy-blocked; static checks do not establish WCAG certification.

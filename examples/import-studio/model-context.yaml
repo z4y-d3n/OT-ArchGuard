@@ -1,0 +1,29 @@
+# Remaining explicit declarations for this synthetic asset-inventory exercise.
+# No connectivity or permission is claimed. The import supplies only assets.
+schema_version: 1
+architecture_id: synthetic_import
+revision: inventory_review_1
+suc:
+  id: synthetic_cell
+  name: Synthetic import tutorial
+  purpose: Teach evidence-based inventory assembly.
+  controlled_process: Imaginary controller and engineering workstation.
+  boundary_description: Two synthetic internal assets; connectivity not documented.
+  completeness_assertion: Inventory-only exercise; interfaces, communications and policies unmodeled.
+  access_points: []
+  external_dependencies: []
+zones:
+  - id: control
+    name: Control
+    purpose: Synthetic inventory grouping.
+    scope: internal
+    grouping_rationale: Owner-selected teaching group; no security guarantee.
+    safety_designation: unassessed
+interfaces: []
+conduits: []
+transport_edges: []
+forwarding_edges: []
+services: []
+rules: []
+intents: []
+scenarios: []

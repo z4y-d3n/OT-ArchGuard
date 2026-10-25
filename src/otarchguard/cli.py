@@ -14,7 +14,9 @@ from otarchguard.api import ValidatedArchitecture, validate_file
 from otarchguard.comparison import compare_architectures, compare_files
 from otarchguard.contract import DiagnosticCategory, ExitCode
 from otarchguard.diagnostics import Diagnostic, ModelError, fail
+from otarchguard.explorer import ExploreOptions, generate_explorer
 from otarchguard.exposure import QueryScope, exposure_architecture, exposure_file
+from otarchguard.ingestion.cli import app as import_app
 from otarchguard.intents import check_architecture, check_file
 from otarchguard.reporting import (
     Analysis,
@@ -24,6 +26,7 @@ from otarchguard.reporting import (
     json_report,
     write_report,
 )
+from otarchguard.review_cli import compare_architecture, quality
 from otarchguard.trace import trace_file
 from otarchguard.trace_reporting import trace_html, trace_json
 
@@ -44,11 +47,16 @@ class TraceCommand(TyperCommand):
             # carry native exit 2; help/interrupt/internal exceptions propagate.
             if getattr(error, "exit_code", None) != ExitCode.ERROR:
                 raise
+            command = (
+                ctx.info_name
+                if ctx.info_name in {"trace", "explore", "quality", "compare-architecture"}
+                else "trace"
+            )
             diagnostic = Diagnostic(
                 DiagnosticCategory.INVALID_INPUT,
                 "INVALID_VALUE",
-                "$.trace_options",
-                "Invalid trace options; see otarchguard trace --help.",
+                f"$.{command}_options",
+                f"Invalid {command} options; see otarchguard {command} --help.",
             )
             typer.echo(json.dumps(asdict(diagnostic), sort_keys=True), err=True)
             raise typer.Exit(ExitCode.ERROR) from None
@@ -92,6 +100,54 @@ app = typer.Typer(
     pretty_exceptions_enable=False,
     add_completion=False,
 )
+app.add_typer(import_app, name="import")
+app.command("quality", cls=TraceCommand)(quality)
+app.command("compare-architecture", cls=TraceCommand)(compare_architecture)
+
+
+@app.command(cls=TraceCommand)
+def explore(
+    architecture: Annotated[Path, typer.Argument(help="Validated schema-1 model input.")],
+    output: Annotated[Path, typer.Option("--output", help="Fresh local Explorer directory.")],
+    provenance: Annotated[Path | None, typer.Option("--provenance")] = None,
+    trace_query: Annotated[
+        list[str] | None,
+        typer.Option("--trace", help="Explicit source-asset:service query; repeatable."),
+    ] = None,
+    check: Annotated[bool, typer.Option("--check", help="Evaluate declared intents.")] = False,
+    scenario: Annotated[
+        list[str] | None,
+        typer.Option("--scenario", help="Evaluate this declared exposure scenario."),
+    ] = None,
+) -> None:
+    """Generate an offline, read-only multipage Architecture Explorer. No server or JavaScript."""
+    try:
+        queries: list[tuple[str, str]] = []
+        for query in trace_query or ():
+            parts = query.split(":")
+            if len(parts) != 2 or not all(parts):
+                fail("INVALID_VALUE", "$.explore", "Use --trace SOURCE_ASSET:SERVICE.")
+            queries.append((parts[0], parts[1]))
+        result = generate_explorer(
+            architecture,
+            output,
+            provenance=provenance,
+            options=ExploreOptions(tuple(queries), check, tuple(scenario or ())),
+        )
+    except ModelError as error:
+        for diagnostic in error.diagnostics:
+            typer.echo(json.dumps(asdict(diagnostic), sort_keys=True, ensure_ascii=True), err=True)
+        raise typer.Exit(ExitCode.ERROR) from None
+    except Exception:
+        diagnostic = Diagnostic(
+            DiagnosticCategory.EXECUTION_ERROR,
+            "INTERNAL_ERROR",
+            "$",
+            "Explorer could not complete; no new site is available.",
+        )
+        typer.echo(json.dumps(asdict(diagnostic), sort_keys=True), err=True)
+        raise typer.Exit(ExitCode.ERROR) from None
+    typer.echo(json.dumps(result, sort_keys=True, ensure_ascii=True))
 
 
 @app.command(cls=TraceCommand)

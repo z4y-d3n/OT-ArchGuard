@@ -1,0 +1,13 @@
+profile_version: 1
+entity: asset
+fields:
+  id: Asset ID
+  name: Display Name
+  role: Role
+  zone_id: Zone
+constants:
+  kind: endpoint
+  scope: internal
+  domain_classification: iacs
+  safety_classification: unassessed
+  criticality: unspecified

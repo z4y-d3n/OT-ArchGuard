@@ -29,11 +29,14 @@ def main() -> None:
     if direct.get("dir_info", {}).get("editable", False):
         raise RuntimeError("Editable installations are not acceptance evidence")
     source_hashes = {
-        p.name: hashlib.sha256(p.read_bytes()).hexdigest()
-        for p in (ROOT / "src/otarchguard").glob("*.py")
+        p.relative_to(ROOT / "src/otarchguard").as_posix(): hashlib.sha256(
+            p.read_bytes()
+        ).hexdigest()
+        for p in (ROOT / "src/otarchguard").rglob("*.py")
     }
     installed_hashes = {
-        p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in module.glob("*.py")
+        p.relative_to(module).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+        for p in module.rglob("*.py")
     }
     if installed_hashes != source_hashes:
         raise RuntimeError("Installed production modules differ from reviewed source")
@@ -63,6 +66,14 @@ def main() -> None:
         "installed_module_sha256": installed_hashes,
         "source_module_sha256": source_hashes,
         "native_version_exit": result.returncode,
+        "installed_packages": {
+            d.metadata["Name"]: {
+                "version": d.version,
+                "license_expression": d.metadata.get("License-Expression"),
+                "license": d.metadata.get("License"),
+            }
+            for d in metadata.distributions()
+        },
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(record, sort_keys=True, indent=2) + "\n", encoding="utf-8")

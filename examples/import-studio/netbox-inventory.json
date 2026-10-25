@@ -1,0 +1,66 @@
+{
+  "export_format": "otarchguard-netbox-offline",
+  "export_version": 1,
+  "devices": [
+    {
+      "id": 1,
+      "name": "PLC",
+      "role": {
+        "id": 1,
+        "name": "Control"
+      },
+      "site": {
+        "id": 8,
+        "name": "Plant"
+      }
+    }
+  ],
+  "interfaces": [
+    {
+      "id": 10,
+      "name": "eth0",
+      "device": {
+        "id": 1
+      },
+      "untagged_vlan": {
+        "id": 20
+      }
+    }
+  ],
+  "ip_addresses": [
+    {
+      "id": 100,
+      "address": "10.0.0.2/24",
+      "assigned_object_id": 10,
+      "assigned_object_type": "dcim.interface"
+    }
+  ],
+  "vlans": [
+    {
+      "id": 20,
+      "vid": 100,
+      "name": "Inventory only"
+    }
+  ],
+  "prefixes": [
+    {
+      "id": 30,
+      "prefix": "10.0.0.0/24",
+      "vlan": {
+        "id": 20
+      }
+    }
+  ],
+  "cables": [
+    {
+      "id": 40,
+      "a_terminations": [
+        {
+          "object_type": "unsupported"
+        }
+      ],
+      "b_terminations": [],
+      "label": "Documented only"
+    }
+  ]
+}

@@ -1,0 +1,198 @@
+{
+  "acknowledgments": [
+    {
+      "members": [
+        "topology::edge::007fa3d17f4fc2fb9d20ccc3372c5e7378cf0c39d3951b133610c862142482a0",
+        "topology::edge::711fffb153e224374b8cbdc2704d079e114faecb3b277a463ed428a9fb12d64a",
+        "topology::edge::a2487985bb69fba71295a5b36ff0a435a3ffdd71bcd0c7bcaa39544d6be11275",
+        "topology::edge::b8fc609558315baad2984e8933280b42197f1d0c52b5ef5d364b92ecffcd238e",
+        "topology::edge::be5b84fc18b873c8e7764e6d15b2c2360958d20efb55047c8eb8db251635385f"
+      ],
+      "rationale": "Retain fictional connectors as documentary evidence only.",
+      "set_sha256": "fe1933fca89db7397b8c446dd4baa1a7ba27352e76f305028900303cff831824",
+      "source_id": "topology"
+    }
+  ],
+  "conflicts": [
+    {
+      "group_id": "conflict_64921ffd4bc3204d0c6092743b40a320b9ec092b295639ce7ba7b5a93f93c2b4",
+      "rationale": "Fictional owner reviewed and selected inventory evidence.",
+      "resolved": true
+    }
+  ],
+  "draft_sha256": "60eda90638a6e1dd870368f3c213d24bab7336925e39fc81fc1b50aa327d26a6",
+  "entities": [
+    {
+      "canonical_id": "eng",
+      "corrections": {},
+      "decision": "OWNER_CONFIRMED",
+      "field_sources": {
+        "zone_id": "inventory::candidate_ee6909d576a3c19f7e7462cea52c6052c37db921cc339932a216499e76c72a31"
+      },
+      "members": [
+        "inventory::candidate_ee6909d576a3c19f7e7462cea52c6052c37db921cc339932a216499e76c72a31",
+        "metadata::candidate_2ecbbf5e0ba4d8b8e007094fcb052f77445364a2f8d2199b03cff6e811ebc83a",
+        "topology::candidate_b41dfdb8f3c370166bcff8c6fdfdc910475d04901347a62c5f03c2b32e7fd779"
+      ],
+      "rationale": "Fictional owner equates these fixture records and confirms fields; inventory zone controls this tutorial conflict.",
+      "references": {}
+    },
+    {
+      "canonical_id": "fw",
+      "corrections": {},
+      "decision": "OWNER_CONFIRMED",
+      "field_sources": {},
+      "members": [
+        "inventory::candidate_b4bae0034a3c0fba7aea892faa3ab67f426bbbaa11515c6c7fdee382cff218b7",
+        "metadata::candidate_244a5d2d3c18ee31e1169498b804d62c660d24e74e23c900cad6c54b035c65a5",
+        "topology::candidate_15d7f750fa0be49123ed542c455ab5d3c973ee67071f2a76cf30d024023e158b"
+      ],
+      "rationale": "Fictional owner equates these fixture records and confirms fields; inventory zone controls this tutorial conflict.",
+      "references": {}
+    },
+    {
+      "canonical_id": "hist",
+      "corrections": {},
+      "decision": "OWNER_CONFIRMED",
+      "field_sources": {},
+      "members": [
+        "inventory::candidate_f54363e8b5979d502cc776059e01a04fe118a43c54db8c21a744e8f4c6938fa7",
+        "metadata::candidate_00547ada3ecc4ee7ac76d17aeaa529601ebd5636a11d8b9289a9af0fc958c321",
+        "topology::candidate_062a75c80a4595863f10c3f1526acd6cc7fc6d4886850f920d617be02811a2b7"
+      ],
+      "rationale": "Fictional owner equates these fixture records and confirms fields; inventory zone controls this tutorial conflict.",
+      "references": {}
+    },
+    {
+      "canonical_id": "hmi",
+      "corrections": {},
+      "decision": "OWNER_CONFIRMED",
+      "field_sources": {},
+      "members": [
+        "inventory::candidate_4f29a089faea8121e9b1cd0d854419b6200097cd1ea3358e235d9d6c6bb56606",
+        "metadata::candidate_d63e9f951c23000794bdb338a41113ca9c5d64d8f9357bcc1fc6cba2945e528c",
+        "topology::candidate_a519ff430da73ac7deecfd19f06bc95b710a9e8bdd6e203282a04e973703500f"
+      ],
+      "rationale": "Fictional owner equates these fixture records and confirms fields; inventory zone controls this tutorial conflict.",
+      "references": {}
+    },
+    {
+      "canonical_id": "plc",
+      "corrections": {},
+      "decision": "OWNER_CONFIRMED",
+      "field_sources": {},
+      "members": [
+        "inventory::candidate_727713eab7787a0c91e2513ff67e0cb75ef19e9f18afd1de12c3e92b7525af94",
+        "metadata::candidate_23e7b87fe6e9b624bfa4edc9a9802aee113c487a440eeccf5c6fcfe565b729b2",
+        "topology::candidate_63e5f268918985070566b786fb57ec0446772f89583133fa68bacdf366a652b7"
+      ],
+      "rationale": "Fictional owner equates these fixture records and confirms fields; inventory zone controls this tutorial conflict.",
+      "references": {}
+    },
+    {
+      "canonical_id": "sw",
+      "corrections": {},
+      "decision": "OWNER_CONFIRMED",
+      "field_sources": {},
+      "members": [
+        "inventory::candidate_05ac44648717d4a3f2ea579682d876c911945e677c834a521f8a2d99c110db66",
+        "metadata::candidate_85abdb72b74bcbb55811013128cb8fcf3709e993a41bea530ff87170ea8f55a7",
+        "topology::candidate_1181cb13c8eb4eda90936efb74046f5161a21127a8567f20d77c1355ff85875f"
+      ],
+      "rationale": "Fictional owner equates these fixture records and confirms fields; inventory zone controls this tutorial conflict.",
+      "references": {}
+    },
+    {
+      "canonical_id": "if_eng",
+      "corrections": {},
+      "decision": "OWNER_CONFIRMED",
+      "field_sources": {},
+      "members": [
+        "interfaces::candidate_2b1297150198972cdc96ffa5e544d6ee0c76216675a68418f3c90a4b07a157ee"
+      ],
+      "rationale": "Fictional owner equates these fixture records and confirms fields; inventory zone controls this tutorial conflict.",
+      "references": {}
+    },
+    {
+      "canonical_id": "if_fw",
+      "corrections": {},
+      "decision": "OWNER_CONFIRMED",
+      "field_sources": {},
+      "members": [
+        "interfaces::candidate_0d0313e55d764a91a5627fded9a3b6af39a74f23d3276aca6b69a9ab966cf78e"
+      ],
+      "rationale": "Fictional owner equates these fixture records and confirms fields; inventory zone controls this tutorial conflict.",
+      "references": {}
+    },
+    {
+      "canonical_id": "if_hist",
+      "corrections": {},
+      "decision": "OWNER_CONFIRMED",
+      "field_sources": {},
+      "members": [
+        "interfaces::candidate_884173a0c055698051a5af46b4271449b8d6dfff78ca0df8dadcb9d0301c8cbb"
+      ],
+      "rationale": "Fictional owner equates these fixture records and confirms fields; inventory zone controls this tutorial conflict.",
+      "references": {}
+    },
+    {
+      "canonical_id": "if_hmi",
+      "corrections": {},
+      "decision": "OWNER_CONFIRMED",
+      "field_sources": {},
+      "members": [
+        "interfaces::candidate_eb816c1f8a7996aebbd284fe881140cc9bdcfc6810470a9fddc16b92a442dc75"
+      ],
+      "rationale": "Fictional owner equates these fixture records and confirms fields; inventory zone controls this tutorial conflict.",
+      "references": {}
+    },
+    {
+      "canonical_id": "if_plc",
+      "corrections": {},
+      "decision": "OWNER_CONFIRMED",
+      "field_sources": {},
+      "members": [
+        "interfaces::candidate_5c9ae60528e38fa190d2517629922d7067faa895f0fece0b4a731d4549daf60b"
+      ],
+      "rationale": "Fictional owner equates these fixture records and confirms fields; inventory zone controls this tutorial conflict.",
+      "references": {}
+    },
+    {
+      "canonical_id": "if_sw",
+      "corrections": {},
+      "decision": "OWNER_CONFIRMED",
+      "field_sources": {},
+      "members": [
+        "interfaces::candidate_b2d3ba9706c2ad3539693e9b2d8d413f5163eb287b6da04520c532475015c605"
+      ],
+      "rationale": "Fictional owner equates these fixture records and confirms fields; inventory zone controls this tutorial conflict.",
+      "references": {}
+    },
+    {
+      "canonical_id": "alternate",
+      "corrections": {},
+      "decision": "OWNER_CONFIRMED",
+      "field_sources": {},
+      "members": [
+        "inventory::candidate_adec4fa3e9420f6791863393ed99aa4680e444e8070f47b0436bed5d4736ed76"
+      ],
+      "rationale": "Fictional owner equates these fixture records and confirms fields; inventory zone controls this tutorial conflict.",
+      "references": {}
+    },
+    {
+      "canonical_id": "control",
+      "corrections": {},
+      "decision": "OWNER_CONFIRMED",
+      "field_sources": {},
+      "members": [
+        "inventory::candidate_da8ab4be47cdc8ed40c3be1a29cdda540875d7dd3ca536519546ecdf09b179b8"
+      ],
+      "rationale": "Fictional owner equates these fixture records and confirms fields; inventory zone controls this tutorial conflict.",
+      "references": {}
+    }
+  ],
+  "model_confirmed": true,
+  "model_rationale": "Fictional inventory declaration; no inferred permissions.",
+  "project_decisions_version": 1,
+  "reviewer": "Synthetic owner"
+}
