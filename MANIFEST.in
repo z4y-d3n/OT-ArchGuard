@@ -1,5 +1,5 @@
-include .github/workflows/ci.yml
 include .gitattributes
+include .github/workflows/ci.yml
 include .gitignore
 include CHANGELOG.md
 include LICENSE
@@ -27,6 +27,7 @@ include docs/development/gate-v12-04.md
 include docs/development/gate-v12-05.md
 include docs/development/gate-v12-06.md
 include docs/development/gate-v12-07.md
+include docs/development/gate-v12-08.md
 include docs/development/v1.2-architecture.md
 include docs/development/v1.2-design-decisions.md
 include docs/development/v1.2-import-formats.md
@@ -48,7 +49,9 @@ include docs/limitations.md
 include docs/release-checklist.md
 include docs/release-notes-1.0.1.md
 include docs/release-notes-1.1.0.md
+include docs/release-notes-1.2.0.md
 include docs/release-publication-1.1.0.md
+include docs/release-publication-1.2.0.md
 include docs/reporting.md
 include docs/requirements.md
 include docs/testing-strategy.md
@@ -184,6 +187,7 @@ include tests/test_explorer.py
 include tests/test_explorer_compact.py
 include tests/test_exposure_compare_cli.py
 include tests/test_exposure_comparison.py
+include tests/test_final_release.py
 include tests/test_fixtures.py
 include tests/test_ingestion.py
 include tests/test_ingestion_cli.py
@@ -211,6 +215,7 @@ include tests/test_release_metamorphic.py
 include tests/test_reporting.py
 include tests/test_resource_envelope.py
 include tests/test_review_bundle.py
+include tests/test_source_checkout.py
 include tests/test_summaries.py
 include tests/test_trace.py
 include tests/test_trace_cli.py
@@ -237,3 +242,4 @@ include tools/synthetic_inventories.py
 include tools/synthetic_projects.py
 include tools/verification-requirements.txt
 include tools/verify_environment.py
+include tools/verify_source_checkout.py

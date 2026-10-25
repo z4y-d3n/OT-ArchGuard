@@ -66,6 +66,14 @@ def main() -> None:
         "installed_module_sha256": installed_hashes,
         "source_module_sha256": source_hashes,
         "native_version_exit": result.returncode,
+        "installed_packages": {
+            d.metadata["Name"]: {
+                "version": d.version,
+                "license_expression": d.metadata.get("License-Expression"),
+                "license": d.metadata.get("License"),
+            }
+            for d in metadata.distributions()
+        },
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(record, sort_keys=True, indent=2) + "\n", encoding="utf-8")

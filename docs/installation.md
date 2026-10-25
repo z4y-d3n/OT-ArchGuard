@@ -1,6 +1,6 @@
 # Installation, parallel upgrade and offline use
 
-This guide describes source version **1.1.0**, requiring Python 3.12 or later.
+This guide describes unpublished candidate **1.2.0rc1**, requiring Python 3.12 or later.
 Consult the owner-published release record for availability, exact source tag and
 audited asset checksums. Use a reviewed checkout or already obtained wheel/sdist;
 compare obtained archives with that record when available. A checksum establishes
@@ -18,8 +18,8 @@ in the reviewed checkout or extracted sdist root (containing `pyproject.toml` an
 ```powershell
 $Python = (Get-Command python).Source
 & $Python --version
-& $Python -m venv .venv-otarchguard-1.1.0
-$EnvPython = (Resolve-Path .venv-otarchguard-1.1.0/Scripts/python.exe).Path
+& $Python -m venv .venv-otarchguard-1.2.0rc1
+$EnvPython = (Resolve-Path .venv-otarchguard-1.2.0rc1/Scripts/python.exe).Path
 ```
 
 Confirm the selected interpreter is Python 3.12 or later before creating the
@@ -47,9 +47,9 @@ through your approved setup procedure before selecting a source installation.
 # Reviewed source checkout:
 & $EnvPython -m pip install --no-build-isolation .
 # OR already obtained wheel:
-& $EnvPython -m pip install artifacts/otarchguard-1.1.0-py3-none-any.whl
+& $EnvPython -m pip install artifacts/otarchguard-1.2.0rc1-py3-none-any.whl
 # OR already obtained source distribution:
-& $EnvPython -m pip install --no-build-isolation artifacts/otarchguard-1.1.0.tar.gz
+& $EnvPython -m pip install --no-build-isolation artifacts/otarchguard-1.2.0rc1.tar.gz
 ```
 
 ## Optional completely offline setup
@@ -61,7 +61,7 @@ needs the build backend available locally. With the obtained application wheel
 in `artifacts/` and dependency wheels in `wheelhouse/`, from the working directory:
 
 ```powershell
-& $EnvPython -m pip install --no-index --find-links wheelhouse artifacts/otarchguard-1.1.0-py3-none-any.whl
+& $EnvPython -m pip install --no-index --find-links wheelhouse artifacts/otarchguard-1.2.0rc1-py3-none-any.whl
 ```
 
 For offline checkout/sdist installation with the backend already installed, use
@@ -77,12 +77,12 @@ After installation, from the same working directory:
 
 ```powershell
 & $EnvPython -m pip check
-$Otarchguard = (Resolve-Path .venv-otarchguard-1.1.0/Scripts/otarchguard.exe).Path
+$Otarchguard = (Resolve-Path .venv-otarchguard-1.2.0rc1/Scripts/otarchguard.exe).Path
 & $Otarchguard --version
 & $Otarchguard --help
 ```
 
-Require version 1.1.0 and a successful dependency check. Use the full native
+Require version 1.2.0rc1 and a successful dependency check. Use the full native
 executable path so an unrelated installation cannot be selected. Schema-1 models
 need no migration. Set `$Model` to a copy of your existing schema-1 model; the
 checkout/sdist example below uses its supplied remote-support model. A wheel
@@ -112,4 +112,4 @@ and invoke the retained known-good executable by full path. No in-place downgrad
 or declaration rewrite is needed. If recreating a historical v1.0.1 environment,
 use its authenticated original archive and compatible dependencies, then verify
 its historical version and behavior. Never rename archives or replace historical
-assets. Follow the [publication and recovery runbook](release-publication-1.1.0.md).
+assets. Follow the [publication and recovery runbook](release-publication-1.2.0.md).

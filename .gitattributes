@@ -1,3 +1,7 @@
+# Preserve exact Git blob bytes in public source and distribution manifests.
+# Saved review fixtures below retain their explicit LF authoring policy.
+* -text
+
 # Saved project reviews bind exact source/profile bytes across checkouts.
 examples/import-studio/projects/** text eol=lf
 

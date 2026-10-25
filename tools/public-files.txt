@@ -1,5 +1,5 @@
-.github/workflows/ci.yml
 .gitattributes
+.github/workflows/ci.yml
 .gitignore
 CHANGELOG.md
 LICENSE
@@ -27,6 +27,7 @@ docs/development/gate-v12-04.md
 docs/development/gate-v12-05.md
 docs/development/gate-v12-06.md
 docs/development/gate-v12-07.md
+docs/development/gate-v12-08.md
 docs/development/v1.2-architecture.md
 docs/development/v1.2-design-decisions.md
 docs/development/v1.2-import-formats.md
@@ -48,7 +49,9 @@ docs/limitations.md
 docs/release-checklist.md
 docs/release-notes-1.0.1.md
 docs/release-notes-1.1.0.md
+docs/release-notes-1.2.0.md
 docs/release-publication-1.1.0.md
+docs/release-publication-1.2.0.md
 docs/reporting.md
 docs/requirements.md
 docs/testing-strategy.md
@@ -184,6 +187,7 @@ tests/test_explorer.py
 tests/test_explorer_compact.py
 tests/test_exposure_compare_cli.py
 tests/test_exposure_comparison.py
+tests/test_final_release.py
 tests/test_fixtures.py
 tests/test_ingestion.py
 tests/test_ingestion_cli.py
@@ -200,6 +204,7 @@ tests/test_normalization.py
 tests/test_policy_evidence.py
 tests/test_preparation.py
 tests/test_presentation.py
+tests/test_product_presentation.py
 tests/test_quality_comparison.py
 tests/test_reachability.py
 tests/test_reachability_oracle.py
@@ -211,6 +216,7 @@ tests/test_release_metamorphic.py
 tests/test_reporting.py
 tests/test_resource_envelope.py
 tests/test_review_bundle.py
+tests/test_source_checkout.py
 tests/test_summaries.py
 tests/test_trace.py
 tests/test_trace_cli.py
@@ -237,3 +243,4 @@ tools/synthetic_inventories.py
 tools/synthetic_projects.py
 tools/verification-requirements.txt
 tools/verify_environment.py
+tools/verify_source_checkout.py

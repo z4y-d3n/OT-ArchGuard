@@ -2,7 +2,7 @@ name: Python verification
 
 on:
   push:
-    branches: ['v1.2', 'codex/v12-07-quality-comparison', 'main']
+    branches: ['v1.2', 'codex/v12-08-final-release-hardening', 'main']
   pull_request:
     branches: ['v1.2', 'main']
   workflow_dispatch:
@@ -43,13 +43,15 @@ jobs:
           if ($roots.Count -ne 1 -or $roots[0] -ne $env:EXPECTED_ROOT_SHA) { throw "Unexpected repository ancestry" }
       - name: Install approved verification dependencies
         run: python -m pip install -r tools/verification-requirements.txt
+      - name: Verify exact committed public source bytes
+        run: python tools/verify_source_checkout.py --output output/source-checkout.json
       - name: Build and audit exact candidate distributions
         run: |
           python -c "from setuptools import build_meta; build_meta.build_wheel('output/artifacts'); build_meta.build_sdist('output/artifacts')"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python tools/audit_release.py output/artifacts/otarchguard-1.2.0.dev0-py3-none-any.whl output/artifacts/otarchguard-1.2.0.dev0.tar.gz --source-root . --output output/archive-audit.json
+          python tools/audit_release.py output/artifacts/otarchguard-1.2.0rc1-py3-none-any.whl output/artifacts/otarchguard-1.2.0rc1.tar.gz --source-root . --output output/archive-audit.json
       - name: Install the exact audited candidate wheel
-        run: python -m pip install --force-reinstall --no-index --no-deps --no-build-isolation output/artifacts/otarchguard-1.2.0.dev0-py3-none-any.whl
+        run: python -m pip install --force-reinstall --no-index --no-deps --no-build-isolation output/artifacts/otarchguard-1.2.0rc1-py3-none-any.whl
       - name: Verify installed distribution, imports and native console
         run: python tools/verify_environment.py --output output/environment-${{ matrix.os }}-${{ matrix.python }}.json
       - name: Ruff lint
@@ -76,16 +78,11 @@ jobs:
           PYTHONPATH: '${{ github.workspace }}/tools/offline'
           PIP_NO_INDEX: '1'
         run: |
-          python -m pip install --force-reinstall --no-index --no-deps --no-build-isolation output/artifacts/otarchguard-1.2.0.dev0.tar.gz
+          python -m pip install --force-reinstall --no-index --no-deps --no-build-isolation output/artifacts/otarchguard-1.2.0rc1.tar.gz
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python tools/verify_environment.py --output output/installed-sdist.json
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          $tests = @(Get-ChildItem tests/test_ingestion*.py | ForEach-Object { $_.FullName })
-          $tests += 'tests/test_review_bundle.py'
-          $tests += 'tests/test_explorer.py'
-          $tests += 'tests/test_explorer_compact.py'
-          $tests += 'tests/test_quality_comparison.py'
-          python -m pytest @tests --basetemp=output/sdist-tmp --tb=short --junitxml=output/sdist-suite.xml
+          python -m pytest tests --basetemp=output/sdist-tmp --tb=short --junitxml=output/sdist-suite.xml
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python -m tools.project_walkthrough --output output/project-walkthrough
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -105,10 +102,12 @@ jobs:
         uses: actions/upload-artifact@v7.0.2
         with:
           name: candidate-integrity-${{ matrix.os }}-${{ matrix.python }}
-          retention-days: 7
+          retention-days: 30
+          if-no-files-found: error
           path: |
             output/artifacts/*
             output/archive-audit.json
+            output/source-checkout.json
             output/full-suite.xml
             output/sdist-suite.xml
             output/installed-sdist.json

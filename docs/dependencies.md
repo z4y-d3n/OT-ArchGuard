@@ -13,6 +13,7 @@ It adds no browser tooling, framework, graph-rendering package or runtime servic
 | PyYAML | >=6,<7 | MIT / YAML |
 | Pydantic | >=2.12,<3 | MIT / records |
 | setuptools | >=77 | MIT / build only |
+| pip | 26.2.2 verification pin | MIT / approved installation tooling, not runtime |
 | pytest | >=8,<10 | MIT / tests |
 | types-PyYAML | >=6,<7 | Apache-2.0 with upstream notices / typing |
 | Ruff | >=0.11,<1 | MIT / lint/format |

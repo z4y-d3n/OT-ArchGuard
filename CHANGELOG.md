@@ -1,3 +1,10 @@
+# 1.2.0rc1 (unpublished candidate)
+
+Final V12-08 candidate: complete integrated Import Studio, offline Explorer, quality and
+comparison; stricter distribution entry auditing and full installed-sdist CI.
+See [candidate notes](docs/release-notes-1.2.0.md). Stable publication requires
+separate owner authorization and exact-source acceptance.
+
 # Changelog
 
 ## 1.1.0
