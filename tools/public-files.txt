@@ -7,6 +7,7 @@ MANIFEST.in
 README.md
 THIRD_PARTY_NOTICES.md
 benchmarks/__init__.py
+benchmarks/capture.py
 benchmarks/documents.py
 benchmarks/explorer.py
 benchmarks/profile.py
@@ -39,6 +40,9 @@ docs/development/v12-04-projects-and-reconciliation.md
 docs/development/v12-05-architecture-explorer.md
 docs/development/v12-06-document-evidence-and-explorer.md
 docs/development/v12-07-quality-and-comparison.md
+docs/development/v13-00-baseline-and-decisions.md
+docs/development/v13-benchmark-results.md
+docs/development/v13-gate-evidence.md
 docs/domain-model.md
 docs/images/README.md
 docs/images/flat-plant-proposed.png
@@ -46,10 +50,12 @@ docs/images/remote-support-proposed.png
 docs/import-studio.md
 docs/installation.md
 docs/limitations.md
+docs/pcap-evidence-studio.md
 docs/release-checklist.md
 docs/release-notes-1.0.1.md
 docs/release-notes-1.1.0.md
 docs/release-notes-1.2.0.md
+docs/release-notes-1.3-draft.md
 docs/release-publication-1.1.0.md
 docs/release-publication-1.2.0.md
 docs/reporting.md
@@ -66,6 +72,10 @@ docs/v1.1/public-contract-inventory.md
 docs/verification.md
 docs/yaml-schema-v1.md
 examples/README.md
+examples/capture-studio/README.md
+examples/capture-studio/architecture.yaml
+examples/capture-studio/plant.pcap
+examples/capture-studio/plant.pcapng
 examples/explorer/README.md
 examples/flat-plant/baseline.yaml
 examples/flat-plant/proposed.yaml
@@ -121,6 +131,13 @@ src/otarchguard/__init__.py
 src/otarchguard/__main__.py
 src/otarchguard/api.py
 src/otarchguard/architecture_comparison.py
+src/otarchguard/capture/__init__.py
+src/otarchguard/capture/cli.py
+src/otarchguard/capture/contract.py
+src/otarchguard/capture/explorer.py
+src/otarchguard/capture/observations.py
+src/otarchguard/capture/parser.py
+src/otarchguard/capture/reconciliation.py
 src/otarchguard/cli.py
 src/otarchguard/comparison.py
 src/otarchguard/contract.py
@@ -177,6 +194,10 @@ tests/fixtures/invalid-interface-placement.yaml
 tests/fixtures/invalid-missing-reference.yaml
 tests/fixtures/minimal-valid.yaml
 tests/fixtures/unsupported-model.yaml
+tests/test_capture_cli.py
+tests/test_capture_observations.py
+tests/test_capture_parser.py
+tests/test_capture_reconciliation.py
 tests/test_check_cli.py
 tests/test_cli.py
 tests/test_comparison_properties.py
@@ -227,6 +248,8 @@ tests/test_validation.py
 tools/__init__.py
 tools/audit_release.py
 tools/capture_contract.py
+tools/capture_walkthrough.py
+tools/capture_workloads.py
 tools/compare_versioned_contract.py
 tools/development_disk.py
 tools/document_walkthrough.py

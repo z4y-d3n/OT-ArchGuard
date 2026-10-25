@@ -152,3 +152,13 @@ and optional documentary evidence; repeat `--trace SOURCE:SERVICE` for actual ex
 before/after evaluation. Missing documentation never implies a vulnerability.
 See the [offline tutorial](examples/quality-comparison/README.md) and
 [versioned contract](docs/development/v12-07-quality-and-comparison.md).
+# PCAP Evidence Studio development
+
+The additive v1.3 development candidate supports passive local PCAP/PCAPNG evidence,
+reviewed identity mappings, comparison through the existing evaluator, and offline
+reports. Package version remains 1.2.0 during compatibility verification.
+See the [capture guide](docs/pcap-evidence-studio.md),
+[fictional tutorial](examples/capture-studio/README.md), and
+[gate evidence](docs/development/v13-gate-evidence.md).
+No stable v1.3 release or final owner acceptance is claimed.
+

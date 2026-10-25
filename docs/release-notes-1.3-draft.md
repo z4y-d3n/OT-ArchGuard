@@ -1,0 +1,24 @@
+# Draft v1.3 release notes — not a published release
+
+PCAP Evidence Studio adds passive local capture inspection, bounded header-only
+observations and conversation catalogs, explicit hash-bound identity review,
+conservative comparison through the existing evaluator, and offline evidence sites.
+Native schema1, policy semantics, historical commands/reports, Import Studio and
+Architecture Explorer remain unchanged. No new runtime dependencies.
+
+Format scope is classic PCAP2.4 and documented PCAPNG sections/interfaces/EPB/SPB.
+Ethernet/VLAN/raw IP, IPv4/IPv6, TCP/UDP, ARP and ICMP metadata is observational.
+Industrial protocol recognition is limited to versioned port hints. No active
+capture, reassembly, industrial command decoding, DNS, telemetry, model mutation or
+automated authorization is implemented.
+
+Only justified reviewed single-interface IPv4 TCP initiations with exact declared
+listeners are evaluated. UDP/response-only TCP, unsupported or damaged evidence
+remain explicit uncertainty. Native witnesses do not prove actual packet routes.
+Discrepancies are model/evidence disagreements, not incidents or compliance scores.
+
+This development candidate retains package version1.2.0 pending the isolated
+version transition and final acceptance. Hosted six-combination candidate CI,
+formal owner acceptance, publication and stable tagging require subsequent steps.
+See [implemented contracts and limitations](pcap-evidence-studio.md) and the
+[gate evidence](development/v13-gate-evidence.md) for actual executed validation.

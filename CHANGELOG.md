@@ -53,3 +53,10 @@ unchanged. Python 3.12 is the minimum; local verification covers Windows Python
 3.12.14 and 3.14.5. The invalid-Unicode diagnostic issue remains documented in
 [limitations](docs/limitations.md). See [verification](docs/verification.md) and
 [release notes](docs/release-notes-1.0.1.md).
+# Unreleased — PCAP Evidence Studio (v1.3 development)
+
+- Add bounded passive PCAP/PCAPNG parsing, metadata observations and port hints.
+- Add explicit hash-bound association review and conservative native-model comparison.
+- Add deterministic offline evidence reports, fictional fixtures and validation tooling.
+- Preserve native schema1 and historical v1.2 contracts; package version transition pending.
+

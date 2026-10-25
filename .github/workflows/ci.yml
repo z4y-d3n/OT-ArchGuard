@@ -2,7 +2,7 @@ name: Python verification
 
 on:
   push:
-    branches: ['v1.2', 'codex/v12-08-final-release-hardening', 'codex/release-1.2.0-preparation', 'main']
+    branches: ['v1.2', 'codex/v12-08-final-release-hardening', 'codex/release-1.2.0-preparation', 'codex/v13-*', 'main']
   pull_request:
     branches: ['v1.2', 'main']
   workflow_dispatch:
@@ -93,6 +93,8 @@ jobs:
           python -m tools.document_walkthrough --output output/document-walkthrough
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python -m tools.quality_walkthrough --output output/quality-walkthrough
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m tools.capture_walkthrough --output output/capture-walkthrough
       - name: Record exact revision and candidate source identity
         run: |
           python -c "import hashlib,json,os,pathlib,platform,subprocess; r=pathlib.Path('.'); files={n:hashlib.sha256((r/n).read_bytes()).hexdigest() for n in (r/'tools/public-files.txt').read_text().splitlines()}; pathlib.Path('output/ci-revision.json').write_text(json.dumps({'tested_commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'pr_head':os.getenv('PR_HEAD'),'run_id':os.getenv('GITHUB_RUN_ID'),'run_attempt':os.getenv('GITHUB_RUN_ATTEMPT'),'platform':platform.platform(),'python':platform.python_version(),'public_source_sha256':hashlib.sha256(json.dumps(files,sort_keys=True,separators=(',',':')).encode()).hexdigest()},sort_keys=True,indent=2))"
@@ -115,6 +117,7 @@ jobs:
             output/explorer-walkthrough.json
             output/document-walkthrough/walkthrough.json
             output/quality-walkthrough/walkthrough.json
+            output/capture-walkthrough/walkthrough.json
             output/ci-revision.json
             output/environment-${{ matrix.os }}-${{ matrix.python }}.json
       - name: Measure fixed NFR-05 workloads offline

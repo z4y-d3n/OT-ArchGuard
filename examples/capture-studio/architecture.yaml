@@ -1,0 +1,127 @@
+schema_version: 1
+architecture_id: fictional_capture_plant
+revision: demo_1
+suc:
+  id: fictional_plant
+  name: Fictional capture demonstration
+  purpose: Offline evidence tutorial.
+  controlled_process: No real process.
+  boundary_description: Finite single-zone teaching plant; boundary is declared only.
+  completeness_assertion: Synthetic inventory only; no operational completeness claim
+  access_points: []
+  external_dependencies: []
+zones:
+- id: control
+  name: Control
+  purpose: Fictional supervision.
+  scope: internal
+  grouping_rationale: Teaching example only.
+  safety_designation: non_safety
+assets:
+- id: eng
+  name: Engineering workstation
+  role: Engineering workstation
+  zone_id: control
+  kind: endpoint
+  scope: internal
+  domain_classification: iacs
+  safety_classification: non_safety
+  criticality: medium
+- id: hmi
+  name: HMI
+  role: HMI
+  zone_id: control
+  kind: endpoint
+  scope: internal
+  domain_classification: iacs
+  safety_classification: non_safety
+  criticality: medium
+- id: plc
+  name: Simulated PLC
+  role: Simulated PLC
+  zone_id: control
+  kind: endpoint
+  scope: internal
+  domain_classification: iacs
+  safety_classification: non_safety
+  criticality: medium
+- id: historian
+  name: Historian
+  role: Historian
+  zone_id: control
+  kind: endpoint
+  scope: internal
+  domain_classification: iacs
+  safety_classification: non_safety
+  criticality: medium
+- id: fw
+  name: Declared boundary device
+  role: Declared boundary device
+  zone_id: control
+  kind: boundary_device
+  scope: internal
+  domain_classification: iacs
+  safety_classification: non_safety
+  criticality: medium
+interfaces:
+- id: eng_net
+  asset_id: eng
+  placement_zone_id: control
+  ipv4: 192.0.2.10/24
+- id: hmi_net
+  asset_id: hmi
+  placement_zone_id: control
+  ipv4: 192.0.2.11/24
+- id: plc_net
+  asset_id: plc
+  placement_zone_id: control
+  ipv4: 192.0.2.20/24
+- id: historian_net
+  asset_id: historian
+  placement_zone_id: control
+  ipv4: 192.0.2.30/24
+- id: fw_net
+  asset_id: fw
+  placement_zone_id: control
+  ipv4: 192.0.2.1/24
+conduits: []
+transport_edges:
+- id: t_eng_plc
+  source_interface_id: eng_net
+  destination_interface_id: plc_net
+- id: t_hmi_plc
+  source_interface_id: hmi_net
+  destination_interface_id: plc_net
+forwarding_edges: []
+services:
+- id: svc_plc
+  asset_id: plc
+  interface_id: plc_net
+  protocol: tcp
+  destination_ports:
+  - start: 502
+    end: 502
+- id: svc_history
+  asset_id: historian
+  interface_id: historian_net
+  protocol: tcp
+  destination_ports:
+  - start: 4840
+    end: 4840
+rules:
+- id: allow_eng_plc
+  edge_ids:
+  - t_eng_plc
+  source:
+    asset_ids:
+    - eng
+  destination:
+    asset_ids:
+    - plc
+  protocol: tcp
+  destination_ports:
+  - start: 502
+    end: 502
+  effect: allow
+intents: []
+scenarios: []
