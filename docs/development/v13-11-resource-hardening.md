@@ -54,7 +54,7 @@ accounting. This change provides neither an enforced RSS cap nor OS isolation.
 ## Measurement method and environment
 
 The nine final workers ran through `benchmarks.capture` in separate processes.
-`output/v13-audit/benchmarks/benchmark.json` retains full-precision timings,
+`output/v13-audit/final-benchmarks/benchmark.json` retains full-precision timings,
 actual fixture SHA-256, observation digests, record/interface counts, output bytes
 and rejection diagnostics. Eight workers completed; the adversarial cardinality
 worker rejected as expected. Its supplied record count is not a parsed count.
@@ -63,7 +63,7 @@ The metadata workload correctly records zero packet records and 256 sections.
 Environment: Windows 11 build 26100, CPython 3.14.5, MSC v.1944 64-bit AMD64;
 Intel Family 6 Model 141 Stepping 1, 12 logical processors. Exact Python build:
 `3.14.5 (tags/v3.14.5:5607950, May 10 2026, 10:43:50) [MSC v.1944 64 bit (AMD64)]`.
-Reviewer and targeted-test activity ran concurrently. There was no CPU isolation,
+The full installed regression suite ran concurrently. There was no CPU isolation,
 frequency control, filesystem-cache control or statistical repetition.
 
 - Elapsed time includes capture analysis, JSON/HTML generation and site link
@@ -76,14 +76,20 @@ frequency control, filesystem-cache control or statistical repetition.
   `ru_maxrss` bytes on those platforms; those branches were not executed here.
 - Each worker has its own lifetime high-water mark, so earlier workloads do not
   contaminate another worker's resident peak.
-- No active socket-denial harness was present in these benchmark workers.
-  Separate installed-suite/walkthrough offline evidence belongs to V13-12.
+- These final workers used the regular verified wheel installation and active
+  socket/DNS-denial harness. The earlier source-checkout exploratory measurement
+  under `output/v13-audit/benchmarks/` is preserved separately. It preceded final
+  source identity closure (one decoder comment changed during that run), so the
+  final installed measurement supersedes it; no executable decoder logic changed
+  between the two measurements. This is not statistical repetition or a selected
+  best-of comparison.
 
 Reproduction requires a fresh output directory:
 
 ```powershell
-$env:PYTHONPATH = 'src'
-.\.venv\Scripts\python.exe -m benchmarks.capture --output output/v13-audit/benchmarks
+$env:PYTHONPATH = (Resolve-Path tools/offline).Path
+$env:OTARCHGUARD_OFFLINE_CHECK = '1'
+.\output\v13-audit\wheel-env\Scripts\python.exe -m benchmarks.capture --output output/v13-audit/final-benchmarks
 ```
 
 ## Executed results
@@ -93,15 +99,15 @@ table; raw JSON retains full precision.
 
 | Workload | Supplied packet records / sections | Input bytes | Flows / hosts | Seconds | Traced peak | Process resident peak | Report bytes | Result |
 |---|---:|---:|---:|---:|---:|---:|---:|---|
-| repeated-1k | 1,000 / 1 | 68,424 | 10 / 7 | 0.342 | 487,579 | 39,223,296 | 158,738 | Complete |
-| repeated-10k | 10,000 / 1 | 684,024 | 10 / 7 | 1.691 | 489,220 | 38,797,312 | 158,970 | Complete |
-| repeated-100k | 100,000 / 1 | 6,840,024 | 10 / 7 | 14.883 | 489,396 | 38,629,376 | 159,192 | Complete |
-| repeated-250k | 250,000 / 1 | 17,100,024 | 10 / 7 | 36.761 | 489,511 | 38,850,560 | 159,316 | Complete |
-| cardinality-1k | 1,000 / 1 | 70,024 | 1,000 / 1,001 | 3.621 | 11,215,572 | 60,481,536 | 6,855,711 | Complete |
-| skew-10k | 10,000 / 1 | 684,024 | 1,009 / 1,007 | 5.156 | 11,397,420 | 59,629,568 | 6,966,483 | Complete |
-| cardinality-rejection | 10,000 supplied / 1 | 700,024 | Not published | 0.909 | 17,206,871 | 75,653,120 | None | Expected rejection |
-| maxframe-64 | 64 / 1 | 16,778,264 | 1 / 0 | 0.072 | 667,679 | 38,838,272 | 32,154 | Complete |
-| metadata-sections-256 | 0 / 256 | 16,789,504 | 0 / 0 | 0.099 | 539,365 | 38,678,528 | 118,325 | Complete |
+| repeated-1k | 1,000 / 1 | 68,424 | 10 / 7 | 0.302 | 487,836 | 38,805,504 | 158,738 | Complete |
+| repeated-10k | 10,000 / 1 | 684,024 | 10 / 7 | 1.702 | 489,376 | 38,883,328 | 158,970 | Complete |
+| repeated-100k | 100,000 / 1 | 6,840,024 | 10 / 7 | 15.640 | 489,552 | 39,235,584 | 159,192 | Complete |
+| repeated-250k | 250,000 / 1 | 17,100,024 | 10 / 7 | 38.928 | 489,723 | 39,018,496 | 159,316 | Complete |
+| cardinality-1k | 1,000 / 1 | 70,024 | 1,000 / 1,001 | 3.431 | 11,231,180 | 60,608,512 | 6,855,711 | Complete |
+| skew-10k | 10,000 / 1 | 684,024 | 1,009 / 1,007 | 4.948 | 11,397,420 | 60,801,024 | 6,966,483 | Complete |
+| cardinality-rejection | 10,000 supplied / 1 | 700,024 | Not published | 0.836 | 17,206,871 | 76,103,680 | None | Expected rejection |
+| maxframe-64 | 64 / 1 | 16,778,264 | 1 / 0 | 0.113 | 667,679 | 39,202,816 | 32,154 | Complete |
+| metadata-sections-256 | 0 / 256 | 16,789,504 | 0 / 0 | 0.131 | 539,365 | 39,137,280 | 118,325 | Complete |
 
 The maximum-frame workload contains 64 captures of 262,144 bytes each. The frames
 carry an unsupported Ethernet type, so the measured result exercises bounded

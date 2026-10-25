@@ -43,8 +43,48 @@ not evidence of a physical air gap. Source-checkout targeted review uses
 
 ## Results
 
-Final installed-suite, compatibility and archive runs are pending at source
-freeze. Their completed receipts and exact counts will replace this paragraph.
+| Verification | Actual result | Receipt |
+|---|---|---|
+| Full regular installed-wheel suite, network denied | **2,612 passed, 0 failed/errors/skipped**, pytest 503.85 s; driver exit0, 504.774 s | `full-suite.xml`, `full-suite.stdout`, `full-receipt.json` |
+| Regular installed-sdist capture suites, network denied | **290 passed, 0 failed/errors/skipped**, exit0 | `sdist-suite.xml`, `sdist-receipt.json` |
+| Ruff lint / formatting | PASS, exit0 / exit0 | `quality-receipt.json`, `ruff.stdout`, `format.stdout` |
+| Strict mypy | PASS, 145 source files, exit0 | `mypy.stdout`, `quality-receipt.json` |
+| pip consistency | No broken requirements, exit0 | `pip-check.stdout` |
+| Native historical compatibility | **45 cases, 123 exact artifacts**; typed exit codes/input identities equal | `legacy-comparison.json` |
+| Historical source contracts | All 54 files under baseline `tests/` unchanged, including fixtures; pyproject, schema document and native contract bytes unchanged | `legacy-comparison.json` |
+| Wheel/sdist member/source/RECORD/metadata audit | PASS, 279 public files, exit0 | `archive-audit.json` (verification stage), `final-archive-audit.json` (final documentation) |
+| Fresh installed module/console origin | PASS, both distributions; all 60 modules match reviewed source | `wheel-environment.json`, `sdist-environment.json`, `final-sdist-environment.json` |
+| Native consoles and fictional capture walkthroughs outside checkout | PASS for wheel and sdist, all six expected classes; network denied | `outside-receipt.json`, `wheel-walkthrough.json`, `sdist-walkthrough.json` |
+| Final installed capture benchmarks | Eight complete, one expected resource rejection | `final-benchmarks/benchmark.json`; V13-11 |
+| Hosted six-cell candidate CI | **NOT RUN** | Authorization boundary in V13-13 |
+| Actual browser keyboard/zoom/accessibility acceptance | **NOT RUN** | SVG-only inspection and checklist in V13-10 |
+
+The full-suite verification wheel SHA-256 is
+`73b94968181a3067165146a7c9f793b6ec450ddbd8801b0ac8348662c2acd319`
+(212,266 bytes). That exact wheel is retained as the final wheel; no rebuild is
+needed when only development evidence markdown changes. The final sdist is
+rebuilt to include the completed records, audited against final committed source,
+regularly installed and its 290 capture tests rerun. Final archive hashes/sizes
+are in `final-archive-audit.json`, `final-manifest.json` and `SHA256SUMS.txt`.
+This avoids a self-referential sdist hash inside its own source documents.
+
+Executable and test bytes were frozen in source identity
+`a9c651f4f3e6997ec6d2ef01c9675d8242dc3475`; the suite driver recorded every
+Python source/test/tool/benchmark hash before execution. The commit was recorded
+during the run without changing those bytes. Only evidence markdown was finalized
+afterward. `final-manifest.json` asserts every executed Python hash still equals
+the final checkout and both installed module inventories. `source-checkout.json`
+binds final committed public bytes, including the completed documents. No code or
+test change is accepted on the strength of an earlier executable revision.
+
+The first baseline compatibility driver attempt used a relative output under the
+archived baseline's different working directory and failed `validate-json` with
+`REPORT_IO_ERROR`. Its partial output is preserved. Supplying an absolute output
+resolved the driver error; the baseline's entire installed module inventory was
+independently matched to `git archive f52c792` before accepting the 123-artifact
+comparison. The initial sdist installation also hit the managed default pip
+cache permission boundary; `--no-cache-dir` plus workspace TMP/TEMP resolved it.
+These setup failures are not silently counted as successful product checks.
 
 ## Verification scope
 

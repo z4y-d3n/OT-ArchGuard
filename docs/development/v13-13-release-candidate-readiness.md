@@ -50,6 +50,16 @@ claimed. Reviewer hypotheses about exact-port cache reuse and duplicate valid
 IPv4 model identities were resolved by independent tests and validation rules;
 no conflicting confirmed finding was concealed.
 
+The exact installed wheel passed **2,612 tests, zero failures/errors/skips**;
+the separately installed sdist capture corpus passed **290**. Ruff, formatting,
+strict mypy and dependency consistency passed. The independent historical
+comparison retained **45 cases / 123 exact artifacts**. Eight final benchmark
+workers completed reports and one rejected the intended resource workload.
+These overlapping tests are not additive counts. V13-08/09/11/12 have local
+engineering evidence; V13-10 and V13-13 remain incomplete because browser and
+hosted acceptance are pending. This is **READY FOR OWNER REVIEW** of local work,
+not **APPROVED FOR STABLE RELEASE** or **PUBLISHED**.
+
 ## Final source and artifact authority
 
 Exact local commit, ancestry, changed files, diff summary, executable/test hashes,
@@ -85,8 +95,9 @@ After authorization, inspect all six actual job artifacts and tested commit IDs.
 Prepare a separate local change only after owner sequencing is agreed:
 `pyproject.toml [project].version` and `src/otarchguard/__init__.py::__version__`
 must both become 1.3.0. The current-release assertions in
-`tests/test_release_candidate.py` and `tests/test_final_release.py` must be reviewed
-against the intended new release rather than weakening historical expectations.
+`tests/test_release_candidate.py::RELEASE_VERSION` must be reviewed against the
+intended new release rather than weakening historical expectations. Preserve the
+archive-integrity regressions in `tests/test_final_release.py`.
 Search all current-release references, update new release/installation records,
 and retain historical 1.2.0 evidence unchanged. Archive filenames, dist-info/root,
 metadata and CLI identity must agree. Build fresh regular environments; rerun

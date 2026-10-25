@@ -49,9 +49,14 @@ the renderer loaded from
 because none of the finding rows link to a flow anchor. This is separate from a
 test merely reproducing the current renderer's output.
 
-The integration owner's static SVG/raster evidence belongs under
-`output/v13-audit/visual/`. The final regression record identifies the generated
-files and receipts. Raster evidence demonstrates SVG geometry and visible labels;
+The integration owner generated and visually inspected SVG-only before/after
+rasters at `output/v13-audit/visual/before.png` (850×492) and `after.png`
+(1100×1300). The preserved tutorial observations/comparison are rendered with
+the original `4fb9b48` diagram and corrected diagram by
+`output/v13-audit/render_visual.py`, then rasterized with bundled Sharp on a white
+background. The new lanes show all ten directed aggregates without shared paths,
+including reverse flows, IPv6 and ARP, with source/destination, ports and codes.
+Raster evidence demonstrates SVG geometry and visible labels;
 it does not establish browser CSS, focus order, screen-reader behavior or zoom.
 
 ## Confirmed strengths and residual limits
