@@ -1,24 +1,55 @@
 # V13-21 — Hosted candidate acceptance and authorization boundary
 
-Date: 2026-10-25. Status: **BLOCKED — specific owner remote-write authorization
-pending**. No remote push, workflow dispatch, PR, merge, tag, release, upload or
-repository-setting modification is authorized by the master prompt. Local work
-continues independently; this status does not negate completed local checks.
+Date: 2026-10-25. Status: **FAIL for the published candidate; local correction
+prepared, remaining jobs in progress.** The owner specifically authorized the
+normal push of `38c1ec96d95e274e3b9ebdd30ad42a3e8cb84a9e` to
+`refs/heads/codex/v13-01-capture-foundation`. That exact push succeeded and created
+the remote branch. The owner authorization covers that commit only. PR, merge,
+tags, releases, uploads, settings and any subsequent push remain unauthorized.
 
 ## Actual hosted results
 
 | Platform | Python | Final 1.3.0 result | Tested commit / run |
 | --- | --- | --- | --- |
-| Windows | 3.12 | NOT RUN | None |
-| Windows | 3.14 | NOT RUN | None |
-| Ubuntu | 3.12 | NOT RUN | None |
-| Ubuntu | 3.14 | NOT RUN | None |
-| macOS | 3.12 | NOT RUN | None |
-| macOS | 3.14 | NOT RUN | None |
+| Windows | 3.12 | IN PROGRESS | job121324170857 |
+| Windows | 3.14 | IN PROGRESS | job121324170817 |
+| Ubuntu | 3.12 | FAIL: strict mypy | job121324170800 |
+| Ubuntu | 3.14 | FAIL: strict mypy | job121324170894 |
+| macOS | 3.12 | FAIL: strict mypy | job121324170818 |
+| macOS | 3.14 | FAIL: strict mypy | job121324170716 |
 
-No historical v1.2 or earlier candidate run is substituted for these results.
-There are no completed-run URLs or retained hosted artifacts for this final
-candidate. Local Windows results establish no hosted multiplatform PASS.
+All cells belong to [Python verification run40244859860](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40244859860),
+attempt1, event push, started2026-10-25T23:27:38Z, exact head38c1ec96d95e274e3b9ebdd30ad42a3e8cb84a9e.
+No historical v1.2 or earlier candidate run is substituted. Local Windows results
+establish no hosted multiplatform PASS. Raw authorization/push/branch/run/job/log
+and downloaded-artifact receipts are retained under `output/v13-hosted/`.
+
+## Confirmed hosted defect and local correction
+
+Four POSIX cells completed source verification, 1.3.0 wheel/sdist builds, archive
+audits, installed module/console verification, Ruff lint and formatting. Strict
+mypy then reported four undefined Windows ctypes attributes in
+`benchmarks/capture.py`: WinDLL (twice), WinError and get_last_error. Its runtime
+`os.name == "nt"` condition excluded those calls on POSIX, but mypy did not use
+that condition to exclude the Windows-only API declarations. Product analyzer
+modules were not implicated. Later tests/walkthroughs/benchmarks in these cells
+were skipped, not PASS.
+
+The local correction uses `sys.platform == "win32"`, recognized by mypy and
+equivalent for the supported native platforms. No ignores, weakened checks,
+forced Windows typing in hosted POSIX jobs, runtime dependency or production
+module change is introduced. Full strict mypy passes separately with win32,
+linux and darwin targets (155 files each); Ruff/format pass and the real local
+Windows RSS helper returns a positive integer. Receipts:
+`output/v13-platform-typing-fix/receipt.json` and mypy target logs. These static
+cross-target checks do not claim POSIX runtime success. The fixed commit still
+requires owner authorization and a new six-cell run.
+
+Four failed-cell integrity ZIPs were retained and their API SHA-256 digests
+matched downloaded bytes. They contain source-checkout, environment, archive
+audit, actual packages and golden/interoperability manifests. Full-suite XML,
+sdist installation, compatibility/consumer/walkthrough/benchmark results are
+absent because mypy stopped execution. Their absence is explicitly recorded.
 
 ## Prepared workflow
 

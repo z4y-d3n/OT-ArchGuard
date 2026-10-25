@@ -91,6 +91,12 @@ project settings other than the release version are checked exactly.
 
 Hosted Windows/Ubuntu/macOS on Python3.12/3.14 is NOT RUN in this gate and cannot
 be inferred from local Windows3.14 tests. Human browser acceptance remains NOT RUN.
+Subsequent owner-authorized publication of38c1ec9 did start hosted run40244859860;
+its actual failed POSIX typing checks and in-progress Windows snapshot are recorded
+in V13-21. The local benchmark guard correction changes no production module,
+evidence contract or test. A separate correction-candidate archive/source manifest
+is retained under `output/v13-hosted/fix-candidate/`; original V13-20 artifacts and
+receipts are preserved as historical exact38c1ec9 evidence.
 
 ## E. Risks
 

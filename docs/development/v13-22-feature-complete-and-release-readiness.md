@@ -7,7 +7,10 @@ subset, with 2,746 final installed-wheel tests passing and independently install
 sdist verification in V13-20. Required hosted validation and
 human browser acceptance remain outstanding. Feature complete, locally tested,
 hosted validated, human accepted, merged and published are distinct milestones.
-No owner approval for publication is recorded.
+No owner approval for release publication is recorded. The owner authorized and
+the agent executed only the exact candidate-branch push of38c1ec9. Its first
+hosted run exposed a POSIX benchmark typing defect; the local correction and
+required follow-up authorization are recorded in V13-21.
 
 ## B. Completed functionality and supported scope
 
@@ -42,8 +45,11 @@ the actual selected `otarchguard-1.3.0-py3-none-any.whl` and
 `otarchguard-1.3.0.tar.gz` bytes returned by the backend. Final release notes,
 changelog, installation guide and fictional tutorial are packaged source.
 
-V13-21 records all six required hosted cells as NOT RUN until an authorized
-publication triggers actual jobs. V13-17 records human checklist items as NOT RUN;
+V13-21 records the actual authorized six-cell run: four POSIX cells fail at strict
+mypy and Windows cells continue in the recorded snapshot. The local correction
+must receive a fresh exact-commit push authorization and pass a new hosted run.
+The original local manifest and archives remain historical evidence for38c1ec9;
+the correction candidate has its own source/archive identities. V13-17 records human checklist items as NOT RUN;
 static/raster/browser-tool observations do not replace human acceptance. All
 remaining gaps are material acceptance requirements, not fabricated PASS results.
 
@@ -68,8 +74,10 @@ against all malformed captures or decoders.
 
 ## E. Unresolved issues and maintenance policy
 
-No confirmed unresolved critical/high defect remains within the reviewed
-supported subset. Outstanding concrete acceptance
+No confirmed unresolved critical/high analyzer defect remains within the reviewed
+supported subset. A benchmark platform-typing failure blocks hosted acceptance;
+its minimal local correction has passed strict target checks but needs a new run.
+Outstanding concrete acceptance
 requirements are six-cell hosted CI, actual human browser checklist and owner
 review. If either reveals a defect, fix it and repeat affected validation before
 claiming release readiness. Deep industrial inspection remains a possible v1.4
@@ -98,8 +106,8 @@ redesigning the core, subject to closing the outstanding acceptance evidence.
 | Determinism, hostile input, budgets, fatal-output preservation, denied Python networking | PASS locally; installed regression and fixed resource receipts |
 | Historical native regression, new capture/ARP tests and read-only future consumer | PASS locally; V13-18 / V13-20, counts overlap |
 | Runtime 1.3.0, archive metadata, regular installs, source/module identity and checksums | V13-20 final audit and release-manifest.json are authoritative |
-| Six hosted final-candidate configurations | NOT RUN; V13-21 requires specific push authorization |
-| Final owner approval before publication | NOT GRANTED; no remote write, merge, tag or upload performed |
+| Six hosted final-candidate configurations | FAIL in four POSIX cells; Windows snapshot IN PROGRESS; correction/rerun required in V13-21 |
+| Final owner approval before release publication | NOT GRANTED; only exact38c1ec9 candidate push authorized/performed |
 
 ## F. Owner-controlled next step
 

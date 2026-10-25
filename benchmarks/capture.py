@@ -23,7 +23,7 @@ from tools.capture_workloads import write_pcap
 
 def process_peak_rss_bytes() -> int | None:
     """OS-reported lifetime resident high-water mark, including interpreter startup."""
-    if os.name == "nt":
+    if sys.platform == "win32":
         import ctypes
         from ctypes import wintypes
 
