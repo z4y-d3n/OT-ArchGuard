@@ -105,7 +105,13 @@ def _properties(title: str, value: object) -> str:
     return "<h2>" + escape(title) + "</h2><pre>" + _json(value) + "</pre>"
 
 
-def _diagram(flows: list[dict[str, Any]], comparison: dict[str, Any] | None) -> str:
+def _evidence_target(index: int, flow_id: str, rows_per_page: int) -> str:
+    return f"evidence-{index // rows_per_page + 1}.html#flow-{flow_id}"
+
+
+def _diagram(
+    flows: list[dict[str, Any]], comparison: dict[str, Any] | None, rows_per_page: int = 100
+) -> str:
     ips = sorted({f[k] for f in flows for k in ("source_ip", "destination_ip") if f[k]})
     if len(ips) > 16 or len(flows) > 24:
         return (
@@ -114,46 +120,66 @@ def _diagram(flows: list[dict[str, Any]], comparison: dict[str, Any] | None) -> 
         )
     if not ips:
         return "<p>No decodable IP-address relationships to diagram.</p>"
-    positions = {ip: 70 + i * 56 for i, ip in enumerate(ips)}
     lines: list[str] = []
     findings = {f["flow_id"]: f for f in comparison["findings"]} if comparison else {}
     for i, flow in enumerate(flows):
         source, target = flow["source_ip"], flow["destination_ip"]
-        if source not in positions or target not in positions:
+        if not source or not target:
             continue
-        x = 350 + i * 18
-        y1, y2 = positions[source], positions[target]
-        lines.append(
-            f'<path class="diagram-line documentary" d="M 300 {y1} H {x} V {y2} H 310" '
-            'marker-end="url(#observed-arrow)"/>'
-        )
+        # Each aggregate owns one lane. Repeated/reverse/self flows cannot share
+        # arrow paths, and visual position never implies a physical topology.
+        y = 100 + len(lines) * 118
         finding = findings.get(flow["id"], {})
-        # Show comparison as a separate textual mark; never label a packet arrow permitted.
-        if finding.get("classification") in {
-            "OBSERVED_MODEL_REACHABLE",
-            "OBSERVED_MODEL_UNREACHABLE",
-        }:
-            lines.append(
-                f'<text x="{x + 4}" y="{(y1 + y2) // 2}">'
-                + ("R" if finding["classification"] == "OBSERVED_MODEL_REACHABLE" else "U")
-                + "</text>"
-            )
+        classification = finding.get("classification", "Not compared")
+        transport = flow["transport"]
+        ports = (
+            f"{flow['source_port']} → {flow['destination_port']}"
+            if flow["source_port"] is not None and flow["destination_port"] is not None
+            else "Ports unavailable"
+        )
+        evidence = _evidence_target(i, flow["id"], rows_per_page)
+        lines.append(
+            f'<g><a href="{evidence}"><text x="24" y="{y}">'
+            + escape(f"Aggregate {i + 1:02d} · {flow['packets']} packet records · Evidence details")
+            + f'</text></a><rect x="24" y="{y + 12}" width="332" height="54" '
+            'fill="#eef4f8" stroke="#657b8b"/>'
+            + f'<text x="36" y="{y + 32}">Observed source</text>'
+            + f'<text x="36" y="{y + 54}">{escape(source)}</text>'
+            + f'<path class="diagram-line documentary" d="M 372 {y + 48} H 724" '
+            'marker-end="url(#observed-arrow)"/>'
+            + f'<text x="548" y="{y + 26}" text-anchor="middle">'
+            + escape(f"{transport} · {ports}")
+            + f'</text><rect x="740" y="{y + 12}" width="332" height="54" '
+            'fill="#eef4f8" stroke="#657b8b"/>'
+            + f'<text x="752" y="{y + 32}">Observed destination</text>'
+            + f'<text x="752" y="{y + 54}">{escape(target)}</text>'
+            + f'<text x="24" y="{y + 90}">Comparison: {escape(classification)}</text></g>'
+        )
     return (
         "<figure><figcaption>Observed directed aggregates · dashed arrows. "
+        "Each lane shows packet direction, transport and decoded ports; it does not infer "
+        "the initiator. Select Evidence details for packet references, owner decisions and "
+        "the original native model query. "
         "Arrow multiplicity is neither session count nor physical connectivity. "
-        "Comparison marks R/U mean model reachable/unreachable for a separately evaluated "
-        "initiation; route witnesses remain in evidence details. Pending and unsupported "
-        'evidence is explained in the tables.</figcaption><div class="scroll" tabindex="0" '
+        "MODEL_REACHABLE / MODEL_UNREACHABLE refer only to a separately evaluated declared "
+        "initiation, never deployed authorization or application success. Owner association "
+        "is reviewed evidence, not a discovered physical link. All aggregates, including "
+        "those without IP endpoints, remain in the tables.</figcaption>"
+        '<div class="scroll" tabindex="0" '
         'role="region" aria-label="Observed communication diagram"><svg '
-        f'xmlns="http://www.w3.org/2000/svg" width="850" height="{len(ips) * 56 + 100}" '
-        'role="img" aria-labelledby="diagram-title"><text id="diagram-title" x="20" y="30">'
-        'Observed communication, not authorization</text><defs><marker id="observed-arrow" '
+        f'xmlns="http://www.w3.org/2000/svg" width="1100" height="{len(lines) * 118 + 120}" '
+        'viewBox="0 0 1100 ' + str(len(lines) * 118 + 120) + '" '
+        'role="group" aria-labelledby="diagram-title diagram-description" font-size="13">'
+        '<title id="diagram-title">Observed communication, not authorization</title>'
+        '<desc id="diagram-description">Independent source-to-destination lanes. '
+        "Each evidence link opens the complete aggregate and comparison.</desc>"
+        '<text x="24" y="30" font-size="18">Observed communication, not authorization</text>'
+        '<text x="24" y="57">Dashed arrow = observed packet direction · '
+        "Comparison text = separate declared-model assessment</text>"
+        '<defs><marker id="observed-arrow" '
         'viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" '
         'orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#505c66"/>'
-        "</marker></defs>"
-        + "".join(lines)
-        + "".join(f'<text x="20" y="{positions[ip] + 5}">{escape(ip)}</text>' for ip in ips)
-        + "</svg></div></figure>"
+        "</marker></defs>" + "".join(lines) + "</svg></div></figure>"
     )
 
 
@@ -224,9 +250,9 @@ def generate_site(
                 "<p>This site contains complete container processing within the stated limits. "
                 "Capture visibility and packet decoding have separate limitations. First/last "
                 "timestamps are exact rational UTC seconds; missing timestamps remain missing.</p>"
-                + _properties("Capture metadata and interfaces", capture)
+                + _diagram(flows, comparison, limits.rows_per_page)
                 + _properties("Coverage", observations["coverage"])
-                + _diagram(flows, comparison)
+                + _properties("Capture metadata and interfaces", capture)
                 + '<p><a href="observations.json">Canonical observations JSON</a></p>'
                 + (
                     '<p><a href="comparison.json">Canonical comparison JSON</a> · '
@@ -262,6 +288,10 @@ def generate_site(
             )
             detail_rows: list[str] = []
             conversation_rows: list[tuple[str, ...]] = []
+            evidence_targets = {
+                flow["id"]: _evidence_target(i, flow["id"], limits.rows_per_page)
+                for i, flow in enumerate(flows)
+            }
             for i, flow in enumerate(flows):
                 detail_name = f"evidence-{i // limits.rows_per_page + 1}.html"
                 anchor = "flow-" + flow["id"]
@@ -349,7 +379,11 @@ def generate_site(
                 "Architecture comparison and uncertainty",
                 ("Flow", "Classification", "Explanation"),
                 [
-                    (escape(f["flow_id"]), escape(f["classification"]), escape(f.get("reason", "")))
+                    (
+                        link(evidence_targets[f["flow_id"]], f["flow_id"]),
+                        escape(f["classification"]),
+                        escape(f.get("reason", "")),
+                    )
                     for f in comparison["findings"]
                 ]
                 if comparison

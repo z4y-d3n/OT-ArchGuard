@@ -1,3 +1,18 @@
+# 1.3 development (unreleased; package remains 1.2.0)
+
+- Independently audit passive PCAP Evidence Studio and reject malformed IPv4
+  options and malformed/unsupported IPv6 extension semantics before exposing
+  transport ports or TCP initiation evidence.
+- Bound retained native comparison evidence incrementally, aborting an over-budget
+  query before evaluating subsequent port intervals. Default native results are
+  unchanged; no partial capture conclusions are published.
+- Separate observed communication into labeled diagram lanes with direct evidence
+  links, and connect comparison findings to exact flow details.
+- Add independent binary/semantic/publication/resource regression corpora, OS peak
+  resident-memory measurements, maximum-frame and metadata workloads, and hosted
+  capture benchmark retention. Hosted validation and browser acceptance remain
+  required; no stable release approval or publication is implied.
+
 # 1.2.0 (stable-release preparation; unpublished)
 
 Prepare the stable version from accepted V12-08 integration without changing

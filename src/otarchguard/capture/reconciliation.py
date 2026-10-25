@@ -19,7 +19,7 @@ from otarchguard.contract import RESOURCE_LIMITS
 from otarchguard.diagnostics import check_limit, fail
 from otarchguard.ingestion.project import _no_links
 from otarchguard.ingestion.tabular import read_regular
-from otarchguard.reachability import QueryResult, ReachabilityEngine
+from otarchguard.reachability import IntervalResult, ReachabilityEngine
 
 CLASSIFICATIONS = (
     "OBSERVED_MODEL_REACHABLE",
@@ -68,24 +68,22 @@ class _NativeEvidence:
     interval_metrics: tuple[tuple[int, int], ...]
 
 
-def _evidence_allocation(query: QueryResult) -> int:
-    """Conservative accounting before dataclass-to-container expansion.
+def _interval_allocation(interval: IntervalResult) -> int:
+    """Conservative accounting before retaining/expanding another native interval.
 
     Native identifiers are ASCII and at most 64 characters. Per-record charges
     include nested endpoint dictionaries, strings, container overhead and rule
     identifier sequences; they are rejection accounting, not measured RSS.
     """
     total = 1024
-    for interval in query.intervals:
+    if interval.witness is not None:
         total += 1024
-        if interval.witness is not None:
-            total += 1024
-            for step in interval.witness.steps:
-                total += 4096 + 128 * len(step.allow_rule_ids)
-        if interval.diagnostics is not None:
-            total += 1024
-            for edge in interval.diagnostics.blocked_edges:
-                total += 1024 + 128 * (len(edge.allow_rule_ids) + len(edge.deny_rule_ids))
+        for step in interval.witness.steps:
+            total += 4096 + 128 * len(step.allow_rule_ids)
+    if interval.diagnostics is not None:
+        total += 1024
+        for edge in interval.diagnostics.blocked_edges:
+            total += 1024 + 128 * (len(edge.allow_rule_ids) + len(edge.deny_rule_ids))
     return total
 
 
@@ -411,10 +409,16 @@ def compare_capture(
         engine = ReachabilityEngine(validated, frozenset(s for _, s in pairs), native_limits)
         # Reserve the whole finite workload before publishing any query conclusions.
         engine.ensure_capacity(sum(len(engine.service_atoms[s]) for _, s in pairs))
-        for source_key, service_key in sorted(pairs):
-            query = engine.evaluate(source_key, service_key)
-            native_allocated += _evidence_allocation(query)
+
+        def reserve_interval(interval: IntervalResult) -> None:
+            nonlocal native_allocated
+            native_allocated += _interval_allocation(interval)
             check_limit("capture_native_evidence_bytes", native_allocated, limits.aggregation_bytes)
+
+        for source_key, service_key in sorted(pairs):
+            native_allocated += 1024
+            check_limit("capture_native_evidence_bytes", native_allocated, limits.aggregation_bytes)
+            query = engine.evaluate(source_key, service_key, interval_observer=reserve_interval)
             # Exactly one conversion per unique native query; findings share this evidence.
             query_data = asdict(query)
             query_bytes, query_lines = _json_metrics(query_data)

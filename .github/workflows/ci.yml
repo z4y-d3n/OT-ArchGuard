@@ -130,6 +130,11 @@ jobs:
           OTARCHGUARD_OFFLINE_CHECK: '1'
           PYTHONPATH: '${{ github.workspace }}/tools/offline'
         run: python -m benchmarks.quality_comparison --output output/quality-benchmark.json
+      - name: Measure synthetic capture workloads offline
+        env:
+          OTARCHGUARD_OFFLINE_CHECK: '1'
+          PYTHONPATH: '${{ github.workspace }}/tools/offline'
+        run: python -m benchmarks.capture --output output/capture-benchmark
       - name: Retain benchmark evidence
         if: always()
         uses: actions/upload-artifact@v7.0.2
@@ -138,5 +143,6 @@ jobs:
           path: |
             output/benchmark-${{ matrix.os }}-${{ matrix.python }}.json
             output/quality-benchmark.json
+            output/capture-benchmark/benchmark.json
           retention-days: 7
           if-no-files-found: warn

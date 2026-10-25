@@ -174,6 +174,9 @@ def _ipv4(value: bytes, result: _Decoded) -> None:
         while offset < header:
             option = value[offset]
             if option == 0:
+                if any(value[offset + 1 : header]):
+                    result.stop("malformed", "IPV4_OPTION_PADDING_INVALID")
+                    return
                 break
             if option == 1:
                 offset += 1
@@ -187,6 +190,24 @@ def _ipv4(value: bytes, result: _Decoded) -> None:
                 return
             if option in {131, 137}:
                 result.stop("unsupported", "IPV4_SOURCE_ROUTE_UNSUPPORTED")
+                return
+            # RFC 791's known options have mandatory fields beyond the TLV
+            # prefix. A framed but semantically unimplemented option must not
+            # supply transport or initiation evidence.
+            if option == 7:  # Record Route: type, length, pointer, IPv4 slots.
+                valid = size >= 3 and (size - 3) % 4 == 0 and value[offset + 2] >= 4
+            elif option == 68:  # Timestamp: pointer and overflow/flag are mandatory.
+                valid = size >= 4 and value[offset + 2] >= 5
+                if valid:
+                    flag = value[offset + 3] & 15
+                    valid = flag in {0, 1, 3} and (size - 4) % (4 if flag == 0 else 8) == 0
+            elif option == 136:  # Stream identifier.
+                valid = size == 4
+            else:
+                result.stop("unsupported", "IPV4_OPTION_UNSUPPORTED")
+                return
+            if not valid:
+                result.stop("malformed", "IPV4_OPTION_FIELDS_INVALID")
                 return
             offset += size
         _transport(value[header:length], value[9], result)
@@ -232,6 +253,34 @@ def _ipv6(value: bytes, result: _Decoded, limits: CaptureLimits) -> None:
         if offset + size > end:
             result.stop("truncated", "IPV6_EXTENSION_TRUNCATED")
             return
+        if protocol == 43:
+            result.stop("unsupported", "IPV6_ROUTING_HEADER_UNSUPPORTED")
+            return
+        if protocol in {0, 60}:
+            cursor, option_end = offset + 2, offset + size
+            unknown_option = False
+            while cursor < option_end:
+                kind = value[cursor]
+                if kind == 0:  # Pad1 has no length byte.
+                    cursor += 1
+                    continue
+                if cursor + 2 > option_end:
+                    result.stop("malformed", "IPV6_OPTION_LENGTH_INVALID")
+                    return
+                option_size = value[cursor + 1] + 2
+                if cursor + option_size > option_end:
+                    result.stop("malformed", "IPV6_OPTION_LENGTH_INVALID")
+                    return
+                if kind == 1:
+                    if any(value[cursor + 2 : cursor + option_size]):
+                        result.stop("malformed", "IPV6_OPTION_PADDING_INVALID")
+                        return
+                else:
+                    unknown_option = True
+                cursor += option_size
+            if unknown_option:
+                result.stop("unsupported", "IPV6_OPTION_UNSUPPORTED")
+                return
         protocol, offset = value[offset], offset + size
     _transport(value[offset:end], protocol, result)
 

@@ -129,7 +129,18 @@ class ReachabilityEngine:
         self.ensure_capacity(self.queries_reserved + queries)
         self.queries_reserved += queries
 
-    def evaluate(self, source_asset_id: str, service_id: str) -> QueryResult:
+    def evaluate(
+        self,
+        source_asset_id: str,
+        service_id: str,
+        *,
+        interval_observer: Callable[[IntervalResult], None] | None = None,
+    ) -> QueryResult:
+        """Evaluate exactly; an optional consumer may reject before retaining each interval.
+
+        The observer cannot replace results or change search/policy semantics. A
+        raised exception aborts the query before the next atom is evaluated.
+        """
         if source_asset_id not in self.graph.origins or service_id not in self.requested:
             fail(
                 "MISSING_REFERENCE",
@@ -148,8 +159,15 @@ class ReachabilityEngine:
             fail("EMPTY_QUERY_SCOPE", "$", "Query origin needs at least one declared interface.")
         atoms = self.service_atoms[service_id]
         self._reserve(len(atoms))
-        results = tuple(self._atom(source_asset_id, service_id, atom) for atom in atoms)
-        return QueryResult(source_asset_id, service.asset_id, service_id, service.protocol, results)
+        results: list[IntervalResult] = []
+        for atom in atoms:
+            result = self._atom(source_asset_id, service_id, atom)
+            if interval_observer is not None:
+                interval_observer(result)
+            results.append(result)
+        return QueryResult(
+            source_asset_id, service.asset_id, service_id, service.protocol, tuple(results)
+        )
 
     def _decisions(self, source: str, service_id: str, port: int) -> Callable[[Edge], Decision]:
         service = self.services[service_id]

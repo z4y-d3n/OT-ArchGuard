@@ -256,7 +256,10 @@ Defaults in `capture/contract.py` are **rejection ceilings, not demonstrated cap
 
 The first exceeded budget wins; high cardinality can exhaust accounting before
 50,000 flows. Conservative allocation accounting is not an OS memory-enforcement
-mechanism. Shared comparison work prevents per-query budget resets. Rejection
+mechanism. Shared comparison work prevents per-query budget resets. Native evidence
+is accounted after each interval, before retention and before evaluating the next
+interval; one in-flight interval and graph/search allocations remain bounded by
+native work ceilings rather than an enforced RSS cap. Rejection
 does not yield partial negative findings. Timing and peak Python-allocation results
 for fixed synthetic workloads are recorded separately in gate evidence.
 
@@ -297,3 +300,12 @@ chosen after evaluating dpkt; see [baseline and parser decision](development/v13
 Python 3.12 and 3.14 remain the declared compatibility range. Executed platform,
 distribution audits and NOT RUN checks are identified in the gate report; local
 Windows evidence cannot substitute for six hosted OS/Python runs.
+
+The independent audit additionally checks IPv4 EOL zero padding and known Record
+Route, Timestamp and StreamID option fields. Other IPv4 options, IPv6 Routing
+Headers and non-padding IPv6 extension options remain explicitly unsupported.
+Malformed IPv6 PadN/TLV structures retain no authoritative ports or SYN evidence.
+The overview diagram uses a separate lane per directed aggregate, with exact
+protocol/ports, comparison code and an evidence link; lane position implies no
+physical topology. Dense diagrams may be omitted while all table/JSON evidence
+remains available. See [visual acceptance conditions](development/v13-10-explorer-visual-acceptance.md).

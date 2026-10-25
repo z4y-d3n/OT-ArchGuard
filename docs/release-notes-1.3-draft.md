@@ -20,5 +20,15 @@ Discrepancies are model/evidence disagreements, not incidents or compliance scor
 This development candidate retains package version1.2.0 pending the isolated
 version transition and final acceptance. Hosted six-combination candidate CI,
 formal owner acceptance, publication and stable tagging require subsequent steps.
-See [implemented contracts and limitations](pcap-evidence-studio.md) and the
-[gate evidence](development/v13-gate-evidence.md) for actual executed validation.
+Independent hardening corrects malformed IPv4 option handling and IPv6 extension
+TLV/padding interpretation, conservatively excludes unimplemented options/routing
+headers, and bounds retained native comparison evidence per interval. Observed
+communication diagrams now use distinct labeled lanes and precise evidence links.
+Independent corpora challenge owner bindings, exact-port caching and uncertainty;
+resource measurements distinguish traced allocations from OS peak resident memory.
+
+See [implemented contracts and limitations](pcap-evidence-studio.md), the
+[independent audit](development/v13-08-independent-audit.md), and the
+[candidate readiness record](development/v13-13-release-candidate-readiness.md)
+for executed validation and outstanding acceptance conditions. Earlier gate records
+remain historical evidence and are not retroactively changed.
