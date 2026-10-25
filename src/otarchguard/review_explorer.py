@@ -49,6 +49,7 @@ STATE_LABELS = {
     "UNSUPPORTED": "Unsupported",
     "COMPARED": "Compared",
     "EVALUATED": "Evaluated",
+    "PARTIALLY_EVALUATED": "Partially evaluated",
     "NOT_EVALUATED": "Not evaluated",
 }
 ENTITY_LABELS = {
@@ -165,7 +166,7 @@ def _comparison_summary(report: dict[str, Any]) -> list[tuple[str, ...]]:
         not isinstance(documentary, str)
         or documentary not in {"COMPARED", "NOT_ASSESSED"}
         or not isinstance(analytical, str)
-        or analytical not in {"EVALUATED", "NOT_EVALUATED"}
+        or analytical not in {"EVALUATED", "PARTIALLY_EVALUATED", "NOT_EVALUATED"}
     )
     if invalid:
         fail("REVIEW_REPORT", "$", "Missing or inconsistent comparison state; no report accepted.")
@@ -178,21 +179,16 @@ def _comparison_summary(report: dict[str, Any]) -> list[tuple[str, ...]]:
         ):
             fail("REVIEW_REPORT", "$", "Unknown comparison layer; no report accepted.")
         counts[change["layer"]] += 1
-    if (
-        (documentary == "NOT_ASSESSED" and (counts["DOCUMENTARY"] or counts["OWNER_DECISION"]))
-        or (
-            documentary == "COMPARED"
-            and not all(
-                report.get(side + "_provenance_sha256") for side in ("baseline", "proposed")
-            )
-        )
-        or (analytical == "EVALUATED") != bool(analyses)
+    if (documentary == "NOT_ASSESSED" and (counts["DOCUMENTARY"] or counts["OWNER_DECISION"])) or (
+        documentary == "COMPARED"
+        and not all(report.get(side + "_provenance_sha256") for side in ("baseline", "proposed"))
     ):
         fail(
             "REVIEW_REPORT",
             "$",
             "Inconsistent comparison evidence or evaluation; no report accepted.",
         )
+    _analysis_counts(report)
     return [
         ("Native declarations", "Compared", str(counts["NATIVE"])),
         (
@@ -206,6 +202,73 @@ def _comparison_summary(report: dict[str, Any]) -> list[tuple[str, ...]]:
             str(counts["OWNER_DECISION"]) if documentary == "COMPARED" else "Not assessed",
         ),
     ]
+
+
+def _analysis_counts(report: dict[str, Any]) -> tuple[int, int, int]:
+    records = report.get("analytical_results")
+    if not isinstance(records, list):
+        fail("REVIEW_REPORT", "$", "Missing analytical records; no report accepted.")
+    completed = {"baseline": 0, "proposed": 0}
+    for record in records:
+        if (
+            not isinstance(record, dict)
+            or not isinstance(record.get("query"), dict)
+            or not isinstance(record.get("classification"), str)
+            or any(side not in record for side in completed)
+        ):
+            fail("REVIEW_REPORT", "$", "Incomplete analytical record; no report accepted.")
+        for side in completed:
+            result = record[side]
+            if result is None:
+                if record["classification"] != "NOT_COMPARABLE":
+                    fail("REVIEW_REPORT", "$", "Unavailable comparison side; no report accepted.")
+                continue
+            if (
+                not isinstance(result, dict)
+                or result.get("status") != "complete"
+                or result.get("model_sha256") != report.get(side + "_model_sha256")
+            ):
+                fail(
+                    "REVIEW_REPORT", "$", "Unbound or incomplete native result; no report accepted."
+                )
+            completed[side] += 1
+    expected = (
+        "EVALUATED"
+        if records and completed["baseline"] == completed["proposed"] == len(records)
+        else "PARTIALLY_EVALUATED"
+        if any(completed.values())
+        else "NOT_EVALUATED"
+    )
+    if report.get("analytical_status") != expected:
+        fail("REVIEW_REPORT", "$", "Inconsistent analytical status; no report accepted.")
+    return len(records), completed["baseline"], completed["proposed"]
+
+
+def _analysis_summary(report: dict[str, Any]) -> str:
+    requested, before, after = _analysis_counts(report)
+    explanation = (
+        "No exact queries were requested."
+        if not requested
+        else "Requested queries were unavailable or unsupported on both model sides."
+        if not before and not after
+        else "Some model sides were not evaluated; inspect the per-query reasons and results."
+        if before < requested or after < requested
+        else "Inspect each record for its exact scope and whether results are comparable."
+    )
+    return (
+        "<p>Exact analysis: "
+        + escape(_state_label(report["analytical_status"]))
+        + ".</p>"
+        + table(
+            "Exact analysis coverage",
+            ("Requested query records", "Baseline evaluated", "Proposed evaluated"),
+            [(str(requested), str(before), str(after))],
+        )
+        + "<p>"
+        + explanation
+        + " Unavailable or not comparable is not a denied query. "
+        "Other queries remain unassessed.</p>"
+    )
 
 
 def _index(
@@ -301,6 +364,14 @@ def _quality_pages(
         rows,
         "<h2>Requirement coverage</h2>"
         + _coverage(report)
+        + (
+            "<p>These per-model quality assessments have their own query scope. "
+            "Selected comparison queries are reported separately in "
+            + link("analysis.html", "Exact comparison analysis")
+            + ".</p>"
+            if prefix in {"quality-baseline", "quality-proposed"}
+            else ""
+        )
         + _technical({k: report[k] for k in ("model_sha256", "assessment_sha256")}),
     )
     return rows
@@ -517,9 +588,7 @@ def _render_comparison(
         "Exact analytical comparison",
         ("Query", "State"),
         rows,
-        "<p>"
-        + escape(_state_label(report["analytical_status"]))
-        + ". Queries absent from this table are unassessed. A new edge "
+        _analysis_summary(report) + "<p>Queries absent from this table are unassessed. A new edge "
         "alone establishes no reachability delta.</p>",
     )
     writer.page(
@@ -527,14 +596,7 @@ def _render_comparison(
         "Architecture comparison",
         "<h2>Comparison scope and outcomes</h2>"
         + table("Compared layers", ("Layer", "Assessment", "Changes"), layer_summary)
-        + "<p>Exact analysis: "
-        + escape(_state_label(report["analytical_status"]))
-        + (
-            " · " + str(len(report["analytical_results"])) + " explicit queries evaluated."
-            if report["analytical_status"] == "EVALUATED"
-            else ". No analytical comparison was requested."
-        )
-        + " Other queries remain unassessed.</p>"
+        + _analysis_summary(report)
         + (
             "<p>Documentary comparison requires both bound provenance records. "
             "Not assessed is not a verified zero.</p>"

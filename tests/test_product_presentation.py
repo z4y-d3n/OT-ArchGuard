@@ -180,6 +180,16 @@ def test_unassessed_documentary_zero_is_not_presented_as_verified_zero(
     assert sum(c["layer"] == "NATIVE" for c in report["changes"]) == 10
     assert report["documentary_status"] == "NOT_ASSESSED"
     assert report["analytical_status"] == "EVALUATED"
+    assert report["quality_baseline"]["analyses"] == []
+    assert (
+        next(f for f in report["quality_baseline"]["findings"] if f["rule_id"] == "exact-query")[
+            "state"
+        ]
+        == "NOT_ASSESSED"
+    )
+    assessment_page = Rendered((output / "quality-baseline.html").read_text(encoding="utf-8"))
+    assert "their own query scope" in "".join(assessment_page.visible)
+    assert "analysis.html" in assessment_page.links
     page = Rendered((output / "index.html").read_text(encoding="utf-8"))
     assert page.tables["Compared layers"][1:] == [
         ["Native declarations", "Compared", "10"],
@@ -262,6 +272,7 @@ def test_evaluated_no_native_delta_still_does_not_assess_documentary_layer(
         "unassessed-with-evidence",
         "unassessed-with-decision",
         "evaluated-without-query",
+        "partial-without-query",
         "unevaluated-with-query",
         "compared-without-bindings",
     ],
@@ -295,6 +306,8 @@ def test_inconsistent_or_missing_comparison_report_never_renders_verified_zero(
         report["changes"][0]["layer"] = "OWNER_DECISION"
     elif mutation == "evaluated-without-query":
         report["analytical_status"] = "EVALUATED"
+    elif mutation == "partial-without-query":
+        report["analytical_status"] = "PARTIALLY_EVALUATED"
     elif mutation == "unevaluated-with-query":
         report["analytical_results"] = [{"query": "not evaluated"}]
     elif mutation == "compared-without-bindings":
@@ -602,4 +615,53 @@ def test_comparison_quality_states_and_full_finding_ids_remain_auditable(
         assert any(row[2:] == ["Satisfied", "Missing required information"] for row in rows)
     else:
         assert any("Not present" in row[2:] for row in rows)
+    assert audit_site(output)["broken_links"] == 0
+
+
+@pytest.mark.parametrize(
+    "case,status,counts",
+    [
+        ("missing-both", "NOT_EVALUATED", ["1", "0", "0"]),
+        ("self-only", "NOT_EVALUATED", ["1", "0", "0"]),
+        ("missing-proposed", "PARTIALLY_EVALUATED", ["1", "1", "0"]),
+        ("missing-baseline", "PARTIALLY_EVALUATED", ["1", "0", "1"]),
+        ("mixed", "PARTIALLY_EVALUATED", ["2", "1", "1"]),
+        ("changed-protocol", "EVALUATED", ["1", "1", "1"]),
+    ],
+)
+def test_requested_queries_are_distinct_from_completed_per_side_results(
+    minimal: dict[str, Any],
+    tmp_path: Path,
+    case: str,
+    status: str,
+    counts: list[str],
+) -> None:
+    before_data, after_data = copy.deepcopy(minimal), copy.deepcopy(minimal)
+    queries: tuple[ReviewQuery, ...] = (ReviewQuery(source_asset_id="eng", service_id="svc_plc"),)
+    if case == "missing-both":
+        queries = (ReviewQuery(source_asset_id="missing", service_id="absent"),)
+    elif case == "self-only":
+        queries = (ReviewQuery(source_asset_id="plc", service_id="svc_plc"),)
+    elif case in {"missing-proposed", "missing-baseline"}:
+        unavailable = after_data if case == "missing-proposed" else before_data
+        unavailable.update(services=[], intents=[], scenarios=[])
+    elif case == "mixed":
+        queries += (ReviewQuery(source_asset_id="missing", service_id="absent"),)
+    elif case == "changed-protocol":
+        after_data["services"][0]["protocol"] = "udp"
+        after_data["rules"][0]["protocol"] = "udp"
+    before = model_file(tmp_path / "before.yaml", before_data)
+    after = model_file(tmp_path / "after.yaml", after_data)
+    expected = compare_architecture_versions(before, after, queries=queries)
+    assert expected["analytical_status"] == status
+    assert any(a["classification"] == "NOT_COMPARABLE" for a in expected["analytical_results"])
+    output = tmp_path / "comparison"
+    generate_review(before, output, proposed=after, queries=queries)
+    assert (output / "review.json").read_bytes() == canonical(expected)
+    for filename in ["index.html", "analysis.html"]:
+        view = Rendered((output / filename).read_text(encoding="utf-8"))
+        assert view.tables["Exact analysis coverage"][1] == counts
+        assert _state_label(status) in "".join(view.visible)
+        assert "not a denied query" in "".join(view.visible)
+        assert "No analytical comparison was requested" not in "".join(view.text)
     assert audit_site(output)["broken_links"] == 0

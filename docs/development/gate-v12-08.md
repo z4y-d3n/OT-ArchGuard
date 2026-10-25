@@ -76,3 +76,9 @@ This is HTML/documentation presentation only: no native model, analytical,
 provenance, CLI/JSON or exit-code contract changes. Each new candidate requires
 fresh installed suites, semantic golden comparisons, scale/link audits, exact
 hosted checks after authorized feature publication, and separate browser evidence.
+Requested comparison query records are distinct from completed per-side traces.
+Evaluated, partially evaluated and not evaluated states retain unavailable and
+not-comparable reasons; the HTML counts actual completed baseline/proposed sides
+and never treats a requested but unsupported query as denied or completed.
+Per-model quality assessment query scope is signposted separately from selected
+comparison analyses; one scope never supplies conclusions for the other.
