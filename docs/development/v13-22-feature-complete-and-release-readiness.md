@@ -3,7 +3,8 @@
 ## A. Executive status
 
 **PARTIAL.** The local implementation is feature complete within its documented
-subset, conditional on V13-20's final receipts. Required hosted validation and
+subset, with 2,746 final installed-wheel tests passing and independently installed
+sdist verification in V13-20. Required hosted validation and
 human browser acceptance remain outstanding. Feature complete, locally tested,
 hosted validated, human accepted, merged and published are distinct milestones.
 No owner approval for publication is recorded.
@@ -67,8 +68,8 @@ against all malformed captures or decoders.
 
 ## E. Unresolved issues and maintenance policy
 
-No confirmed unresolved critical/high defect is accepted within the reviewed
-supported subset; final result depends on V13-20. Outstanding concrete acceptance
+No confirmed unresolved critical/high defect remains within the reviewed
+supported subset. Outstanding concrete acceptance
 requirements are six-cell hosted CI, actual human browser checklist and owner
 review. If either reveals a defect, fix it and repeat affected validation before
 claiming release readiness. Deep industrial inspection remains a possible v1.4
@@ -81,6 +82,24 @@ requires demonstrated need and explicit scope. Contract-breaking corrections
 require a documented revision and migration or rejection. Future maintenance
 cannot be ruled out. V1.4 can build readers on these frozen interfaces without
 redesigning the core, subject to closing the outstanding acceptance evidence.
+
+## Final acceptance checklist
+
+| Requirement | Recorded state and evidence |
+|---|---|
+| PCAP / PCAPNG accepted subset, independent interoperability | PASS locally; V13-14 and installed suites in V13-20 |
+| Accurate metadata/aggregates, explicit unsupported content, conservative port hints | PASS locally; parser/observation/interoperability/semantic tests |
+| ARP sender/target/delivery and target-only exclusion | PASS locally; V13-15, V13-16 and frozen consumer |
+| Explicit owner mapping and unchanged native evaluator semantics | PASS locally; strict decision tests and 45-case historical comparison |
+| No authorization from observed traffic, blocking from absence, or session success inference | PASS within tested scope; semantic tests, notices and scoped/suppressed absence |
+| Readable labels/count grammar/ARP panels, exact codes, privacy warnings | PASS static engineering; V13-16; human visual review pending |
+| Evidence links, pagination and complete dense fallback | PASS automated site audits; human navigation pending |
+| Browser keyboard/focus/200% zoom/narrow layout/accessibility interaction | NOT RUN; V13-17, owner explicitly pending review |
+| Determinism, hostile input, budgets, fatal-output preservation, denied Python networking | PASS locally; installed regression and fixed resource receipts |
+| Historical native regression, new capture/ARP tests and read-only future consumer | PASS locally; V13-18 / V13-20, counts overlap |
+| Runtime 1.3.0, archive metadata, regular installs, source/module identity and checksums | V13-20 final audit and release-manifest.json are authoritative |
+| Six hosted final-candidate configurations | NOT RUN; V13-21 requires specific push authorization |
+| Final owner approval before publication | NOT GRANTED; no remote write, merge, tag or upload performed |
 
 ## F. Owner-controlled next step
 

@@ -62,6 +62,8 @@ allowed). No content loaded and no alternate surface, local server, proxy or
 indirect navigation was attempted. Receipt: `output/v13-final/browser-attempt.json`.
 Browser interaction testing is therefore BLOCKED by tooling; all human checklist
 items remain NOT RUN, so this gate remains PARTIAL.
+The owner explicitly replied "Pendiente de revisión." on 2026-10-25. This records
+pending review only; it is not browser acceptance or publication approval.
 
 ## E. Next step
 
