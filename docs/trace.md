@@ -26,7 +26,7 @@ optional top-level fields, timestamps, source paths or overall `passed` flag.
 | Field | Type / meaning |
 | --- | --- |
 | trace_version | integer 1 |
-| engine_version | current application version string (for example, 1.2.0rc1); independent of trace_version |
+| engine_version | current application version string (for example, 1.2.0); independent of trace_version |
 | schema_version | integer 1 |
 | status | literal `complete`; does not assert reachability |
 | model_sha256 | canonical validated snapshot SHA-256 string |

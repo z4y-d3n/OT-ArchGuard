@@ -1,6 +1,6 @@
 # Quality and before/after review, entirely offline
 
-Use an installed 1.2.0rc1 distribution. From the source/tutorial checkout run:
+Use an installed 1.2.0 distribution. From the source/tutorial checkout run:
 
 ```powershell
 python -m tools.quality_walkthrough --output NEW_LOCAL_FOLDER

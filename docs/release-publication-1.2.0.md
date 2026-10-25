@@ -5,12 +5,16 @@ merge, stable integration, tag, GitHub Release and PyPI upload have separate
 authorization boundaries. No command below authorizes its execution. Never
 repurpose the historical mistaken PR #8, force-push or move an existing tag.
 
-## Candidate policy
+## Stable preparation policy
 
-Use **1.2.0rc1** consistently in pyproject, application version, literal identity
-tests, current installation examples and CI archive names. Historical gate and
-release documents retain their historical version. Native schema/report/trace
-contracts keep their existing versions. No prerelease upload is implied.
+Accepted V12-08 integration used **1.2.0rc1**; those source and artifact records
+remain historical. The dedicated stable-preparation branch uses **1.2.0**
+consistently in pyproject, application version, literal identity tests, current
+installation examples and installed walkthrough expectations. CI records the
+actual wheel/sdist names returned by the build backend, then audits, installs
+and tests those exact files. Historical gate/release records and native
+schema/report/trace versions are unchanged. A stable version string does not
+establish publication or authorize a tag, release or registry upload.
 
 Freeze a clean reviewed commit and public file manifest. Record both Git tree and
 the SHA-256 of canonical sorted JSON mapping public names to raw-byte SHA-256.
@@ -19,7 +23,7 @@ Build without fetching dependencies using the approved setuptools backend:
 
 ```text
 python -c "from setuptools import build_meta; build_meta.build_wheel('output/artifacts'); build_meta.build_sdist('output/artifacts')"
-python tools/audit_release.py output/artifacts/otarchguard-1.2.0rc1-py3-none-any.whl output/artifacts/otarchguard-1.2.0rc1.tar.gz --source-root . --output output/archive-audit.json
+python tools/audit_release.py output/artifacts/otarchguard-1.2.0-py3-none-any.whl output/artifacts/otarchguard-1.2.0.tar.gz --source-root . --output output/archive-audit.json
 ```
 
 Use fresh regular installations outside the source tree. Provision approved
@@ -31,24 +35,27 @@ the exact approved verification pins; local evidence records its existing closur
 
 ## Review, integration and final source
 
-1. Review the exact diff from merged V12-07 baseline
-   `6492143cb5c75f9f1ac51b70a7a305011c9d64fe`.
+1. Verify accepted V12-08 integration
+   `3062f8dab0f9b79beeec9cc7a255663ee98b1e13`, including its six actual
+   integration CI cells and independent source/package/test evidence. Create
+   the release-preparation branch from the accepted current `origin/v1.2` tip.
 2. Present the exact commit/refspec and sanitized public-file inventory before
    requesting branch-push authorization. Confirm the remote ref has not changed.
-3. After authorization, push only `codex/v12-08-final-release-hardening` and open
+3. After authorization, push only `codex/release-1.2.0-preparation` and open
    its PR against `v1.2`. Do not enable auto-merge.
 4. Require all six PR cells, exact run/attempt/job identities, full/sdist JUnit,
    archive/module audit and artifact upload results. Inspect actual artifacts
    where access permits; missing counts are unknown, not zero.
 5. Complete owner review, browser journeys and manual accessibility disposition.
    Obtain explicit authorization for the actual PR merge.
-6. Verify the resulting integration commit and tree, main and historical tags.
+6. After a separately authorized merge of the stable-preparation PR into `v1.2`,
+   verify the resulting integration commit and tree, main and historical tags.
    Rebuild and rerun all six cells on that exact integration source. A green PR
    does not establish a green merge. Stop on unexpected differences.
-7. Only after candidate acceptance and separate release authorization, prepare a
-   new release PR into `main`. Change every active version reference to `1.2.0`
-   in a reviewed release-only commit and rerun packaging, installed verification,
-   browser checks affected by the change and the final six-cell matrix.
+7. Only after the stable `v1.2` integration is accepted and separately authorized,
+   prepare the subsequent `v1.2` to `main` release PR. Its source already carries
+   `1.2.0`; never relabel earlier RC archives. Require exact source, packaging,
+   installed verification, affected browser checks and the final six-cell matrix.
 8. Obtain explicit merge authorization. Verify resulting stable commit, source
    manifest and newly built stable wheel/sdist. Never relabel rc archives.
 9. Obtain separate annotated-tag and GitHub Release authorization. Verify

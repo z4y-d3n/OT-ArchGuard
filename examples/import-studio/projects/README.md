@@ -6,7 +6,7 @@ CSV, XLSX and draw.io disagree about the engineering workstation's zone. None
 of these documents supplies network permission. The native model context declares
 no transport, forwarding, rules or services.
 
-Use an installed 1.2.0rc1 console. Copy `mixed` to a writable working directory
+Use an installed 1.2.0 console. Copy `mixed` to a writable working directory
 and run these commands from inside that copy. Every output must have a new name.
 
 1. Inspect `project.json`. It registers four explicit source paths, each adapter

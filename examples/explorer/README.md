@@ -4,7 +4,7 @@ All files in this tutorial are fictional. Install the locally built development
 wheel into an environment containing the approved dependencies:
 
 ```text
-python -m pip install --no-index --no-deps /path/to/otarchguard-1.2.0rc1-py3-none-any.whl
+python -m pip install --no-index --no-deps /path/to/otarchguard-1.2.0-py3-none-any.whl
 otarchguard --version
 ```
 
