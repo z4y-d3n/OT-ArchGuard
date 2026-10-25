@@ -4,7 +4,7 @@ OT-ArchGuard is an offline Python CLI for reviewing declared IT/OT network
 architectures. It validates architecture models, checks communication requirements
 and compares TCP/UDP listener reachability between proposed configurations.
 
-Source version: **1.2.0** (stable-release preparation; unpublished). YAML schema: **1**. Consult the owner-published release
+Source version: **1.3.0** (release candidate; unpublished). YAML schema: **1**. Consult the owner-published release
 record for availability, exact source tag and audited asset checksums.
 
 Development Import Studio now supports offline multi-source projects through
@@ -24,15 +24,15 @@ groups evidence into bounded pages with individual anchors. See the
 [document tutorial](examples/import-studio/documents/README.md) and
 [supported subsets and design decisions](docs/development/v12-06-document-evidence-and-explorer.md).
 PDF/VSDX remain deferred. Grouped reports contain additional sensitive evidence.
-Stable v1.2.0 release readiness still requires actual hosted verification on all
-six OS/Python combinations; local development acceptance does not establish it.
-See [v1.2 release notes](docs/release-notes-1.2.0.md)
+Release readiness requires hosted verification on all six OS/Python combinations
+and owner browser acceptance for the final source; local tests alone do not establish it.
+See [v1.3.0 release notes](docs/release-notes-1.3.0.md)
 and [Gate V11-6 verification](docs/v1.1/gate-v11-6.md).
 
 This development branch adds owner-reviewed CSV/TSV, restricted XLSX and JSON inventories. See the
 [reviewed import walkthrough](docs/import-studio.md) and
 [v1.2 roadmap](docs/development/v1.2-roadmap.md). The published v1.1.0 baseline
-remains immutable. Current release-preparation builds use 1.2.0; the version
+remains immutable. Current release-candidate builds use 1.3.0; the version
 identity alone does not authorize stable publication.
 
 OT-ArchGuard is an independent industrial network architecture analysis tool inspired by general OT cybersecurity good practices, including those addressed by the IEC 62443 series. It does not provide certification, establish normative conformity or imply institutional endorsement.
@@ -133,7 +133,7 @@ with optional `--policy-evidence`, `--report PATH` and `--report-format html|jso
 Exit 0 means the exact declared query completed, including unreachable or mixed
 port outcomes. Intents remain unassessed by trace. See the [trace contract](docs/trace.md)
 and [synthetic trace examples](examples/README.md#exact-communication-trace).
-Current release-preparation application and distribution versions are 1.2.0. Evaluate upgrades in a parallel
+Current release-candidate application and distribution versions are 1.3.0. Evaluate upgrades in a parallel
 environment; see [installation and upgrade](docs/installation.md). Consult the
 owner-published release record for available assets, source tag and checksums.
 
@@ -152,13 +152,18 @@ and optional documentary evidence; repeat `--trace SOURCE:SERVICE` for actual ex
 before/after evaluation. Missing documentation never implies a vulnerability.
 See the [offline tutorial](examples/quality-comparison/README.md) and
 [versioned contract](docs/development/v12-07-quality-and-comparison.md).
-# PCAP Evidence Studio development
+## PCAP Evidence Studio
 
-The additive v1.3 development candidate supports passive local PCAP/PCAPNG evidence,
+The additive v1.3.0 release candidate supports passive local PCAP/PCAPNG evidence,
 reviewed identity mappings, comparison through the existing evaluator, and offline
-reports. Package version remains 1.2.0 during compatibility verification.
+reports. Capture metadata never establishes authorization, host authenticity,
+session success or deployed firewall behavior. ARP sender/target fields retain
+their protocol meaning; an ARP target reference does not establish a device.
 See the [capture guide](docs/pcap-evidence-studio.md),
 [fictional tutorial](examples/capture-studio/README.md), and
 [gate evidence](docs/development/v13-gate-evidence.md).
-No stable v1.3 release or final owner acceptance is claimed.
+Native schema 1 remains supported. Evidence contracts and a read-only consumer are
+documented in [V13-18](docs/development/v13-18-evidence-contract-freeze.md).
+No stable v1.3 release, hosted validation or final owner acceptance is implied by
+the package version.
 

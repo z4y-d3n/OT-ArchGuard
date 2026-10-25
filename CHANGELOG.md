@@ -1,4 +1,14 @@
-# 1.3 development (unreleased; package remains 1.2.0)
+# 1.3.0 (release candidate; unpublished)
+
+- Complete the controlled package/runtime transition to 1.3.0 while preserving
+  schema 1 and historical analytical contracts.
+- Validate independently produced captures, correct ARP sender/target and Ethernet
+  delivery semantics, and prevent target-only ARP references from becoming device
+  identity proposals.
+- Freeze versioned capture evidence contracts and demonstrate a read-only consumer.
+- Improve Explorer wording and evidence presentation. Hosted six-platform results
+  and human browser acceptance must be recorded for the final source before
+  owner-controlled publication. See [release notes](docs/release-notes-1.3.0.md).
 
 - Independently audit passive PCAP Evidence Studio and reject malformed IPv4
   options and malformed/unsupported IPv6 extension semantics before exposing
@@ -68,10 +78,10 @@ unchanged. Python 3.12 is the minimum; local verification covers Windows Python
 3.12.14 and 3.14.5. The invalid-Unicode diagnostic issue remains documented in
 [limitations](docs/limitations.md). See [verification](docs/verification.md) and
 [release notes](docs/release-notes-1.0.1.md).
-# Unreleased — PCAP Evidence Studio (v1.3 development)
+# PCAP Evidence Studio — introduced in 1.3.0
 
 - Add bounded passive PCAP/PCAPNG parsing, metadata observations and port hints.
 - Add explicit hash-bound association review and conservative native-model comparison.
 - Add deterministic offline evidence reports, fictional fixtures and validation tooling.
-- Preserve native schema1 and historical v1.2 contracts; package version transition pending.
+- Preserve native schema 1 and historical v1.2 contracts.
 

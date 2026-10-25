@@ -12,6 +12,7 @@ from typing import Any
 
 import yaml
 
+import otarchguard
 from otarchguard.api import validate_file
 from otarchguard.reporting import architecture_svg
 
@@ -141,7 +142,8 @@ def capture(output: Path) -> dict[str, Any]:
         "python": platform.python_version(),
         "platform": platform.platform(),
         "production_sha256": {
-            p.name: digest(p.read_bytes()) for p in sorted((ROOT / "src/otarchguard").glob("*.py"))
+            p.name: digest(p.read_bytes())
+            for p in sorted(Path(otarchguard.__file__).parent.glob("*.py"))
         },
         "inputs": inputs,
         "exits": exits,

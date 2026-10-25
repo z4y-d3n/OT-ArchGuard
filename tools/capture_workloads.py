@@ -32,7 +32,7 @@ def ipv4_frame(source: str, destination: str, protocol: int, body: bytes) -> byt
     return bytes.fromhex("0200000000200200000000100800") + header + body
 
 
-def demo_frames() -> list[bytes]:
+def demo_frames(*, extended: bool = False) -> list[bytes]:
     frames = [
         tcp_frame("192.0.2.10", "192.0.2.20", 40000, 502),
         tcp_frame("192.0.2.20", "192.0.2.10", 502, 40000, 0x12),
@@ -61,6 +61,15 @@ def demo_frames() -> list[bytes]:
     frames.append(
         bytes.fromhex("02000000002002000000001086dd") + ipv6 + bytes.fromhex("8000000000010001")
     )
+    if extended:
+        frames.extend(
+            [
+                bytes.fromhex("0200000000100200000000200806")
+                + struct.pack("!HHBBH", 1, 0x0800, 6, 4, 2)
+                + bytes.fromhex("020000000020c0000214020000000010c000020a"),
+                bytes.fromhex("02000000002002000000001088b5") + b"fictional unsupported metadata",
+            ]
+        )
     return frames
 
 
@@ -95,11 +104,11 @@ def _block(kind: int, body: bytes) -> bytes:
     return struct.pack("<II", kind, size) + body + struct.pack("<I", size)
 
 
-def write_pcapng(path: Path) -> None:
+def write_pcapng(path: Path, *, extended: bool = False) -> None:
     with path.open("xb") as stream:
         stream.write(_block(0x0A0D0D0A, struct.pack("<IHHq", 0x1A2B3C4D, 1, 0, -1)))
         stream.write(_block(1, struct.pack("<HHI", 1, 0, 65535)))
-        for index, frame in enumerate(demo_frames()):
+        for index, frame in enumerate(demo_frames(extended=extended)):
             ticks = 1_700_000_000_000_000 + index
             padding = b"\x00" * ((-len(frame)) % 4)
             stream.write(

@@ -1,0 +1,1181 @@
+{
+  "aggregation_accounted_bytes": 172820,
+  "capture": {
+    "blocks": 14,
+    "capture_id": "0c4c4c320bda1bde2991bf3ed21980f1e61736c7ee2e07a7ca75ec390e12362d",
+    "capture_version": 1,
+    "captured_bytes": 610,
+    "format": "pcapng",
+    "interfaces": [
+      {
+        "interface": 0,
+        "linktype": 1,
+        "section": 0,
+        "snaplen": 65535,
+        "timestamp_denominator": 1000000,
+        "timestamp_offset_seconds": 0
+      }
+    ],
+    "limitations": [],
+    "original_bytes": 610,
+    "packets": 12,
+    "sha256": "0c4c4c320bda1bde2991bf3ed21980f1e61736c7ee2e07a7ca75ec390e12362d",
+    "size_bytes": 1064,
+    "unknown_blocks": 0
+  },
+  "catalog_version": 1,
+  "conversations": [
+    {
+      "captured_bytes": 54,
+      "first_timestamp": "1700000000000003/1000000",
+      "flow_ids": [
+        "flow-4c9497b5692be8f03530992f9560d78e655b30608cc715a8b9bcd1393bc57d85"
+      ],
+      "id": "conversation-138c3a9141063b90fa73aa548551b582827044f94d5e9f0d6a7cf0da49070415",
+      "initiation_direction": "observed_syn",
+      "initiator_flow_id": "flow-4c9497b5692be8f03530992f9560d78e655b30608cc715a8b9bcd1393bc57d85",
+      "ip_version": 4,
+      "last_timestamp": "1700000000000003/1000000",
+      "limitations": [
+        "Grouped observations; no deduplication or complete sessions inferred."
+      ],
+      "linktypes": [
+        1
+      ],
+      "original_bytes": 54,
+      "packets": 1,
+      "transport": "tcp",
+      "vlans": []
+    },
+    {
+      "captured_bytes": 108,
+      "first_timestamp": "1700000000/1",
+      "flow_ids": [
+        "flow-adb8b910a5e521e0498c7a14430bcdf6f3434d00d103f663719c10c521eb8a34",
+        "flow-bbf1f530ef18250f0ae2884ef8fb94e677f960c791c4c20fb6e96392df39c1ac"
+      ],
+      "id": "conversation-326feb888bb64c02d2ad078eec74d2bf0789fde7413e1c367732ab357a1aead7",
+      "initiation_direction": "observed_syn",
+      "initiator_flow_id": "flow-bbf1f530ef18250f0ae2884ef8fb94e677f960c791c4c20fb6e96392df39c1ac",
+      "ip_version": 4,
+      "last_timestamp": "1700000000000001/1000000",
+      "limitations": [
+        "Grouped observations; no deduplication or complete sessions inferred."
+      ],
+      "linktypes": [
+        1
+      ],
+      "original_bytes": 108,
+      "packets": 2,
+      "transport": "tcp",
+      "vlans": []
+    },
+    {
+      "captured_bytes": 54,
+      "first_timestamp": "850000000000001/500000",
+      "flow_ids": [
+        "flow-1a0a318e37d1ba3e894aeb0f87b06d68f5208ff0640e16beb81d55e2fce07366"
+      ],
+      "id": "conversation-36d4b693986eebeb3867167ce798e4f04a4bbc14df10880cc8ff7771bbc02184",
+      "initiation_direction": "observed_syn",
+      "initiator_flow_id": "flow-1a0a318e37d1ba3e894aeb0f87b06d68f5208ff0640e16beb81d55e2fce07366",
+      "ip_version": 4,
+      "last_timestamp": "850000000000001/500000",
+      "limitations": [
+        "Grouped observations; no deduplication or complete sessions inferred."
+      ],
+      "linktypes": [
+        1
+      ],
+      "original_bytes": 54,
+      "packets": 1,
+      "transport": "tcp",
+      "vlans": []
+    },
+    {
+      "captured_bytes": 54,
+      "first_timestamp": "850000000000003/500000",
+      "flow_ids": [
+        "flow-2fbdbf75704d29eac1d0fcf0dfec13302efe61b1aa34424c8f71a026232d505f"
+      ],
+      "id": "conversation-429f39e4f5c2c317cc24fdfe1e08433cca3749b00fd943c3a5e07f2ac7567f88",
+      "initiation_direction": "observed_syn",
+      "initiator_flow_id": "flow-2fbdbf75704d29eac1d0fcf0dfec13302efe61b1aa34424c8f71a026232d505f",
+      "ip_version": 4,
+      "last_timestamp": "850000000000003/500000",
+      "limitations": [
+        "Grouped observations; no deduplication or complete sessions inferred."
+      ],
+      "linktypes": [
+        1
+      ],
+      "original_bytes": 54,
+      "packets": 1,
+      "transport": "tcp",
+      "vlans": []
+    },
+    {
+      "captured_bytes": 42,
+      "first_timestamp": "170000000000001/100000",
+      "flow_ids": [
+        "flow-375ac7cf7fba0f6ec5228c3efae3b17319b6fa62eb98056e93cd6b5c0571df42"
+      ],
+      "id": "conversation-549d1a9df2870d51d893668fed3662c70f7deec8e61d4228236e8ab4ae6af7ef",
+      "initiation_direction": "uncertain",
+      "initiator_flow_id": null,
+      "ip_version": 4,
+      "last_timestamp": "170000000000001/100000",
+      "limitations": [
+        "Grouped observations; no deduplication or complete sessions inferred."
+      ],
+      "linktypes": [
+        1
+      ],
+      "original_bytes": 42,
+      "packets": 1,
+      "transport": "arp",
+      "vlans": []
+    },
+    {
+      "captured_bytes": 44,
+      "first_timestamp": "1700000000000011/1000000",
+      "flow_ids": [
+        "flow-bf5b790cf8035236fffc03b0e672da8598ce282d3b96417d292c8252c65ea64b"
+      ],
+      "id": "conversation-7e706f2d074cd82ecbf7ef4c10f77676d4fe1342fbcfdc4969a1ca72a8d2f709",
+      "initiation_direction": "uncertain",
+      "initiator_flow_id": null,
+      "ip_version": null,
+      "last_timestamp": "1700000000000011/1000000",
+      "limitations": [
+        "Grouped observations; no deduplication or complete sessions inferred."
+      ],
+      "linktypes": [
+        1
+      ],
+      "original_bytes": 44,
+      "packets": 1,
+      "transport": "unknown",
+      "vlans": []
+    },
+    {
+      "captured_bytes": 42,
+      "first_timestamp": "212500000000001/125000",
+      "flow_ids": [
+        "flow-c70778c8bd7fedd434ee430352fe33d3284667d3ffa4ecb8e3e64e4aa9079cdd"
+      ],
+      "id": "conversation-880645c52d2acaabce74656773766514e0c3ad5abf666475cfd8287c22dc6ba6",
+      "initiation_direction": "uncertain",
+      "initiator_flow_id": null,
+      "ip_version": 4,
+      "last_timestamp": "212500000000001/125000",
+      "limitations": [
+        "Grouped observations; no deduplication or complete sessions inferred."
+      ],
+      "linktypes": [
+        1
+      ],
+      "original_bytes": 42,
+      "packets": 1,
+      "transport": "arp",
+      "vlans": []
+    },
+    {
+      "captured_bytes": 62,
+      "first_timestamp": "1700000000000009/1000000",
+      "flow_ids": [
+        "flow-97a03ca9cc2667000ae6f63158c5d44e89c990246cea735f3703b354dd517cbe"
+      ],
+      "id": "conversation-9031ee85e0da6ca16eb83f251d5ea11b4bef3e2e4344878ca13c5e7f1f7c10f6",
+      "initiation_direction": "uncertain",
+      "initiator_flow_id": null,
+      "ip_version": 6,
+      "last_timestamp": "1700000000000009/1000000",
+      "limitations": [
+        "Grouped observations; no deduplication or complete sessions inferred."
+      ],
+      "linktypes": [
+        1
+      ],
+      "original_bytes": 62,
+      "packets": 1,
+      "transport": "icmpv6",
+      "vlans": []
+    },
+    {
+      "captured_bytes": 54,
+      "first_timestamp": "425000000000001/250000",
+      "flow_ids": [
+        "flow-90165a4084fb758d7b549528b6fd932b89e201b318dd1b01c7bcb750f2f3df07"
+      ],
+      "id": "conversation-9fb732b5e4fe9588cd9ab10154f044ba3f1489a68005649bd61967b7505d8a1b",
+      "initiation_direction": "uncertain",
+      "initiator_flow_id": null,
+      "ip_version": 4,
+      "last_timestamp": "425000000000001/250000",
+      "limitations": [
+        "Grouped observations; no deduplication or complete sessions inferred."
+      ],
+      "linktypes": [
+        1
+      ],
+      "original_bytes": 54,
+      "packets": 1,
+      "transport": "tcp",
+      "vlans": []
+    },
+    {
+      "captured_bytes": 54,
+      "first_timestamp": "1700000000000007/1000000",
+      "flow_ids": [
+        "flow-0371656870a63a6e55b0ce69a0dc6a2720b66a490793e643a433483912c64eac"
+      ],
+      "id": "conversation-d3875a0fb7cf4757bb0c306cdefd61c18994ae44c9f04e75c3f5ce3fd7d339eb",
+      "initiation_direction": "observed_syn",
+      "initiator_flow_id": "flow-0371656870a63a6e55b0ce69a0dc6a2720b66a490793e643a433483912c64eac",
+      "ip_version": 4,
+      "last_timestamp": "1700000000000007/1000000",
+      "limitations": [
+        "Grouped observations; no deduplication or complete sessions inferred."
+      ],
+      "linktypes": [
+        1
+      ],
+      "original_bytes": 54,
+      "packets": 1,
+      "transport": "tcp",
+      "vlans": []
+    },
+    {
+      "captured_bytes": 42,
+      "first_timestamp": "340000000000001/200000",
+      "flow_ids": [
+        "flow-828e79c98c5b003ec81881b339fdb291d4ef391a93af4736aa4658d0798d4dea"
+      ],
+      "id": "conversation-e265fa863546cb29d9af8f7d754dbe5f659d89d0fb08b2b03f8338b8568a4579",
+      "initiation_direction": "uncertain",
+      "initiator_flow_id": null,
+      "ip_version": 4,
+      "last_timestamp": "340000000000001/200000",
+      "limitations": [
+        "Grouped observations; no deduplication or complete sessions inferred."
+      ],
+      "linktypes": [
+        1
+      ],
+      "original_bytes": 42,
+      "packets": 1,
+      "transport": "udp",
+      "vlans": []
+    }
+  ],
+  "coverage": {
+    "capture_records_truncated": 0,
+    "complete_file_scan": true,
+    "decoded": 11,
+    "fragmented": 0,
+    "interpreted_packets": 11,
+    "malformed": 0,
+    "packets": 12,
+    "truncated": 0,
+    "uninterpreted_packets": 1,
+    "unsupported": 1
+  },
+  "flows": [
+    {
+      "arp": null,
+      "captured_bytes": 54,
+      "conversation_id": "conversation-d3875a0fb7cf4757bb0c306cdefd61c18994ae44c9f04e75c3f5ce3fd7d339eb",
+      "destination_ip": "192.0.2.98",
+      "destination_macs": [
+        "02:00:00:00:00:20"
+      ],
+      "destination_port": 502,
+      "first_timestamp": "1700000000000007/1000000",
+      "id": "flow-0371656870a63a6e55b0ce69a0dc6a2720b66a490793e643a433483912c64eac",
+      "initiation_evidence": [
+        {
+          "captured_length": 54,
+          "index": 8,
+          "interface": 0,
+          "offset": 652,
+          "original_length": 54,
+          "section": 0,
+          "timestamp": {
+            "denominator": 1000000,
+            "offset_seconds": 0,
+            "ticks": 1700000000000007
+          }
+        }
+      ],
+      "initiation_evidence_omitted": 0,
+      "initiation_packets": 1,
+      "interfaces": [
+        "0:0"
+      ],
+      "ip_version": 4,
+      "last_timestamp": "1700000000000007/1000000",
+      "limitations": [],
+      "linktype": 1,
+      "missing_timestamps": 0,
+      "original_bytes": 54,
+      "packets": 1,
+      "protocol_hints": [
+        {
+          "level": "PORT_HINT",
+          "port": 502,
+          "protocol": "Modbus/TCP"
+        }
+      ],
+      "samples": [
+        {
+          "captured_length": 54,
+          "index": 8,
+          "interface": 0,
+          "offset": 652,
+          "original_length": 54,
+          "section": 0,
+          "timestamp": {
+            "denominator": 1000000,
+            "offset_seconds": 0,
+            "ticks": 1700000000000007
+          }
+        }
+      ],
+      "samples_omitted": 0,
+      "source_ip": "192.0.2.10",
+      "source_macs": [
+        "02:00:00:00:00:10"
+      ],
+      "source_port": 40004,
+      "status": "decoded",
+      "tcp_flags": [
+        "SYN"
+      ],
+      "transport": "tcp",
+      "transport_evidence": "TRANSPORT_OBSERVED",
+      "vlans": []
+    },
+    {
+      "arp": null,
+      "captured_bytes": 54,
+      "conversation_id": "conversation-36d4b693986eebeb3867167ce798e4f04a4bbc14df10880cc8ff7771bbc02184",
+      "destination_ip": "192.0.2.20",
+      "destination_macs": [
+        "02:00:00:00:00:20"
+      ],
+      "destination_port": 502,
+      "first_timestamp": "850000000000001/500000",
+      "id": "flow-1a0a318e37d1ba3e894aeb0f87b06d68f5208ff0640e16beb81d55e2fce07366",
+      "initiation_evidence": [
+        {
+          "captured_length": 54,
+          "index": 3,
+          "interface": 0,
+          "offset": 224,
+          "original_length": 54,
+          "section": 0,
+          "timestamp": {
+            "denominator": 1000000,
+            "offset_seconds": 0,
+            "ticks": 1700000000000002
+          }
+        }
+      ],
+      "initiation_evidence_omitted": 0,
+      "initiation_packets": 1,
+      "interfaces": [
+        "0:0"
+      ],
+      "ip_version": 4,
+      "last_timestamp": "850000000000001/500000",
+      "limitations": [],
+      "linktype": 1,
+      "missing_timestamps": 0,
+      "original_bytes": 54,
+      "packets": 1,
+      "protocol_hints": [
+        {
+          "level": "PORT_HINT",
+          "port": 502,
+          "protocol": "Modbus/TCP"
+        }
+      ],
+      "samples": [
+        {
+          "captured_length": 54,
+          "index": 3,
+          "interface": 0,
+          "offset": 224,
+          "original_length": 54,
+          "section": 0,
+          "timestamp": {
+            "denominator": 1000000,
+            "offset_seconds": 0,
+            "ticks": 1700000000000002
+          }
+        }
+      ],
+      "samples_omitted": 0,
+      "source_ip": "192.0.2.11",
+      "source_macs": [
+        "02:00:00:00:00:10"
+      ],
+      "source_port": 40001,
+      "status": "decoded",
+      "tcp_flags": [
+        "SYN"
+      ],
+      "transport": "tcp",
+      "transport_evidence": "TRANSPORT_OBSERVED",
+      "vlans": []
+    },
+    {
+      "arp": null,
+      "captured_bytes": 54,
+      "conversation_id": "conversation-429f39e4f5c2c317cc24fdfe1e08433cca3749b00fd943c3a5e07f2ac7567f88",
+      "destination_ip": "192.0.2.20",
+      "destination_macs": [
+        "02:00:00:00:00:20"
+      ],
+      "destination_port": 502,
+      "first_timestamp": "850000000000003/500000",
+      "id": "flow-2fbdbf75704d29eac1d0fcf0dfec13302efe61b1aa34424c8f71a026232d505f",
+      "initiation_evidence": [
+        {
+          "captured_length": 54,
+          "index": 7,
+          "interface": 0,
+          "offset": 564,
+          "original_length": 54,
+          "section": 0,
+          "timestamp": {
+            "denominator": 1000000,
+            "offset_seconds": 0,
+            "ticks": 1700000000000006
+          }
+        }
+      ],
+      "initiation_evidence_omitted": 0,
+      "initiation_packets": 1,
+      "interfaces": [
+        "0:0"
+      ],
+      "ip_version": 4,
+      "last_timestamp": "850000000000003/500000",
+      "limitations": [],
+      "linktype": 1,
+      "missing_timestamps": 0,
+      "original_bytes": 54,
+      "packets": 1,
+      "protocol_hints": [
+        {
+          "level": "PORT_HINT",
+          "port": 502,
+          "protocol": "Modbus/TCP"
+        }
+      ],
+      "samples": [
+        {
+          "captured_length": 54,
+          "index": 7,
+          "interface": 0,
+          "offset": 564,
+          "original_length": 54,
+          "section": 0,
+          "timestamp": {
+            "denominator": 1000000,
+            "offset_seconds": 0,
+            "ticks": 1700000000000006
+          }
+        }
+      ],
+      "samples_omitted": 0,
+      "source_ip": "192.0.2.99",
+      "source_macs": [
+        "02:00:00:00:00:10"
+      ],
+      "source_port": 40003,
+      "status": "decoded",
+      "tcp_flags": [
+        "SYN"
+      ],
+      "transport": "tcp",
+      "transport_evidence": "TRANSPORT_OBSERVED",
+      "vlans": []
+    },
+    {
+      "arp": {
+        "ethernet_delivery": "unicast",
+        "ethernet_destination_mac": "02:00:00:00:00:10",
+        "ethernet_source_mac": "02:00:00:00:00:20",
+        "metadata_version": 1,
+        "opcode": 2,
+        "operation": "reply",
+        "sender_hardware_address": "02:00:00:00:00:20",
+        "sender_protocol_address": "192.0.2.20",
+        "target_hardware_address": "02:00:00:00:00:10",
+        "target_protocol_address": "192.0.2.10"
+      },
+      "captured_bytes": 42,
+      "conversation_id": "conversation-549d1a9df2870d51d893668fed3662c70f7deec8e61d4228236e8ab4ae6af7ef",
+      "destination_ip": "192.0.2.10",
+      "destination_macs": [
+        "02:00:00:00:00:10"
+      ],
+      "destination_port": null,
+      "first_timestamp": "170000000000001/100000",
+      "id": "flow-375ac7cf7fba0f6ec5228c3efae3b17319b6fa62eb98056e93cd6b5c0571df42",
+      "initiation_evidence": [],
+      "initiation_evidence_omitted": 0,
+      "initiation_packets": 0,
+      "interfaces": [
+        "0:0"
+      ],
+      "ip_version": 4,
+      "last_timestamp": "170000000000001/100000",
+      "limitations": [],
+      "linktype": 1,
+      "missing_timestamps": 0,
+      "original_bytes": 42,
+      "packets": 1,
+      "protocol_hints": [],
+      "samples": [
+        {
+          "captured_length": 42,
+          "index": 11,
+          "interface": 0,
+          "offset": 912,
+          "original_length": 42,
+          "section": 0,
+          "timestamp": {
+            "denominator": 1000000,
+            "offset_seconds": 0,
+            "ticks": 1700000000000010
+          }
+        }
+      ],
+      "samples_omitted": 0,
+      "source_ip": "192.0.2.20",
+      "source_macs": [
+        "02:00:00:00:00:20"
+      ],
+      "source_port": null,
+      "status": "decoded",
+      "tcp_flags": [],
+      "transport": "arp",
+      "transport_evidence": "UNKNOWN",
+      "vlans": []
+    },
+    {
+      "arp": null,
+      "captured_bytes": 54,
+      "conversation_id": "conversation-138c3a9141063b90fa73aa548551b582827044f94d5e9f0d6a7cf0da49070415",
+      "destination_ip": "192.0.2.20",
+      "destination_macs": [
+        "02:00:00:00:00:20"
+      ],
+      "destination_port": 102,
+      "first_timestamp": "1700000000000003/1000000",
+      "id": "flow-4c9497b5692be8f03530992f9560d78e655b30608cc715a8b9bcd1393bc57d85",
+      "initiation_evidence": [
+        {
+          "captured_length": 54,
+          "index": 4,
+          "interface": 0,
+          "offset": 312,
+          "original_length": 54,
+          "section": 0,
+          "timestamp": {
+            "denominator": 1000000,
+            "offset_seconds": 0,
+            "ticks": 1700000000000003
+          }
+        }
+      ],
+      "initiation_evidence_omitted": 0,
+      "initiation_packets": 1,
+      "interfaces": [
+        "0:0"
+      ],
+      "ip_version": 4,
+      "last_timestamp": "1700000000000003/1000000",
+      "limitations": [],
+      "linktype": 1,
+      "missing_timestamps": 0,
+      "original_bytes": 54,
+      "packets": 1,
+      "protocol_hints": [
+        {
+          "level": "PORT_HINT",
+          "port": 102,
+          "protocol": "S7comm"
+        }
+      ],
+      "samples": [
+        {
+          "captured_length": 54,
+          "index": 4,
+          "interface": 0,
+          "offset": 312,
+          "original_length": 54,
+          "section": 0,
+          "timestamp": {
+            "denominator": 1000000,
+            "offset_seconds": 0,
+            "ticks": 1700000000000003
+          }
+        }
+      ],
+      "samples_omitted": 0,
+      "source_ip": "192.0.2.10",
+      "source_macs": [
+        "02:00:00:00:00:10"
+      ],
+      "source_port": 40002,
+      "status": "decoded",
+      "tcp_flags": [
+        "SYN"
+      ],
+      "transport": "tcp",
+      "transport_evidence": "TRANSPORT_OBSERVED",
+      "vlans": []
+    },
+    {
+      "arp": null,
+      "captured_bytes": 42,
+      "conversation_id": "conversation-e265fa863546cb29d9af8f7d754dbe5f659d89d0fb08b2b03f8338b8568a4579",
+      "destination_ip": "192.0.2.20",
+      "destination_macs": [
+        "02:00:00:00:00:20"
+      ],
+      "destination_port": 47808,
+      "first_timestamp": "340000000000001/200000",
+      "id": "flow-828e79c98c5b003ec81881b339fdb291d4ef391a93af4736aa4658d0798d4dea",
+      "initiation_evidence": [],
+      "initiation_evidence_omitted": 0,
+      "initiation_packets": 0,
+      "interfaces": [
+        "0:0"
+      ],
+      "ip_version": 4,
+      "last_timestamp": "340000000000001/200000",
+      "limitations": [],
+      "linktype": 1,
+      "missing_timestamps": 0,
+      "original_bytes": 42,
+      "packets": 1,
+      "protocol_hints": [
+        {
+          "level": "PORT_HINT",
+          "port": 47808,
+          "protocol": "BACnet/IP"
+        }
+      ],
+      "samples": [
+        {
+          "captured_length": 42,
+          "index": 6,
+          "interface": 0,
+          "offset": 488,
+          "original_length": 42,
+          "section": 0,
+          "timestamp": {
+            "denominator": 1000000,
+            "offset_seconds": 0,
+            "ticks": 1700000000000005
+          }
+        }
+      ],
+      "samples_omitted": 0,
+      "source_ip": "192.0.2.11",
+      "source_macs": [
+        "02:00:00:00:00:10"
+      ],
+      "source_port": 41000,
+      "status": "decoded",
+      "tcp_flags": [],
+      "transport": "udp",
+      "transport_evidence": "TRANSPORT_OBSERVED",
+      "vlans": []
+    },
+    {
+      "arp": null,
+      "captured_bytes": 54,
+      "conversation_id": "conversation-9fb732b5e4fe9588cd9ab10154f044ba3f1489a68005649bd61967b7505d8a1b",
+      "destination_ip": "192.0.2.10",
+      "destination_macs": [
+        "02:00:00:00:00:20"
+      ],
+      "destination_port": 49000,
+      "first_timestamp": "425000000000001/250000",
+      "id": "flow-90165a4084fb758d7b549528b6fd932b89e201b318dd1b01c7bcb750f2f3df07",
+      "initiation_evidence": [],
+      "initiation_evidence_omitted": 0,
+      "initiation_packets": 0,
+      "interfaces": [
+        "0:0"
+      ],
+      "ip_version": 4,
+      "last_timestamp": "425000000000001/250000",
+      "limitations": [],
+      "linktype": 1,
+      "missing_timestamps": 0,
+      "original_bytes": 54,
+      "packets": 1,
+      "protocol_hints": [
+        {
+          "level": "PORT_HINT",
+          "port": 502,
+          "protocol": "Modbus/TCP"
+        }
+      ],
+      "samples": [
+        {
+          "captured_length": 54,
+          "index": 5,
+          "interface": 0,
+          "offset": 400,
+          "original_length": 54,
+          "section": 0,
+          "timestamp": {
+            "denominator": 1000000,
+            "offset_seconds": 0,
+            "ticks": 1700000000000004
+          }
+        }
+      ],
+      "samples_omitted": 0,
+      "source_ip": "192.0.2.20",
+      "source_macs": [
+        "02:00:00:00:00:10"
+      ],
+      "source_port": 502,
+      "status": "decoded",
+      "tcp_flags": [
+        "ACK"
+      ],
+      "transport": "tcp",
+      "transport_evidence": "TRANSPORT_OBSERVED",
+      "vlans": []
+    },
+    {
+      "arp": null,
+      "captured_bytes": 62,
+      "conversation_id": "conversation-9031ee85e0da6ca16eb83f251d5ea11b4bef3e2e4344878ca13c5e7f1f7c10f6",
+      "destination_ip": "2001:db8::20",
+      "destination_macs": [
+        "02:00:00:00:00:20"
+      ],
+      "destination_port": null,
+      "first_timestamp": "1700000000000009/1000000",
+      "id": "flow-97a03ca9cc2667000ae6f63158c5d44e89c990246cea735f3703b354dd517cbe",
+      "initiation_evidence": [],
+      "initiation_evidence_omitted": 0,
+      "initiation_packets": 0,
+      "interfaces": [
+        "0:0"
+      ],
+      "ip_version": 6,
+      "last_timestamp": "1700000000000009/1000000",
+      "limitations": [],
+      "linktype": 1,
+      "missing_timestamps": 0,
+      "original_bytes": 62,
+      "packets": 1,
+      "protocol_hints": [],
+      "samples": [
+        {
+          "captured_length": 62,
+          "index": 10,
+          "interface": 0,
+          "offset": 816,
+          "original_length": 62,
+          "section": 0,
+          "timestamp": {
+            "denominator": 1000000,
+            "offset_seconds": 0,
+            "ticks": 1700000000000009
+          }
+        }
+      ],
+      "samples_omitted": 0,
+      "source_ip": "2001:db8::10",
+      "source_macs": [
+        "02:00:00:00:00:10"
+      ],
+      "source_port": null,
+      "status": "decoded",
+      "tcp_flags": [],
+      "transport": "icmpv6",
+      "transport_evidence": "TRANSPORT_OBSERVED",
+      "vlans": []
+    },
+    {
+      "arp": null,
+      "captured_bytes": 54,
+      "conversation_id": "conversation-326feb888bb64c02d2ad078eec74d2bf0789fde7413e1c367732ab357a1aead7",
+      "destination_ip": "192.0.2.10",
+      "destination_macs": [
+        "02:00:00:00:00:20"
+      ],
+      "destination_port": 40000,
+      "first_timestamp": "1700000000000001/1000000",
+      "id": "flow-adb8b910a5e521e0498c7a14430bcdf6f3434d00d103f663719c10c521eb8a34",
+      "initiation_evidence": [],
+      "initiation_evidence_omitted": 0,
+      "initiation_packets": 0,
+      "interfaces": [
+        "0:0"
+      ],
+      "ip_version": 4,
+      "last_timestamp": "1700000000000001/1000000",
+      "limitations": [],
+      "linktype": 1,
+      "missing_timestamps": 0,
+      "original_bytes": 54,
+      "packets": 1,
+      "protocol_hints": [
+        {
+          "level": "PORT_HINT",
+          "port": 502,
+          "protocol": "Modbus/TCP"
+        }
+      ],
+      "samples": [
+        {
+          "captured_length": 54,
+          "index": 2,
+          "interface": 0,
+          "offset": 136,
+          "original_length": 54,
+          "section": 0,
+          "timestamp": {
+            "denominator": 1000000,
+            "offset_seconds": 0,
+            "ticks": 1700000000000001
+          }
+        }
+      ],
+      "samples_omitted": 0,
+      "source_ip": "192.0.2.20",
+      "source_macs": [
+        "02:00:00:00:00:10"
+      ],
+      "source_port": 502,
+      "status": "decoded",
+      "tcp_flags": [
+        "ACK",
+        "SYN"
+      ],
+      "transport": "tcp",
+      "transport_evidence": "TRANSPORT_OBSERVED",
+      "vlans": []
+    },
+    {
+      "arp": null,
+      "captured_bytes": 54,
+      "conversation_id": "conversation-326feb888bb64c02d2ad078eec74d2bf0789fde7413e1c367732ab357a1aead7",
+      "destination_ip": "192.0.2.20",
+      "destination_macs": [
+        "02:00:00:00:00:20"
+      ],
+      "destination_port": 502,
+      "first_timestamp": "1700000000/1",
+      "id": "flow-bbf1f530ef18250f0ae2884ef8fb94e677f960c791c4c20fb6e96392df39c1ac",
+      "initiation_evidence": [
+        {
+          "captured_length": 54,
+          "index": 1,
+          "interface": 0,
+          "offset": 48,
+          "original_length": 54,
+          "section": 0,
+          "timestamp": {
+            "denominator": 1000000,
+            "offset_seconds": 0,
+            "ticks": 1700000000000000
+          }
+        }
+      ],
+      "initiation_evidence_omitted": 0,
+      "initiation_packets": 1,
+      "interfaces": [
+        "0:0"
+      ],
+      "ip_version": 4,
+      "last_timestamp": "1700000000/1",
+      "limitations": [],
+      "linktype": 1,
+      "missing_timestamps": 0,
+      "original_bytes": 54,
+      "packets": 1,
+      "protocol_hints": [
+        {
+          "level": "PORT_HINT",
+          "port": 502,
+          "protocol": "Modbus/TCP"
+        }
+      ],
+      "samples": [
+        {
+          "captured_length": 54,
+          "index": 1,
+          "interface": 0,
+          "offset": 48,
+          "original_length": 54,
+          "section": 0,
+          "timestamp": {
+            "denominator": 1000000,
+            "offset_seconds": 0,
+            "ticks": 1700000000000000
+          }
+        }
+      ],
+      "samples_omitted": 0,
+      "source_ip": "192.0.2.10",
+      "source_macs": [
+        "02:00:00:00:00:10"
+      ],
+      "source_port": 40000,
+      "status": "decoded",
+      "tcp_flags": [
+        "SYN"
+      ],
+      "transport": "tcp",
+      "transport_evidence": "TRANSPORT_OBSERVED",
+      "vlans": []
+    },
+    {
+      "arp": null,
+      "captured_bytes": 44,
+      "conversation_id": "conversation-7e706f2d074cd82ecbf7ef4c10f77676d4fe1342fbcfdc4969a1ca72a8d2f709",
+      "destination_ip": null,
+      "destination_macs": [
+        "02:00:00:00:00:20"
+      ],
+      "destination_port": null,
+      "first_timestamp": "1700000000000011/1000000",
+      "id": "flow-bf5b790cf8035236fffc03b0e672da8598ce282d3b96417d292c8252c65ea64b",
+      "initiation_evidence": [],
+      "initiation_evidence_omitted": 0,
+      "initiation_packets": 0,
+      "interfaces": [
+        "0:0"
+      ],
+      "ip_version": null,
+      "last_timestamp": "1700000000000011/1000000",
+      "limitations": [
+        "NETWORK_PROTOCOL_UNSUPPORTED"
+      ],
+      "linktype": 1,
+      "missing_timestamps": 0,
+      "original_bytes": 44,
+      "packets": 1,
+      "protocol_hints": [],
+      "samples": [
+        {
+          "captured_length": 44,
+          "index": 12,
+          "interface": 0,
+          "offset": 988,
+          "original_length": 44,
+          "section": 0,
+          "timestamp": {
+            "denominator": 1000000,
+            "offset_seconds": 0,
+            "ticks": 1700000000000011
+          }
+        }
+      ],
+      "samples_omitted": 0,
+      "source_ip": null,
+      "source_macs": [
+        "02:00:00:00:00:10"
+      ],
+      "source_port": null,
+      "status": "unsupported",
+      "tcp_flags": [],
+      "transport": "unknown",
+      "transport_evidence": "UNKNOWN",
+      "vlans": []
+    },
+    {
+      "arp": {
+        "ethernet_delivery": "broadcast",
+        "ethernet_destination_mac": "ff:ff:ff:ff:ff:ff",
+        "ethernet_source_mac": "02:00:00:00:00:10",
+        "metadata_version": 1,
+        "opcode": 1,
+        "operation": "request",
+        "sender_hardware_address": "02:00:00:00:00:10",
+        "sender_protocol_address": "192.0.2.10",
+        "target_hardware_address": "00:00:00:00:00:00",
+        "target_protocol_address": "192.0.2.20"
+      },
+      "captured_bytes": 42,
+      "conversation_id": "conversation-880645c52d2acaabce74656773766514e0c3ad5abf666475cfd8287c22dc6ba6",
+      "destination_ip": "192.0.2.20",
+      "destination_macs": [
+        "ff:ff:ff:ff:ff:ff"
+      ],
+      "destination_port": null,
+      "first_timestamp": "212500000000001/125000",
+      "id": "flow-c70778c8bd7fedd434ee430352fe33d3284667d3ffa4ecb8e3e64e4aa9079cdd",
+      "initiation_evidence": [],
+      "initiation_evidence_omitted": 0,
+      "initiation_packets": 0,
+      "interfaces": [
+        "0:0"
+      ],
+      "ip_version": 4,
+      "last_timestamp": "212500000000001/125000",
+      "limitations": [],
+      "linktype": 1,
+      "missing_timestamps": 0,
+      "original_bytes": 42,
+      "packets": 1,
+      "protocol_hints": [],
+      "samples": [
+        {
+          "captured_length": 42,
+          "index": 9,
+          "interface": 0,
+          "offset": 740,
+          "original_length": 42,
+          "section": 0,
+          "timestamp": {
+            "denominator": 1000000,
+            "offset_seconds": 0,
+            "ticks": 1700000000000008
+          }
+        }
+      ],
+      "samples_omitted": 0,
+      "source_ip": "192.0.2.10",
+      "source_macs": [
+        "02:00:00:00:00:10"
+      ],
+      "source_port": null,
+      "status": "decoded",
+      "tcp_flags": [],
+      "transport": "arp",
+      "transport_evidence": "UNKNOWN",
+      "vlans": []
+    }
+  ],
+  "hosts": [
+    {
+      "destination_macs": [
+        "02:00:00:00:00:20"
+      ],
+      "id": "host-60f25b1d73c65dea626b07efe90abfa1d407745daa2e168c26453bb23c8e6ba7",
+      "ip": "192.0.2.10",
+      "ip_version": 4,
+      "observation_roles": [
+        "arp_request_sender",
+        "packet_destination",
+        "packet_source"
+      ],
+      "packets": 6,
+      "source_macs": [
+        "02:00:00:00:00:10"
+      ]
+    },
+    {
+      "destination_macs": [],
+      "id": "host-c03322910c1b378c35ce0b2db117563d8f17fb12d46af8ba2c1abd5c82805cf5",
+      "ip": "192.0.2.11",
+      "ip_version": 4,
+      "observation_roles": [
+        "packet_source"
+      ],
+      "packets": 2,
+      "source_macs": [
+        "02:00:00:00:00:10"
+      ]
+    },
+    {
+      "destination_macs": [
+        "02:00:00:00:00:20"
+      ],
+      "id": "host-b0444a5f82771215a8166411dde14a4889099e3f8a6244a34841dcc4b4dfe377",
+      "ip": "192.0.2.20",
+      "ip_version": 4,
+      "observation_roles": [
+        "arp_reply_sender",
+        "packet_destination",
+        "packet_source"
+      ],
+      "packets": 8,
+      "source_macs": [
+        "02:00:00:00:00:10",
+        "02:00:00:00:00:20"
+      ]
+    },
+    {
+      "destination_macs": [
+        "02:00:00:00:00:20"
+      ],
+      "id": "host-d4570473d39db7190c5a2dac4793c5b881e8bacd459a6ed449adcdce0efb77b4",
+      "ip": "192.0.2.98",
+      "ip_version": 4,
+      "observation_roles": [
+        "packet_destination"
+      ],
+      "packets": 1,
+      "source_macs": []
+    },
+    {
+      "destination_macs": [],
+      "id": "host-1dc2c211e41d4f95bce873d8e37933961e99238356c5999379c1c3cec27360ea",
+      "ip": "192.0.2.99",
+      "ip_version": 4,
+      "observation_roles": [
+        "packet_source"
+      ],
+      "packets": 1,
+      "source_macs": [
+        "02:00:00:00:00:10"
+      ]
+    },
+    {
+      "destination_macs": [],
+      "id": "host-e46962b1be1d112df4cbc0d7e5c6e3cd2b4332a8ec561433a834a0826c1669c5",
+      "ip": "2001:db8::10",
+      "ip_version": 6,
+      "observation_roles": [
+        "packet_source"
+      ],
+      "packets": 1,
+      "source_macs": [
+        "02:00:00:00:00:10"
+      ]
+    },
+    {
+      "destination_macs": [
+        "02:00:00:00:00:20"
+      ],
+      "id": "host-ac8861d4a6b36049c61640a74d408df415d1a0124381b87293d0bd39e63c2181",
+      "ip": "2001:db8::20",
+      "ip_version": 6,
+      "observation_roles": [
+        "packet_destination"
+      ],
+      "packets": 1,
+      "source_macs": []
+    }
+  ],
+  "limitations": [
+    "Raw capture records are counted; duplicates and multi-interface copies are not deduplicated.",
+    "Conversations group endpoint tuples, not sessions or successful communications.",
+    "MAC addresses are frame observations and may belong to transit equipment.",
+    "Port associations are PORT_HINT only, never confirmed application protocols.",
+    "No payloads, DNS resolution, reassembly, checksum validation or live networking.",
+    "Initial SYN evidence suggests an initiator; it does not establish a complete session.",
+    "Missing traffic establishes neither blocking nor the absence of a device or service.",
+    "ARP sender fields are claims; target fields only reference an address and do not establish a destination device, ownership or a response."
+  ],
+  "observation_version": 2,
+  "observations_sha256": "f855b94fb59319edb777a4b30bad3683ac019103dc842e9fa8ae1ffdfc7d76d1"
+}

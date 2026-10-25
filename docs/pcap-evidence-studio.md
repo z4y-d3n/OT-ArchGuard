@@ -1,15 +1,15 @@
-# PCAP Evidence Studio — development candidate
+# PCAP Evidence Studio — 1.3.0 release candidate
 
 PCAP Evidence Studio reads local fictional or authorized PCAP evidence without
 initiating network communications. It answers what was observed, which owner-reviewed
 identities and declarations can be compared, and which uncertainties need review.
 Observed traffic is not permission. Unobserved traffic is not evidence of blocking.
 
-This is additive v1.3 development on the v1.2 baseline. Native YAML remains schema 1.
-The package/engine version remains 1.2.0 to preserve frozen historical contracts
-until a separately reviewed version transition. Capture, observation, association,
-comparison, protocol catalog and site contracts each start at version 1.
-No stable v1.3 release or human acceptance is claimed.
+The package/engine version is 1.3.0. Native YAML remains schema 1. Capture,
+association, comparison, protocol catalog and site contracts remain version 1;
+observations use version 2 to explicitly correct ARP identities and host eligibility.
+See the [frozen evidence contracts](development/v13-18-evidence-contract-freeze.md).
+This is an unpublished candidate; hosted and human acceptance are recorded separately.
 
 ## Operation and definitive CLI contract
 
@@ -82,7 +82,7 @@ is automatically a physical adjacency or an authorized communication.
 | IPv6 | Addresses, bounded hop/routing/destination/AH extension headers, TCP/UDP/ICMPv6 | No native model evaluation; fragments and jumbograms unevaluated; bounded extension depth |
 | TCP | Header ports/flags and possible initial SYN direction | No streams, session reconstruction, deduplication or established/successful-session inference |
 | UDP | Header ports and datagram metadata | A datagram alone never establishes initiation direction |
-| ARP | Ethernet/IPv4 ARP protocol-address metadata | Claims do not establish ownership or physical adjacency |
+| ARP | Ethernet/IPv4 request/reply, explicit sender/target IP/MAC, opcode and Ethernet delivery | Claims do not establish ownership, response or physical adjacency; target-only references and unspecified senders do not create host entries |
 | ICMP/ICMPv6 | Transport observation | No initiation query to the TCP/UDP-only native evaluator |
 
 Container corruption aborts the command. Damaged packet contents remain classified
@@ -199,8 +199,9 @@ reviewed associations, directed aggregates, bidirectional grouping, transport/po
 hints, findings, exact evidence details, coverage and declaration absence.
 Tables paginate without dropping aggregates. At most 16 addresses/24 aggregates
 appear in the overview diagram; larger diagrams are explicitly omitted while full
-tables/JSON remain available. Dashed arrows denote captured direction; R/U marks
-refer to a separate model evaluation. No arrow asserts authorization or a physical
+tables/JSON remain available. Dashed IP arrows denote captured direction; ARP panels
+separate sender/target fields from actual Ethernet delivery without a target arrow.
+Readable assessment labels accompany exact classification codes. No arrow asserts authorization or a physical
 link. Native routes remain in detailed witnesses rather than a fabricated topology.
 
 HTML has semantic headings/tables, keyboard focus, a skip link, scrollable wide
@@ -279,7 +280,9 @@ independent reachable/unreachable models, stale/orphan/duplicate decisions,
 overlapping services, unresolved identity, UDP, midstream TCP, IPv6 and ARP.
 CLI tests cover output preservation, hostile review text, pagination, local links
 and denied sockets/DNS. Bounded fixed-seed byte mutations are included; no unbounded
-fuzzer is run. Historical v1.2 tests remain unchanged.
+fuzzer is run. Historical v1.2 tests retain their semantics; the active package
+version assertion is updated to 1.3.0. Independent text2pcap/spec-authored corpus
+tests and frozen evidence/consumer tests require no external decoder installation.
 
 ```text
 python -m pytest tests/test_capture_parser.py tests/test_capture_observations.py tests/test_capture_reconciliation.py tests/test_capture_cli.py
@@ -291,7 +294,8 @@ The walkthrough uses an exact installed console launcher and no development-sour
 imports in the product subprocess. Its fictional model includes engineering, HMI,
 PLC, historian and a declared boundary device, plus unmodeled addresses. It generates
 PCAP and PCAPNG with reachable engineering TCP502, intentionally unreachable HMI
-TCP502, undeclared TCP102, response-only TCP, uncertain UDP, ARP, IPv6 and unknown
+TCP502, undeclared TCP102, response-only TCP, uncertain UDP, ARP request/reply, IPv6,
+unsupported Ethernet content and unknown
 endpoints. A fixture-author decision file is explicitly synthetic. Independent
 expected codes are checked. See [the packaged tutorial](../examples/capture-studio/README.md).
 

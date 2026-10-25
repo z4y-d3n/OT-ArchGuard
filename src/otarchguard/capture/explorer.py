@@ -23,12 +23,40 @@ NOTICE = (
 )
 NAV = (
     ("index.html", "Overview"),
-    ("hosts.html", "Observed devices"),
+    ("hosts.html", "Observed addresses"),
     ("conversations.html", "Conversations"),
     ("protocols.html", "Protocols"),
     ("findings.html", "Comparison"),
     ("coverage.html", "Coverage and limits"),
 )
+
+CLASSIFICATION_LABELS = {
+    "OBSERVED_MODEL_REACHABLE": "Compatible with declared reachability",
+    "OBSERVED_MODEL_UNREACHABLE": "Discrepancy with declared reachability",
+    "OBSERVED_SERVICE_UNDECLARED": "No matching declared service",
+    "OBSERVED_ENDPOINT_UNMAPPED": "Endpoint not associated with the model",
+    "OBSERVED_DIRECTION_UNCERTAIN": "Initiation direction uncertain",
+    "OBSERVED_MODEL_UNSUPPORTED": "Outside current model capabilities",
+    "OBSERVED_EVALUATION_INCOMPLETE": "Declared-model evaluation incomplete",
+    "DECLARED_SERVICE_NOT_OBSERVED": "Declared service not observed",
+    "EVIDENCE_AMBIGUOUS": "Evidence identity is ambiguous",
+}
+
+
+def _classification(code: str) -> str:
+    return CLASSIFICATION_LABELS.get(code, code)
+
+
+def _packet_count(count: int) -> str:
+    return f"{count} packet" + ("" if count == 1 else "s")
+
+
+def _endpoint(flow: dict[str, Any], side: str) -> str:
+    arp = flow.get("arp")
+    value = flow[f"{side}_ip"]
+    if arp:
+        return ("Sender IP: " if side == "source" else "Target IP (reference): ") + str(value)
+    return str(value) if value is not None else "Unavailable"
 
 
 def fresh_destination(path: Path) -> None:
@@ -128,19 +156,47 @@ def _diagram(
             continue
         # Each aggregate owns one lane. Repeated/reverse/self flows cannot share
         # arrow paths, and visual position never implies a physical topology.
-        y = 100 + len(lines) * 118
+        y = 100 + len(lines) * 150
         finding = findings.get(flow["id"], {})
         classification = finding.get("classification", "Not compared")
-        transport = flow["transport"]
+        arp = flow.get("arp")
+        transport = "ARP " + arp["operation"] if arp else flow["transport"]
         ports = (
             f"{flow['source_port']} → {flow['destination_port']}"
             if flow["source_port"] is not None and flow["destination_port"] is not None
             else "Ports unavailable"
         )
         evidence = _evidence_target(i, flow["id"], rows_per_page)
+        if arp:
+            lines.append(
+                f'<g><a href="{evidence}"><text x="24" y="{y}">'
+                + escape(
+                    f"Aggregate {i + 1:02d} · {_packet_count(flow['packets'])} · Evidence details"
+                )
+                + f'</text></a><rect x="24" y="{y + 12}" width="1048" height="80" '
+                'fill="#eef4f8" stroke="#657b8b"/>'
+                + f'<text x="36" y="{y + 33}">'
+                + escape(f"{transport} · Sender IP: {source} · Target IP: {target}")
+                + f'</text><text x="36" y="{y + 55}">'
+                + escape(
+                    "Ethernet destination: "
+                    + arp["ethernet_delivery"].capitalize()
+                    + " · "
+                    + arp["ethernet_destination_mac"]
+                )
+                + f'</text><text x="36" y="{y + 77}">'
+                "Target is a protocol reference; no target presence, response or IP ownership "
+                "is established.</text>"
+                + f'<text x="24" y="{y + 112}">Comparison: '
+                + escape(_classification(classification))
+                + f'</text><text x="24" y="{y + 132}">Code: '
+                + escape(classification)
+                + "</text></g>"
+            )
+            continue
         lines.append(
             f'<g><a href="{evidence}"><text x="24" y="{y}">'
-            + escape(f"Aggregate {i + 1:02d} · {flow['packets']} packet records · Evidence details")
+            + escape(f"Aggregate {i + 1:02d} · {_packet_count(flow['packets'])} · Evidence details")
             + f'</text></a><rect x="24" y="{y + 12}" width="332" height="54" '
             'fill="#eef4f8" stroke="#657b8b"/>'
             + f'<text x="36" y="{y + 32}">Observed source</text>'
@@ -153,11 +209,17 @@ def _diagram(
             'fill="#eef4f8" stroke="#657b8b"/>'
             + f'<text x="752" y="{y + 32}">Observed destination</text>'
             + f'<text x="752" y="{y + 54}">{escape(target)}</text>'
-            + f'<text x="24" y="{y + 90}">Comparison: {escape(classification)}</text></g>'
+            + f'<text x="24" y="{y + 100}">Comparison: '
+            + escape(_classification(classification))
+            + f'</text><text x="24" y="{y + 122}">Code: '
+            + escape(classification)
+            + "</text></g>"
         )
     return (
         "<figure><figcaption>Observed directed aggregates · dashed arrows. "
-        "Each lane shows packet direction, transport and decoded ports; it does not infer "
+        "IP lanes show packet direction, transport and decoded ports; ARP panels separately "
+        "show sender/target protocol fields and Ethernet delivery. An ARP target is not an "
+        "observed destination device. Neither layout infers "
         "the initiator. Select Evidence details for packet references, owner decisions and "
         "the original native model query. "
         "Arrow multiplicity is neither session count nor physical connectivity. "
@@ -167,11 +229,11 @@ def _diagram(
         "those without IP endpoints, remain in the tables.</figcaption>"
         '<div class="scroll" tabindex="0" '
         'role="region" aria-label="Observed communication diagram"><svg '
-        f'xmlns="http://www.w3.org/2000/svg" width="1100" height="{len(lines) * 118 + 120}" '
-        'viewBox="0 0 1100 ' + str(len(lines) * 118 + 120) + '" '
+        f'xmlns="http://www.w3.org/2000/svg" width="1100" height="{len(lines) * 150 + 120}" '
+        'viewBox="0 0 1100 ' + str(len(lines) * 150 + 120) + '" '
         'role="group" aria-labelledby="diagram-title diagram-description" font-size="13">'
         '<title id="diagram-title">Observed communication, not authorization</title>'
-        '<desc id="diagram-description">Independent source-to-destination lanes. '
+        '<desc id="diagram-description">Independent IP direction lanes and ARP field panels. '
         "Each evidence link opens the complete aggregate and comparison.</desc>"
         '<text x="24" y="30" font-size="18">Observed communication, not authorization</text>'
         '<text x="24" y="57">Dashed arrow = observed packet direction · '
@@ -216,7 +278,11 @@ def generate_site(
                 write(name, _document(title, body, capture["sha256"]))
 
             def listing(
-                stem: str, title: str, headings: tuple[str, ...], rows: list[tuple[str, ...]]
+                stem: str,
+                title: str,
+                headings: tuple[str, ...],
+                rows: list[tuple[str, ...]],
+                introduction: str = "",
             ) -> None:
                 size = limits.rows_per_page
                 check_limit("capture_site_files", (len(rows) + size - 1) // size, limits.pages)
@@ -233,7 +299,9 @@ def generate_site(
                     page(
                         name,
                         title,
-                        navigation + table(title, headings, rows[i * size : (i + 1) * size]),
+                        introduction
+                        + navigation
+                        + table(title, headings, rows[i * size : (i + 1) * size]),
                     )
 
             write("assets.css", CSS.encode())
@@ -275,6 +343,7 @@ def generate_site(
                     "Source MAC evidence",
                     "Destination MAC evidence",
                     "Appearances",
+                    "Observation roles",
                     "Reviewed association",
                 ),
                 [
@@ -282,9 +351,15 @@ def generate_site(
                         _json(h[k])
                         for k in ("ip", "ip_version", "source_macs", "destination_macs", "packets")
                     )
-                    + (_json(associations.get(h["ip"], {"decision": "Not reviewed"})),)
+                    + (
+                        _json(h.get("observation_roles", [])),
+                        _json(associations.get(h["ip"], {"decision": "Not reviewed"})),
+                    )
                     for h in observations["hosts"]
                 ],
+                "<p>Addresses are observations with unresolved identity until owner review. "
+                "ARP target-only references and unspecified ARP sender addresses do not create "
+                "catalog entries. MAC evidence describes Ethernet delivery, not ownership.</p>",
             )
             detail_rows: list[str] = []
             conversation_rows: list[tuple[str, ...]] = []
@@ -298,16 +373,28 @@ def generate_site(
                 conclusion = findings.get(flow["id"], {}).get("classification", "Not compared")
                 conversation_rows.append(
                     (
-                        link(detail_name + "#" + anchor, str(flow["source_ip"])),
-                        escape(flow["destination_ip"]),
-                        escape(flow["transport"]),
-                        escape(f"{flow['source_port']} → {flow['destination_port']}"),
+                        link(detail_name + "#" + anchor, _endpoint(flow, "source")),
+                        escape(_endpoint(flow, "destination")),
+                        escape(
+                            "ARP " + flow["arp"]["operation"]
+                            if flow.get("arp")
+                            else flow["transport"]
+                        ),
+                        escape(
+                            f"{flow['source_port']} → {flow['destination_port']}"
+                            if flow["source_port"] is not None
+                            and flow["destination_port"] is not None
+                            else "Unavailable"
+                        ),
                         escape(flow["packets"]),
                         escape(flow["captured_bytes"]),
                         escape(flow["first_timestamp"]),
                         escape(flow["last_timestamp"]),
                         escape(flow["status"]),
-                        escape(conclusion),
+                        escape(_classification(conclusion))
+                        + "<br><code>"
+                        + escape(conclusion)
+                        + "</code>",
                     )
                 )
                 detail_rows.append(
@@ -315,7 +402,10 @@ def generate_site(
                     + anchor
                     + '"><h2>Directed aggregate '
                     + escape(flow["id"][:12])
-                    + "</h2><p>Direction is packet direction. "
+                    + "</h2><p>For IP packets, direction is packet direction. For ARP, "
+                    "source_ip/destination_ip retain historical sender/target protocol fields; "
+                    "explicit ARP metadata records Ethernet delivery. Mentioning a target "
+                    "does not establish its presence or response. "
                     "A five-tuple is not an established session. Sample omissions do not alter "
                     "aggregate denominators. Packet references identify record/block offsets "
                     "in the capture with the digest above.</p><pre>"
@@ -338,8 +428,8 @@ def generate_site(
                 "conversations",
                 "Directed aggregates in bidirectional conversations",
                 (
-                    "Observed source",
-                    "Observed destination",
+                    "IP source / ARP sender",
+                    "IP destination / ARP target reference",
                     "Transport",
                     "Ports",
                     "Packets",
@@ -381,7 +471,10 @@ def generate_site(
                 [
                     (
                         link(evidence_targets[f["flow_id"]], f["flow_id"]),
-                        escape(f["classification"]),
+                        escape(_classification(f["classification"]))
+                        + "<br><code>"
+                        + escape(f["classification"])
+                        + "</code>",
                         escape(f.get("reason", "")),
                     )
                     for f in comparison["findings"]

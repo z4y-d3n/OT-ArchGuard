@@ -16,7 +16,7 @@ from tools.capture_workloads import plant_model, write_pcap, write_pcapng
 def walkthrough(output: Path) -> dict[str, Any]:
     output.mkdir(exist_ok=False)
     write_pcap(output / "plant.pcap")
-    write_pcapng(output / "plant.pcapng")
+    write_pcapng(output / "plant.pcapng", extended=True)
     model = output / "architecture.yaml"
     model.write_text(yaml.safe_dump(plant_model(), sort_keys=False), encoding="utf-8")
     console = Path(sysconfig.get_path("scripts")) / (

@@ -38,6 +38,8 @@ _LIMITATIONS = [
     "No payloads, DNS resolution, reassembly, checksum validation or live networking.",
     "Initial SYN evidence suggests an initiator; it does not establish a complete session.",
     "Missing traffic establishes neither blocking nor the absence of a device or service.",
+    "ARP sender fields are claims; target fields only reference an address and do not "
+    "establish a destination device, ownership or a response.",
 ]
 
 
@@ -63,6 +65,7 @@ class _Decoded:
     incidents: list[str] = field(default_factory=list)
     tcp_flags: tuple[str, ...] = ()
     initiation: bool = False
+    arp: dict[str, Any] | None = None
 
     def stop(self, status: str, reason: str) -> None:
         self.status, self.reason = status, reason
@@ -331,6 +334,25 @@ def _decode(packet: Packet, limits: CaptureLimits) -> _Decoded:
             result.ip_version = 4
             result.source_ip = str(ipaddress.IPv4Address(value[14:18]))
             result.destination_ip = str(ipaddress.IPv4Address(value[24:28]))
+            opcode = int.from_bytes(value[6:8], "big")
+            result.arp = {
+                "metadata_version": 1,
+                "opcode": opcode,
+                "operation": {1: "request", 2: "reply"}.get(opcode, "unsupported"),
+                "sender_protocol_address": result.source_ip,
+                "target_protocol_address": result.destination_ip,
+                "sender_hardware_address": _mac(value[8:14]),
+                "target_hardware_address": _mac(value[18:24]),
+                "ethernet_source_mac": result.source_mac,
+                "ethernet_destination_mac": result.destination_mac,
+                "ethernet_delivery": "broadcast"
+                if result.destination_mac == "ff:ff:ff:ff:ff:ff"
+                else "multicast"
+                if result.destination_mac is not None and int(result.destination_mac[:2], 16) & 1
+                else "unicast",
+            }
+            if opcode not in {1, 2}:
+                result.stop("unsupported", "ARP_OPCODE_UNSUPPORTED")
     else:
         result.stop("unsupported", "NETWORK_PROTOCOL_UNSUPPORTED")
     if packet.link_errors:
@@ -455,6 +477,7 @@ class _Flow:
             "source_port": o.source_port,
             "destination_port": o.destination_port,
             "transport": o.transport,
+            "arp": o.arp,
             "transport_evidence": "TRANSPORT_OBSERVED"
             if o.status == "decoded" and o.transport in {"tcp", "udp", "icmp", "icmpv6"}
             else "UNKNOWN",
@@ -489,6 +512,7 @@ class _Host:
     packets: int = 0
     source_macs: set[str] = field(default_factory=set)
     destination_macs: set[str] = field(default_factory=set)
+    observation_roles: set[str] = field(default_factory=set)
 
 
 def analyze_capture(path: Path, limits: CaptureLimits = CAPTURE_LIMITS) -> dict[str, Any]:
@@ -509,13 +533,25 @@ def analyze_capture(path: Path, limits: CaptureLimits = CAPTURE_LIMITS) -> dict[
             (o.source_ip or "", o.source_port if o.source_port is not None else -1),
             (o.destination_ip or "", o.destination_port if o.destination_port is not None else -1),
         ]
-        group = [sorted(endpoints), o.transport, o.ip_version, o.vlans]
+        group: list[object] = [sorted(endpoints), o.transport, o.ip_version, o.vlans]
+        # ARP protocol fields describe message claims, not an IP conversation.
+        # Keep distinct opcodes, claims and Ethernet delivery in separate groups.
+        if o.arp is not None:
+            group.append(o.arp)
         if o.source_ip is None and o.destination_ip is None:
             group.append(packet.linktype)
         conversation_id = "conversation-" + _digest(group)
-        identity = "flow-" + _digest(
-            [endpoints, o.transport, o.ip_version, o.vlans, o.status, packet.linktype]
-        )
+        identity_fields: list[object] = [
+            endpoints,
+            o.transport,
+            o.ip_version,
+            o.vlans,
+            o.status,
+            packet.linktype,
+        ]
+        if o.arp is not None:
+            identity_fields.append(o.arp)
+        identity = "flow-" + _digest(identity_fields)
         if identity not in flows:
             check_limit("capture_flows", len(flows) + 1, limits.flows)
             if conversation_id not in conversations:
@@ -526,10 +562,26 @@ def analyze_capture(path: Path, limits: CaptureLimits = CAPTURE_LIMITS) -> dict[
             flows[identity] = _Flow(identity, conversation_id, o, packet.linktype)
             conversations[conversation_id].append(identity)
         flows[identity].update(packet, o, budget)
-        for ip, mac, direction in (
-            (o.source_ip, o.source_mac, "source"),
-            (o.destination_ip, o.destination_mac, "destination"),
-        ):
+        host_evidence = [
+            (o.source_ip, o.source_mac, "source", "packet_source"),
+            (o.destination_ip, o.destination_mac, "destination", "packet_destination"),
+        ]
+        if o.transport == "arp":
+            # A target may never have transmitted or existed. Zero SPA is the
+            # unspecified address used by probes, not an observed host identity.
+            host_evidence = (
+                [
+                    (
+                        o.source_ip,
+                        o.source_mac,
+                        "source",
+                        "arp_" + o.arp["operation"] + "_sender",
+                    )
+                ]
+                if o.status == "decoded" and o.arp is not None and o.source_ip != "0.0.0.0"
+                else []
+            )
+        for ip, mac, direction, role in host_evidence:
             if ip is None:
                 continue
             if ip not in hosts:
@@ -539,6 +591,7 @@ def analyze_capture(path: Path, limits: CaptureLimits = CAPTURE_LIMITS) -> dict[
             host = hosts[ip]
             host.packets += 1
             budget.add(host.source_macs if direction == "source" else host.destination_macs, mac)
+            budget.add(host.observation_roles, role)
 
     metadata = scan_capture(path, consume=consume, limits=limits)
     grouped: list[dict[str, Any]] = []
@@ -583,7 +636,7 @@ def analyze_capture(path: Path, limits: CaptureLimits = CAPTURE_LIMITS) -> dict[
             }
         )
     report: dict[str, Any] = {
-        "observation_version": 1,
+        "observation_version": 2,
         "catalog_version": 1,
         "capture": metadata,
         "hosts": [
@@ -594,6 +647,7 @@ def analyze_capture(path: Path, limits: CaptureLimits = CAPTURE_LIMITS) -> dict[
                 "packets": h.packets,
                 "source_macs": sorted(h.source_macs),
                 "destination_macs": sorted(h.destination_macs),
+                "observation_roles": sorted(h.observation_roles),
             }
             for _, h in sorted(hosts.items())
         ],

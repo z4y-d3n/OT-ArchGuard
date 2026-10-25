@@ -1,0 +1,749 @@
+{
+  "decoder": "TShark (Wireshark) 4.6.7 (v4.6.7-0-gb439fb7b47a9).",
+  "input_sha256": "683fde3d8c38a273b2ddedbfa3aacf04d4e50dd74587cf9d84cfa99aef223bee",
+  "command": "tshark -n -r text2pcap-pcapng.data -T fields -E separator=TAB -E occurrence=f -e frame.number -e frame.interface_id -e frame.time_epoch -e frame.cap_len -e frame.len -e eth.src -e eth.dst -e ip.src -e ip.dst -e ipv6.src -e ipv6.dst -e ip.proto -e ipv6.nxt -e tcp.srcport -e tcp.dstport -e udp.srcport -e udp.dstport -e vlan.id -e arp.hw.type -e arp.proto.type -e arp.hw.size -e arp.proto.size -e arp.opcode -e arp.src.hw_mac -e arp.dst.hw_mac -e arp.src.proto_ipv4 -e arp.dst.proto_ipv4",
+  "rows": [
+    {
+      "frame.number": "1",
+      "frame.interface_id": "0",
+      "frame.time_epoch": "1577836800.123456789",
+      "frame.cap_len": "54",
+      "frame.len": "54",
+      "eth.src": "02:00:00:00:00:10",
+      "eth.dst": "02:00:00:00:00:20",
+      "ip.src": "192.0.2.10",
+      "ip.dst": "192.0.2.20",
+      "ipv6.src": "",
+      "ipv6.dst": "",
+      "ip.proto": "6",
+      "ipv6.nxt": "",
+      "tcp.srcport": "40000",
+      "tcp.dstport": "502",
+      "udp.srcport": "",
+      "udp.dstport": "",
+      "vlan.id": "",
+      "arp.hw.type": "",
+      "arp.proto.type": "",
+      "arp.hw.size": "",
+      "arp.proto.size": "",
+      "arp.opcode": "",
+      "arp.src.hw_mac": "",
+      "arp.dst.hw_mac": "",
+      "arp.src.proto_ipv4": "",
+      "arp.dst.proto_ipv4": ""
+    },
+    {
+      "frame.number": "2",
+      "frame.interface_id": "0",
+      "frame.time_epoch": "1577836801.123456789",
+      "frame.cap_len": "42",
+      "frame.len": "42",
+      "eth.src": "02:00:00:00:00:10",
+      "eth.dst": "02:00:00:00:00:20",
+      "ip.src": "192.0.2.10",
+      "ip.dst": "192.0.2.20",
+      "ipv6.src": "",
+      "ipv6.dst": "",
+      "ip.proto": "17",
+      "ipv6.nxt": "",
+      "tcp.srcport": "",
+      "tcp.dstport": "",
+      "udp.srcport": "41000",
+      "udp.dstport": "47808",
+      "vlan.id": "",
+      "arp.hw.type": "",
+      "arp.proto.type": "",
+      "arp.hw.size": "",
+      "arp.proto.size": "",
+      "arp.opcode": "",
+      "arp.src.hw_mac": "",
+      "arp.dst.hw_mac": "",
+      "arp.src.proto_ipv4": "",
+      "arp.dst.proto_ipv4": ""
+    },
+    {
+      "frame.number": "3",
+      "frame.interface_id": "0",
+      "frame.time_epoch": "1577836802.123456789",
+      "frame.cap_len": "42",
+      "frame.len": "42",
+      "eth.src": "02:00:00:00:00:10",
+      "eth.dst": "02:00:00:00:00:20",
+      "ip.src": "192.0.2.10",
+      "ip.dst": "192.0.2.20",
+      "ipv6.src": "",
+      "ipv6.dst": "",
+      "ip.proto": "1",
+      "ipv6.nxt": "",
+      "tcp.srcport": "",
+      "tcp.dstport": "",
+      "udp.srcport": "",
+      "udp.dstport": "",
+      "vlan.id": "",
+      "arp.hw.type": "",
+      "arp.proto.type": "",
+      "arp.hw.size": "",
+      "arp.proto.size": "",
+      "arp.opcode": "",
+      "arp.src.hw_mac": "",
+      "arp.dst.hw_mac": "",
+      "arp.src.proto_ipv4": "",
+      "arp.dst.proto_ipv4": ""
+    },
+    {
+      "frame.number": "4",
+      "frame.interface_id": "0",
+      "frame.time_epoch": "1577836803.123456789",
+      "frame.cap_len": "62",
+      "frame.len": "62",
+      "eth.src": "02:00:00:00:00:10",
+      "eth.dst": "02:00:00:00:00:20",
+      "ip.src": "",
+      "ip.dst": "",
+      "ipv6.src": "2001:db8::10",
+      "ipv6.dst": "2001:db8::20",
+      "ip.proto": "",
+      "ipv6.nxt": "58",
+      "tcp.srcport": "",
+      "tcp.dstport": "",
+      "udp.srcport": "",
+      "udp.dstport": "",
+      "vlan.id": "",
+      "arp.hw.type": "",
+      "arp.proto.type": "",
+      "arp.hw.size": "",
+      "arp.proto.size": "",
+      "arp.opcode": "",
+      "arp.src.hw_mac": "",
+      "arp.dst.hw_mac": "",
+      "arp.src.proto_ipv4": "",
+      "arp.dst.proto_ipv4": ""
+    },
+    {
+      "frame.number": "5",
+      "frame.interface_id": "0",
+      "frame.time_epoch": "1577836804.123456789",
+      "frame.cap_len": "42",
+      "frame.len": "42",
+      "eth.src": "02:00:00:00:00:10",
+      "eth.dst": "ff:ff:ff:ff:ff:ff",
+      "ip.src": "",
+      "ip.dst": "",
+      "ipv6.src": "",
+      "ipv6.dst": "",
+      "ip.proto": "",
+      "ipv6.nxt": "",
+      "tcp.srcport": "",
+      "tcp.dstport": "",
+      "udp.srcport": "",
+      "udp.dstport": "",
+      "vlan.id": "",
+      "arp.hw.type": "1",
+      "arp.proto.type": "0x0800",
+      "arp.hw.size": "6",
+      "arp.proto.size": "4",
+      "arp.opcode": "1",
+      "arp.src.hw_mac": "02:00:00:00:00:10",
+      "arp.dst.hw_mac": "00:00:00:00:00:00",
+      "arp.src.proto_ipv4": "192.0.2.10",
+      "arp.dst.proto_ipv4": "192.0.2.20"
+    },
+    {
+      "frame.number": "6",
+      "frame.interface_id": "0",
+      "frame.time_epoch": "1577836805.123456789",
+      "frame.cap_len": "58",
+      "frame.len": "58",
+      "eth.src": "02:00:00:00:00:10",
+      "eth.dst": "02:00:00:00:00:20",
+      "ip.src": "192.0.2.10",
+      "ip.dst": "192.0.2.20",
+      "ipv6.src": "",
+      "ipv6.dst": "",
+      "ip.proto": "6",
+      "ipv6.nxt": "",
+      "tcp.srcport": "40000",
+      "tcp.dstport": "502",
+      "udp.srcport": "",
+      "udp.dstport": "",
+      "vlan.id": "100",
+      "arp.hw.type": "",
+      "arp.proto.type": "",
+      "arp.hw.size": "",
+      "arp.proto.size": "",
+      "arp.opcode": "",
+      "arp.src.hw_mac": "",
+      "arp.dst.hw_mac": "",
+      "arp.src.proto_ipv4": "",
+      "arp.dst.proto_ipv4": ""
+    },
+    {
+      "frame.number": "7",
+      "frame.interface_id": "0",
+      "frame.time_epoch": "1577836806.123456789",
+      "frame.cap_len": "54",
+      "frame.len": "54",
+      "eth.src": "02:00:00:00:00:10",
+      "eth.dst": "02:00:00:00:00:20",
+      "ip.src": "192.0.2.10",
+      "ip.dst": "192.0.2.20",
+      "ipv6.src": "",
+      "ipv6.dst": "",
+      "ip.proto": "6",
+      "ipv6.nxt": "",
+      "tcp.srcport": "",
+      "tcp.dstport": "",
+      "udp.srcport": "",
+      "udp.dstport": "",
+      "vlan.id": "",
+      "arp.hw.type": "",
+      "arp.proto.type": "",
+      "arp.hw.size": "",
+      "arp.proto.size": "",
+      "arp.opcode": "",
+      "arp.src.hw_mac": "",
+      "arp.dst.hw_mac": "",
+      "arp.src.proto_ipv4": "",
+      "arp.dst.proto_ipv4": ""
+    },
+    {
+      "frame.number": "8",
+      "frame.interface_id": "0",
+      "frame.time_epoch": "1577836807.123456789",
+      "frame.cap_len": "34",
+      "frame.len": "34",
+      "eth.src": "02:00:00:00:00:10",
+      "eth.dst": "02:00:00:00:00:20",
+      "ip.src": "192.0.2.10",
+      "ip.dst": "192.0.2.20",
+      "ipv6.src": "",
+      "ipv6.dst": "",
+      "ip.proto": "6",
+      "ipv6.nxt": "",
+      "tcp.srcport": "",
+      "tcp.dstport": "",
+      "udp.srcport": "",
+      "udp.dstport": "",
+      "vlan.id": "",
+      "arp.hw.type": "",
+      "arp.proto.type": "",
+      "arp.hw.size": "",
+      "arp.proto.size": "",
+      "arp.opcode": "",
+      "arp.src.hw_mac": "",
+      "arp.dst.hw_mac": "",
+      "arp.src.proto_ipv4": "",
+      "arp.dst.proto_ipv4": ""
+    },
+    {
+      "frame.number": "9",
+      "frame.interface_id": "0",
+      "frame.time_epoch": "1577836808.123456789",
+      "frame.cap_len": "54",
+      "frame.len": "54",
+      "eth.src": "02:00:00:00:00:10",
+      "eth.dst": "02:00:00:00:00:20",
+      "ip.src": "192.0.2.10",
+      "ip.dst": "192.0.2.20",
+      "ipv6.src": "",
+      "ipv6.dst": "",
+      "ip.proto": "6",
+      "ipv6.nxt": "",
+      "tcp.srcport": "40000",
+      "tcp.dstport": "502",
+      "udp.srcport": "",
+      "udp.dstport": "",
+      "vlan.id": "",
+      "arp.hw.type": "",
+      "arp.proto.type": "",
+      "arp.hw.size": "",
+      "arp.proto.size": "",
+      "arp.opcode": "",
+      "arp.src.hw_mac": "",
+      "arp.dst.hw_mac": "",
+      "arp.src.proto_ipv4": "",
+      "arp.dst.proto_ipv4": ""
+    },
+    {
+      "frame.number": "10",
+      "frame.interface_id": "0",
+      "frame.time_epoch": "1577836809.123456789",
+      "frame.cap_len": "8",
+      "frame.len": "8",
+      "eth.src": "",
+      "eth.dst": "",
+      "ip.src": "",
+      "ip.dst": "",
+      "ipv6.src": "",
+      "ipv6.dst": "",
+      "ip.proto": "",
+      "ipv6.nxt": "",
+      "tcp.srcport": "",
+      "tcp.dstport": "",
+      "udp.srcport": "",
+      "udp.dstport": "",
+      "vlan.id": "",
+      "arp.hw.type": "",
+      "arp.proto.type": "",
+      "arp.hw.size": "",
+      "arp.proto.size": "",
+      "arp.opcode": "",
+      "arp.src.hw_mac": "",
+      "arp.dst.hw_mac": "",
+      "arp.src.proto_ipv4": "",
+      "arp.dst.proto_ipv4": ""
+    },
+    {
+      "frame.number": "11",
+      "frame.interface_id": "0",
+      "frame.time_epoch": "1577836810.123456789",
+      "frame.cap_len": "74",
+      "frame.len": "74",
+      "eth.src": "02:00:00:00:00:10",
+      "eth.dst": "02:00:00:00:00:20",
+      "ip.src": "",
+      "ip.dst": "",
+      "ipv6.src": "2001:db8::10",
+      "ipv6.dst": "2001:db8::20",
+      "ip.proto": "",
+      "ipv6.nxt": "6",
+      "tcp.srcport": "40000",
+      "tcp.dstport": "502",
+      "udp.srcport": "",
+      "udp.dstport": "",
+      "vlan.id": "",
+      "arp.hw.type": "",
+      "arp.proto.type": "",
+      "arp.hw.size": "",
+      "arp.proto.size": "",
+      "arp.opcode": "",
+      "arp.src.hw_mac": "",
+      "arp.dst.hw_mac": "",
+      "arp.src.proto_ipv4": "",
+      "arp.dst.proto_ipv4": ""
+    },
+    {
+      "frame.number": "12",
+      "frame.interface_id": "0",
+      "frame.time_epoch": "1577836811.123456789",
+      "frame.cap_len": "62",
+      "frame.len": "62",
+      "eth.src": "02:00:00:00:00:10",
+      "eth.dst": "02:00:00:00:00:20",
+      "ip.src": "",
+      "ip.dst": "",
+      "ipv6.src": "2001:db8::10",
+      "ipv6.dst": "2001:db8::20",
+      "ip.proto": "",
+      "ipv6.nxt": "17",
+      "tcp.srcport": "",
+      "tcp.dstport": "",
+      "udp.srcport": "41000",
+      "udp.dstport": "47808",
+      "vlan.id": "",
+      "arp.hw.type": "",
+      "arp.proto.type": "",
+      "arp.hw.size": "",
+      "arp.proto.size": "",
+      "arp.opcode": "",
+      "arp.src.hw_mac": "",
+      "arp.dst.hw_mac": "",
+      "arp.src.proto_ipv4": "",
+      "arp.dst.proto_ipv4": ""
+    }
+  ],
+  "containers": {
+    "spec-le-us.data": {
+      "sha256": "6496e24e44140aed2ca52d902df4b5c7865816527dfe6852dcc2a8daec2e7e7f",
+      "packets": [
+        {
+          "frame.number": "1",
+          "frame.interface_id": null,
+          "frame.time_epoch": "1970-01-01T00:01:40.123456000Z",
+          "frame.cap_len": "54",
+          "frame.len": "54"
+        },
+        {
+          "frame.number": "2",
+          "frame.interface_id": null,
+          "frame.time_epoch": "1970-01-01T00:01:41.123456000Z",
+          "frame.cap_len": "42",
+          "frame.len": "42"
+        }
+      ]
+    },
+    "spec-le-ns.data": {
+      "sha256": "a0f0f3e561f86e223a5be3531bd5941bbc5149fbb6532fd962b73bcfb2c3b036",
+      "packets": [
+        {
+          "frame.number": "1",
+          "frame.interface_id": null,
+          "frame.time_epoch": "1970-01-01T00:01:40.000123456Z",
+          "frame.cap_len": "54",
+          "frame.len": "54"
+        },
+        {
+          "frame.number": "2",
+          "frame.interface_id": null,
+          "frame.time_epoch": "1970-01-01T00:01:41.000123456Z",
+          "frame.cap_len": "42",
+          "frame.len": "42"
+        }
+      ]
+    },
+    "spec-be-us.data": {
+      "sha256": "0cffe2502d0282b06d2fc1c0f0dabf7a701f9f70ed8dd455a643efaf8fffc6b1",
+      "packets": [
+        {
+          "frame.number": "1",
+          "frame.interface_id": null,
+          "frame.time_epoch": "1970-01-01T00:01:40.123456000Z",
+          "frame.cap_len": "54",
+          "frame.len": "54"
+        },
+        {
+          "frame.number": "2",
+          "frame.interface_id": null,
+          "frame.time_epoch": "1970-01-01T00:01:41.123456000Z",
+          "frame.cap_len": "42",
+          "frame.len": "42"
+        }
+      ]
+    },
+    "spec-be-ns.data": {
+      "sha256": "4801b61b2e98f99278743853e6eceb448c8f1bb12f01c15fffb8c74f147200e6",
+      "packets": [
+        {
+          "frame.number": "1",
+          "frame.interface_id": null,
+          "frame.time_epoch": "1970-01-01T00:01:40.000123456Z",
+          "frame.cap_len": "54",
+          "frame.len": "54"
+        },
+        {
+          "frame.number": "2",
+          "frame.interface_id": null,
+          "frame.time_epoch": "1970-01-01T00:01:41.000123456Z",
+          "frame.cap_len": "42",
+          "frame.len": "42"
+        }
+      ]
+    },
+    "spec-empty.data": {
+      "sha256": "acc530668c8bc60b2d229281130b1899bfc81d70fdada5c34b3236c628f739c8",
+      "packets": []
+    },
+    "spec-unsupported-link.data": {
+      "sha256": "26d779d98f1b5c8e507a1760a3bdfc9f7dc0396bfdebb8feb79d28f6a6aa9881",
+      "packets": [
+        {
+          "frame.number": "1",
+          "frame.interface_id": null,
+          "frame.time_epoch": "1970-01-01T00:01:40.123456000Z",
+          "frame.cap_len": "9",
+          "frame.len": "9"
+        }
+      ]
+    },
+    "spec-sections.data": {
+      "sha256": "ff0ff818c95a0d70e86aed6bf15b684543485785bdd0fa8fd689b633a096aa66",
+      "packets": [
+        {
+          "frame.number": "1",
+          "frame.interface_id": "0",
+          "frame.time_epoch": "1969-12-31T23:59:58.750000000Z",
+          "frame.cap_len": "54",
+          "frame.len": "54"
+        },
+        {
+          "frame.number": "2",
+          "frame.interface_id": "1",
+          "frame.time_epoch": "1970-01-01T00:00:00.000001000Z",
+          "frame.cap_len": "9",
+          "frame.len": "9"
+        },
+        {
+          "frame.number": "3",
+          "frame.interface_id": "0",
+          "frame.time_epoch": null,
+          "frame.cap_len": "42",
+          "frame.len": "42"
+        },
+        {
+          "frame.number": "4",
+          "frame.interface_id": "0",
+          "frame.time_epoch": "1970-01-01T00:00:04.007000000Z",
+          "frame.cap_len": "42",
+          "frame.len": "42"
+        }
+      ]
+    },
+    "text2pcap-pcap.data": {
+      "sha256": "b8f745b19bf43c53e068126edb03c04c954437ac63a752f3097512997b5eb1d3",
+      "packets": [
+        {
+          "frame.number": "1",
+          "frame.interface_id": null,
+          "frame.time_epoch": "2020-01-01T00:00:00.123456000Z",
+          "frame.cap_len": "54",
+          "frame.len": "54"
+        },
+        {
+          "frame.number": "2",
+          "frame.interface_id": null,
+          "frame.time_epoch": "2020-01-01T00:00:01.123456000Z",
+          "frame.cap_len": "42",
+          "frame.len": "42"
+        },
+        {
+          "frame.number": "3",
+          "frame.interface_id": null,
+          "frame.time_epoch": "2020-01-01T00:00:02.123456000Z",
+          "frame.cap_len": "42",
+          "frame.len": "42"
+        },
+        {
+          "frame.number": "4",
+          "frame.interface_id": null,
+          "frame.time_epoch": "2020-01-01T00:00:03.123456000Z",
+          "frame.cap_len": "62",
+          "frame.len": "62"
+        },
+        {
+          "frame.number": "5",
+          "frame.interface_id": null,
+          "frame.time_epoch": "2020-01-01T00:00:04.123456000Z",
+          "frame.cap_len": "42",
+          "frame.len": "42"
+        },
+        {
+          "frame.number": "6",
+          "frame.interface_id": null,
+          "frame.time_epoch": "2020-01-01T00:00:05.123456000Z",
+          "frame.cap_len": "58",
+          "frame.len": "58"
+        },
+        {
+          "frame.number": "7",
+          "frame.interface_id": null,
+          "frame.time_epoch": "2020-01-01T00:00:06.123456000Z",
+          "frame.cap_len": "54",
+          "frame.len": "54"
+        },
+        {
+          "frame.number": "8",
+          "frame.interface_id": null,
+          "frame.time_epoch": "2020-01-01T00:00:07.123456000Z",
+          "frame.cap_len": "34",
+          "frame.len": "34"
+        },
+        {
+          "frame.number": "9",
+          "frame.interface_id": null,
+          "frame.time_epoch": "2020-01-01T00:00:08.123456000Z",
+          "frame.cap_len": "54",
+          "frame.len": "54"
+        },
+        {
+          "frame.number": "10",
+          "frame.interface_id": null,
+          "frame.time_epoch": "2020-01-01T00:00:09.123456000Z",
+          "frame.cap_len": "8",
+          "frame.len": "8"
+        },
+        {
+          "frame.number": "11",
+          "frame.interface_id": null,
+          "frame.time_epoch": "2020-01-01T00:00:10.123456000Z",
+          "frame.cap_len": "74",
+          "frame.len": "74"
+        },
+        {
+          "frame.number": "12",
+          "frame.interface_id": null,
+          "frame.time_epoch": "2020-01-01T00:00:11.123456000Z",
+          "frame.cap_len": "62",
+          "frame.len": "62"
+        }
+      ]
+    },
+    "text2pcap-nsecpcap.data": {
+      "sha256": "2ab8ec40ac48ed68f704934bfeb87fb210c7e6160b3cb389ec713b45d1427b1d",
+      "packets": [
+        {
+          "frame.number": "1",
+          "frame.interface_id": null,
+          "frame.time_epoch": "2020-01-01T00:00:00.123456789Z",
+          "frame.cap_len": "54",
+          "frame.len": "54"
+        },
+        {
+          "frame.number": "2",
+          "frame.interface_id": null,
+          "frame.time_epoch": "2020-01-01T00:00:01.123456789Z",
+          "frame.cap_len": "42",
+          "frame.len": "42"
+        },
+        {
+          "frame.number": "3",
+          "frame.interface_id": null,
+          "frame.time_epoch": "2020-01-01T00:00:02.123456789Z",
+          "frame.cap_len": "42",
+          "frame.len": "42"
+        },
+        {
+          "frame.number": "4",
+          "frame.interface_id": null,
+          "frame.time_epoch": "2020-01-01T00:00:03.123456789Z",
+          "frame.cap_len": "62",
+          "frame.len": "62"
+        },
+        {
+          "frame.number": "5",
+          "frame.interface_id": null,
+          "frame.time_epoch": "2020-01-01T00:00:04.123456789Z",
+          "frame.cap_len": "42",
+          "frame.len": "42"
+        },
+        {
+          "frame.number": "6",
+          "frame.interface_id": null,
+          "frame.time_epoch": "2020-01-01T00:00:05.123456789Z",
+          "frame.cap_len": "58",
+          "frame.len": "58"
+        },
+        {
+          "frame.number": "7",
+          "frame.interface_id": null,
+          "frame.time_epoch": "2020-01-01T00:00:06.123456789Z",
+          "frame.cap_len": "54",
+          "frame.len": "54"
+        },
+        {
+          "frame.number": "8",
+          "frame.interface_id": null,
+          "frame.time_epoch": "2020-01-01T00:00:07.123456789Z",
+          "frame.cap_len": "34",
+          "frame.len": "34"
+        },
+        {
+          "frame.number": "9",
+          "frame.interface_id": null,
+          "frame.time_epoch": "2020-01-01T00:00:08.123456789Z",
+          "frame.cap_len": "54",
+          "frame.len": "54"
+        },
+        {
+          "frame.number": "10",
+          "frame.interface_id": null,
+          "frame.time_epoch": "2020-01-01T00:00:09.123456789Z",
+          "frame.cap_len": "8",
+          "frame.len": "8"
+        },
+        {
+          "frame.number": "11",
+          "frame.interface_id": null,
+          "frame.time_epoch": "2020-01-01T00:00:10.123456789Z",
+          "frame.cap_len": "74",
+          "frame.len": "74"
+        },
+        {
+          "frame.number": "12",
+          "frame.interface_id": null,
+          "frame.time_epoch": "2020-01-01T00:00:11.123456789Z",
+          "frame.cap_len": "62",
+          "frame.len": "62"
+        }
+      ]
+    },
+    "text2pcap-pcapng.data": {
+      "sha256": "683fde3d8c38a273b2ddedbfa3aacf04d4e50dd74587cf9d84cfa99aef223bee",
+      "packets": [
+        {
+          "frame.number": "1",
+          "frame.interface_id": "0",
+          "frame.time_epoch": "2020-01-01T00:00:00.123456789Z",
+          "frame.cap_len": "54",
+          "frame.len": "54"
+        },
+        {
+          "frame.number": "2",
+          "frame.interface_id": "0",
+          "frame.time_epoch": "2020-01-01T00:00:01.123456789Z",
+          "frame.cap_len": "42",
+          "frame.len": "42"
+        },
+        {
+          "frame.number": "3",
+          "frame.interface_id": "0",
+          "frame.time_epoch": "2020-01-01T00:00:02.123456789Z",
+          "frame.cap_len": "42",
+          "frame.len": "42"
+        },
+        {
+          "frame.number": "4",
+          "frame.interface_id": "0",
+          "frame.time_epoch": "2020-01-01T00:00:03.123456789Z",
+          "frame.cap_len": "62",
+          "frame.len": "62"
+        },
+        {
+          "frame.number": "5",
+          "frame.interface_id": "0",
+          "frame.time_epoch": "2020-01-01T00:00:04.123456789Z",
+          "frame.cap_len": "42",
+          "frame.len": "42"
+        },
+        {
+          "frame.number": "6",
+          "frame.interface_id": "0",
+          "frame.time_epoch": "2020-01-01T00:00:05.123456789Z",
+          "frame.cap_len": "58",
+          "frame.len": "58"
+        },
+        {
+          "frame.number": "7",
+          "frame.interface_id": "0",
+          "frame.time_epoch": "2020-01-01T00:00:06.123456789Z",
+          "frame.cap_len": "54",
+          "frame.len": "54"
+        },
+        {
+          "frame.number": "8",
+          "frame.interface_id": "0",
+          "frame.time_epoch": "2020-01-01T00:00:07.123456789Z",
+          "frame.cap_len": "34",
+          "frame.len": "34"
+        },
+        {
+          "frame.number": "9",
+          "frame.interface_id": "0",
+          "frame.time_epoch": "2020-01-01T00:00:08.123456789Z",
+          "frame.cap_len": "54",
+          "frame.len": "54"
+        },
+        {
+          "frame.number": "10",
+          "frame.interface_id": "0",
+          "frame.time_epoch": "2020-01-01T00:00:09.123456789Z",
+          "frame.cap_len": "8",
+          "frame.len": "8"
+        },
+        {
+          "frame.number": "11",
+          "frame.interface_id": "0",
+          "frame.time_epoch": "2020-01-01T00:00:10.123456789Z",
+          "frame.cap_len": "74",
+          "frame.len": "74"
+        },
+        {
+          "frame.number": "12",
+          "frame.interface_id": "0",
+          "frame.time_epoch": "2020-01-01T00:00:11.123456789Z",
+          "frame.cap_len": "62",
+          "frame.len": "62"
+        }
+      ]
+    }
+  }
+}

@@ -67,6 +67,21 @@ jobs:
           OTARCHGUARD_OFFLINE_CHECK: '1'
           PYTHONPATH: '${{ github.workspace }}/tools/offline'
         run: python -m pytest --basetemp=.pytest_tmp --tb=short --junitxml=output/full-suite.xml
+      - name: Reproduce immutable v1.2 native compatibility offline
+        env:
+          OTARCHGUARD_OFFLINE_CHECK: '1'
+          PYTHONPATH: '${{ github.workspace }}/tools/offline'
+          PIP_NO_INDEX: '1'
+        run: python -m tools.verify_legacy_candidate --output output/native-compatibility
+      - name: Validate frozen read-only evidence consumers offline
+        env:
+          OTARCHGUARD_OFFLINE_CHECK: '1'
+          PYTHONPATH: '${{ github.workspace }}/tools/offline'
+        run: |
+          python -m tools.read_capture_evidence tests/fixtures/capture-contract-v2/supported > output/evidence-consumer-supported.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m tools.read_capture_evidence tests/fixtures/capture-contract-v2/limited > output/evidence-consumer-limited.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Execute documented synthetic walkthroughs offline
         env:
           OTARCHGUARD_OFFLINE_CHECK: '1'
@@ -101,6 +116,7 @@ jobs:
         env:
           PR_HEAD: ${{ github.event.pull_request.head.sha }}
       - name: Retain candidate integrity evidence
+        if: always()
         uses: actions/upload-artifact@v7.0.2
         with:
           name: candidate-integrity-${{ matrix.os }}-${{ matrix.python }}
@@ -119,6 +135,15 @@ jobs:
             output/quality-walkthrough/walkthrough.json
             output/capture-walkthrough/walkthrough.json
             output/ci-revision.json
+            output/native-compatibility/comparison.json
+            output/native-compatibility/command-*.stdout
+            output/native-compatibility/command-*.stderr
+            output/native-compatibility/baseline/*
+            output/native-compatibility/candidate/*
+            output/evidence-consumer-*.json
+            tests/fixtures/capture-contract-v2/manifest.json
+            tests/fixtures/capture-interoperability/manifest.json
+            tests/fixtures/capture-interoperability/reference-decoder.json
             output/environment-${{ matrix.os }}-${{ matrix.python }}.json
       - name: Measure fixed NFR-05 workloads offline
         env:

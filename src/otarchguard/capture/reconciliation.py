@@ -165,9 +165,12 @@ def mapping_template(
     limits: CaptureLimits = CAPTURE_LIMITS,
 ) -> dict[str, Any]:
     """Propose only exact declared IPv4 addresses, with every decision pending."""
-    for name in ("observation_version", "catalog_version"):
-        if type(observations.get(name)) is not int or observations[name] != 1:
-            _mapping_error("Unsupported observation or protocol-catalog version.")
+    for name, version in (("observation_version", 2), ("catalog_version", 1)):
+        if type(observations.get(name)) is not int or observations[name] != version:
+            _mapping_error(
+                "Unsupported observation or protocol-catalog version; regenerate "
+                "observations and owner review from the original capture."
+            )
     canonical = json.dumps(
         {k: v for k, v in observations.items() if k != "observations_sha256"},
         sort_keys=True,

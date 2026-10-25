@@ -75,7 +75,7 @@ def test_diagram_separates_packet_directions_and_exposes_exact_flow_evidence(
     ]
     for flow in rendered:
         assert flow["source_ip"] in visible and flow["destination_ip"] in visible
-        assert flow["transport"] in visible
+        assert flow["transport"] in visible.lower()
         assert any(target.endswith("#flow-" + flow["id"]) for target in audit.links)
         if flow["source_port"] is not None and flow["destination_port"] is not None:
             assert f"{flow['source_port']} → {flow['destination_port']}" in visible
@@ -84,8 +84,9 @@ def test_diagram_separates_packet_directions_and_exposes_exact_flow_evidence(
     directions = re.findall(
         r'<path class="diagram-line documentary" d="M (\d+) (\d+) H (\d+)"', diagram
     )
-    assert len(directions) == len(rendered)
-    assert len({y for _, y, _ in directions}) == len(rendered)
+    directed = [flow for flow in rendered if flow.get("arp") is None]
+    assert len(directions) == len(directed)
+    assert len({y for _, y, _ in directions}) == len(directed)
     assert all(int(end) > int(start) for start, _, end in directions)
     assert "Observed source" in visible and "Observed destination" in visible
     assert "viewBox=" in diagram

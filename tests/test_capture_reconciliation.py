@@ -46,7 +46,7 @@ def observations(*flows: dict[str, Any]) -> dict[str, Any]:
         {f[field] for f in flows for field in ("source_ip", "destination_ip") if f[field]}
     )
     result = {
-        "observation_version": 1,
+        "observation_version": 2,
         "catalog_version": 1,
         "capture": {
             "sha256": "a" * 64,
@@ -341,7 +341,7 @@ def test_changed_observation_contents_invalidate_review(minimal: dict[str, Any])
         compare_capture(obs, model, review)
 
 
-@pytest.mark.parametrize("version", [True, 1.0, 2, "1"])
+@pytest.mark.parametrize("version", [True, 1.0, 3, "1"])
 @pytest.mark.parametrize("field", ["observation_version", "catalog_version"])
 def test_observation_version_types_are_exact(
     minimal: dict[str, Any], field: str, version: Any
