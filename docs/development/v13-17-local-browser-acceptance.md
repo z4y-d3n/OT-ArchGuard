@@ -56,6 +56,13 @@ another automation surface must not be used to evade it. SVG rasterization and
 structural audits cannot establish interaction acceptance. See V13-20 for actual
 automated executions, and the final owner report for any permitted browser result.
 
+Actual attempt on 2026-10-25: ChatGPT in-app browser selected, direct `file://`
+navigation to the final installed report refused by URL policy (only HTTP/HTTPS
+allowed). No content loaded and no alternate surface, local server, proxy or
+indirect navigation was attempted. Receipt: `output/v13-final/browser-attempt.json`.
+Browser interaction testing is therefore BLOCKED by tooling; all human checklist
+items remain NOT RUN, so this gate remains PARTIAL.
+
 ## E. Next step
 
 The owner must execute the human checklist on the final report and return the

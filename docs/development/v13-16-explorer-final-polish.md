@@ -41,6 +41,13 @@ Targeted source run: 9 tests passed after final fixture correction. Final instal
 full-suite execution, commands and raw XML are recorded in V13-20.
 Independent read-only review found no further Explorer semantic/security issue.
 
+The final installed overview SVG was separately extracted and rasterized with
+bundled Sharp, then visually inspected at 1100 by 1770 pixels. Request/reply panels,
+counts, IPv6, separate assessment/code lines and independent IP direction lanes
+were legible in this static rendering. Receipts: `output/v13-final/final-overview.svg`
+and `final-overview.png`. This excludes browser CSS/layout and interaction behavior;
+the blocked direct-file browser attempt is documented in V13-17.
+
 The existing independent HTML parser audits every generated link/fragment before
 publication. Semantic headings, scoped table headers, descriptive evidence links,
 skip navigation, keyboard focus outlines, SVG title/description, scroll regions,

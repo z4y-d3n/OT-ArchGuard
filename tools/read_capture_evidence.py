@@ -485,7 +485,10 @@ def load_bundle(directory: Path) -> dict[str, Any]:
         proposals = _list(mapping["proposals"], 20_000, "association proposals")
         require(all(isinstance(p, dict) for p in proposals), "Invalid proposal record")
         cores = [{k: v for k, v in p.items() if k not in decisions} for p in proposals]
-        require(mapping["candidates_sha256"] == digest(cores), "Candidate integrity mismatch")
+        require(
+            mapping["candidates_sha256"] == digest(sorted(cores, key=lambda c: c["host_id"])),
+            "Candidate integrity mismatch",
+        )
         require(
             comparison["association_decisions"] == mapping["proposals"],
             "Comparison decisions differ from owner assertions",

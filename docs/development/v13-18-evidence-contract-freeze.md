@@ -98,12 +98,15 @@ never fabricated zero-valued timestamps or inferred sessions.
 - Each proposal has id, host_id, observed_ip, candidates (sorted asset_id /
   interface_id pairs), decision, selected_asset_id, selected_interface_id, reviewer,
   rationale. IDs are `association_` plus digest of host_id/observed_ip/candidates.
-  Proposals are ordered by host ID. Candidate digest covers proposals excluding
-  the five mutable decision fields. Decisions are PENDING/ACCEPT/REJECT. Pending
+  Templates order proposals by host ID. Owner reviews may reorder proposals while
+  preserving every original proposal exactly once; comparison retains that reviewed
+  order. Candidate digest covers immutable proposal cores in canonical host-ID
+  order, excluding the five mutable decision fields. Decisions are PENDING/ACCEPT/REJECT. Pending
   has empty reviewer/rationale and null selections; other decisions need nonblank
   bounded text; ACCEPT must select an original candidate. No automatic approval.
 - Mapping digest covers the complete reviewed object. Model SHA is the existing
-  native canonical-model identity. Comparison binds all three source hashes.
+  native canonical-model identity. Comparison binds capture, model, observation
+  and complete mapping hashes.
   association_decisions exactly copies reviewed proposals; findings retain flow
   order and include flow_id, conversation_id, classification, reason, samples,
   association_decision_ids, capture_sha256, model_sha256, native_result (null or

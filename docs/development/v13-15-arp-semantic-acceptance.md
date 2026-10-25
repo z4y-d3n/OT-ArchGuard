@@ -2,9 +2,9 @@
 
 ## A. Executive status
 
-**PASS for analyzer, aggregation and association semantics; integrated visual
-acceptance pending.** Explorer rendering must be assessed using the integrated
-V13-16/V13-17 acceptance evidence. This gate corrects
+**PASS for analyzer, aggregation, association and static presentation semantics.**
+V13-16 verifies integrated ARP field panels and static SVG rendering. Actual human
+browser acceptance remains pending in V13-17. This gate corrects
 a demonstrated defect rather than adding industrial protocol inspection.
 
 The baseline was `dfcb6d9d6c2c1b3b475f1f6a64b193362cabed98`. Integration commit

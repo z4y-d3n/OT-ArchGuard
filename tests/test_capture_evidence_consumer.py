@@ -6,7 +6,11 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+import yaml
 
+from otarchguard.api import validate_bytes
+from otarchguard.capture.reconciliation import compare_capture
+from tools.capture_workloads import plant_model
 from tools.read_capture_evidence import digest, load_bundle, read_json, validate_observations
 
 FIXTURES = Path(__file__).parent / "fixtures/capture-contract-v2"
@@ -35,7 +39,7 @@ def publish(directory: Path, value: dict[str, Any]) -> Path:
         proposal["id"] = "association_" + digest(core)
         id_changes[previous_id] = proposal["id"]
         cores.append({"id": proposal["id"], **core})
-    mapping["candidates_sha256"] = digest(cores)
+    mapping["candidates_sha256"] = digest(sorted(cores, key=lambda c: c["host_id"]))
     comparison["association_decisions"] = copy.deepcopy(mapping["proposals"])
     for finding in comparison["findings"]:
         finding["association_decision_ids"] = [
@@ -155,6 +159,25 @@ def test_unknown_optional_fields_and_classifications_remain_available(tmp_path: 
     actual = load_bundle(publish(tmp_path, value))
     assert actual["observations"]["future_optional"] == {"example": "preserve"}
     assert actual["comparison"]["findings"][0]["classification"] == "FUTURE_CLASSIFICATION"
+
+
+def test_product_accepted_owner_review_reordering_preserves_canonical_candidate_binding(
+    tmp_path: Path,
+) -> None:
+    value = bundle()
+    mapping = value["mapping"]
+    canonical_digest = mapping["candidates_sha256"]
+    original_order = [p["id"] for p in mapping["proposals"]]
+    mapping["proposals"].reverse()
+    model = validate_bytes(yaml.safe_dump(plant_model(), sort_keys=False).encode())
+    value["comparison"] = compare_capture(value["observations"], model, mapping)
+    # Candidate facts remain bound to template order; owner decisions and the
+    # exact mapping digest retain the order supplied by the owner.
+    assert mapping["candidates_sha256"] == canonical_digest
+    actual = load_bundle(publish(tmp_path, value))
+    assert actual["mapping"]["candidates_sha256"] == canonical_digest
+    assert [p["id"] for p in actual["comparison"]["association_decisions"]] == original_order[::-1]
+    assert actual["comparison"]["mapping_sha256"] == digest(mapping)
 
 
 @pytest.mark.parametrize(
