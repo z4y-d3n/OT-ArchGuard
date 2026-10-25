@@ -4,9 +4,10 @@ Recorded 2026-10-25. These are provisional engineering results, not owner accept
 an assertion of product security, or authorization to publish a stable release.
 The implementation is on `codex/v13-01-capture-foundation`.
 
-At this record's creation, HEAD is the unchanged baseline commit
-`f52c792b683cb499dc7de765b65b5cc897a96854`; implementation files are working-tree
-changes. No candidate commit is implied. The immutable v1.2.0 source tree is
+The tested implementation commit is
+`3d3bbd5fda3c90690478df06085432fb6371abf8`; subsequent evidence-only commits
+do not change production or test bytes. The immutable baseline commit is
+`f52c792b683cb499dc7de765b65b5cc897a96854`; its v1.2.0 source tree is
 `2229b0657128cdb56eb978eb4fb0a5e74fd275f4`.
 See [the baseline inventory](v13-00-baseline-and-decisions.md) for remote reference
 verification, compatibility decisions, source inspection and technical references.
@@ -26,11 +27,15 @@ completion of the separate candidate-wide hardening and release gates.
 | `tests/test_capture_observations.py` | PASS: 43 tests | Local decoder, aggregation, damaged packet, TCP options and EPB flags checks |
 | `tests/test_capture_reconciliation.py` | PASS: 64 tests | Shared mapping/comparison tests, including strict controls, native engine oracles and result amplification budgets |
 | `tests/test_capture_cli.py` | PASS: 13 tests | CLI, output preservation, HTML, denied sockets/DNS and deterministic site bytes |
-| Ruff and strict mypy | PASS on the reviewed source/test scope | Final repository-wide checks are recorded with candidate verification |
-| Entire candidate regression suite | RUNNING, result pending | Regular installed candidate run restarted after TCP option and result amplification corrections; superseded runs do not establish final-source success |
-| Initial wheel and sdist archive audit | PASS | `output/v1.3-review/archive-audit.json` records matching archive/source bytes, metadata, licenses and public manifests; final post-freeze artifact audit remains pending |
-| Clean wheel and sdist environment installations | NOT RUN | Environments prepared; final artifact installations and checks pending |
+| Ruff and strict mypy | PASS repository-wide | Ruff check and formatting; strict mypy: 141 source files; pip check: no broken requirements |
+| Entire candidate regression suite | PASS: 2,533 tests, 486.51 s | Regular installed final candidate wheel, Windows/Python3.14.5, network denied; 0 failures/errors/skips. `output/v1.3-candidate/full-suite.xml` and source-identity receipts bind the tested code. Superseded runs are not acceptance evidence |
+| Wheel and sdist archive audit | PASS | `output/v1.3-review/archive-audit.json` and final `output/v1.3-final/archive-audit.json` record archive/source bytes, metadata, licenses and public manifests |
+| Clean wheel and sdist environment installations | PASS, offline | Separate fresh environments, no-index/no-deps/no-build-isolation product installs; `clean-wheel.json` and `clean-sdist.json` verify installed module hashes and native consoles |
+| Clean installed-sdist capture suite | PASS: 211 tests, 6.35 s | Network denied; `output/v1.3-review/sdist-capture.xml` |
+| Legacy command/report comparison | PASS: 45 cases, 123 artifacts | Exact JSON/HTML/SVG/stdout/stderr bytes and exit codes versus immutable v1.2; `output/v1.3-candidate/legacy-contract-comparison.json` |
+| Committed public source identity | PASS: 269 files | `verify_source_checkout.py` verifies exact Git blob bytes; final receipt at `output/v1.3-final/source-checkout.json` |
 | Installed-console fictional walkthrough | PASS | `output/capture-tutorial/walkthrough.json`; all six expected finding classes were verified |
+| Clean wheel/sdist walkthroughs outside checkout | PASS, both | Copied standalone driver, no development source imports; `output/v1.3-review/clean-wheel-tutorial/walkthrough.json` and corresponding `clean-sdist-tutorial/` |
 | Representative benchmark executions | PASS: seven final-source workers | Six complete reports, one expected resource rejection; [measured conditions and hashes](v13-benchmark-results.md) |
 | Candidate Windows/Ubuntu/macOS × Python 3.12/3.14 hosted CI | NOT RUN | No remote candidate branch/PR write has been authorized |
 
@@ -224,7 +229,9 @@ its result is `output/capture-tutorial/walkthrough.json`.
 **A. Executive result — PARTIAL.** Bounded mutation, uncertainty, determinism,
 output-preservation and offline-denial checks execute successfully in targeted
 suites. Seven representative synthetic workers completed their expected outcomes.
-Complete installed regression and final clean distribution evidence are pending.
+The final complete installed regression and clean wheel/sdist verification passed.
+The gate remains PARTIAL because browser visual review is unavailable and native
+evaluation has the bounded-work, non-RSS resource limitation described below.
 
 **B. Technical evidence.** Targeted evidence appears in the ledger. The parser has
 192 deterministic mutations; decoder tests add 500 bounded packet mutations.
@@ -232,9 +239,12 @@ Complete installed regression and final clean distribution evidence are pending.
 `examples/capture-studio/` provide reproducible fictional fixtures and expected codes.
 No real capture or benchmark data is used. The installed tutorial passed six
 expected classifications. [Benchmark evidence](v13-benchmark-results.md) records
-actual times, traced allocations, output sizes and input/source hashes. Initial
-archive audit passed; final artifact checks and exact installed regression are
-pending after the TCP option and native-result amplification corrections.
+actual times, traced allocations, output sizes and input/source hashes. Both clean
+installations verified exact production module hashes and native console origins.
+The complete final wheel suite passed 2,533 tests; clean installed-sdist capture
+tests passed 211. Historical test files remain byte-identical to the baseline;
+the original CLI's additive registration is the only changed historical production
+module. Native command/report compatibility preserved 123 exact artifacts.
 
 **C. Quality.** No new runtime dependency, native tool, privilege or network service
 is required. v1.2 tests and expectations were preserved. Wheel/sdist, source audits,
@@ -245,21 +255,28 @@ are not exhaustive fuzzing or a security audit. Local Windows evidence cannot pr
 all supported OS/Python combinations. The browser rejected local `file:` navigation,
 so visual review remains NOT RUN despite successful structural HTML/link audits.
 Pending checks are NOT RUN, not PASS.
+Branch/line coverage percentages were NOT MEASURED. Native QueryResult construction
+occurs inside the preserved evaluator under cumulative native work ceilings;
+capture allocation accounting bounds retained evidence and its conversion, not
+every transient engine allocation or whole-process RSS. No OS memory sandbox is
+claimed. This residual limitation requires review for unusually large native models.
 
-**E. Continuation.** Record the final installed candidate suite and clean wheel/sdist
-checks; repeat affected verification when candidate source bytes change. Preserve
-the executed walkthrough and workload evidence with their stated scope.
+**E. Continuation.** Complete visual review and review residual native-model resource
+assumptions. Repeat affected verification when production/test bytes change. Preserve
+the executed suite, walkthrough and workload evidence with their stated scope.
 
 ## V13-07 — Release candidate preparation
 
-**A. Executive result — PARTIAL.** Local review preparation is underway. This work
+**A. Executive result — PARTIAL.** Local review preparation is complete. This work
 is not recommended as a stable v1.3 release candidate while required evidence is
 missing. Human acceptance and stable version transition remain outstanding.
 
 **B. Technical evidence.** Documentation includes overview/contracts, supported
 matrix, privacy/threat model, CLI, interpretation, limits and fictional tutorial.
-Candidate source/test manifests, wheel/sdist audit results and draft release notes
-must be verified against the final review revision. Candidate six-cell hosted CI
+Candidate source/test manifests, audited wheel/sdist, installed module identities,
+complete local regression and draft release notes are available for review.
+Final artifact/source hashes are in `output/v1.3-final/`; the implementation and
+all historical refs remain distinct. Candidate six-cell hosted CI
 is NOT RUN. Baseline six-cell CI is historical reference evidence only.
 
 **C. Quality.** Native schema, engine contracts and existing reports remain at their
