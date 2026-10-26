@@ -6,7 +6,9 @@ CSV, XLSX and draw.io disagree about the engineering workstation's zone. None
 of these documents supplies network permission. The native model context declares
 no transport, forwarding, rules or services.
 
-Use an installed 1.2.0 console. Copy `mixed` to a writable working directory
+Use the regular installed v1.3.0 console from the
+[installation guide](../../../docs/installation.md). Obtain `mixed` from the
+verified v1.3.0 source distribution and copy it to a writable working directory
 and run these commands from inside that copy. Every output must have a new name.
 
 1. Inspect `project.json`. It registers four explicit source paths, each adapter
@@ -77,7 +79,7 @@ and run these commands from inside that copy. Every output must have a new name.
    The sidecar's model hash is the native validator's model identity. Native schema
    validity establishes declared consistency, not real-world network completeness.
 
-The development tool `python -m tools.project_walkthrough --output output/tutorial`
+The verification tool `python -m tools.project_walkthrough --output output/tutorial`
 executes these installed-console steps from a separate copied working directory,
 also proving unresolved review, stale source and overwrite refusal. Regenerate
 the fictional fixture with `python -m tools.synthetic_projects NEW_DIRECTORY`.

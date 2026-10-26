@@ -1,6 +1,8 @@
 # Quality and before/after review, entirely offline
 
-Use an installed 1.2.0 distribution. From the source/tutorial checkout run:
+Use a regular installed v1.3.0 distribution, verified with the
+[installation guide](../../docs/installation.md). From the matching source
+distribution or tutorial checkout run:
 
 ```powershell
 python -m tools.quality_walkthrough --output NEW_LOCAL_FOLDER

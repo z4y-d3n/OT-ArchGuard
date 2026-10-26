@@ -1,31 +1,43 @@
 # Verification strategy
 
-V12-05 adds `tests/test_explorer.py`, parsed site/link/resource audits, hostile
-native/documentary labels, strict provenance tampering, output budgets, palette
-contrast, semantic landmarks, deterministic relocation and real installed-console
-cases. `python -m tools.explorer_walkthrough --output NEW` runs the shipped fictional
-example from a regular installed distribution. Select an output outside the checkout
-to verify independent console use. `python -m benchmarks.explorer --output NEW.json`
-measures bounded small/medium/larger and adversarial sites with separate allocation
-samples. The final gate receipt binds fresh wheel/sdist tests and all production
-module hashes to one frozen public-file manifest. Local browser tooling rejects
-`file://`; actual zoom/focus/CSP/network/assistive-technology behavior is unverified.
+The published v1.3.0 source is `10d7de6c416ec6f0ee364c671ebe9292ee69e672`.
+Its [release integration CI](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40273411275)
+passed all six Windows/Ubuntu/macOS × Python 3.12/3.14 configurations. Each
+installed-wheel and installed-sdist suite reported 2,815 tests with zero failures,
+errors or skips; counts overlap. The final PCAP Evidence Explorer's second real
+human browser review passed all six criteria. See the
+[release notes](release-notes-1.3.0.md) for that evidence and its limits.
 
-For source version 1.1.0, [Gate V11-6](v1.1/gate-v11-6.md) records candidate
-history. Final acceptance requires local and hosted receipts for the exact
-reviewed commit. Earlier version/gate outcomes below remain historical evidence.
+A later documentation or implementation commit requires its own relevant checks
+and exact source binding. Published-release CI is not a new execution against that
+later commit. Keep source/package hashes, installed import paths, command exits
+and raw results together; do not silently update a baseline to make a failure pass.
 
-Use matching regular installed wheel environments on Windows Python 3.12/3.14.
-Version 1.0.1 results are in the [verification summary](verification.md).
+The current workflow uses native Windows, Ubuntu and macOS runners with Python
+3.12/3.14, `fail-fast: false` and no exclusions. PowerShell Core is explicit on
+every runner. It builds/audits exact distributions, verifies regular installed
+wheel and sdist suites, denies Python network operations in test children, checks
+native compatibility and frozen capture consumers, and executes fictional
+walkthroughs and benchmarks. Integrity artifacts have 30-day retention;
+benchmark artifacts have seven-day retention. The workflow does not publish a
+release. Verify [.github/workflows/ci.yml](../.github/workflows/ci.yml) and the
+actual run before reporting results.
 
-The v1.1 workflow defines native Windows, Ubuntu and macOS runners with Python
-3.12/3.14, `fail-fast: false` and no exclusions. The Gate V11-2 dossier records
-then-pending hosted verification; use current-commit receipts for acceptance.
-Job ID `verify` is retained; expanded displayed check names need owner review
-in branch-protection settings against the required current checks.
-PowerShell Core is explicit on every runner; offline paths use forward slashes.
-Artifacts include OS/Python identity and expire in seven days. No release upload
-is performed. See [Gate V11-2](v1.1/gate-v11-2.md).
+Architecture Explorer tests cover parsed site/link/resource audits, hostile
+native/documentary labels, provenance tampering, output budgets, semantic
+landmarks, contrast, deterministic relocation and real installed-console cases.
+`python -m tools.explorer_walkthrough --output NEW` runs the shipped fictional
+example with the installed distribution; choose an output outside the checkout.
+`python -m benchmarks.explorer --output NEW.json` measures bounded sites with
+separate allocation samples.
+
+The original V11/V12 gates retain their historical results, including blocked
+`file://` automation and then-pending hosted/browser checks. They do not imply
+completed manual acceptance of every Architecture Explorer, quality or native
+report view. PCAP browser acceptance is separate; static structure/raster checks
+do not establish general zoom/focus/print/screen-reader behavior or certification.
+Version 1.0.1 measurements remain in the [historical summary](verification.md);
+[Gate V11-6](v1.1/gate-v11-6.md) records the later v1.1 history.
 
 After a regular install, run `python tools/verify_environment.py --output
 output/environment.json` to verify distribution metadata, actual import location,
@@ -34,6 +46,7 @@ POSIX uses `otarchguard`, Windows uses `otarchguard.exe`; neither assumes it is
 beside `sys.executable`.
 
 ~~~powershell
+New-Item -ItemType Directory -Force output | Out-Null
 .\.venv\Scripts\python.exe -m pip install -r tools/verification-requirements.txt
 .\.venv\Scripts\python.exe -m pip install --no-build-isolation --no-deps .
 $env:OTARCHGUARD_OFFLINE_CHECK='1'
@@ -142,8 +155,9 @@ index; native analytics and standalone reporting regressions remain unchanged.
 measurements. The exact old Explorer workloads are compared against a preserved
 V12-05 installation. Final installed wheel/sdist, module hashes and offline console
 walkthroughs bind the current source; preparation runs cannot accept later changes.
-The browser file-origin request was blocked by tool policy; real browser behavior
-is NOT EXECUTED, distinct from structural accessibility/link/security tests.
+At that original V12-06 gate, browser file-origin automation was blocked and
+real browser behavior was NOT EXECUTED. That historical result remains distinct
+from structural checks and the later PCAP-specific human acceptance.
 
 ## V12-07 quality and architecture comparison
 
@@ -156,5 +170,33 @@ separate. Split/merge and fuzzy identity inference are unsupported.
 See the [seven ADRs](development/v12-07-quality-and-comparison.md) for versioned schemas,
 coverage denominators, query comparability, resource ceilings, compact offline
 views, installed-console tests, reproducible benchmarks and independent local,
-PR, hosted-CI and owner-review acceptance. Actual file-URL browser interaction
-was policy-blocked; static checks do not establish WCAG certification.
+PR, hosted-CI and owner-review acceptance. The original V12-07 file-URL automation
+attempt was policy-blocked; static checks do not establish WCAG certification.
+
+## PCAP evidence and final UX regressions
+
+Capture tests independently construct binary containers and challenge header
+decoding, metadata bounds, ARP sender/target semantics, malformed/unsupported
+evidence, exact timestamps, hashes, owner-decision freshness and native-query scope.
+Frozen JSON consumers verify evidence versions independently of presentation.
+
+`tests/test_capture_display.py`, `tests/test_capture_views.py` and
+`tests/test_capture_ux_integrity.py` cover exact readable UTC, summary denominators,
+structured fields, meaningful links, contextual/dense pagination, unique anchors,
+escaping, CSP, deterministic bytes, denied sockets and no-clobber publication.
+Keep `tests/test_product_presentation.py::test_trace_documentation_qualifies_completed_queries`:
+the README exit-code section must state that Trace exit 0 includes unreachable
+results and does not assert that every flow was permitted or assess intents.
+
+From the verified source tree with its regular installed console:
+
+~~~text
+python -m tools.capture_walkthrough --output output/capture-verification
+python -m tools.read_capture_evidence tests/fixtures/capture-contract-v2/supported
+python -m tools.read_capture_evidence tests/fixtures/capture-contract-v2/limited
+~~~
+
+Create output parents and use fresh destinations. The capture walkthrough uses
+fictional data and explicit fixture-author decisions, not real owner approvals.
+The corpus and its finite interoperability limits are documented in the
+[PCAP guide](pcap-evidence-studio.md#capture-corpus-and-use-policy).

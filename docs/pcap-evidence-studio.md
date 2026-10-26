@@ -1,24 +1,37 @@
-# PCAP Evidence Studio — 1.3.0 release candidate
+# PCAP Evidence Studio — v1.3.0
 
 PCAP Evidence Studio reads local fictional or authorized PCAP evidence without
 initiating network communications. It answers what was observed, which owner-reviewed
 identities and declarations can be compared, and which uncertainties need review.
 Observed traffic is not permission. Unobserved traffic is not evidence of blocking.
 
-The package/engine version is 1.3.0. Native YAML remains schema 1. Capture,
-association, comparison, protocol catalog and site contracts remain version 1;
-observations use version 2 to explicitly correct ARP identities and host eligibility.
-See the [frozen evidence contracts](development/v13-18-evidence-contract-freeze.md).
-This is an unpublished candidate; hosted and human acceptance are recorded separately.
-Six-platform CI passed for exact candidate
-`5c4c18da4711c36f4f5750c03009d429551d0cf0` in
-[run 40246239841](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40246239841).
-Its documentation-only child `e763f0cb6591dee6b80b6aa846286d2b901a95ae`
-has no hosted run of its own. The subsequent owner review passed four criteria
-and failed navigation and interpretation. The UX remediation requires its own
-source/package verification and a second human review; the historical green run
-does not accept the changed renderer. See the
-[provenance record](development/v13-27-source-and-release-provenance.md).
+It is part of [published stable v1.3.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0),
+whose immutable release commit is `10d7de6c416ec6f0ee364c671ebe9292ee69e672`.
+Native YAML remains schema 1. Capture, association, comparison, protocol catalog
+and site contracts remain version 1; observations use version 2 to retain explicit
+ARP identities and host eligibility. See the
+[frozen evidence contracts](development/v13-18-evidence-contract-freeze.md).
+
+The [release integration CI](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40273411275)
+passed Windows, Ubuntu and macOS with Python 3.12/3.14: each configuration reported
+2,815 installed-wheel and 2,815 installed-sdist tests with zero failures, errors
+or skips. Counts overlap. The final second human browser review passed all six
+criteria, including the previously failed navigation and interpretation criteria.
+Earlier candidate CI and the original four PASS/two FAIL review remain preserved
+as [historical development evidence](development/v13-23-ux-findings-and-baseline.md),
+not pending requirements for the published release.
+
+Use the [installation guide](installation.md) and the release's published assets,
+manifest and SHA256SUMS. Documentation on current `main` may improve after
+publication without changing the tagged source or package contents.
+
+[Commands](#operation-and-definitive-cli-contract) ·
+[Supported subset](#supported-subset-and-coverage) ·
+[Owner review](#association-decisions) ·
+[Comparison scope](#comparison-classifications-and-exact-scope) ·
+[Explorer/privacy](#explorer-privacy-and-threat-model) ·
+[Resource limits](#resource-and-reproducibility-contract) ·
+[Corpus policy](#capture-corpus-and-use-policy)
 
 ## Operation and definitive CLI contract
 
@@ -344,11 +357,12 @@ expected codes are checked. See [the packaged tutorial](../examples/capture-stud
 
 No additional runtime dependency was introduced. The standard-library subset was
 chosen after evaluating dpkt; see [baseline and parser decision](development/v13-00-baseline-and-decisions.md).
-Python 3.12 is the minimum; hosted acceptance explicitly covers Python 3.12 and
-3.14 on Windows, Ubuntu and macOS for `5c4c18d`. Other interpreter/platform
-combinations are not implied. New UX-candidate verification and remaining human
-checks are identified separately; earlier hosted results do not validate changed
-renderer bytes.
+Python 3.12 is the minimum; the published release's integration CI explicitly
+covers Python 3.12 and 3.14 on Windows, Ubuntu and macOS for
+`10d7de6c416ec6f0ee364c671ebe9292ee69e672`. Other interpreter/platform combinations
+are not implied. The final second human browser review passed all six criteria.
+Historical gate results retain their exact source and timing; they do not accept
+subsequent documentation or implementation commits automatically.
 
 The independent audit additionally checks IPv4 EOL zero padding and known Record
 Route, Timestamp and StreamID option fields. Other IPv4 options, IPv6 Routing

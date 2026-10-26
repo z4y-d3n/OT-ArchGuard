@@ -70,7 +70,9 @@ docs/development/v13-final-baseline-and-impact.md
 docs/development/v13-gate-evidence.md
 docs/domain-model.md
 docs/images/README.md
+docs/images/architecture-explorer-overview.png
 docs/images/flat-plant-proposed.png
+docs/images/pcap-evidence-studio-overview.png
 docs/images/remote-support-proposed.png
 docs/import-studio.md
 docs/installation.md

@@ -1,14 +1,14 @@
 # Offline Architecture Explorer walkthrough
 
-All files in this tutorial are fictional. Install the locally built development
-wheel into an environment containing the approved dependencies:
+All files in this tutorial are fictional. Install the verified published v1.3.0
+wheel following the [installation guide](../../docs/installation.md), then check
+the selected console:
 
 ```text
-python -m pip install --no-index --no-deps /path/to/otarchguard-1.2.0-py3-none-any.whl
 otarchguard --version
 ```
 
-Copy `examples/import-studio/projects/mixed/` from the development source archive
+Copy `examples/import-studio/projects/mixed/` from the verified v1.3.0 source distribution
 into a new working directory **outside the checkout**. It contains an XLSX asset/
 zone inventory, JSON interfaces, CSV metadata, a draw.io drawing, profiles, explicit
 native context and `tutorial-decisions.json`. Those owner choices apply only to
@@ -57,7 +57,14 @@ witness; `it → svc_plc` evaluates TCP/502 with a negative engine explanation.
 Inspect exact direction, destination binding, model hash, ports and limitations.
 Other pairs remain unassessed. Without `--provenance`, the site explicitly identifies
 itself as model-only and does not fabricate origins. Existing single-source
-sidecars are not supported by Explorer version 1; omit them for model-only output.
+sidecars are not accepted as project provenance; omit them for model-only output.
+
+In the released Explorer's spatial overview, forwarding paths use solid purple
+strokes even though the inherited SVG legend says "Purple dashed: explicit
+forwarding." This is a presentation/legend mismatch in v1.3.0, not a change to
+declared forwarding or analysis. Read the purple direction, edge IDs and endpoints;
+neither stroke style nor an arrow establishes permission. Standalone native
+report diagrams retain their separately documented dashed forwarding style.
 
 Each site has `index.html`, entity/source/candidate/group/decision/node/connector/
 analysis detail pages with hash-derived filenames, paginated indexes, `assets.css`

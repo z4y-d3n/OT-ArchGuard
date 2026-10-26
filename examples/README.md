@@ -6,7 +6,8 @@ Service labels/ports identify synthetic listeners; no actual protocol behavior,
 authentication, return traffic, compromise or process impact is verified.
 Owner criticality and completeness assertions are descriptive only.
 
-Run from the repository root after the regular installed package:
+Run from the verified v1.3.0 source distribution or matching checkout root after
+installing the regular package with the [installation guide](../docs/installation.md):
 
 ```powershell
 .\.venv\Scripts\python.exe examples/run_examples.py
@@ -104,7 +105,7 @@ runtime tests complement, but do not replace, human offline visual review.
 
 The original synthetic [trace cell](trace/communication.yaml) declares one
 directed transition and a disconnected listener. Run these with the installed
-development console:
+v1.3.0 console:
 
 ```console
 otarchguard trace examples/trace/communication.yaml --source eng --service svc_allowed

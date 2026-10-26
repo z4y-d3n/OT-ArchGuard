@@ -1,7 +1,7 @@
 # Draft v1.3 release notes — not a published release
 
-Historical development notes, superseded by the active
-[1.3.0 candidate notes](release-notes-1.3.0.md). Version statements below describe
+Historical development notes, superseded by the
+[published v1.3.0 notes](release-notes-1.3.0.md). Version statements below describe
 the earlier development phase and are retained as historical evidence.
 
 PCAP Evidence Studio adds passive local capture inspection, bounded header-only
