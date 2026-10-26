@@ -17,6 +17,13 @@ Choose an output that does not exist. The script calls the interpreter's install
 decisions and a separately named fictional-fixture-author reviewed file. Those
 decisions demonstrate the contract; they are not real owner approvals.
 Open `output/capture tutorial/comparison/index.html` directly. No server or network.
+Start with the Overview counts and finding summaries. Follow an observed address
+to its related communications, then open the communication's finding and exact
+evidence. Associations explain owner assertions; bidirectional groups collect
+related tuples without establishing a session. Technical details retain full
+identifiers and original packet references, while canonical JSON remains directly
+accessible. UTC displays format the original exact timestamps without changing
+their rational evidence values.
 The final walkthrough generates the ten-record classic capture and an extended
 twelve-record PCAPNG with an ARP reply and unsupported Ethernet content. Its
 comparison explicitly suppresses declared-service absence because interpretation
@@ -49,3 +56,11 @@ does not prove blocking. Port502 is a Modbus/TCP **hint**, not payload recogniti
 To regenerate the exact packaged fixture bytes, use `tools.capture_workloads.write_pcap`,
 `write_pcapng` with its default `extended=False`, and `plant_model`; no network or
 packet library is involved. The final walkthrough explicitly selects `extended=True`.
+
+The independently produced interoperability corpus is separate from this tutorial:
+it combines specification-authored synthetic bytes and Wireshark `text2pcap`
+4.6.7 output checked with offline TShark receipts. Neither is real industrial
+traffic. See the [corpus policy](../../docs/pcap-evidence-studio.md#capture-corpus-and-use-policy).
+The previous six-platform CI accepted `5c4c18d`; a changed UX candidate needs its
+own validation and a second owner browser review. Original navigation and
+interpretation failures remain recorded until the owner confirms the new report.

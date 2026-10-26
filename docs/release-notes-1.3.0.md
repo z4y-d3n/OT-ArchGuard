@@ -13,6 +13,17 @@ stable tagging or publication. Historical 1.2.0 development archives must not be
 renamed or published as 1.3.0. Final built filenames and SHA-256 identities come
 from the actual build and release manifest.
 
+Six-platform hosted CI passed for exact candidate
+`5c4c18da4711c36f4f5750c03009d429551d0cf0` in
+[run 40246239841](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40246239841).
+Every wheel and sdist suite reported 2,746 passing tests with no failures, errors
+or skips; the counts overlap and are not additive. Its local documentation-only
+child `e763f0cb6591dee6b80b6aa846286d2b901a95ae` has no hosted run of its own.
+The later human browser review passed four criteria and failed navigation and
+interpretation. The UX remediation therefore requires a new exact-source
+candidate, packages and validation, followed by a second human review. Earlier
+green CI does not accept the changed renderer.
+
 ## Supported evidence
 
 The accepted subset includes classic PCAP 2.4 and documented PCAPNG
@@ -23,6 +34,14 @@ reference never establishes that a device exists, responded or owns an address.
 Protocol labels associated with ports remain hints, not confirmed application
 recognition. See the [supported subset](pcap-evidence-studio.md) and
 [independent interoperability record](development/v13-14-capture-interoperability.md).
+
+Independent interoperability used synthetic specification-authored fixtures and
+Wireshark `text2pcap` 4.6.7 output with offline TShark 4.6.7 reference receipts.
+The original fictional fixtures, origins, licenses and hashes are documented in
+the [corpus policy](pcap-evidence-studio.md#capture-corpus-and-use-policy).
+No real industrial capture or downloaded public operational corpus was tested.
+This establishes tested-subset behavior rather than universal producer or plant
+coverage. No operational capture or Wireshark code is redistributed.
 
 Only justified, owner-reviewed single-interface IPv4 TCP initial-SYN observations
 with exact declared listeners are eligible for native evaluation. UDP, response-only
@@ -45,6 +64,14 @@ the creator or cryptographically sign owner review assertions.
 
 ## Installation and remaining acceptance
 
+The focused UI correction replaces primary raw-JSON displays with readable
+counts, statuses and structured evidence; it adds contextual navigation, meaningful
+communication labels, precise UTC presentation and finding explanations. Exact
+identifiers, packet references, rational timestamps and canonical JSON remain
+available. The existing directed lanes and ARP sender/target/delivery distinction
+are retained. Technical rendering checks support the second human review and
+cannot turn the original navigation or interpretation FAIL into PASS.
+
 Use a fresh regular environment with Python 3.12 or later and the actual audited
 wheel or sdist. Verify `otarchguard --version` reports `1.3.0`, run `pip check`,
 and retain the prior working installation during evaluation. See the
@@ -60,7 +87,9 @@ The [final regression](development/v13-20-version-transition-and-final-regressio
 [hosted acceptance](development/v13-21-hosted-candidate-acceptance.md),
 [browser acceptance](development/v13-17-local-browser-acceptance.md), and
 [readiness decision](development/v13-22-feature-complete-and-release-readiness.md)
-record actual results and outstanding requirements. Six hosted OS/Python cells
-and human browser checks must not be inferred from local tests. Merge, tags,
-GitHub Release, package uploads and repository settings require separate owner
-authorization.
+record the earlier stage. The
+[source reconciliation](development/v13-27-source-and-release-provenance.md)
+supersedes its stale outstanding-CI wording without changing historical outcomes.
+New candidate verification and second human acceptance are separate milestones;
+neither follows automatically from the earlier passing run. Merge, tags, GitHub
+Release, package uploads and repository settings require separate owner authorization.

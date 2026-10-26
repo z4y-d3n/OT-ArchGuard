@@ -24,8 +24,12 @@ groups evidence into bounded pages with individual anchors. See the
 [document tutorial](examples/import-studio/documents/README.md) and
 [supported subsets and design decisions](docs/development/v12-06-document-evidence-and-explorer.md).
 PDF/VSDX remain deferred. Grouped reports contain additional sensitive evidence.
-Release readiness requires hosted verification on all six OS/Python combinations
-and owner browser acceptance for the final source; local tests alone do not establish it.
+Six-platform hosted CI passed for candidate
+`5c4c18da4711c36f4f5750c03009d429551d0cf0` in
+[run 40246239841](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40246239841).
+The later owner browser review passed four criteria and failed navigation and
+interpretation. The current UX remediation requires fresh exact-source
+verification and a second human review before release approval.
 See [v1.3.0 release notes](docs/release-notes-1.3.0.md)
 and [Gate V11-6 verification](docs/v1.1/gate-v11-6.md).
 
@@ -52,8 +56,10 @@ Reduced exposure does not cancel a failed operational requirement.
 
 ## Install and run
 
-Python 3.12 or later is required. Local verification covers Windows with Python
-3.12.14 and 3.14.5; see [historical V11-6 verification](docs/v1.1/gate-v11-6.md).
+Python 3.12 or later is required. The historical v1.3 candidate above passed
+Windows, Ubuntu and macOS with Python 3.12/3.14; this is evidence for that exact
+source. Earlier local results are in
+[historical V11-6 verification](docs/v1.1/gate-v11-6.md).
 From a checkout or extracted source distribution:
 
 ~~~powershell
@@ -166,4 +172,12 @@ Native schema 1 remains supported. Evidence contracts and a read-only consumer a
 documented in [V13-18](docs/development/v13-18-evidence-contract-freeze.md).
 No stable v1.3 release, hosted validation or final owner acceptance is implied by
 the package version.
+
+Interoperability evidence uses independently authored synthetic bytes and
+Wireshark `text2pcap` 4.6.7 output, checked against offline TShark 4.6.7 receipts.
+It demonstrates the [tested subset](docs/pcap-evidence-studio.md#capture-corpus-and-use-policy),
+not every capture producer or real industrial-plant traffic. No authorized real
+industrial capture or downloaded operational/public corpus is part of this validation.
+See the [source and acceptance reconciliation](docs/development/v13-27-source-and-release-provenance.md)
+for historical CI, the original human results and the new candidate boundary.
 

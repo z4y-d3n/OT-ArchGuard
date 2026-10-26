@@ -56,6 +56,15 @@ docs/development/v13-19-final-security-and-scope-review.md
 docs/development/v13-20-version-transition-and-final-regression.md
 docs/development/v13-21-hosted-candidate-acceptance.md
 docs/development/v13-22-feature-complete-and-release-readiness.md
+docs/development/v13-23-ux-findings-and-baseline.md
+docs/development/v13-24-readable-evidence-and-navigation.md
+docs/development/v13-25-timestamp-and-summary-validation.md
+docs/development/v13-26-contract-and-security-preservation.md
+docs/development/v13-27-source-and-release-provenance.md
+docs/development/v13-28-final-regression-and-package-verification.md
+docs/development/v13-29-hosted-ux-candidate-acceptance.md
+docs/development/v13-30-second-human-browser-acceptance.md
+docs/development/v13-31-final-release-readiness.md
 docs/development/v13-benchmark-results.md
 docs/development/v13-final-baseline-and-impact.md
 docs/development/v13-gate-evidence.md
@@ -151,10 +160,12 @@ src/otarchguard/architecture_comparison.py
 src/otarchguard/capture/__init__.py
 src/otarchguard/capture/cli.py
 src/otarchguard/capture/contract.py
+src/otarchguard/capture/display.py
 src/otarchguard/capture/explorer.py
 src/otarchguard/capture/observations.py
 src/otarchguard/capture/parser.py
 src/otarchguard/capture/reconciliation.py
+src/otarchguard/capture/views.py
 src/otarchguard/cli.py
 src/otarchguard/comparison.py
 src/otarchguard/contract.py
@@ -240,6 +251,7 @@ tests/fixtures/minimal-valid.yaml
 tests/fixtures/unsupported-model.yaml
 tests/test_capture_arp_semantics.py
 tests/test_capture_cli.py
+tests/test_capture_display.py
 tests/test_capture_evidence_consumer.py
 tests/test_capture_evidence_contract.py
 tests/test_capture_explorer_polish.py
@@ -251,6 +263,8 @@ tests/test_capture_interoperability.py
 tests/test_capture_observations.py
 tests/test_capture_parser.py
 tests/test_capture_reconciliation.py
+tests/test_capture_ux_integrity.py
+tests/test_capture_views.py
 tests/test_check_cli.py
 tests/test_cli.py
 tests/test_comparison_properties.py
