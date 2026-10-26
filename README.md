@@ -1,47 +1,27 @@
 # OT-ArchGuard
 
 OT-ArchGuard is an offline Python CLI for reviewing declared IT/OT network
-architectures. It validates architecture models, checks communication requirements
-and compares TCP/UDP listener reachability between proposed configurations.
+architectures and comparing supported passive network evidence with those
+declarations. It combines architecture analysis, reviewed data import and
+navigable local reports.
 
-Source version: **1.3.0** (release candidate; unpublished). YAML schema: **1**. Consult the owner-published release
-record for availability, exact source tag and audited asset checksums.
+**Latest stable release: [v1.3.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0).**
+Requires **Python 3.12 or later**. Native YAML schema: **1**.
 
-Development Import Studio now supports offline multi-source projects through
-`otarchguard import project`: combine CSV/TSV, XLSX, JSON/NetBox and diagrams,
-review explicit identity/field conflicts, acknowledge evidence-only connectors,
-and emit one native-validated model with multi-source provenance. See the
-[complete fictional walkthrough](examples/import-studio/projects/README.md) and
-[V12-04 contracts](docs/development/v12-04-projects-and-reconciliation.md).
-The offline [Architecture Explorer](examples/explorer/README.md) adds navigable
-zones, assets, interfaces, retained project provenance and explicit analytical
-queries: `otarchguard explore MODEL --provenance SIDECAR --output NEW_DIRECTORY`.
-Its static pages use local CSS and no JavaScript or server. Documentary connectors,
-owner declarations and exact analytical results retain separate trust semantics.
-V12-06 adds restricted TXT/Markdown/DOCX/PPTX documentary observations and explicit
-table mapping, with owner review and source-change rejection. Explorer contract 2
-groups evidence into bounded pages with individual anchors. See the
-[document tutorial](examples/import-studio/documents/README.md) and
-[supported subsets and design decisions](docs/development/v12-06-document-evidence-and-explorer.md).
-PDF/VSDX remain deferred. Grouped reports contain additional sensitive evidence.
-Six-platform hosted CI passed for candidate
-`5c4c18da4711c36f4f5750c03009d429551d0cf0` in
-[run 40246239841](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40246239841).
-The later owner browser review passed four criteria and failed navigation and
-interpretation. The current UX remediation requires fresh exact-source
-verification and a second human review before release approval.
-See [v1.3.0 release notes](docs/release-notes-1.3.0.md)
-and [Gate V11-6 verification](docs/v1.1/gate-v11-6.md).
+[Capabilities](#capabilities) · [Install and run](#install-and-run) ·
+[Examples](#examples-and-technical-documentation) · [Verification](#release-verification) ·
+[Limitations](#limitations-and-license) · [Changelog](CHANGELOG.md)
 
-This development branch adds owner-reviewed CSV/TSV, restricted XLSX and JSON inventories. See the
-[reviewed import walkthrough](docs/import-studio.md) and
-[v1.2 roadmap](docs/development/v1.2-roadmap.md). The published v1.1.0 baseline
-remains immutable. Current release-candidate builds use 1.3.0; the version
-identity alone does not authorize stable publication.
+## Capabilities
 
-OT-ArchGuard is an independent industrial network architecture analysis tool inspired by general OT cybersecurity good practices, including those addressed by the IEC 62443 series. It does not provide certification, establish normative conformity or imply institutional endorsement.
+| Capability | What you can do | Start here |
+| --- | --- | --- |
+| **Architecture Analysis** | Validate declared models, evaluate exact communication paths and compare reachability and exposure | [Schema](docs/yaml-schema-v1.md), [trace](docs/trace.md), [examples](examples/README.md) |
+| **Import Studio** | Combine supported inventories, diagrams and documentary observations through explicit owner review | [Import guide](docs/import-studio.md), [multi-source walkthrough](examples/import-studio/projects/README.md) |
+| **Architecture Explorer** | Navigate zones, assets, interfaces, provenance and explicit analytical queries in offline reports | [Explorer walkthrough](examples/explorer/README.md) |
+| **PCAP Evidence Studio** | Inspect supported captures, review address associations and reconcile observations with the declared model | [Capture guide](docs/pcap-evidence-studio.md), [fictional tutorial](examples/capture-studio/README.md) |
 
-## What it analyzes
+### Architecture Analysis
 
 - Strict bounded YAML with typed references, placements and canonical SHA-256 hashes.
 - Directed interface-state paths with explicit transport and boundary forwarding.
@@ -54,13 +34,84 @@ OT-ArchGuard is an independent industrial network architecture analysis tool ins
 Zones, subnets, roles, conduits and reachable applications create no implicit paths.
 Reduced exposure does not cancel a failed operational requirement.
 
+Use `otarchguard trace MODEL --source ASSET --service SERVICE [--destination ASSET]`
+for an exact declared query, with optional `--policy-evidence` and HTML/JSON reports.
+A completed unreachable or mixed-port trace exits 0; trace does not assess intents.
+See the [trace contract](docs/trace.md) and
+[synthetic trace examples](examples/README.md#exact-communication-trace).
+
+`otarchguard quality MODEL` assesses declarations and explicit optional requirements;
+add `--output NEW` for a human report.
+`otarchguard compare-architecture BASELINE PROPOSED --output NEW` compares native
+and optional documentary evidence. Repeat `--trace SOURCE:SERVICE` for exact
+before/after evaluation. Missing documentation never implies a vulnerability.
+See the [quality and comparison tutorial](examples/quality-comparison/README.md)
+and [versioned contract](docs/development/v12-07-quality-and-comparison.md).
+
+### Import Studio
+
+`otarchguard import project` combines supported CSV/TSV, restricted XLSX,
+JSON/NetBox, Draw.io and GraphML inputs into reviewed multi-source projects.
+Restricted TXT, Markdown, DOCX and PPTX observations support explicit table mapping.
+Owners resolve identity and field conflicts, acknowledge evidence-only connectors
+and emit a native-validated model with retained provenance. Source-change checks
+reject stale review decisions.
+
+Documentary connectors, owner declarations and analytical results retain separate
+trust semantics. PDF/VSDX import and unrestricted document interpretation remain
+outside the supported scope. See the
+[multi-source walkthrough](examples/import-studio/projects/README.md),
+[document tutorial](examples/import-studio/documents/README.md),
+[project contracts](docs/development/v12-04-projects-and-reconciliation.md) and
+[document subsets](docs/development/v12-06-document-evidence-and-explorer.md).
+
+### Architecture Explorer
+
+~~~text
+otarchguard explore MODEL --provenance SIDECAR --output NEW_DIRECTORY
+~~~
+
+The Explorer connects zones, assets, interfaces, retained project provenance and
+explicit analytical queries. Its static pages use local HTML/CSS/SVG without
+JavaScript, a server or external rendering services. Bounded grouped evidence
+pages have individual anchors and preserve review context. See the
+[Explorer walkthrough](examples/explorer/README.md) and
+[report options](docs/reporting.md). Reports can contain sensitive evidence.
+
+### PCAP Evidence Studio
+
+Version 1.3.0 adds bounded, passive analysis of the documented PCAP/PCAPNG subset.
+It records supported Ethernet/VLAN, IPv4/IPv6, TCP/UDP, ARP and ICMP metadata,
+directed aggregates and related bidirectional groups. Explicit, evidence-bound
+owner review associates observed addresses with declared assets and interfaces.
+Eligible observations reuse the native evaluator within the documented IPv4 TCP
+initiation scope.
+
+The offline evidence interface includes communication diagrams, structured
+protocol and coverage tables, summary counts, descriptive links, contextual
+findings and complete paginated navigation. UTC timestamps preserve the exact
+original precision, and canonical JSON remains available as technical evidence.
+ARP panels distinguish sender fields, target references and Ethernet delivery.
+
+Port-based industrial protocol names are hints, not confirmed payload decoding.
+Observed traffic does not establish authorization, host authenticity, session
+success or deployed firewall behavior. ARP target references do not prove device
+existence, ownership or response; missing traffic does not prove blocking.
+
+See the [capture guide](docs/pcap-evidence-studio.md),
+[fictional tutorial](examples/capture-studio/README.md) and
+[frozen evidence contracts](docs/development/v13-18-evidence-contract-freeze.md).
+
 ## Install and run
 
-Python 3.12 or later is required. The historical v1.3 candidate above passed
-Windows, Ubuntu and macOS with Python 3.12/3.14; this is evidence for that exact
-source. Earlier local results are in
-[historical V11-6 verification](docs/v1.1/gate-v11-6.md).
-From a checkout or extracted source distribution:
+Download the published [v1.3.0 release assets](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0)
+and verify them against `SHA256SUMS.txt` before installation. The
+[installation guide](docs/installation.md) covers wheel/sdist installation,
+parallel upgrades, checksum verification and a prepared offline wheelhouse.
+
+The following example runs from a verified v1.3.0 checkout or extracted source
+distribution, which includes `examples/`. A wheel does not include these models;
+wheel-only users must supply their own model and its declared IDs.
 
 ~~~powershell
 py -3.12 -m venv .venv
@@ -73,10 +124,9 @@ New-Item -ItemType Directory -Force output | Out-Null
 .\.venv\Scripts\otarchguard.exe exposure examples/remote-support/baseline.yaml --scenario support_scope --report output/exposure.html
 ~~~
 
-Installation requires access to compatible dependencies, either online or through
-a prepared wheelhouse. Runtime analysis and reports require no network service,
-JavaScript or external renderer. See [installation](docs/installation.md) and
-[synthetic examples](examples/README.md).
+Installation may need network access to obtain compatible dependencies and build
+tools, or a complete prepared wheelhouse. Runtime analysis and generated reports
+require no network service, JavaScript or external renderer.
 
 | Exit | Meaning |
 | --- | --- |
@@ -87,9 +137,10 @@ JavaScript or external renderer. See [installation](docs/installation.md) and
 Trace exit 0 means the exact query completed, including unreachable or mixed port
 results. It does not mean every flow was permitted; trace does not assess intents.
 
-JSON results go to stdout; fatal diagnostics go to stderr. Specify --report-format
-json for JSON report files. Create report parent directories and keep outputs
-separate from inputs. Fatal errors preserve existing reports; check the native exit.
+JSON results go to stdout; fatal diagnostics go to stderr. Specify
+`--report-format json` for JSON report files. Create report parent directories
+and keep outputs separate from inputs. Fatal errors preserve existing reports;
+check the native exit status.
 
 ## Examples and technical documentation
 
@@ -107,18 +158,31 @@ These version 1.0.1 previews show invented models. Boundary attachment cards sha
 one ID represent one device. Arrows represent declared transitions; they do not
 establish permitted communication or physical connectivity.
 
-The v1.1.0 renderer adds topology-informed deterministic zone order,
-repeatable HTML `--zone-order` preferences, numbered orthogonal routes and local
-report navigation. See [report options](docs/reporting.md) and
-[Gate V11-2 evidence](docs/v1.1/gate-v11-2.md). Its six native OS/Python CI
-combinations cover Windows, Ubuntu and macOS with Python 3.12/3.14.
-Acceptance evidence must identify the exact reviewed release source.
-
 Read the [schema](docs/yaml-schema-v1.md), [domain model](docs/domain-model.md),
 [algorithms](docs/algorithms.md), [requirements](docs/requirements.md),
 [reporting guide](docs/reporting.md), [testing strategy](docs/testing-strategy.md),
 [boundary example](docs/boundary-device-example.md) and
 [release verification checklist](docs/release-checklist.md).
+Earlier design and verification records retain their historical context.
+
+## Release verification
+
+Stable v1.3.0 is published from
+[`10d7de6c416ec6f0ee364c671ebe9292ee69e672`](https://github.com/z4y-d3n/OT-ArchGuard/commit/10d7de6c416ec6f0ee364c671ebe9292ee69e672).
+Its [final integration CI](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40273411275)
+passed all six Windows, Ubuntu and macOS configurations with Python 3.12 and 3.14:
+28 successful steps per configuration, including 2,815 installed-wheel tests and
+2,815 installed-sdist tests with zero failures, errors or skips. These test counts
+overlap and are not additive.
+
+The final PCAP Evidence Explorer also completed its second human browser review:
+all six criteria passed, including navigation, interpretation, legibility at
+200% zoom and offline keyboard operation. The original review results remain
+part of the historical evidence.
+
+Published archives, `release-manifest.json` and `SHA256SUMS.txt` are available on
+the [release page](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0).
+See the [changelog](CHANGELOG.md) for the completed release.
 
 ## Limitations and license
 
@@ -126,58 +190,22 @@ The tool evaluates finite declared initiation paths. It does not verify deployed
 inventory, sessions, return traffic, authentication, vulnerabilities, compromise,
 availability, physical risk or process safety. Completeness, classification and
 criticality are user assertions; security-level evidence remains unassessed.
-See [known limitations](docs/limitations.md). Version 1.1.0 corrects the historical
-v1.0.1 invalid-Unicode diagnostic issue.
+It provides no TCP stream reassembly, deep industrial protocol inspection or
+application payload decoding.
+
+Capture interoperability evidence uses independently authored synthetic bytes and
+Wireshark `text2pcap` 4.6.7 output, checked against offline TShark 4.6.7 receipts.
+It covers the [tested subset](docs/pcap-evidence-studio.md#capture-corpus-and-use-policy),
+not every capture producer or real industrial-plant traffic. No authorized real
+industrial capture or downloaded operational/public corpus is part of that
+validation. Network metadata and review text may be sensitive.
+See [known limitations](docs/limitations.md).
+
+OT-ArchGuard is an independent industrial network architecture analysis tool
+inspired by general OT cybersecurity good practices, including those addressed
+by the IEC 62443 series. It does not provide certification, establish normative
+conformity or imply institutional endorsement.
 
 Project code and documentation use [Apache-2.0](LICENSE). Dependencies retain
 their own [licenses and notices](THIRD_PARTY_NOTICES.md).
-## Exact communication trace
-
-Version 1.1.0 adds
-`otarchguard trace MODEL --source ASSET --service SERVICE [--destination ASSET]`
-with optional `--policy-evidence`, `--report PATH` and `--report-format html|json`.
-Exit 0 means the exact declared query completed, including unreachable or mixed
-port outcomes. Intents remain unassessed by trace. See the [trace contract](docs/trace.md)
-and [synthetic trace examples](examples/README.md#exact-communication-trace).
-Current release-candidate application and distribution versions are 1.3.0. Evaluate upgrades in a parallel
-environment; see [installation and upgrade](docs/installation.md). Consult the
-owner-published release record for available assets, source tag and checksums.
-
-For v1.2, easier architecture authoring is a required future adoption goal:
-guided creation, industrial templates, spreadsheet/CSV import, schema-1 YAML
-generation, understandable validation and progressive visual editing. These
-capabilities are absent from published v1.1.0; see the development walkthrough
-above for implemented CSV/TSV, restricted XLSX and JSON/NetBox import subsets.
-
-## Quality and architecture comparison (development)
-
-`otarchguard quality MODEL` assesses model declarations and explicit optional
-requirements, with canonical JSON output. Add `--output NEW` for a human report.
-`otarchguard compare-architecture BASELINE PROPOSED --output NEW` compares native
-and optional documentary evidence; repeat `--trace SOURCE:SERVICE` for actual exact
-before/after evaluation. Missing documentation never implies a vulnerability.
-See the [offline tutorial](examples/quality-comparison/README.md) and
-[versioned contract](docs/development/v12-07-quality-and-comparison.md).
-## PCAP Evidence Studio
-
-The additive v1.3.0 release candidate supports passive local PCAP/PCAPNG evidence,
-reviewed identity mappings, comparison through the existing evaluator, and offline
-reports. Capture metadata never establishes authorization, host authenticity,
-session success or deployed firewall behavior. ARP sender/target fields retain
-their protocol meaning; an ARP target reference does not establish a device.
-See the [capture guide](docs/pcap-evidence-studio.md),
-[fictional tutorial](examples/capture-studio/README.md), and
-[gate evidence](docs/development/v13-gate-evidence.md).
-Native schema 1 remains supported. Evidence contracts and a read-only consumer are
-documented in [V13-18](docs/development/v13-18-evidence-contract-freeze.md).
-No stable v1.3 release, hosted validation or final owner acceptance is implied by
-the package version.
-
-Interoperability evidence uses independently authored synthetic bytes and
-Wireshark `text2pcap` 4.6.7 output, checked against offline TShark 4.6.7 receipts.
-It demonstrates the [tested subset](docs/pcap-evidence-studio.md#capture-corpus-and-use-policy),
-not every capture producer or real industrial-plant traffic. No authorized real
-industrial capture or downloaded operational/public corpus is part of this validation.
-See the [source and acceptance reconciliation](docs/development/v13-27-source-and-release-provenance.md)
-for historical CI, the original human results and the new candidate boundary.
 

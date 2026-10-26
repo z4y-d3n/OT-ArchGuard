@@ -1,29 +1,60 @@
-# 1.3.0 (release candidate; unpublished)
+# Changelog
 
-- Complete the controlled package/runtime transition to 1.3.0 while preserving
-  schema 1 and historical analytical contracts.
-- Validate independently produced captures, correct ARP sender/target and Ethernet
-  delivery semantics, and prevent target-only ARP references from becoming device
-  identity proposals.
-- Freeze versioned capture evidence contracts and demonstrate a read-only consumer.
-- Improve Explorer wording and evidence presentation. Hosted six-platform results
-  and human browser acceptance must be recorded for the final source before
-  owner-controlled publication. See [release notes](docs/release-notes-1.3.0.md).
+## 1.3.0 — 2026-10-26 (stable)
 
-- Independently audit passive PCAP Evidence Studio and reject malformed IPv4
-  options and malformed/unsupported IPv6 extension semantics before exposing
-  transport ports or TCP initiation evidence.
-- Bound retained native comparison evidence incrementally, aborting an over-budget
-  query before evaluating subsequent port intervals. Default native results are
-  unchanged; no partial capture conclusions are published.
-- Separate observed communication into labeled diagram lanes with direct evidence
-  links, and connect comparison findings to exact flow details.
-- Add independent binary/semantic/publication/resource regression corpora, OS peak
-  resident-memory measurements, maximum-frame and metadata workloads, and hosted
-  capture benchmark retention. Hosted validation and browser acceptance remain
-  required; no stable release approval or publication is implied.
+Published [v1.3.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0)
+is the latest stable release, from accepted integration commit
+`10d7de6c416ec6f0ee364c671ebe9292ee69e672`.
 
-# 1.2.0 (stable-release preparation; unpublished)
+- Add bounded passive PCAP/PCAPNG analysis, supported packet metadata, directed
+  communication aggregates, related bidirectional groups and conservative port hints.
+- Add deterministic offline HTML/CSS/SVG evidence reports and fictional walkthroughs,
+  without JavaScript, a web server or remote rendering resources.
+- Add explicit hash-bound association review and reconciliation through the existing
+  native evaluator, retaining witnesses, diagnostics and stale-evidence checks.
+- Correct ARP sender/target and Ethernet-delivery semantics; target-only references
+  do not become observed-address identity proposals.
+- Reject malformed IPv4 options and malformed/unsupported IPv6 extension semantics
+  before exposing transport ports or TCP initiation evidence.
+- Replace primary raw JSON presentation with structured summaries, protocol and
+  coverage tables, readable review fields, contextual explanations and empty states.
+  Canonical JSON and exact identifiers remain available as technical evidence.
+- Add descriptive communication labels and reciprocal navigation between observed
+  addresses, aggregates, groups, associations, findings and exact evidence, including
+  complete paginated relationships and separate index/detail page namespaces.
+- Display human-readable UTC timestamps without losing original rational precision,
+  and provide summary/category counts consistent with canonical evidence.
+- Preserve separate directed diagram lanes, direct evidence links and ARP field
+  panels. Distinguish observed traffic from declared-model assessment and uncertainty.
+- Bound retained native comparison evidence incrementally, stopping over-budget
+  queries before subsequent port intervals and publishing no partial conclusions.
+- Add independent binary, semantic, publication and resource regression corpora,
+  maximum-frame and metadata workloads, OS peak resident-memory measurements and
+  hosted capture benchmarks.
+- Freeze versioned capture evidence contracts and verify independent read-only
+  consumers. Preserve native YAML schema 1, existing Import Studio, Architecture
+  Explorer and historical analytical contracts.
+- Verify the final integration in [CI run 40273411275](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40273411275):
+  all six Windows/Ubuntu/macOS × Python 3.12/3.14 configurations passed, each with
+  2,815 installed-wheel tests and 2,815 installed-sdist tests and zero failures,
+  errors or skips. Wheel/sdist counts overlap and are not additive.
+- Complete the second human browser acceptance with all six criteria passing,
+  including the previously failed navigation and interpretation criteria,
+  legibility at 200% zoom and offline keyboard operation.
+
+Industrial protocol names inferred from ports remain hints. The release performs
+no TCP stream reassembly, deep industrial protocol inspection or application
+payload decoding. Independent synthetic and Wireshark-generated reference captures
+cover the documented subset; universal producer compatibility and validation
+against real operational industrial traffic are not claimed.
+
+See the [published release notes and assets](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0),
+[installation guide](docs/installation.md) and [PCAP Evidence Studio guide](docs/pcap-evidence-studio.md).
+
+The earlier entries below retain their original development and release-preparation
+context. Their status wording records that stage, rather than current release availability.
+
+## 1.2.0 (stable-release preparation; unpublished)
 
 Prepare the stable version from accepted V12-08 integration without changing
 native schema, analytical semantics, provenance bindings or runtime dependencies.
@@ -32,14 +63,12 @@ tests those exact artifacts on the release-preparation branch and its PR.
 Publication remains a separate owner decision; this entry is not a release claim.
 See [release notes](docs/release-notes-1.2.0.md).
 
-# 1.2.0rc1 (unpublished candidate)
+## 1.2.0rc1 (unpublished candidate)
 
 Final V12-08 candidate: complete integrated Import Studio, offline Explorer, quality and
 comparison; stricter distribution entry auditing and full installed-sdist CI.
 See [candidate notes](docs/release-notes-1.2.0.md). Stable publication requires
 separate owner authorization and exact-source acceptance.
-
-# Changelog
 
 ## 1.1.0
 
@@ -78,10 +107,4 @@ unchanged. Python 3.12 is the minimum; local verification covers Windows Python
 3.12.14 and 3.14.5. The invalid-Unicode diagnostic issue remains documented in
 [limitations](docs/limitations.md). See [verification](docs/verification.md) and
 [release notes](docs/release-notes-1.0.1.md).
-# PCAP Evidence Studio — introduced in 1.3.0
-
-- Add bounded passive PCAP/PCAPNG parsing, metadata observations and port hints.
-- Add explicit hash-bound association review and conservative native-model comparison.
-- Add deterministic offline evidence reports, fictional fixtures and validation tooling.
-- Preserve native schema 1 and historical v1.2 contracts.
 
