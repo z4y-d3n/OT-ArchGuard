@@ -116,7 +116,7 @@ def write_mapping(path: Path, mapping: dict[str, Any], limits: CaptureLimits) ->
 
 def _document(title: str, body: str, capture_hash: str, filename: str = "index.html") -> bytes:
     current = re.sub(r"-\d+\.html$", ".html", filename)
-    if filename.startswith("evidence-"):
+    if filename.startswith(("evidence-", "evidenceindex-")):
         current = "evidence.html"
 
     def navigation(items: tuple[tuple[str, str], ...]) -> str:
@@ -310,7 +310,7 @@ def _anchor(kind: str, value: str) -> str:
 
 def _page_name(stem: str, page: int) -> str:
     if stem == "evidence" and page:
-        return f"evidence-index-{page + 1}.html"
+        return f"evidenceindex-{page + 1}.html"
     return stem + (f"-{page + 1}" if page else "") + ".html"
 
 

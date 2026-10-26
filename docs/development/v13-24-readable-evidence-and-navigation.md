@@ -80,7 +80,7 @@ For a high-cardinality address, the complete route is:
 Pagination includes page/record counts and previous/next links. Conversation,
 group, finding, association, evidence and address targets are precomputed for
 their actual page, so links do not assume the first page. The evidence index
-uses `evidence.html` / `evidence-index-N.html`; detail pages keep `evidence-N.html`,
+uses `evidence.html` / `evidenceindex-N.html`; detail pages keep `evidence-N.html`,
 avoiding filename collisions. Complete canonical JSON remains directly linked.
 
 Uncataloged addresses are labeled as such, without invented host or association

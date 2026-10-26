@@ -515,7 +515,7 @@ def test_primary_and_secondary_navigation_exposes_all_evidence_families_and_curr
         active = [node for node in nav_links if node.attrs.get("aria-current") == "page"]
         assert active, name
         family = re.sub(r"-\d+$", "", name[:-5])
-        if name.startswith("evidence-"):
+        if name.startswith(("evidence-", "evidenceindex-")):
             family = "evidence"
         assert any(str(n.attrs["href"]).split(".", 1)[0] == family for n in active), name
 

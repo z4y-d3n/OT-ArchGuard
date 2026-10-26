@@ -35,6 +35,19 @@ identity. The final installed benchmark remains required and supersedes the
 source preflight. Resource ceilings are unchanged; richer output can reach them
 sooner and is rejected rather than silently truncated.
 
+The complete integration preflight exposed a page-namespace regression: new
+`evidence-index-N.html` pages were counted as existing `evidence-N.html` detail
+pages by the unchanged capture CLI regression. The renderer now uses
+`evidenceindex-N.html` for subsequent index pages, preserving the original detail
+namespace and its test. The provisional `5ec9edc` candidate is not selected for
+acceptance; its receipts and packages are retained separately when replacing the
+working acceptance outputs. Fresh exact-source packages and complete suites are
+required after this correction.
+
+The corrected source then passed all 37 combined capture CLI and UX-integrity
+cases, with Ruff lint/format and strict mypy passing. This focused execution is
+additional diagnostic evidence, not a substitute for the final complete suites.
+
 ## Exact-source acceptance receipts
 
 All paths below are under `output/v13-ux/`. Final completion is conditional on
