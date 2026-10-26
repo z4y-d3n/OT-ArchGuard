@@ -69,6 +69,7 @@ include docs/development/v13-31-final-release-readiness.md
 include docs/development/v13-benchmark-results.md
 include docs/development/v13-final-baseline-and-impact.md
 include docs/development/v13-gate-evidence.md
+include docs/development/v14-01-handoff-es.md
 include docs/development/v14-analysis-revisions-adr.md
 include docs/development/v14-architecture.md
 include docs/development/v14-enip-s7.md

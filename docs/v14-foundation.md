@@ -2,6 +2,9 @@
 
 This is a local v1.4 development checkpoint, package/CLI `1.4.0.dev1`.
 The unchanged native engine retains identity `1.3.0` to preserve frozen evidence.
+The legacy Python `__version__` remains that engine alias; use
+`DISTRIBUTION_VERSION`, installed distribution metadata or `--version` for the
+development product identity.
 The stable release is v1.3.0; this modified branch is not a stable distribution.
 The following operations are implemented; historical comparisons and baseline
 approval are not yet available.
