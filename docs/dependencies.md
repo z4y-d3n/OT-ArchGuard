@@ -3,7 +3,7 @@
 Runtime: Typer for CLI, PyYAML for bounded parsing, Pydantic for strict records.
 The standard library provides addressing, hashing, graphs, intervals and serialization.
 There are no mandatory cloud, telemetry, scanning, browser or LLM dependencies.
-The development Architecture Explorer uses the same dependency closure plus the
+Architecture Explorer uses the same dependency closure plus the
 standard library for static HTML/CSS/SVG, hashing, input checks and link auditing.
 It adds no browser tooling, framework, graph-rendering package or runtime service.
 

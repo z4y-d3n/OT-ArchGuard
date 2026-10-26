@@ -1,6 +1,6 @@
 # Exact communication trace
 
-Development Explorer integration uses `otarchguard explore MODEL --output NEW
+Architecture Explorer integration uses `otarchguard explore MODEL --output NEW
 --trace SOURCE:SERVICE` (repeatable). It regenerates the same exact engine result,
 retains model binding and port/transport/direction/negative-result qualifications,
 and links the involved native entities. No query runs by default. See the
@@ -26,7 +26,7 @@ optional top-level fields, timestamps, source paths or overall `passed` flag.
 | Field | Type / meaning |
 | --- | --- |
 | trace_version | integer 1 |
-| engine_version | current application version string (for example, 1.2.0); independent of trace_version |
+| engine_version | current application version string (1.3.0 in this release); independent of trace_version |
 | schema_version | integer 1 |
 | status | literal `complete`; does not assert reachability |
 | model_sha256 | canonical validated snapshot SHA-256 string |
@@ -164,5 +164,8 @@ separate. Split/merge and fuzzy identity inference are unsupported.
 See the [seven ADRs](development/v12-07-quality-and-comparison.md) for versioned schemas,
 coverage denominators, query comparability, resource ceilings, compact offline
 views, installed-console tests, reproducible benchmarks and independent local,
-PR, hosted-CI and owner-review acceptance. Actual file-URL browser interaction
-was policy-blocked; static checks do not establish WCAG certification.
+PR, hosted-CI and owner-review acceptance. The original V12-07 browser-automation
+attempt was policy-blocked; that historical result does not claim manual
+acceptance of every Explorer view. PCAP Evidence Studio's separate second human
+review is recorded in the [v1.3.0 release notes](release-notes-1.3.0.md).
+Static checks do not establish WCAG certification.

@@ -6,7 +6,9 @@ structural extraction rather than Office rendering. The DOCX table deliberately
 contradicts the existing mixed inventory's zone. Presentation arrows and text
 claiming `TCP 502 allowed` establish no native edge or rule.
 
-After a regular noneditable development installation, from the source distribution:
+After a regular noneditable v1.3.0 installation using the
+[installation guide](../../../docs/installation.md), from the verified source
+distribution or matching checkout:
 
 ```console
 otarchguard import inspect examples/import-studio/documents/inventory.docx

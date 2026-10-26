@@ -1,6 +1,6 @@
 # Offline evidence reports, version 1
 
-The additive development [Architecture Explorer](../examples/explorer/README.md)
+[Architecture Explorer](../examples/explorer/README.md)
 uses static multipage navigation for native models and project provenance. Run
 `otarchguard explore MODEL --output NEW_DIRECTORY`, optionally with
 `--provenance SIDECAR`, `--trace SOURCE:SERVICE`, `--check` or `--scenario ID`.
@@ -9,11 +9,15 @@ arbitrary old HTML/JSON report is imported as analytical authority. Existing
 single-file reports and their version-1 bytes/contracts remain unchanged.
 See [input, security and size contracts](development/v12-05-architecture-explorer.md).
 
-For current presentation design and observed verification, see
-[Gate V11-2](v1.1/gate-v11-2.md). Analytical report JSON remains version 1.
+This page specifies native single-file reports, not the separate
+[PCAP evidence site](pcap-evidence-studio.md). For the native renderer's design
+origin and historical verification, see [Gate V11-2](v1.1/gate-v11-2.md).
+Current published-release acceptance is summarized in the
+[v1.3.0 release notes](release-notes-1.3.0.md). Analytical report JSON remains version 1.
 
-All four commands retain their existing deterministic JSON stdout and native exit
-codes. Add `--report PATH` to write a fully offline HTML artifact, or add
+The native `validate`, `check`, `exposure` and `compare` commands retain their
+existing deterministic JSON stdout and native exit codes. Add `--report PATH`
+to write a fully offline HTML artifact, or add
 `--report-format json` for the richer JSON report envelope. The filename extension
 does not select the format. Existing parent directories are required. No browser,
 Graphviz, Jinja2, JavaScript, web server or additional dependency is required.
@@ -102,9 +106,10 @@ used for analysis (CLI uses defaults). `json_report` and `html_report` return
 bytes; `architecture_svg(snapshot)` returns standalone SVG text. These helpers do
 not run analyses or infer paths. The default rendering retains all detailed
 evidence in memory, with no separate report-size budget or streaming renderer;
-large reports can be lengthy. Resource ceilings remain provisional.
+large reports can be lengthy. Enforced resource ceilings are conservative
+rejection limits, not capacity guarantees.
 
-## Presentation ordering (v1.1 development)
+## Presentation ordering
 
 All four commands accept repeatable `--zone-order ZONE_ID` with an HTML `--report`:
 
@@ -162,7 +167,7 @@ owner assertions. SL-T, SL-C and SL-A remain **unassessed, not zero**. Assessmen
 and approval evidence stays external. A report is neither a full cybersecurity
 requirements specification nor verified deployed inventory. It makes no external standards conformity/certification, exploitability, compromise-probability or
 physical-risk-reduction claim. See [the synthetic walkthroughs](../examples/README.md).
-The v1.1 development trace uses a separate `trace_version: 1` envelope and static
+The trace command uses a separate `trace_version: 1` envelope and static
 HTML entry points. See [trace evidence and finite summaries](trace.md). Native
 exposure/comparison HTML adds summaries of completed scenario queries and
 conservative declaration-change references. Existing report-version-1 JSON is
@@ -194,5 +199,7 @@ separate. Split/merge and fuzzy identity inference are unsupported.
 See the [seven ADRs](development/v12-07-quality-and-comparison.md) for versioned schemas,
 coverage denominators, query comparability, resource ceilings, compact offline
 views, installed-console tests, reproducible benchmarks and independent local,
-PR, hosted-CI and owner-review acceptance. Actual file-URL browser interaction
-was policy-blocked; static checks do not establish WCAG certification.
+PR, hosted-CI and owner-review acceptance. The original V12-07 file-URL automation
+attempt was policy-blocked; preserve that historical limitation separately from
+PCAP Evidence Studio's completed second human review. Static checks do not
+establish WCAG certification.

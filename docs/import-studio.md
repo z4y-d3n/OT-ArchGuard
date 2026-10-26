@@ -1,17 +1,18 @@
-# Import Studio â€” unreleased v1.2 foundation
+# Import Studio
 
-V12-01 preserves the CSV/TSV workflow; V12-02 adds restricted XLSX, explicit
-JSON inventories and a versioned offline NetBox export subset. V12-03 adds bounded
-GraphML and diagrams.net evidence. Single-source drafts take
+Import Studio is included in [stable v1.3.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0).
+It supports reviewed CSV/TSV, restricted XLSX, explicit JSON inventories, a
+versioned offline NetBox export subset, bounded GraphML and diagrams.net evidence.
+Single-source drafts take
 one source file; structured profiles can select several collections or sheets.
-V12-04 adds a separate project workflow that combines multiple documents without
+A separate project workflow combines multiple documents without
 merging their authoritative YAML by hand. Start with the
 [complete project walkthrough](../examples/import-studio/projects/README.md).
 The [project reference](development/v12-04-projects-and-reconciliation.md) documents
 manifest/draft/decision contracts, exact CLI commands, explicit owner partitions,
 field conflicts and safe hash-bound connector acknowledgment. Existing commands
 below keep their single-source behavior.
-V12-06 adds restricted UTF-8 TXT/Markdown and transitional DOCX/PPTX text evidence.
+Restricted UTF-8 TXT/Markdown and transitional DOCX/PPTX text evidence are also supported.
 Use profile version 4, explicit `select` collections and optional exact-header
 table mappings; drafts use version 5. Project controls retain version 1. Every
 nonempty document observation set requires evidence-only owner acknowledgment;
@@ -19,14 +20,15 @@ mapped candidates require separate partition/field review and model confirmation
 See the [document tutorial](../examples/import-studio/documents/README.md) and
 [format/security/review reference](development/v12-06-document-evidence-and-explorer.md).
 Imports remain evidence until the owner confirms declarations. No connectivity or
-permission is inferred. Development builds identify themselves as `1.2.0`;
-the published v1.1.0 release is unchanged and lacks these commands.
+permission is inferred. Install the published `1.3.0` distribution using the
+[installation guide](installation.md). Historical V12 records describe when the
+adapters were introduced; they do not make the current implementation unreleased.
 
 ## First architecture from a synthetic inventory
 
-Use an installed development wheel and the synthetic files in
+Use a regular installed v1.3.0 wheel or sdist and the synthetic files in
 [`examples/import-studio`](../examples/import-studio). They are shipped in the
-development source archive, so these commands work outside a Git checkout.
+published source distribution, so these commands work outside a Git checkout.
 Create an empty working directory, copy the three example files into it, and
 ensure its `output` directory exists. The installed `otarchguard` console supplies
 the implementation; the source files are only inputs.
@@ -101,7 +103,7 @@ constants:
   criticality: unspecified
 ```
 
-`fields` maps native field name â†’ exact source header. A source ID column is
+`fields` maps native field name → exact source header. A source ID column is
 mandatory; it is never replaced with a slug derived from a display name. One
 column maps to one field. `constants` are explicit profile proposals, labeled
 `CANDIDATE_INFERENCE` until the owner confirms each whole candidate. A field cannot
@@ -176,7 +178,7 @@ crash durability, distributed-filesystem atomicity or adversarial concurrent-wri
 isolation on every platform. A process failure before publication can leave a
 hidden staging directory; its contents are not a published validated bundle.
 
-## Following gates and scenarios
+## Related workflows and references
 
 - Excel/JSON-to-first-architecture: the structured workflow below is implemented
   in V12-02, with explicit sheet/collection selection and literal formula corrections.
@@ -189,7 +191,11 @@ hidden staging directory; its contents are not a published validated bundle.
 - Before/after: existing `compare` evaluates two native declared models. A source
   document change does not itself establish a physical or analytical change.
 
-PDF/VSDX and completeness/comparison views remain future work. See the
+PDF/VSDX remain unsupported. Explicit declaration/documentary coverage and
+before/after review are implemented by `quality` and `compare-architecture`; see
+the [quality/comparison tutorial](../examples/quality-comparison/README.md).
+The following records preserve the earlier design context:
+
 [architecture](development/v1.2-architecture.md),
 [decision record](development/v1.2-design-decisions.md) and
 [roadmap](development/v1.2-roadmap.md).
@@ -198,11 +204,11 @@ PDF/VSDX and completeness/comparison views remain future work. See the
 
 The shipped synthetic examples cover all three new adapters. Copy the relevant
 source, profile and context from `examples/import-studio` into a writable folder.
-Use a regular development installation (`1.2.0`), with no extra dependencies.
+Use a regular `1.3.0` installation, with no additional runtime dependencies.
 For an approved local wheel and existing runtime wheels, offline installation is:
 
 ```text
-python -m pip install --no-index --find-links /approved/wheelhouse otarchguard-1.2.0-py3-none-any.whl
+python -m pip install --no-index --find-links /approved/wheelhouse otarchguard-1.3.0-py3-none-any.whl
 ```
 
 The wheelhouse must contain the existing Typer, PyYAML, Pydantic dependencies and
@@ -305,8 +311,11 @@ merge. Native validation remains authoritative, including correction references
 and IPv4 host/prefix semantics. JSON key order and excluded metadata do not affect
 semantic candidate identity; array position remains relevant. XLSX sheet order
 does not affect candidate identity when selected names/content are unchanged.
-Every source-byte change still requires a new draft and review. Cross-file
-reconciliation remains deferred. See the [subset and resource budgets](development/v1.2-import-formats.md).
+Every source-byte change still requires a new draft and review. These single-source
+commands do not reconcile separate files; use the
+[project workflow](../examples/import-studio/projects/README.md) for explicit
+cross-file identity/field decisions. See the
+[subset and resource budgets](development/v1.2-import-formats.md).
 
 ## Exact numeric evidence (V12-02R)
 
@@ -320,7 +329,7 @@ JSON decimals/exponents retain their exact source lexeme and numeric category in
 a tagged raw record. `0.10000000000000001`, `1.00`, `1e-400` and `-0` retain that
 spelling as proposed text when explicitly mapped as numbers. Numeric fields do
 not accept numeric strings or booleans. Decimal/exponent tokens do not satisfy an
-integer-only mapping. Exponents are bounded to Â±9999, tokens to 64 characters.
+integer-only mapping. Exponents are bounded to ±9999, tokens to 64 characters.
 No automatic rounding, truncation or permissions result from these values.
 
 XLSX preserves the number stored in OOXML, which may already differ from what a
@@ -331,7 +340,7 @@ Quoted native YAML text preserves exponent-shaped declarations through validatio
 See the [complete numeric policy](development/v12-02r-numeric-policy.md).
 
 For a selected source-review archive from the repository, use a regular installed
-development interpreter and new destinations:
+interpreter with the regular installed package and new destinations:
 
 ```text
 python -m tools.review_bundle --output ingestion-v12-02r-review.zip --inventory ingestion-v12-02r-inventory.json
@@ -350,7 +359,7 @@ secret concealed in an otherwise allowed scalar.
 The shipped `industrial.drawio`, compressed two-page `multipage.drawio`,
 `directed.graphml` and `undirected.graphml` are synthetic industrial topologies.
 Copy the source, matching profile and `model-context.yaml` into a working folder
-outside the checkout. With an installed development distribution:
+outside the checkout. With a regular installed v1.3.0 distribution:
 
 ```text
 otarchguard import inspect industrial.drawio
