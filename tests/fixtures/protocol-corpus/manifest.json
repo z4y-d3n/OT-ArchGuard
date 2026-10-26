@@ -156,6 +156,284 @@
       "source_url": "https://github.com/cisagov/ICSNPP/tree/12b5d2416dcdbf5fb8225f6b268ea8ec1867af4d",
       "tier": 3,
       "upstream_revision": "12b5d2416dcdbf5fb8225f6b268ea8ec1867af4d"
+    },
+    {
+      "attribution": "Repository copyright 2023 Battelle Energy Alliance, LLC; retain root LICENSE.txt and NOTICE.txt if separately authorized to redistribute.",
+      "capture_type": "pcapng",
+      "expected_negative": [
+        "No device identity, successful operation, owner approval or native reachability conclusion."
+      ],
+      "expected_positive": [
+        "Independent TShark 4.6.7 header observations recorded in external-tshark-receipts.json."
+      ],
+      "id": "cisa-enip-multiple",
+      "known_limitations": [
+        "Local analysis of public parser test traces only; raw bytes excluded from Git and packages.",
+        "Collection context and original collector are not independently established; not production-plant validation.",
+        "Repository-level BSD terms reviewed; per-capture redistribution remains unapproved.",
+        "Header-only sensitivity review; capture may retain application data and private addresses.",
+        "CIP Multiple Service Packet inner services require unsupported deep parsing; only supported envelope may be recognized."
+      ],
+      "license": "BSD-3-Clause at repository root; independent per-capture collector/grant unverified",
+      "original_author": null,
+      "original_filename": "multiple_service_packet_cip.pcapng",
+      "parser_identity": "V14-01 bounded header subset; product comparison recorded separately",
+      "protocol_families": [
+        "ethernet_ip"
+      ],
+      "redistribution": "unknown",
+      "reference_tool": "TShark (Wireshark) 4.6.7 (v4.6.7-0-gb439fb7b47a9).",
+      "review_status": "approved_external",
+      "sensitivity_review": "reviewed",
+      "sha256": "4eed29d01d6fe3c827e3c947694526e7669d937ff8973d5c420979565597087c",
+      "size_bytes": 344,
+      "source_organization": "CISA ICSNPP / Battelle Energy Alliance",
+      "source_url": "https://raw.githubusercontent.com/cisagov/icsnpp-enip/3fbd32e3d2838d5e2bcd6c9ed79f036d23a0642e/testing/traces/multiple_service_packet_cip.pcapng",
+      "tier": 3,
+      "upstream_revision": "3fbd32e3d2838d5e2bcd6c9ed79f036d23a0642e"
+    },
+    {
+      "attribution": "Repository copyright 2023 Battelle Energy Alliance, LLC; retain root LICENSE.txt and NOTICE.txt if separately authorized to redistribute.",
+      "capture_type": "pcapng",
+      "expected_negative": [
+        "No device identity, successful operation, owner approval or native reachability conclusion."
+      ],
+      "expected_positive": [
+        "Independent TShark 4.6.7 header observations recorded in external-tshark-receipts.json."
+      ],
+      "id": "cisa-enip-set-attribute",
+      "known_limitations": [
+        "Local analysis of public parser test traces only; raw bytes excluded from Git and packages.",
+        "Collection context and original collector are not independently established; not production-plant validation.",
+        "Repository-level BSD terms reviewed; per-capture redistribution remains unapproved.",
+        "Header-only sensitivity review; capture may retain application data and private addresses."
+      ],
+      "license": "BSD-3-Clause at repository root; independent per-capture collector/grant unverified",
+      "original_author": null,
+      "original_filename": "set_attribute_single_service_cip.pcapng",
+      "parser_identity": "V14-01 bounded header subset; product comparison recorded separately",
+      "protocol_families": [
+        "ethernet_ip"
+      ],
+      "redistribution": "unknown",
+      "reference_tool": "TShark (Wireshark) 4.6.7 (v4.6.7-0-gb439fb7b47a9).",
+      "review_status": "approved_external",
+      "sensitivity_review": "reviewed",
+      "sha256": "9b24d02e6f15a40f2109c2476bb117e2273bc9485077a50044269d3738cea8dc",
+      "size_bytes": 500,
+      "source_organization": "CISA ICSNPP / Battelle Energy Alliance",
+      "source_url": "https://raw.githubusercontent.com/cisagov/icsnpp-enip/3fbd32e3d2838d5e2bcd6c9ed79f036d23a0642e/testing/traces/set_attribute_single_service_cip.pcapng",
+      "tier": 3,
+      "upstream_revision": "3fbd32e3d2838d5e2bcd6c9ed79f036d23a0642e"
+    },
+    {
+      "attribution": "Repository copyright 2023 Battelle Energy Alliance, LLC; retain root LICENSE.txt and NOTICE.txt if separately authorized to redistribute.",
+      "capture_type": "pcap",
+      "expected_negative": [
+        "No device identity, successful operation, owner approval or native reachability conclusion."
+      ],
+      "expected_positive": [
+        "Independent TShark 4.6.7 header observations recorded in external-tshark-receipts.json."
+      ],
+      "id": "cisa-snap7",
+      "known_limitations": [
+        "Local analysis of public parser test traces only; raw bytes excluded from Git and packages.",
+        "Collection context and original collector are not independently established; not production-plant validation.",
+        "Repository-level BSD terms reviewed; per-capture redistribution remains unapproved.",
+        "Header-only sensitivity review; capture may retain application data and private addresses."
+      ],
+      "license": "BSD-3-Clause at repository root; independent per-capture collector/grant unverified",
+      "original_author": null,
+      "original_filename": "snap7.pcap",
+      "parser_identity": "V14-01 bounded header subset; product comparison recorded separately",
+      "protocol_families": [
+        "s7comm"
+      ],
+      "redistribution": "unknown",
+      "reference_tool": "TShark (Wireshark) 4.6.7 (v4.6.7-0-gb439fb7b47a9).",
+      "review_status": "approved_external",
+      "sensitivity_review": "reviewed",
+      "sha256": "2b91f6a8a203ec83e4f2dbb69d5e61602845f23da0baa31d95d029fb24cbd427",
+      "size_bytes": 8260,
+      "source_organization": "CISA ICSNPP / Battelle Energy Alliance",
+      "source_url": "https://raw.githubusercontent.com/cisagov/icsnpp-s7comm/102a35c8f967f20640bd2427bb28a7c609b37493/testing/traces/snap7.pcap",
+      "tier": 3,
+      "upstream_revision": "102a35c8f967f20640bd2427bb28a7c609b37493"
+    },
+    {
+      "attribution": "Repository copyright 2023 Battelle Energy Alliance, LLC; retain root LICENSE.txt and NOTICE.txt if separately authorized to redistribute.",
+      "capture_type": "pcap",
+      "expected_negative": [
+        "No device identity, successful operation, owner approval or native reachability conclusion.",
+        "S7comm-plus frames must never become classic S7comm positives; file also contains classic frames."
+      ],
+      "expected_positive": [
+        "Independent TShark 4.6.7 header observations recorded in external-tshark-receipts.json."
+      ],
+      "id": "cisa-s7-plus-mixed",
+      "known_limitations": [
+        "Local analysis of public parser test traces only; raw bytes excluded from Git and packages.",
+        "Collection context and original collector are not independently established; not production-plant validation.",
+        "Repository-level BSD terms reviewed; per-capture redistribution remains unapproved.",
+        "Header-only sensitivity review; capture may retain application data and private addresses."
+      ],
+      "license": "BSD-3-Clause at repository root; independent per-capture collector/grant unverified",
+      "original_author": null,
+      "original_filename": "s7comm_plus.pcap",
+      "parser_identity": "V14-01 bounded header subset; product comparison recorded separately",
+      "protocol_families": [
+        "s7comm"
+      ],
+      "redistribution": "unknown",
+      "reference_tool": "TShark (Wireshark) 4.6.7 (v4.6.7-0-gb439fb7b47a9).",
+      "review_status": "approved_external",
+      "sensitivity_review": "reviewed",
+      "sha256": "2f9befe0667443fb86b7184b6ff7fcc4eb61fae67d3ce30793ce7b2937067b0c",
+      "size_bytes": 33464,
+      "source_organization": "CISA ICSNPP / Battelle Energy Alliance",
+      "source_url": "https://raw.githubusercontent.com/cisagov/icsnpp-s7comm/102a35c8f967f20640bd2427bb28a7c609b37493/testing/traces/s7comm_plus.pcap",
+      "tier": 3,
+      "upstream_revision": "102a35c8f967f20640bd2427bb28a7c609b37493"
+    },
+    {
+      "attribution": "Repository copyright 2023 Battelle Energy Alliance, LLC; retain root LICENSE.txt and NOTICE.txt if separately authorized to redistribute.",
+      "capture_type": "pcap",
+      "expected_negative": [
+        "No device identity, successful operation, owner approval or native reachability conclusion."
+      ],
+      "expected_positive": [
+        "Independent TShark 4.6.7 header observations recorded in external-tshark-receipts.json."
+      ],
+      "id": "cisa-open62541",
+      "known_limitations": [
+        "Local analysis of public parser test traces only; raw bytes excluded from Git and packages.",
+        "Collection context and original collector are not independently established; not production-plant validation.",
+        "Repository-level BSD terms reviewed; per-capture redistribution remains unapproved.",
+        "Header-only sensitivity review; capture may retain application data and private addresses.",
+        "Filename identifies an open62541 client/server example; localhost lab traffic observed by independent decoder, not a plant capture."
+      ],
+      "license": "BSD-3-Clause at repository root; independent per-capture collector/grant unverified",
+      "original_author": null,
+      "original_filename": "open62541_client-server_mainloop.pcap",
+      "parser_identity": "V14-01 bounded header subset; product comparison recorded separately",
+      "protocol_families": [
+        "opcua_binary"
+      ],
+      "redistribution": "unknown",
+      "reference_tool": "TShark (Wireshark) 4.6.7 (v4.6.7-0-gb439fb7b47a9).",
+      "review_status": "approved_external",
+      "sensitivity_review": "reviewed",
+      "sha256": "07dd69db7de730928601e4f66d94382d94257a344ae3a5f9147b7dec108bcefd",
+      "size_bytes": 22412,
+      "source_organization": "CISA ICSNPP / Battelle Energy Alliance",
+      "source_url": "https://raw.githubusercontent.com/cisagov/icsnpp-opcua-binary/d7fd8894d23baabcaf59989abc3cbab6b469c074/testing/traces/open62541_client-server_mainloop.pcap",
+      "tier": 3,
+      "upstream_revision": "d7fd8894d23baabcaf59989abc3cbab6b469c074"
+    },
+    {
+      "attribution": "Repository copyright 2023 Battelle Energy Alliance, LLC; retain root LICENSE.txt and NOTICE.txt if separately authorized to redistribute.",
+      "capture_type": "pcap",
+      "expected_negative": [
+        "No device identity, successful operation, owner approval or native reachability conclusion.",
+        "Normal product dispatch must not scan or recognize OPC UA on TCP/12345."
+      ],
+      "expected_positive": [
+        "TShark explicit decode-as TCP/12345 observes OPC UA headers."
+      ],
+      "id": "cisa-open62541-nonstandard",
+      "known_limitations": [
+        "Local analysis of public parser test traces only; raw bytes excluded from Git and packages.",
+        "Collection context and original collector are not independently established; not production-plant validation.",
+        "Repository-level BSD terms reviewed; per-capture redistribution remains unapproved.",
+        "Header-only sensitivity review; capture may retain application data and private addresses.",
+        "Filename identifies an open62541 client/server example; localhost lab traffic observed by independent decoder, not a plant capture."
+      ],
+      "license": "BSD-3-Clause at repository root; independent per-capture collector/grant unverified",
+      "original_author": null,
+      "original_filename": "open62541_client-server_mainloop-no-handshake-12345.pcap",
+      "parser_identity": "V14-01 bounded header subset; product comparison recorded separately",
+      "protocol_families": [
+        "opcua_binary"
+      ],
+      "redistribution": "unknown",
+      "reference_tool": "TShark (Wireshark) 4.6.7 (v4.6.7-0-gb439fb7b47a9).",
+      "review_status": "approved_external",
+      "sensitivity_review": "reviewed",
+      "sha256": "da507c9d8798e978ef452efa761da3ab8a3b28c5ad9cb68c150edfb27c7619a9",
+      "size_bytes": 17159,
+      "source_organization": "CISA ICSNPP / Battelle Energy Alliance",
+      "source_url": "https://raw.githubusercontent.com/cisagov/icsnpp-opcua-binary/d7fd8894d23baabcaf59989abc3cbab6b469c074/testing/traces/open62541_client-server_mainloop-no-handshake-12345.pcap",
+      "tier": 3,
+      "upstream_revision": "d7fd8894d23baabcaf59989abc3cbab6b469c074"
+    },
+    {
+      "attribution": "Repository copyright 2023 Battelle Energy Alliance, LLC; retain root LICENSE.txt and NOTICE.txt if separately authorized to redistribute.",
+      "capture_type": "pcap",
+      "expected_negative": [
+        "No device identity, successful operation, owner approval or native reachability conclusion."
+      ],
+      "expected_positive": [
+        "Independent TShark 4.6.7 header observations recorded in external-tshark-receipts.json."
+      ],
+      "id": "cisa-dnp3",
+      "known_limitations": [
+        "Local analysis of public parser test traces only; raw bytes excluded from Git and packages.",
+        "Collection context and original collector are not independently established; not production-plant validation.",
+        "Repository-level BSD terms reviewed; per-capture redistribution remains unapproved.",
+        "Header-only sensitivity review; capture may retain application data and private addresses."
+      ],
+      "license": "BSD-3-Clause at repository root; independent per-capture collector/grant unverified",
+      "original_author": null,
+      "original_filename": "dnp3_example.pcap",
+      "parser_identity": "V14-01 bounded header subset; product comparison recorded separately",
+      "protocol_families": [
+        "dnp3"
+      ],
+      "redistribution": "unknown",
+      "reference_tool": "TShark (Wireshark) 4.6.7 (v4.6.7-0-gb439fb7b47a9).",
+      "review_status": "approved_external",
+      "sensitivity_review": "reviewed",
+      "sha256": "d9b22ee7b5ece4a78d8f9995aff20d55bfb315752ce136f97c77eb5ce73511bf",
+      "size_bytes": 115403,
+      "source_organization": "CISA ICSNPP / Battelle Energy Alliance",
+      "source_url": "https://raw.githubusercontent.com/cisagov/icsnpp-dnp3/b31dbadeceb1cbcda16aef89c650559cd177dd7e/testing/traces/dnp3_example.pcap",
+      "tier": 3,
+      "upstream_revision": "b31dbadeceb1cbcda16aef89c650559cd177dd7e"
+    },
+    {
+      "attribution": "Repository copyright 2023 Battelle Energy Alliance, LLC; retain root LICENSE.txt and NOTICE.txt if separately authorized to redistribute.",
+      "capture_type": "pcap",
+      "expected_negative": [
+        "No device identity, successful operation, owner approval or native reachability conclusion."
+      ],
+      "expected_positive": [
+        "Independent TShark 4.6.7 header observations recorded in external-tshark-receipts.json."
+      ],
+      "id": "cisa-opcua-gap",
+      "known_limitations": [
+        "Local analysis of public parser test traces only; raw bytes excluded from Git and packages.",
+        "Collection context and original collector are not independently established; not production-plant validation.",
+        "Repository-level BSD terms reviewed; per-capture redistribution remains unapproved.",
+        "Header-only sensitivity review; capture may retain application data and private addresses.",
+        "Upstream gap example includes segmented/incomplete messages; unsupported segmentation is retained separately."
+      ],
+      "license": "BSD-3-Clause at repository root; independent per-capture collector/grant unverified",
+      "original_author": null,
+      "original_filename": "opcua_with-gap_with-handshake.pcap",
+      "parser_identity": "V14-01 bounded header subset; product comparison recorded separately",
+      "protocol_families": [
+        "opcua_binary"
+      ],
+      "redistribution": "unknown",
+      "reference_tool": "TShark (Wireshark) 4.6.7 (v4.6.7-0-gb439fb7b47a9).",
+      "review_status": "approved_external",
+      "sensitivity_review": "reviewed",
+      "sha256": "030950345b2c79eaf3bedf8a04c2325cfe4a5d8b40225d250ed693daf350b6b6",
+      "size_bytes": 83524,
+      "source_organization": "CISA ICSNPP / Battelle Energy Alliance",
+      "source_url": "https://raw.githubusercontent.com/cisagov/icsnpp-opcua-binary/d7fd8894d23baabcaf59989abc3cbab6b469c074/testing/traces/opcua_with-gap_with-handshake.pcap",
+      "tier": 3,
+      "upstream_revision": "d7fd8894d23baabcaf59989abc3cbab6b469c074"
     }
   ],
   "manifest_version": 1,

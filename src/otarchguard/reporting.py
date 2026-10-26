@@ -8,7 +8,7 @@ from html import escape as _html_escape
 from pathlib import Path
 from typing import Any, Literal
 
-from otarchguard import __version__
+from otarchguard import NATIVE_ENGINE_VERSION as __version__
 from otarchguard.api import ValidatedArchitecture
 from otarchguard.comparison import ComparisonResult
 from otarchguard.contract import RESOURCE_LIMITS, DiagnosticCategory, ResourceLimits

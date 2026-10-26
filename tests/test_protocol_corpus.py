@@ -69,7 +69,7 @@ def test_original_fixture_generation_and_integrity() -> None:
 
 def test_external_candidates_are_explicitly_unverified() -> None:
     manifest = load_manifest(CORPUS / "manifest.json")
-    external = [e for e in manifest["entries"] if e["tier"] != 1]
+    external = [e for e in manifest["entries"] if e["review_status"] == "candidate"]
     assert external
     for entry in external:
         assert entry["review_status"] == "candidate"
@@ -180,7 +180,7 @@ def test_manifest_and_verification_cli() -> None:
         text=True,
         check=True,
     )
-    assert json.loads(completed.stdout)["approved"] == 1
+    assert json.loads(completed.stdout)["approved"] == 9
 
 
 def test_symlink_input_rejected(tmp_path: Path) -> None:

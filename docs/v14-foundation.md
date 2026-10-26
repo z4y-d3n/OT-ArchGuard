@@ -1,7 +1,7 @@
 # v1.4 development foundation
 
-This is a local v1.4 development checkpoint. The package retains version `1.3.0`
-to preserve frozen native evidence bytes until a reviewed version transition.
+This is a local v1.4 development checkpoint, package/CLI `1.4.0.dev1`.
+The unchanged native engine retains identity `1.3.0` to preserve frozen evidence.
 The stable release is v1.3.0; this modified branch is not a stable distribution.
 The following operations are implemented; historical comparisons and baseline
 approval are not yet available.
@@ -15,8 +15,10 @@ otarchguard capture enrich authorized-local.pcap --output protocol-enrichment.js
 The command scans local PCAP/PCAPNG through the existing bounded reader and emits
 the independent version-1 enrichment JSON to stdout and, optionally, a fresh file.
 It never overwrites a destination. No packet bytes are exported. Supported subsets
-are Modbus TCP MBAP and allowlisted PDU shapes on port 502, and Layer-2 PROFINET DCP
-over EtherType `0x8892`, including supported VLAN envelopes. Complete records must
+are Modbus TCP on 502, EtherNet/IP/limited CIP on 44818, classic S7comm on 102,
+IEC-104 on 2404, OPC UA Binary on 4840, DNP3 on 20000, and Layer-2 PROFINET DCP
+over EtherType `0x8892`, including supported VLAN envelopes. TCP only; UDP and
+implicit I/O remain unsupported. Complete records must
 fit in the bounded packet view. The Python interface permits explicit Modbus
 selection on another port; the CLI does not perform speculative protocol searches.
 
@@ -31,7 +33,18 @@ values, ownership assertions or native evaluator results are added.
 Enrichment binds the exact capture SHA-256. `observations_sha256` is null in this
 slice because enrichment is independent of the existing observation artifact.
 It must not be treated as an approval of newly decoded meanings by a historical
-mapping reviewer. The five other target protocols remain unimplemented.
+mapping reviewer. Enrichment schema 1 now emits decoder revision 2; the strict
+reader also accepts the original two-protocol decoder revision 1.
+
+The artifact's `counts` separates each protocol and recognition status, for example
+`"iec104:STRUCTURALLY_VALID": 1` and `"s7comm:UNSUPPORTED_VARIANT": 2`.
+Counts describe retained records; `skipped_packets` separately explains unsupported
+outer frames and noncandidate traffic. A header category is not an asset, approval
+or successful industrial operation. Secure OPC UA bodies remain opaque. DNP3
+addresses are protocol addresses. See the exact [EtherNet/IP/S7 subsets](development/v14-enip-s7.md)
+and [IEC104/OPC UA/DNP3 subsets](development/v14-iec-opc-dnp.md),
+[external capture evidence](development/v14-external-corpus.md) and
+[version decision](development/v14-version-identity-adr.md).
 
 ## Immutable snapshot import
 

@@ -1,0 +1,182 @@
+{
+  "captures": [
+    {
+      "filename": "multiple_service_packet_cip.pcapng",
+      "input_sha256": "4eed29d01d6fe3c827e3c947694526e7669d937ff8973d5c420979565597087c",
+      "mismatches": [],
+      "positive_records": 1,
+      "product_counts": {
+        "ethernet_ip:STRUCTURALLY_VALID": 1
+      },
+      "product_enrichment_sha256": "fa54a782b577d495f9232b654b9a19265283ba4fb3da003b3b67198734515006",
+      "product_skipped": {},
+      "reason_counts": {
+        "('STRUCTURALLY_VALID', None)": 1
+      },
+      "reference_packets": 1,
+      "selected_field_comparisons": 1,
+      "size_bytes": 344,
+      "status": "FIELDS_MATCH",
+      "tool_version": "TShark (Wireshark) 4.6.7 (v4.6.7-0-gb439fb7b47a9)."
+    },
+    {
+      "filename": "set_attribute_single_service_cip.pcapng",
+      "input_sha256": "9b24d02e6f15a40f2109c2476bb117e2273bc9485077a50044269d3738cea8dc",
+      "mismatches": [],
+      "positive_records": 1,
+      "product_counts": {
+        "ethernet_ip:STRUCTURALLY_VALID": 1
+      },
+      "product_enrichment_sha256": "648508dc30d85cdf9cdb127a2eaa3990b717150b3b792b163a1ada0980254cbc",
+      "product_skipped": {},
+      "reason_counts": {
+        "('STRUCTURALLY_VALID', None)": 1
+      },
+      "reference_packets": 1,
+      "selected_field_comparisons": 1,
+      "size_bytes": 500,
+      "status": "FIELDS_MATCH",
+      "tool_version": "TShark (Wireshark) 4.6.7 (v4.6.7-0-gb439fb7b47a9)."
+    },
+    {
+      "filename": "snap7.pcap",
+      "input_sha256": "2b91f6a8a203ec83e4f2dbb69d5e61602845f23da0baa31d95d029fb24cbd427",
+      "mismatches": [],
+      "positive_records": 11,
+      "product_counts": {
+        "s7comm:STRUCTURALLY_VALID": 11,
+        "s7comm:UNSUPPORTED_VARIANT": 53
+      },
+      "product_enrichment_sha256": "b16fd277663677b9a6b042f09f218e2c9fae1cb9bb5cb4eef2a3663925131be2",
+      "product_skipped": {},
+      "reason_counts": {
+        "('STRUCTURALLY_VALID', None)": 11,
+        "('UNSUPPORTED_VARIANT', 'S7_FUNCTION_UNSUPPORTED')": 33,
+        "('UNSUPPORTED_VARIANT', 'S7_USERDATA_UNSUPPORTED')": 20
+      },
+      "reference_packets": 64,
+      "selected_field_comparisons": 21,
+      "size_bytes": 8260,
+      "status": "FIELDS_MATCH",
+      "tool_version": "TShark (Wireshark) 4.6.7 (v4.6.7-0-gb439fb7b47a9)."
+    },
+    {
+      "filename": "s7comm_plus.pcap",
+      "input_sha256": "2f9befe0667443fb86b7184b6ff7fcc4eb61fae67d3ce30793ce7b2937067b0c",
+      "mismatches": [],
+      "positive_records": 0,
+      "product_counts": {},
+      "product_enrichment_sha256": "0a1df9ec3d5d7e5962ea94478c4feb659a6b30fbb72c435a65ccb715b8fe5650",
+      "product_skipped": {
+        "LINKTYPE_UNSUPPORTED": 262
+      },
+      "reason_counts": {},
+      "reference_packets": 34,
+      "selected_field_comparisons": 0,
+      "size_bytes": 33464,
+      "status": "UNSUPPORTED_OUTER_LINKTYPE",
+      "tool_version": "TShark (Wireshark) 4.6.7 (v4.6.7-0-gb439fb7b47a9)."
+    },
+    {
+      "filename": "open62541_client-server_mainloop.pcap",
+      "input_sha256": "07dd69db7de730928601e4f66d94382d94257a344ae3a5f9147b7dec108bcefd",
+      "mismatches": [],
+      "positive_records": 0,
+      "product_counts": {},
+      "product_enrichment_sha256": "474afbe3398260dc3bc4c33d13bd83df4b520b906733771ffd1403624a44a993",
+      "product_skipped": {
+        "LINKTYPE_UNSUPPORTED": 154
+      },
+      "reason_counts": {},
+      "reference_packets": 66,
+      "selected_field_comparisons": 0,
+      "size_bytes": 22412,
+      "status": "UNSUPPORTED_OUTER_LINKTYPE",
+      "tool_version": "TShark (Wireshark) 4.6.7 (v4.6.7-0-gb439fb7b47a9)."
+    },
+    {
+      "filename": "open62541_client-server_mainloop-no-handshake-12345.pcap",
+      "input_sha256": "da507c9d8798e978ef452efa761da3ab8a3b28c5ad9cb68c150edfb27c7619a9",
+      "mismatches": [],
+      "positive_records": 0,
+      "product_counts": {},
+      "product_enrichment_sha256": "bf64132118c62cde9d28145e1d2308cd0e752a012568e8f32161d4f1dfeb081b",
+      "product_skipped": {
+        "LINKTYPE_UNSUPPORTED": 113
+      },
+      "reason_counts": {},
+      "reference_packets": 54,
+      "selected_field_comparisons": 0,
+      "size_bytes": 17159,
+      "status": "UNSUPPORTED_OUTER_LINKTYPE",
+      "tool_version": "TShark (Wireshark) 4.6.7 (v4.6.7-0-gb439fb7b47a9)."
+    },
+    {
+      "filename": "dnp3_example.pcap",
+      "input_sha256": "d9b22ee7b5ece4a78d8f9995aff20d55bfb315752ce136f97c77eb5ce73511bf",
+      "mismatches": [],
+      "positive_records": 365,
+      "product_counts": {
+        "dnp3:STRUCTURALLY_VALID": 365,
+        "dnp3:UNSUPPORTED_VARIANT": 469
+      },
+      "product_enrichment_sha256": "b4e840be2fba1417bda5f88901ee711bc69549cb18620f8f190649e13f03b67a",
+      "product_skipped": {},
+      "reason_counts": {
+        "('STRUCTURALLY_VALID', None)": 365,
+        "('UNSUPPORTED_VARIANT', 'APPLICATION_FUNCTION_NOT_SUPPORTED')": 267,
+        "('UNSUPPORTED_VARIANT', 'TRANSPORT_FRAGMENTATION_NOT_SUPPORTED')": 202
+      },
+      "reference_packets": 834,
+      "selected_field_comparisons": 1460,
+      "size_bytes": 115403,
+      "status": "FIELDS_MATCH",
+      "tool_version": "TShark (Wireshark) 4.6.7 (v4.6.7-0-gb439fb7b47a9)."
+    },
+    {
+      "filename": "opcua_with-gap_with-handshake.pcap",
+      "input_sha256": "030950345b2c79eaf3bedf8a04c2325cfe4a5d8b40225d250ed693daf350b6b6",
+      "mismatches": [],
+      "positive_records": 237,
+      "product_counts": {
+        "opcua_binary:PORT_HINT": 171,
+        "opcua_binary:STRUCTURALLY_VALID": 237,
+        "opcua_binary:TRUNCATED": 3
+      },
+      "product_enrichment_sha256": "34d3a20ab1ef751df6c6d520373304c700f56d1b0df4a51d7848cdf3fef0ad8e",
+      "product_skipped": {},
+      "reason_counts": {
+        "('PORT_HINT', 'MESSAGE_TYPE_NOT_RECOGNIZED')": 11,
+        "('PORT_HINT', 'NO_APPLICATION_BYTES')": 160,
+        "('STRUCTURALLY_VALID', None)": 237,
+        "('TRUNCATED', 'MESSAGE_INCOMPLETE_OR_SEGMENTED')": 3
+      },
+      "reference_packets": 240,
+      "selected_field_comparisons": 711,
+      "size_bytes": 83524,
+      "status": "FIELDS_MATCH",
+      "tool_version": "TShark (Wireshark) 4.6.7 (v4.6.7-0-gb439fb7b47a9)."
+    }
+  ],
+  "comparison_method": "Every emitted positive record: compare selected safe fields to same original TShark frame.number, TCP desegmentation disabled. Unsupported records are counted separately.",
+  "limitations": [
+    "No plant-production provenance established.",
+    "External bytes and full product JSON remain local ignored development data.",
+    "NULL/SLL inputs are retained as actual unsupported outer-linktype outcomes."
+  ],
+  "protocol_source_sha256": {
+    "__init__.py": "20058d18b0c9c4b2c9d8ae640df6c0568e1e46b964c37566f41c158f0cd5aca7",
+    "contract.py": "65a3f89fab845300b19dd62e68f7052eca3115a524cf762786536f84fabb561b",
+    "dcp.py": "8113c0a9d3937192649018e6420272b4a213780a9b657b837f002dfb6d368d0d",
+    "dnp3.py": "afc8bbf997326faf649a97fbe0cfd4dbd2ea11acd21a48f5ac0c001cbf307df6",
+    "enip.py": "a17d2bdd9646a6c9854a0478b677a9978a0223929a4bfbd196325ed6ba6a33cb",
+    "header_validation.py": "51d4d4b90d2ea6a7d65139a706edd14bacf745ffe7e744522283e5a3f5e53e7e",
+    "iec104.py": "ed4f9aa91acbd62574d73b28cbb1e1459ce61bef561aa487778a6c9c9480ebe9",
+    "modbus.py": "773cfb835e0714965292373a3a27faa1adbf2a6e0962fbc5541c57cb255524db",
+    "opcua.py": "cb8e043ab2755bac0d98d1122ddd2eeff6363a1d3e23dd7a9b228109f34457b0",
+    "packet.py": "17c19913187fbcf83b33c84df5aa3c8425f02174cf217fbd3aab43453ca15ebf",
+    "s7comm.py": "cb28843b476c14fb4b2711dca10cf076600206fb2132a058e6265d00358d662b",
+    "validation.py": "5316aad8063683e09e7b0ad605a3b7e05e7abd7da381f319b7af3a1536b060a3"
+  },
+  "receipt_version": 1
+}

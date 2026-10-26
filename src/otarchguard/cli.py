@@ -9,7 +9,7 @@ from typing import Annotated, Any
 import typer
 from typer.core import TyperCommand
 
-from otarchguard import __version__
+from otarchguard import NATIVE_ENGINE_VERSION, __version__
 from otarchguard.api import ValidatedArchitecture, validate_file
 from otarchguard.capture.cli import app as capture_app
 from otarchguard.comparison import compare_architectures, compare_files
@@ -253,7 +253,7 @@ def validate(
             {
                 "status": "valid",
                 "schema_version": result.model.schema_version,
-                "engine_version": __version__,
+                "engine_version": NATIVE_ENGINE_VERSION,
                 "model_sha256": result.sha256,
                 "scope": "Declared structural consistency only; no path or compliance evaluation.",
             },
@@ -278,7 +278,7 @@ def check(
     try:
         snapshots = (validate_file(architecture),) if report is not None else ()
         result = check_architecture(snapshots[0]) if snapshots else check_file(architecture)
-        payload = {"engine_version": __version__, "schema_version": 1, **asdict(result)}
+        payload = {"engine_version": NATIVE_ENGINE_VERSION, "schema_version": 1, **asdict(result)}
         serialized = json.dumps(payload, sort_keys=True)
         _report(
             report,
@@ -328,7 +328,8 @@ def exposure(
             else exposure_file(architecture, scenario)
         )
         serialized = json.dumps(
-            {"engine_version": __version__, "schema_version": 1, **asdict(result)}, sort_keys=True
+            {"engine_version": NATIVE_ENGINE_VERSION, "schema_version": 1, **asdict(result)},
+            sort_keys=True,
         )
         _report(
             report,
@@ -398,7 +399,8 @@ def compare(
             else compare_files(baseline, proposed, scenario, scope=scope)
         )
         serialized = json.dumps(
-            {"engine_version": __version__, "schema_version": 1, **asdict(result)}, sort_keys=True
+            {"engine_version": NATIVE_ENGINE_VERSION, "schema_version": 1, **asdict(result)},
+            sort_keys=True,
         )
         _report(
             report,

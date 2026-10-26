@@ -2,6 +2,15 @@
 
 ## Unreleased — v1.4 local development foundation
 
+- V14-01 adds EtherNet/IP/limited CIP, classic S7comm, IEC-104, OPC UA Binary
+  outer framing and CRC-checked DNP3 to complete seven bounded header subsets.
+- Preserve enrichment schema 1; emit decoder revision 2 and strictly consume
+  legacy revision 1. Frozen native evidence and workspace/snapshot v1 stay intact.
+- Separate development distribution `1.4.0.dev1` from native engine `1.3.0`;
+  document analytical revision and scoped-review identities for V14-02.
+- Add local-only external laboratory capture verification with exact source
+  hashes and TShark receipts. No third-party capture bytes are redistributed.
+
 - Add independent bounded Modbus TCP and Layer-2 PROFINET DCP header enrichment
   through `capture enrich`, preserving observation v2 and reconciliation semantics.
 - Add metadata-only immutable evidence workspace initialization, snapshot import,

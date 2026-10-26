@@ -12,7 +12,7 @@ from dataclasses import asdict, dataclass, replace
 from pathlib import Path, PureWindowsPath
 from typing import Any, NoReturn, cast
 
-from otarchguard import __version__
+from otarchguard import NATIVE_ENGINE_VERSION as __version__
 from otarchguard.api import ValidatedArchitecture
 from otarchguard.capture.contract import CAPTURE_LIMITS, CaptureLimits
 from otarchguard.contract import RESOURCE_LIMITS

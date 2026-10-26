@@ -37,15 +37,37 @@ def verify(output: Path, baseline_python: Path | None = None) -> dict[str, Any]:
     for name in historical_tests:
         before, after = baseline[name], (ROOT / name).read_bytes()
         if name == "tests/test_release_candidate.py":
-            before = before.replace(b'RELEASE_VERSION = "1.2.0"', b'RELEASE_VERSION = "1.3.0"')
+            before = before.replace(
+                b'RELEASE_VERSION = "1.2.0"',
+                b'RELEASE_VERSION = "1.4.0.dev1"\nENGINE_VERSION = "1.3.0"',
+            )
+            for field in (
+                b'legacy["engine_version"]',
+                b"trace.engine_version",
+                b'payload["engine_version"]',
+            ):
+                before = before.replace(
+                    field + b" == RELEASE_VERSION", field + b" == ENGINE_VERSION"
+                )
         if before != after:
             raise ValueError(f"Unreviewed historical test change: {name}")
     for name in ("docs/yaml-schema-v1.md", "src/otarchguard/contract.py"):
         if baseline[name] != (ROOT / name).read_bytes():
             raise ValueError(f"Historical native contract changed: {name}")
-    project = baseline["pyproject.toml"].replace(b'version = "1.2.0"', b'version = "1.3.0"')
+    project = baseline["pyproject.toml"].replace(b'version = "1.2.0"', b'version = "1.4.0.dev1"')
     if project != (ROOT / "pyproject.toml").read_bytes():
         raise ValueError("Project changes exceed the approved package version transition")
+    # These exceptions prove exact import-only edits, rather than allowing arbitrary
+    # evaluator changes through the captured-module allowlist.
+    engine_modules = {"reporting.py", "trace.py", "explorer.py"}
+    for module in engine_modules:
+        name = "src/otarchguard/" + module
+        expected_source = baseline[name].replace(
+            b"from otarchguard import __version__",
+            b"from otarchguard import NATIVE_ENGINE_VERSION as __version__",
+        )
+        if expected_source != (ROOT / name).read_bytes():
+            raise ValueError(f"Native engine separation exceeded exact import edit: {module}")
     environment = {
         **os.environ,
         "OTARCHGUARD_OFFLINE_CHECK": "1",
@@ -108,14 +130,16 @@ def verify(output: Path, baseline_python: Path | None = None) -> dict[str, Any]:
         output / "candidate",
         old="1.2.0",
         new="1.3.0",
-        allowed_module_changes=frozenset({"cli.py", "reachability.py"}),
+        allowed_module_changes=frozenset({"cli.py", "reachability.py"} | engine_modules),
     )
     comparison.update(
         baseline_commit=BASELINE,
         baseline_installed_module=installed["module"],
         baseline_module_sha256=expected,
         historical_test_files=len(historical_tests),
-        historical_test_exception="Exact current RELEASE_VERSION assertion only",
+        historical_test_exception=(
+            "Exact distribution version assertion and three fixed 1.3.0 engine assertions only"
+        ),
         commands=commands,
     )
     (output / "comparison.json").write_text(
