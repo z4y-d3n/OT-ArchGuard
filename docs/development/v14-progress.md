@@ -16,7 +16,7 @@ remote branch, pull request or tag is authorized by this local development work.
   an outdated installed 1.2.0 package; verification must install the audited current
   wheel before claiming installed-package results.
 
-## V14-00 acceptance
+## V14-00 acceptance — verified local checkpoint
 
 Implemented locally:
 
@@ -36,8 +36,8 @@ Focused verification: 177 new tests passed in 5.21 s, zero failures/errors/skips
 across protocol (56), lifecycle (55), corpus (38), independent audit (26) and
 integration (2) tests. Ruff lint/format, strict mypy (177 Python files) and the two
 frozen evidence consumers pass. Native v1.2 compatibility passes for 124 captured
-files with the pre-existing exact version/module allowlist. Full final installed
-wheel/sdist suites and final source/archive receipts are pending below.
+files with the pre-existing exact version/module allowlist. Final installed
+wheel/sdist suites and source/archive results are recorded below.
 
 Independent review found and corrected DCP service IDs, unrelated-PROFINET labeling,
 Modbus register-response framing, unknown payload fields, impossible packet bounds,
@@ -53,6 +53,160 @@ contracts are development interfaces, not a final immutable release freeze:
 See [architecture decisions](v14-architecture.md) and
 [corpus provenance](v14-protocol-corpus.md). No third-party packet capture is
 authorized for redistribution merely by appearing in the source-candidate manifest.
+
+## Executed verification
+
+Implementation commit: `dacda7cd3bf12ed95ad52b8e5cf66533b79c0311`.
+The acceptance-record commit after it changes documentation only. Production and
+test bytes are identical to the implementation commit exercised here.
+
+Local platform: Windows 11 AMD64 / Python 3.14.5. Dependencies were installed from
+the existing offline wheelhouse. No candidate hosted or other-platform execution
+is claimed. Both installations are regular installed packages, not editable or
+`PYTHONPATH=src` substitutes; installed module SHA-256 inventories match each other
+and the committed production source.
+
+| Check | Actual result | Local receipt under `output/` |
+|---|---|---|
+| Final wheel full pytest, child networking denied | 2,992 passed, 0 failures/errors/skips, 531.27 s | `v14-final-wheel-suite.xml` |
+| Final sdist full pytest, separate environment, child networking denied | 2,992 passed, 0 failures/errors/skips, 554.07 s | `v14-sdist-suite.xml` |
+| Final wheel focused new tests | 177 passed, 4.57 s | `v14-final-wheel-focused.xml` |
+| Ruff lint / formatting | Passed; 277 Python files formatted | Executed `ruff check .` / `ruff format --check .` |
+| Strict mypy | Passed, 177 Python source files | Executed `python -m mypy` |
+| `pip check` | Passed in both environments | No broken requirements |
+| Exact committed public source | Passed | `v14-source-checkout.json` |
+| Wheel and sdist member/content audit | Passed | `v14-final-archive-audit.json` |
+| Installed source/console identity | Passed in both environments | `v14-final-wheel-environment.json`, `v14-sdist-environment.json` |
+| Immutable v1.2 native compatibility | PASS, 124 captured files; historical test/contract guards preserved | `v14-native-compatibility/comparison.json` |
+| Fourteen frozen capture/reader/golden files vs main and v1.3.0 | Exact bytes / SHA-256 match | `v14-frozen-integrity.json` |
+| Independent frozen evidence consumers | Both passed: supported 10 flows, limited 12 flows | Executed `tools.read_capture_evidence` on both frozen directories |
+| Original corpus integrity | Passed; exact 339-byte fixture and pinned TShark receipt | `tools.protocol_corpus --verify synthetic-industrial` |
+| Final installed evidence walkthrough | Passed; 2 snapshots, duplicate preserved, metadata verified | `v14-final-evidence-walkthrough/walkthrough.json` |
+| Existing installed capture walkthrough | Passed, all six expected classifications present | `v14-capture-walkthrough/walkthrough.json` |
+
+The two full-suite totals overlap; they are **not** 5,984 unique tests. The current
+inventory is 2,992 tests: the unchanged 2,815-test baseline plus 177 new cases.
+An earlier pre-final-DCP wheel run passed 2,984 cases; it is superseded by the final
+2,992-case run and is not used as the current acceptance count.
+
+Full suite commands, with `PYTHONPATH=tools/offline` and
+`OTARCHGUARD_OFFLINE_CHECK=1` in the local environment:
+
+```powershell
+.venv/Scripts/python.exe -m pytest -q --basetemp=output/v14-final-wheel-test-tmp --tb=short --junitxml=output/v14-final-wheel-suite.xml
+.venv-v14-sdist/Scripts/python.exe -m pytest -q --basetemp=output/v14-sdist-test-tmp --tb=short --junitxml=output/v14-sdist-suite.xml
+```
+
+The installed wheels/sdist are local verification artifacts retaining version
+`1.3.0`; they must not be published or represented as the immutable stable release.
+The initial stale installed package and sandbox temp/cache path failures were
+resolved by using workspace-local temporary directories and disabling pip's cache.
+No application test failure was waived. Old uninstall backup directories were
+preserved under `output/v14-environment-recovery`, not discarded.
+
+Local execution receipts are ignored workspace files, not source-distribution
+contents. A final documentation-only handoff rebuild/audit uses
+`v14-handoff-source-checkout.json`, `v14-handoff-archive-audit.json` and
+`v14-handoff-environment.json`; it does not change tested production or test bytes.
+
+## Finite resource measurement
+
+Receipt: `output/v14-final-performance/measurements.json`. The workload repeats
+the original four-frame synthetic corpus 1,000 times after its 24-byte PCAP header:
+4,000 records / 315,024 input bytes. Input SHA-256:
+`2863b7cef1877e8ebac4b66b530b6665431977f0a5f302bf51139a8af6167902`.
+
+| Operation | Elapsed | Python traced peak bytes | Pretty JSON bytes | Process lifetime peak RSS bytes |
+|---|---:|---:|---:|---:|
+| Existing observations | 0.6175 s | 162,813 | 15,796 | 42,610,688 |
+| Independent enrichment | 1.0827 s | 11,424,124 | 3,429,015 | 60,895,232 |
+| Snapshot build/validation | 0.00463 s | Not measured | 17,993 | Not measured |
+
+Enrichment retains 3,000 supported records and explicitly skips 1,000 unrelated
+PROFINET frames. The original four-frame fixture itself produces three records,
+one `NON_DCP_PROFINET_FRAME_ID` skip and 5,293 pretty JSON bytes. The two original
+Modbus headers and DCP Identify header match the independent TShark receipt.
+
+These are single finite measurements, not capacity or throughput guarantees.
+RSS includes interpreter startup, imports and earlier operations in the process;
+it is not an isolated per-operation delta. Python traced allocations are not RSS.
+There is no historical HTML implementation to benchmark yet, and no before/after
+speed improvement is claimed for the unchanged v1.3 parser. The local reproducible
+measurement script is `output/v14-performance-measure.py`; choose a fresh output
+directory when rerunning it.
+
+## Known limits and trust status
+
+- Two of seven protocol decoders are implemented. No general TCP reassembly,
+  session validation, command execution inference or application values are added.
+- Workspace storage is metadata-only and single-writer. Hashes establish integrity,
+  not authenticity; ingestion does not reopen the original capture. Concurrent
+  hostile filesystem mutation and power-loss durability are not guaranteed.
+- Lifecycle storage deliberately rejects unknown extension fields instead of
+  stripping them or silently copying arbitrary payloads. The frozen v1.3 read-only
+  consumer remains unchanged and has its original optional-field policy.
+- Enrichment attachments, reviewed associations/native comparisons, approved
+  baselines, drift, historical Explorer and portable bundle export are pending.
+- Corpus Tier 1 has one original fixture; Tier 2 is empty. Four Tier 3 candidates
+  remain unapproved with unknown actual capture hashes where bytes were not acquired.
+  No actual external industrial capture was tested or redistributed. Acquisition
+  tooling remains deferred until an entry can be approved with exact byte identity.
+- The package/engine-version transition and final v1.4 contract freeze are pending.
+  Existing native comparison goldens and all historical tests were left intact.
+- Hosted six-configuration acceptance and owner release approval remain mandatory
+  before presenting a release candidate as accepted.
+
+## Changed files and Git handoff
+
+There are 33 changed files relative to the reviewed main:
+
+```text
+.github/workflows/ci.yml
+CHANGELOG.md
+MANIFEST.in
+README.md
+docs/development/v14-architecture.md
+docs/development/v14-enrichment-contract.md
+docs/development/v14-evidence-contract.md
+docs/development/v14-progress.md
+docs/development/v14-protocol-corpus.md
+docs/v14-foundation.md
+src/otarchguard/capture/cli.py
+src/otarchguard/capture/protocols/__init__.py
+src/otarchguard/capture/protocols/contract.py
+src/otarchguard/capture/protocols/dcp.py
+src/otarchguard/capture/protocols/modbus.py
+src/otarchguard/capture/protocols/packet.py
+src/otarchguard/capture/protocols/validation.py
+src/otarchguard/cli.py
+src/otarchguard/evidence/__init__.py
+src/otarchguard/evidence/cli.py
+src/otarchguard/evidence/observations.py
+src/otarchguard/evidence/workspace.py
+tests/fixtures/protocol-corpus/manifest.json
+tests/fixtures/protocol-corpus/synthetic-industrial.pcap
+tests/fixtures/protocol-corpus/tshark-receipt.json
+tests/test_evidence_workspace.py
+tests/test_protocol_corpus.py
+tests/test_protocol_enrichment.py
+tests/test_v14_independent_audit.py
+tests/test_v14_integration.py
+tools/evidence_walkthrough.py
+tools/protocol_corpus.py
+tools/public-files.txt
+```
+
+Local review commands:
+
+```console
+git status --short
+git log --oneline origin/main..HEAD
+git diff --stat origin/main..HEAD
+git show --stat dacda7cd3bf12ed95ad52b8e5cf66533b79c0311
+```
+
+No push, pull request, merge, tag, release, repository-setting change or hosted
+workflow dispatch was performed. Remote mutation still requires owner authorization.
 
 ## Remaining milestones
 
