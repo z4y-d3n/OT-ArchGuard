@@ -1,0 +1,167 @@
+{
+  "entries": [
+    {
+      "attribution": "Original independently authored fictional fixture; see tests/test_protocol_corpus.py synthetic_capture.",
+      "capture_type": "pcap",
+      "expected_negative": [
+        "Packet 4: PROFINET FrameID 0x8000 is not DCP."
+      ],
+      "expected_positive": [
+        "Packets 1 and 2: complete Modbus TCP FC3 request and response headers.",
+        "Packet 3: PROFINET DCP Identify request with AllSelector block."
+      ],
+      "id": "synthetic-industrial",
+      "known_limitations": [
+        "Not a real-world capture.",
+        "Zero IPv4/TCP checksums; checksum correctness is not assessed.",
+        "Independent reference decoding does not establish runtime support."
+      ],
+      "license": "Apache-2.0",
+      "original_author": "OT-ArchGuard v1.4 contributors",
+      "original_filename": "synthetic-industrial.pcap",
+      "parser_identity": "enrichment_version 1; first Modbus TCP and PROFINET DCP subset",
+      "protocol_families": [
+        "modbus_tcp",
+        "profinet_dcp"
+      ],
+      "redistribution": "original",
+      "reference_tool": "TShark (Wireshark) 4.6.7 (v4.6.7-0-gb439fb7b47a9).",
+      "review_status": "approved_synthetic",
+      "sensitivity_review": "fictional",
+      "sha256": "9c76cfdb752a20f1a4b3d932352d6f68c514539677def2af800bcc5d41c63559",
+      "size_bytes": 339,
+      "source_organization": "OT-ArchGuard",
+      "source_url": null,
+      "tier": 1,
+      "upstream_revision": null
+    },
+    {
+      "attribution": "Repository credits multiple third-party sources; attribution of this file is unverified.",
+      "capture_type": "pcap",
+      "expected_negative": [],
+      "expected_positive": [],
+      "id": "automayt-modbus-candidate",
+      "known_limitations": [
+        "No LICENSE found in the reviewed repository tree; per-capture redistribution permission is unknown.",
+        "Git LFS pointer inspected, not payload: expected OID 9e055a2d15a8e447be131002137341ae5f8f8b91b64576cd2fdbd854e141373e, advertised size 8337. Actual payload identity remains unverified.",
+        "No real-world decoder test has been performed."
+      ],
+      "license": null,
+      "original_author": null,
+      "original_filename": "MODBUS/Modbus/Modbus.pcap",
+      "parser_identity": null,
+      "protocol_families": [
+        "modbus_tcp"
+      ],
+      "redistribution": "unknown",
+      "reference_tool": null,
+      "review_status": "candidate",
+      "sensitivity_review": "not_reviewed",
+      "sha256": null,
+      "size_bytes": null,
+      "source_organization": "automayt/ICS-pcap",
+      "source_url": "https://github.com/automayt/ICS-pcap/blob/13b7ae335529146b40535c2d7aa756886040d8ad/MODBUS/Modbus/Modbus.pcap",
+      "tier": 3,
+      "upstream_revision": "13b7ae335529146b40535c2d7aa756886040d8ad"
+    },
+    {
+      "attribution": null,
+      "capture_type": "pcap",
+      "expected_negative": [],
+      "expected_positive": [],
+      "id": "wireshark-dcp-candidate",
+      "known_limitations": [
+        "Publication index references the capture, but author, immutable byte identity and per-capture redistribution permission are not established.",
+        "No payload acquired or sensitivity review performed.",
+        "The wiki transport-dependency paragraph is not used as a framing specification."
+      ],
+      "license": null,
+      "original_author": null,
+      "original_filename": "ChangeIPUsingDCP.pcap",
+      "parser_identity": null,
+      "protocol_families": [
+        "profinet_dcp"
+      ],
+      "redistribution": "unknown",
+      "reference_tool": null,
+      "review_status": "candidate",
+      "sensitivity_review": "not_reviewed",
+      "sha256": null,
+      "size_bytes": null,
+      "source_organization": "Wireshark Wiki",
+      "source_url": "https://wiki.wireshark.org/PROFINET/DCP",
+      "tier": 3,
+      "upstream_revision": null
+    },
+    {
+      "attribution": null,
+      "capture_type": null,
+      "expected_negative": [],
+      "expected_positive": [],
+      "id": "wireshark-protocol-candidates",
+      "known_limitations": [
+        "Candidate index only: iec104.pcap, s7comm_reading_plc_status.pcap, dnp3_read.pcap.",
+        "DNP3 index credits pcapr.net by bwilkerson; no per-file grant reviewed.",
+        "No payloads acquired; exact hashes, immutable source revisions and permissions remain unknown."
+      ],
+      "license": null,
+      "original_author": null,
+      "original_filename": null,
+      "parser_identity": null,
+      "protocol_families": [
+        "iec104",
+        "s7comm",
+        "dnp3"
+      ],
+      "redistribution": "unknown",
+      "reference_tool": null,
+      "review_status": "candidate",
+      "sensitivity_review": "not_reviewed",
+      "sha256": null,
+      "size_bytes": null,
+      "source_organization": "Wireshark Wiki",
+      "source_url": "https://wiki.wireshark.org/SampleCaptures",
+      "tier": 3,
+      "upstream_revision": null
+    },
+    {
+      "attribution": "Copyright 2023 Battelle Energy Alliance, LLC.",
+      "capture_type": "reference-only",
+      "expected_negative": [],
+      "expected_positive": [],
+      "id": "icsnpp-reference",
+      "known_limitations": [
+        "Zeek parser family; not a ready-made Python dependency or approved capture dataset.",
+        "No code copied and no submodule capture license reviewed.",
+        "Does not provide independent real-world OT-ArchGuard validation."
+      ],
+      "license": "BSD-3-Clause (repository code; capture scope unverified)",
+      "original_author": "Battelle Energy Alliance, LLC",
+      "original_filename": null,
+      "parser_identity": null,
+      "protocol_families": [
+        "ethernet_ip",
+        "s7comm",
+        "opcua_binary",
+        "modbus_tcp",
+        "dnp3"
+      ],
+      "redistribution": "not_applicable",
+      "reference_tool": null,
+      "review_status": "candidate",
+      "sensitivity_review": "not_reviewed",
+      "sha256": null,
+      "size_bytes": null,
+      "source_organization": "CISA / Battelle Energy Alliance",
+      "source_url": "https://github.com/cisagov/ICSNPP/tree/12b5d2416dcdbf5fb8225f6b268ea8ec1867af4d",
+      "tier": 3,
+      "upstream_revision": "12b5d2416dcdbf5fb8225f6b268ea8ec1867af4d"
+    }
+  ],
+  "manifest_version": 1,
+  "tiers": {
+    "1": "original_synthetic",
+    "2": "external_redistributable",
+    "3": "external_reference_only"
+  }
+}

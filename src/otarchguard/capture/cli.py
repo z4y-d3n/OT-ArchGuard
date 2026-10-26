@@ -13,11 +13,12 @@ from otarchguard.capture.contract import CAPTURE_LIMITS
 from otarchguard.capture.explorer import fresh_destination, generate_site, write_mapping
 from otarchguard.capture.observations import analyze_capture
 from otarchguard.capture.parser import scan_capture
+from otarchguard.capture.protocols import enrich_capture
 from otarchguard.capture.reconciliation import compare_capture, load_mapping, mapping_template
 from otarchguard.contract import DiagnosticCategory, ExitCode
 from otarchguard.diagnostics import Diagnostic, ModelError, fail
 from otarchguard.explorer_data import load_model
-from otarchguard.ingestion.workflow import serialize
+from otarchguard.ingestion.workflow import serialize, write_new_file
 
 
 def _option_error(error: Exception) -> None:
@@ -105,6 +106,28 @@ def inspect_capture(
             "resource_ceilings": asdict(CAPTURE_LIMITS),
             "status": "complete",
         }
+
+    _execute(run)
+
+
+@app.command("enrich", cls=CaptureCommand)
+def enrich(
+    capture: Annotated[
+        Path, typer.Argument(help="Local capture; bounded industrial headers only.")
+    ],
+    output: Annotated[
+        Path | None, typer.Option("--output", help="Optional fresh enrichment JSON file.")
+    ] = None,
+) -> None:
+    """Emit independent protocol metadata; existing observations and approvals are unchanged."""
+
+    def run() -> dict[str, Any]:
+        if output is not None:
+            fresh_destination(output)
+        result = enrich_capture(capture)
+        if output is not None:
+            write_new_file(output, serialize(result))
+        return result
 
     _execute(run)
 

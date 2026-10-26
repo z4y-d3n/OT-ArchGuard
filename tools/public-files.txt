@@ -68,6 +68,11 @@ docs/development/v13-31-final-release-readiness.md
 docs/development/v13-benchmark-results.md
 docs/development/v13-final-baseline-and-impact.md
 docs/development/v13-gate-evidence.md
+docs/development/v14-architecture.md
+docs/development/v14-enrichment-contract.md
+docs/development/v14-evidence-contract.md
+docs/development/v14-progress.md
+docs/development/v14-protocol-corpus.md
 docs/domain-model.md
 docs/images/README.md
 docs/images/architecture-explorer-overview.png
@@ -97,6 +102,7 @@ docs/v1.1/gate-v11-4.md
 docs/v1.1/gate-v11-5.md
 docs/v1.1/gate-v11-6.md
 docs/v1.1/public-contract-inventory.md
+docs/v14-foundation.md
 docs/verification.md
 docs/yaml-schema-v1.md
 examples/README.md
@@ -166,6 +172,12 @@ src/otarchguard/capture/display.py
 src/otarchguard/capture/explorer.py
 src/otarchguard/capture/observations.py
 src/otarchguard/capture/parser.py
+src/otarchguard/capture/protocols/__init__.py
+src/otarchguard/capture/protocols/contract.py
+src/otarchguard/capture/protocols/dcp.py
+src/otarchguard/capture/protocols/modbus.py
+src/otarchguard/capture/protocols/packet.py
+src/otarchguard/capture/protocols/validation.py
 src/otarchguard/capture/reconciliation.py
 src/otarchguard/capture/views.py
 src/otarchguard/cli.py
@@ -174,6 +186,10 @@ src/otarchguard/contract.py
 src/otarchguard/diagnostics.py
 src/otarchguard/diagrams.py
 src/otarchguard/domain.py
+src/otarchguard/evidence/__init__.py
+src/otarchguard/evidence/cli.py
+src/otarchguard/evidence/observations.py
+src/otarchguard/evidence/workspace.py
 src/otarchguard/explorer.py
 src/otarchguard/explorer_data.py
 src/otarchguard/explorer_html.py
@@ -250,6 +266,9 @@ tests/fixtures/capture-interoperability/text2pcap-pcapng.data
 tests/fixtures/invalid-interface-placement.yaml
 tests/fixtures/invalid-missing-reference.yaml
 tests/fixtures/minimal-valid.yaml
+tests/fixtures/protocol-corpus/manifest.json
+tests/fixtures/protocol-corpus/synthetic-industrial.pcap
+tests/fixtures/protocol-corpus/tshark-receipt.json
 tests/fixtures/unsupported-model.yaml
 tests/test_capture_arp_semantics.py
 tests/test_capture_cli.py
@@ -273,6 +292,7 @@ tests/test_comparison_properties.py
 tests/test_console_resolution.py
 tests/test_contract.py
 tests/test_diagram_geometry.py
+tests/test_evidence_workspace.py
 tests/test_explorer.py
 tests/test_explorer_compact.py
 tests/test_exposure_compare_cli.py
@@ -295,6 +315,8 @@ tests/test_policy_evidence.py
 tests/test_preparation.py
 tests/test_presentation.py
 tests/test_product_presentation.py
+tests/test_protocol_corpus.py
+tests/test_protocol_enrichment.py
 tests/test_quality_comparison.py
 tests/test_reachability.py
 tests/test_reachability_oracle.py
@@ -313,6 +335,8 @@ tests/test_trace.py
 tests/test_trace_cli.py
 tests/test_unicode.py
 tests/test_unicode_cli.py
+tests/test_v14_independent_audit.py
+tests/test_v14_integration.py
 tests/test_validate_cli.py
 tests/test_validation.py
 tools/__init__.py
@@ -323,11 +347,13 @@ tools/capture_workloads.py
 tools/compare_versioned_contract.py
 tools/development_disk.py
 tools/document_walkthrough.py
+tools/evidence_walkthrough.py
 tools/explorer_walkthrough.py
 tools/freeze_capture_contracts.py
 tools/independent_capture_corpus.py
 tools/offline/sitecustomize.py
 tools/project_walkthrough.py
+tools/protocol_corpus.py
 tools/public-files.txt
 tools/quality_walkthrough.py
 tools/read_capture_evidence.py
