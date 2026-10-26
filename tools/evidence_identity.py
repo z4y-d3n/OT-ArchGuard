@@ -10,7 +10,9 @@ from dataclasses import asdict, dataclass
 
 
 def _sha(value: str) -> bool:
-    return len(value) == 64 and all(c in "0123456789abcdef" for c in value)
+    return (
+        isinstance(value, str) and len(value) == 64 and all(c in "0123456789abcdef" for c in value)
+    )
 
 
 @dataclass(frozen=True)
@@ -28,6 +30,11 @@ class AnalysisInputs:
 def proposed_analysis_id(inputs: AnalysisInputs) -> str:
     """Domain-separated experimental identity, never a snapshot-v1 identifier."""
     fields = asdict(inputs)
+    if any(
+        fields[name] is None
+        for name in ("capture_sha256", "observations_sha256", "producer_semantics_sha256")
+    ):
+        raise ValueError("Required evidence and producer identities must be present")
     if any(value is not None and not _sha(value) for value in fields.values()):
         raise ValueError("Expected exact lowercase SHA-256 input identities")
     envelope = {"proposal_version": 1, "domain": "otarchguard.analysis", "inputs": fields}

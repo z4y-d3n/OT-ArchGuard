@@ -24,7 +24,7 @@ ENGINE_VERSION = "1.3.0"
 
 
 def test_exact_candidate_identity_and_frozen_contracts(installed_console: Path) -> None:
-    assert __version__ == RELEASE_VERSION
+    assert __version__ == ENGINE_VERSION
     assert importlib.metadata.version("otarchguard") == RELEASE_VERSION
     project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]
     assert project["version"] == RELEASE_VERSION

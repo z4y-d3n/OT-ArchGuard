@@ -48,7 +48,12 @@ def main() -> None:
     result = subprocess.run(
         [str(console), "--version"], capture_output=True, text=True, check=False, timeout=30
     )
-    if result.returncode or result.stderr or result.stdout.strip() != otarchguard.__version__:
+    if (
+        result.returncode
+        or result.stderr
+        or result.stdout.strip() != otarchguard.DISTRIBUTION_VERSION
+        or distribution.version != otarchguard.DISTRIBUTION_VERSION
+    ):
         raise RuntimeError("Native installed console version check failed")
     record = {
         "python": platform.python_version(),
@@ -61,7 +66,9 @@ def main() -> None:
         "console": str(console),
         "module": str(module),
         "distribution": distribution.version,
-        "application": otarchguard.__version__,
+        "application": otarchguard.DISTRIBUTION_VERSION,
+        "native_engine": otarchguard.NATIVE_ENGINE_VERSION,
+        "legacy_version_api": otarchguard.__version__,
         "direct_url": direct,
         "installed_module_sha256": installed_hashes,
         "source_module_sha256": source_hashes,

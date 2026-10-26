@@ -42,6 +42,7 @@ def verify(output: Path, baseline_python: Path | None = None) -> dict[str, Any]:
                 b'RELEASE_VERSION = "1.4.0.dev1"\nENGINE_VERSION = "1.3.0"',
             )
             for field in (
+                b"__version__",
                 b'legacy["engine_version"]',
                 b"trace.engine_version",
                 b'payload["engine_version"]',
@@ -49,6 +50,11 @@ def verify(output: Path, baseline_python: Path | None = None) -> dict[str, Any]:
                 before = before.replace(
                     field + b" == RELEASE_VERSION", field + b" == ENGINE_VERSION"
                 )
+        if name == "tests/test_cli.py":
+            before = before.replace(
+                b"from otarchguard import __version__",
+                b"from otarchguard import DISTRIBUTION_VERSION as __version__",
+            )
         if before != after:
             raise ValueError(f"Unreviewed historical test change: {name}")
     for name in ("docs/yaml-schema-v1.md", "src/otarchguard/contract.py"):
@@ -57,17 +63,6 @@ def verify(output: Path, baseline_python: Path | None = None) -> dict[str, Any]:
     project = baseline["pyproject.toml"].replace(b'version = "1.2.0"', b'version = "1.4.0.dev1"')
     if project != (ROOT / "pyproject.toml").read_bytes():
         raise ValueError("Project changes exceed the approved package version transition")
-    # These exceptions prove exact import-only edits, rather than allowing arbitrary
-    # evaluator changes through the captured-module allowlist.
-    engine_modules = {"reporting.py", "trace.py", "explorer.py"}
-    for module in engine_modules:
-        name = "src/otarchguard/" + module
-        expected_source = baseline[name].replace(
-            b"from otarchguard import __version__",
-            b"from otarchguard import NATIVE_ENGINE_VERSION as __version__",
-        )
-        if expected_source != (ROOT / name).read_bytes():
-            raise ValueError(f"Native engine separation exceeded exact import edit: {module}")
     environment = {
         **os.environ,
         "OTARCHGUARD_OFFLINE_CHECK": "1",
@@ -130,7 +125,7 @@ def verify(output: Path, baseline_python: Path | None = None) -> dict[str, Any]:
         output / "candidate",
         old="1.2.0",
         new="1.3.0",
-        allowed_module_changes=frozenset({"cli.py", "reachability.py"} | engine_modules),
+        allowed_module_changes=frozenset({"cli.py", "reachability.py"}),
     )
     comparison.update(
         baseline_commit=BASELINE,
@@ -138,7 +133,8 @@ def verify(output: Path, baseline_python: Path | None = None) -> dict[str, Any]:
         baseline_module_sha256=expected,
         historical_test_files=len(historical_tests),
         historical_test_exception=(
-            "Exact distribution version assertion and three fixed 1.3.0 engine assertions only"
+            "Exact distribution assertion, four fixed 1.3.0 engine/API assertions, "
+            "and CLI version-test import only"
         ),
         commands=commands,
     )

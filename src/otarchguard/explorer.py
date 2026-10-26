@@ -8,7 +8,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
-from otarchguard import NATIVE_ENGINE_VERSION as __version__
+from otarchguard import __version__
 from otarchguard.api import ValidatedArchitecture
 from otarchguard.diagnostics import check_limit, fail
 from otarchguard.diagrams import spatial_svg

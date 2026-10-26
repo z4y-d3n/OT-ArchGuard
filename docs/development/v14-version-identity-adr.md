@@ -8,11 +8,17 @@ V14-00 used the distribution string in canonical native evidence. Advancing the
 package version therefore changed frozen capture-comparison bytes despite an
 unchanged evaluator. V14-01 separates two explicit constants in `otarchguard`:
 
-- `__version__ = "1.4.0.dev1"`: distribution metadata and `--version`.
+- `DISTRIBUTION_VERSION = "1.4.0.dev1"`: distribution metadata and `--version`.
 - `NATIVE_ENGINE_VERSION = "1.3.0"`: the unchanged native evaluator/report identity.
 
-The native CLI JSON, report writer, trace dataclass, Explorer canonical queries
-and capture reconciliation use the latter. Their schemas, canonical fields,
+The historical public `__version__` API remains an alias of the native engine
+identity: frozen native producers already import that name. Consumers wanting the
+installed product identity must use `DISTRIBUTION_VERSION`, package metadata or
+the CLI. This explicitly documented compatibility alias avoids changing exact
+historically asserted analytical module bytes. It must not be interpreted as the
+distribution version. Native CLI JSON, report writer, trace dataclass, Explorer
+canonical queries and capture reconciliation retain their original imports.
+Their schemas, canonical fields,
 ordering, meanings and hashes remain unchanged. The native Explorer footer also
 retains the engine identity. Existing historical evidence is never rewritten.
 An engine identity describes semantics, not the complete installed distribution.
@@ -27,14 +33,16 @@ digests without entering frozen analytical identity.
 ## Compatibility verification
 
 The existing release identity test changes only the expected distribution value
-and splits its three engine assertions into a fixed `1.3.0` value. No golden,
+and splits four legacy API/engine assertions into a fixed `1.3.0` value. The CLI
+version test changes only its expected-version import to `DISTRIBUTION_VERSION`.
+No golden,
 packet, observation, comparison or native expected assessment is changed.
-The immutable v1.2 verifier checks these exact test substitutions. It also proves
-that the three extra native-module exceptions are **exact import substitutions**
-(`NATIVE_ENGINE_VERSION as __version__`); arbitrary code changes still fail.
-The pre-existing CLI/reachability exceptions and root engine transition from
+The immutable v1.2 verifier checks these exact test substitutions. No new native
+module-source exception is allowed. The pre-existing CLI/reachability exceptions and root engine transition from
 v1.2 to v1.3 remain explicit. The native compatibility comparator is unchanged.
 
+The full-suite frozen-source assertion caught an initial import-only refactor of
+reconciliation. That refactor was removed; the frozen hash and test were preserved.
 New tests independently assert the different product/engine values and actual
 report/trace output. Installed wheel/sdist suites exercise the existing frozen
 capture comparison and independent evidence readers. The local acceptance report

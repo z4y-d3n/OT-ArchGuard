@@ -8,7 +8,7 @@ from typing import Any
 
 import pytest
 
-from otarchguard import NATIVE_ENGINE_VERSION, __version__
+from otarchguard import DISTRIBUTION_VERSION, NATIVE_ENGINE_VERSION, __version__
 from otarchguard.api import validate_file
 from otarchguard.evidence.workspace import build_snapshot
 from otarchguard.reporting import build_report
@@ -23,7 +23,8 @@ def inputs() -> AnalysisInputs:
 
 
 def test_distribution_advances_without_changing_native_engine_evidence() -> None:
-    assert __version__ == "1.4.0.dev1"
+    assert DISTRIBUTION_VERSION == "1.4.0.dev1"
+    assert __version__ == "1.3.0"
     assert NATIVE_ENGINE_VERSION == "1.3.0"
     path = ROOT / "tests/fixtures/minimal-valid.yaml"
     assert build_report("validation", (validate_file(path),))["engine_version"] == "1.3.0"
@@ -54,8 +55,8 @@ def test_identity_proposal_has_independent_canonical_oracle_and_no_review_assert
     assert "approv" not in canonical and "baseline" not in canonical
 
 
-@pytest.mark.parametrize("bad", ["a" * 63, "A" * 64, "../capture", "é" * 64])
-def test_proposal_rejects_ambiguous_identity(bad: str) -> None:
+@pytest.mark.parametrize("bad", ["a" * 63, "A" * 64, "../capture", "é" * 64, None, 1, True])
+def test_proposal_rejects_ambiguous_identity(bad: Any) -> None:
     with pytest.raises(ValueError):
         proposed_analysis_id(replace(inputs(), capture_sha256=bad))
 

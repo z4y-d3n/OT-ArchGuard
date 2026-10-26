@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
-from otarchguard import NATIVE_ENGINE_VERSION as __version__
+from otarchguard import __version__
 from otarchguard.api import ValidatedArchitecture, validate_bytes, validate_file
 from otarchguard.contract import ID_PATTERN, RESOURCE_LIMITS, ResourceLimits
 from otarchguard.diagnostics import fail
