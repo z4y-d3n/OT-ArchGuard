@@ -134,6 +134,9 @@ require no network service, JavaScript or external renderer.
 | 1 | Completed analysis with failed intents on either comparison side |
 | 2 | Invalid/unsupported input, resource exhaustion, execution or I/O failure |
 
+Trace exit 0 means the exact query completed, including unreachable or mixed port
+results. It does not mean every flow was permitted; trace does not assess intents.
+
 JSON results go to stdout; fatal diagnostics go to stderr. Specify
 `--report-format json` for JSON report files. Create report parent directories
 and keep outputs separate from inputs. Fatal errors preserve existing reports;
