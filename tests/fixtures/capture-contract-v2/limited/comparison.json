@@ -1,0 +1,611 @@
+{
+  "absence_assessment": {
+    "reason": "Absence is assessed only in fully scanned, fully interpreted packet metadata without unknown blocks or snapshot truncation; sensor visibility still remains unknown.",
+    "status": "suppressed"
+  },
+  "absence_scope": "All declared services versus accepted decoded IPv4 destination headers in this finite capture only; no visibility completeness is asserted.",
+  "association_decisions": [
+    {
+      "candidates": [],
+      "decision": "PENDING",
+      "host_id": "host-1dc2c211e41d4f95bce873d8e37933961e99238356c5999379c1c3cec27360ea",
+      "id": "association_6f9b44fa3233a47ddd3c8b47e3ab23b61c0dac61220f45772c7ef4f6018e965f",
+      "observed_ip": "192.0.2.99",
+      "rationale": "",
+      "reviewer": "",
+      "selected_asset_id": null,
+      "selected_interface_id": null
+    },
+    {
+      "candidates": [
+        {
+          "asset_id": "eng",
+          "interface_id": "eng_net"
+        }
+      ],
+      "decision": "ACCEPT",
+      "host_id": "host-60f25b1d73c65dea626b07efe90abfa1d407745daa2e168c26453bb23c8e6ba7",
+      "id": "association_1dc31fe13b12338488894ff9f3e136b999f8714313116fe0a9541fb8043ad207",
+      "observed_ip": "192.0.2.10",
+      "rationale": "Synthetic fixture assertion only; no operational identity approval.",
+      "reviewer": "fictional-contract-author",
+      "selected_asset_id": "eng",
+      "selected_interface_id": "eng_net"
+    },
+    {
+      "candidates": [],
+      "decision": "PENDING",
+      "host_id": "host-ac8861d4a6b36049c61640a74d408df415d1a0124381b87293d0bd39e63c2181",
+      "id": "association_5e9172a9d7f5e2d294fb94e8d35a5eb3b0ab671a1d63fcb63b1260c43cb2c276",
+      "observed_ip": "2001:db8::20",
+      "rationale": "",
+      "reviewer": "",
+      "selected_asset_id": null,
+      "selected_interface_id": null
+    },
+    {
+      "candidates": [
+        {
+          "asset_id": "plc",
+          "interface_id": "plc_net"
+        }
+      ],
+      "decision": "ACCEPT",
+      "host_id": "host-b0444a5f82771215a8166411dde14a4889099e3f8a6244a34841dcc4b4dfe377",
+      "id": "association_645bbc3f918a6ec7171cc12c504a15e3e9e5983db6ade6a422f226b97b769367",
+      "observed_ip": "192.0.2.20",
+      "rationale": "Synthetic fixture assertion only; no operational identity approval.",
+      "reviewer": "fictional-contract-author",
+      "selected_asset_id": "plc",
+      "selected_interface_id": "plc_net"
+    },
+    {
+      "candidates": [
+        {
+          "asset_id": "hmi",
+          "interface_id": "hmi_net"
+        }
+      ],
+      "decision": "ACCEPT",
+      "host_id": "host-c03322910c1b378c35ce0b2db117563d8f17fb12d46af8ba2c1abd5c82805cf5",
+      "id": "association_c183019c891039be9990c7ded547cd3b0d92a67915edc682df984a12b887fc13",
+      "observed_ip": "192.0.2.11",
+      "rationale": "Synthetic fixture assertion only; no operational identity approval.",
+      "reviewer": "fictional-contract-author",
+      "selected_asset_id": "hmi",
+      "selected_interface_id": "hmi_net"
+    },
+    {
+      "candidates": [],
+      "decision": "PENDING",
+      "host_id": "host-d4570473d39db7190c5a2dac4793c5b881e8bacd459a6ed449adcdce0efb77b4",
+      "id": "association_24df8106667feb367012618541d3404af3db23218e851ceec1be2e3010dcdbaf",
+      "observed_ip": "192.0.2.98",
+      "rationale": "",
+      "reviewer": "",
+      "selected_asset_id": null,
+      "selected_interface_id": null
+    },
+    {
+      "candidates": [],
+      "decision": "PENDING",
+      "host_id": "host-e46962b1be1d112df4cbc0d7e5c6e3cd2b4332a8ec561433a834a0826c1669c5",
+      "id": "association_7531583690d28660fd802dfc10bed3b5b1d114eb665ce311101d8fb21afdcf26",
+      "observed_ip": "2001:db8::10",
+      "rationale": "",
+      "reviewer": "",
+      "selected_asset_id": null,
+      "selected_interface_id": null
+    }
+  ],
+  "capture_sha256": "0c4c4c320bda1bde2991bf3ed21980f1e61736c7ee2e07a7ca75ec390e12362d",
+  "comparison_version": 1,
+  "declared_services_not_observed": [],
+  "findings": [
+    {
+      "association_decision_ids": [
+        "association_1dc31fe13b12338488894ff9f3e136b999f8714313116fe0a9541fb8043ad207",
+        "association_24df8106667feb367012618541d3404af3db23218e851ceec1be2e3010dcdbaf"
+      ],
+      "capture_sha256": "0c4c4c320bda1bde2991bf3ed21980f1e61736c7ee2e07a7ca75ec390e12362d",
+      "classification": "OBSERVED_ENDPOINT_UNMAPPED",
+      "conversation_id": "conversation-d3875a0fb7cf4757bb0c306cdefd61c18994ae44c9f04e75c3f5ce3fd7d339eb",
+      "flow_id": "flow-0371656870a63a6e55b0ce69a0dc6a2720b66a490793e643a433483912c64eac",
+      "model_sha256": "9035468d31248812b88cf6e760557d16ac74e627ed9fda35d06717775c971d66",
+      "native_result": null,
+      "reason": "Both endpoint identities require explicit accepted owner decisions.",
+      "samples": [
+        {
+          "captured_length": 54,
+          "index": 8,
+          "interface": 0,
+          "offset": 652,
+          "original_length": 54,
+          "section": 0,
+          "timestamp": {
+            "denominator": 1000000,
+            "offset_seconds": 0,
+            "ticks": 1700000000000007
+          }
+        }
+      ]
+    },
+    {
+      "association_decision_ids": [
+        "association_c183019c891039be9990c7ded547cd3b0d92a67915edc682df984a12b887fc13",
+        "association_645bbc3f918a6ec7171cc12c504a15e3e9e5983db6ade6a422f226b97b769367"
+      ],
+      "capture_sha256": "0c4c4c320bda1bde2991bf3ed21980f1e61736c7ee2e07a7ca75ec390e12362d",
+      "classification": "OBSERVED_MODEL_UNREACHABLE",
+      "conversation_id": "conversation-36d4b693986eebeb3867167ce798e4f04a4bbc14df10880cc8ff7771bbc02184",
+      "flow_id": "flow-1a0a318e37d1ba3e894aeb0f87b06d68f5208ff0640e16beb81d55e2fce07366",
+      "model_sha256": "9035468d31248812b88cf6e760557d16ac74e627ed9fda35d06717775c971d66",
+      "native_result": {
+        "engine_version": "1.3.0",
+        "model_sha256": "9035468d31248812b88cf6e760557d16ac74e627ed9fda35d06717775c971d66",
+        "observed_destination_port": 502,
+        "query": {
+          "destination_asset_id": "plc",
+          "intervals": [
+            {
+              "diagnostics": {
+                "blocked_edge_count": 1,
+                "blocked_edges": [
+                  {
+                    "allow_rule_ids": [],
+                    "deny_rule_ids": [],
+                    "edge_id": "t_hmi_plc",
+                    "reason": "missing_permit"
+                  }
+                ],
+                "limitation": "Frontier evidence is not a unique root cause or a guaranteed fix.",
+                "reason": "no_permitted_path",
+                "structural_path_exists": true,
+                "truncated": false
+              },
+              "end": 502,
+              "reachable": false,
+              "start": 502,
+              "witness": null
+            }
+          ],
+          "protocol": "tcp",
+          "service_id": "svc_plc",
+          "source_asset_id": "hmi"
+        },
+        "selected_interval": {
+          "diagnostics": {
+            "blocked_edge_count": 1,
+            "blocked_edges": [
+              {
+                "allow_rule_ids": [],
+                "deny_rule_ids": [],
+                "edge_id": "t_hmi_plc",
+                "reason": "missing_permit"
+              }
+            ],
+            "limitation": "Frontier evidence is not a unique root cause or a guaranteed fix.",
+            "reason": "no_permitted_path",
+            "structural_path_exists": true,
+            "truncated": false
+          },
+          "end": 502,
+          "reachable": false,
+          "start": 502,
+          "witness": null
+        }
+      },
+      "reason": "The existing engine evaluates this declared initiation and observed port as unreachable under the model.",
+      "samples": [
+        {
+          "captured_length": 54,
+          "index": 3,
+          "interface": 0,
+          "offset": 224,
+          "original_length": 54,
+          "section": 0,
+          "timestamp": {
+            "denominator": 1000000,
+            "offset_seconds": 0,
+            "ticks": 1700000000000002
+          }
+        }
+      ]
+    },
+    {
+      "association_decision_ids": [
+        "association_6f9b44fa3233a47ddd3c8b47e3ab23b61c0dac61220f45772c7ef4f6018e965f",
+        "association_645bbc3f918a6ec7171cc12c504a15e3e9e5983db6ade6a422f226b97b769367"
+      ],
+      "capture_sha256": "0c4c4c320bda1bde2991bf3ed21980f1e61736c7ee2e07a7ca75ec390e12362d",
+      "classification": "OBSERVED_ENDPOINT_UNMAPPED",
+      "conversation_id": "conversation-429f39e4f5c2c317cc24fdfe1e08433cca3749b00fd943c3a5e07f2ac7567f88",
+      "flow_id": "flow-2fbdbf75704d29eac1d0fcf0dfec13302efe61b1aa34424c8f71a026232d505f",
+      "model_sha256": "9035468d31248812b88cf6e760557d16ac74e627ed9fda35d06717775c971d66",
+      "native_result": null,
+      "reason": "Both endpoint identities require explicit accepted owner decisions.",
+      "samples": [
+        {
+          "captured_length": 54,
+          "index": 7,
+          "interface": 0,
+          "offset": 564,
+          "original_length": 54,
+          "section": 0,
+          "timestamp": {
+            "denominator": 1000000,
+            "offset_seconds": 0,
+            "ticks": 1700000000000006
+          }
+        }
+      ]
+    },
+    {
+      "association_decision_ids": [
+        "association_645bbc3f918a6ec7171cc12c504a15e3e9e5983db6ade6a422f226b97b769367",
+        "association_1dc31fe13b12338488894ff9f3e136b999f8714313116fe0a9541fb8043ad207"
+      ],
+      "capture_sha256": "0c4c4c320bda1bde2991bf3ed21980f1e61736c7ee2e07a7ca75ec390e12362d",
+      "classification": "OBSERVED_MODEL_UNSUPPORTED",
+      "conversation_id": "conversation-549d1a9df2870d51d893668fed3662c70f7deec8e61d4228236e8ab4ae6af7ef",
+      "flow_id": "flow-375ac7cf7fba0f6ec5228c3efae3b17319b6fa62eb98056e93cd6b5c0571df42",
+      "model_sha256": "9035468d31248812b88cf6e760557d16ac74e627ed9fda35d06717775c971d66",
+      "native_result": null,
+      "reason": "Packet metadata is outside the evaluator's supported IPv4 TCP/UDP scope.",
+      "samples": [
+        {
+          "captured_length": 42,
+          "index": 11,
+          "interface": 0,
+          "offset": 912,
+          "original_length": 42,
+          "section": 0,
+          "timestamp": {
+            "denominator": 1000000,
+            "offset_seconds": 0,
+            "ticks": 1700000000000010
+          }
+        }
+      ]
+    },
+    {
+      "association_decision_ids": [
+        "association_1dc31fe13b12338488894ff9f3e136b999f8714313116fe0a9541fb8043ad207",
+        "association_645bbc3f918a6ec7171cc12c504a15e3e9e5983db6ade6a422f226b97b769367"
+      ],
+      "capture_sha256": "0c4c4c320bda1bde2991bf3ed21980f1e61736c7ee2e07a7ca75ec390e12362d",
+      "classification": "OBSERVED_SERVICE_UNDECLARED",
+      "conversation_id": "conversation-138c3a9141063b90fa73aa548551b582827044f94d5e9f0d6a7cf0da49070415",
+      "flow_id": "flow-4c9497b5692be8f03530992f9560d78e655b30608cc715a8b9bcd1393bc57d85",
+      "model_sha256": "9035468d31248812b88cf6e760557d16ac74e627ed9fda35d06717775c971d66",
+      "native_result": null,
+      "reason": "No declared service covers this reviewed destination interface, transport and destination port.",
+      "samples": [
+        {
+          "captured_length": 54,
+          "index": 4,
+          "interface": 0,
+          "offset": 312,
+          "original_length": 54,
+          "section": 0,
+          "timestamp": {
+            "denominator": 1000000,
+            "offset_seconds": 0,
+            "ticks": 1700000000000003
+          }
+        }
+      ]
+    },
+    {
+      "association_decision_ids": [
+        "association_c183019c891039be9990c7ded547cd3b0d92a67915edc682df984a12b887fc13",
+        "association_645bbc3f918a6ec7171cc12c504a15e3e9e5983db6ade6a422f226b97b769367"
+      ],
+      "capture_sha256": "0c4c4c320bda1bde2991bf3ed21980f1e61736c7ee2e07a7ca75ec390e12362d",
+      "classification": "OBSERVED_DIRECTION_UNCERTAIN",
+      "conversation_id": "conversation-e265fa863546cb29d9af8f7d754dbe5f659d89d0fb08b2b03f8338b8568a4579",
+      "flow_id": "flow-828e79c98c5b003ec81881b339fdb291d4ef391a93af4736aa4658d0798d4dea",
+      "model_sha256": "9035468d31248812b88cf6e760557d16ac74e627ed9fda35d06717775c971d66",
+      "native_result": null,
+      "reason": "No unique decoded initial TCP SYN direction is evidenced; UDP and midstream traffic do not establish initiation.",
+      "samples": [
+        {
+          "captured_length": 42,
+          "index": 6,
+          "interface": 0,
+          "offset": 488,
+          "original_length": 42,
+          "section": 0,
+          "timestamp": {
+            "denominator": 1000000,
+            "offset_seconds": 0,
+            "ticks": 1700000000000005
+          }
+        }
+      ]
+    },
+    {
+      "association_decision_ids": [
+        "association_645bbc3f918a6ec7171cc12c504a15e3e9e5983db6ade6a422f226b97b769367",
+        "association_1dc31fe13b12338488894ff9f3e136b999f8714313116fe0a9541fb8043ad207"
+      ],
+      "capture_sha256": "0c4c4c320bda1bde2991bf3ed21980f1e61736c7ee2e07a7ca75ec390e12362d",
+      "classification": "OBSERVED_DIRECTION_UNCERTAIN",
+      "conversation_id": "conversation-9fb732b5e4fe9588cd9ab10154f044ba3f1489a68005649bd61967b7505d8a1b",
+      "flow_id": "flow-90165a4084fb758d7b549528b6fd932b89e201b318dd1b01c7bcb750f2f3df07",
+      "model_sha256": "9035468d31248812b88cf6e760557d16ac74e627ed9fda35d06717775c971d66",
+      "native_result": null,
+      "reason": "No unique decoded initial TCP SYN direction is evidenced; UDP and midstream traffic do not establish initiation.",
+      "samples": [
+        {
+          "captured_length": 54,
+          "index": 5,
+          "interface": 0,
+          "offset": 400,
+          "original_length": 54,
+          "section": 0,
+          "timestamp": {
+            "denominator": 1000000,
+            "offset_seconds": 0,
+            "ticks": 1700000000000004
+          }
+        }
+      ]
+    },
+    {
+      "association_decision_ids": [
+        "association_7531583690d28660fd802dfc10bed3b5b1d114eb665ce311101d8fb21afdcf26",
+        "association_5e9172a9d7f5e2d294fb94e8d35a5eb3b0ab671a1d63fcb63b1260c43cb2c276"
+      ],
+      "capture_sha256": "0c4c4c320bda1bde2991bf3ed21980f1e61736c7ee2e07a7ca75ec390e12362d",
+      "classification": "OBSERVED_MODEL_UNSUPPORTED",
+      "conversation_id": "conversation-9031ee85e0da6ca16eb83f251d5ea11b4bef3e2e4344878ca13c5e7f1f7c10f6",
+      "flow_id": "flow-97a03ca9cc2667000ae6f63158c5d44e89c990246cea735f3703b354dd517cbe",
+      "model_sha256": "9035468d31248812b88cf6e760557d16ac74e627ed9fda35d06717775c971d66",
+      "native_result": null,
+      "reason": "Packet metadata is outside the evaluator's supported IPv4 TCP/UDP scope.",
+      "samples": [
+        {
+          "captured_length": 62,
+          "index": 10,
+          "interface": 0,
+          "offset": 816,
+          "original_length": 62,
+          "section": 0,
+          "timestamp": {
+            "denominator": 1000000,
+            "offset_seconds": 0,
+            "ticks": 1700000000000009
+          }
+        }
+      ]
+    },
+    {
+      "association_decision_ids": [
+        "association_645bbc3f918a6ec7171cc12c504a15e3e9e5983db6ade6a422f226b97b769367",
+        "association_1dc31fe13b12338488894ff9f3e136b999f8714313116fe0a9541fb8043ad207"
+      ],
+      "capture_sha256": "0c4c4c320bda1bde2991bf3ed21980f1e61736c7ee2e07a7ca75ec390e12362d",
+      "classification": "OBSERVED_DIRECTION_UNCERTAIN",
+      "conversation_id": "conversation-326feb888bb64c02d2ad078eec74d2bf0789fde7413e1c367732ab357a1aead7",
+      "flow_id": "flow-adb8b910a5e521e0498c7a14430bcdf6f3434d00d103f663719c10c521eb8a34",
+      "model_sha256": "9035468d31248812b88cf6e760557d16ac74e627ed9fda35d06717775c971d66",
+      "native_result": null,
+      "reason": "No unique decoded initial TCP SYN direction is evidenced; UDP and midstream traffic do not establish initiation.",
+      "samples": [
+        {
+          "captured_length": 54,
+          "index": 2,
+          "interface": 0,
+          "offset": 136,
+          "original_length": 54,
+          "section": 0,
+          "timestamp": {
+            "denominator": 1000000,
+            "offset_seconds": 0,
+            "ticks": 1700000000000001
+          }
+        }
+      ]
+    },
+    {
+      "association_decision_ids": [
+        "association_1dc31fe13b12338488894ff9f3e136b999f8714313116fe0a9541fb8043ad207",
+        "association_645bbc3f918a6ec7171cc12c504a15e3e9e5983db6ade6a422f226b97b769367"
+      ],
+      "capture_sha256": "0c4c4c320bda1bde2991bf3ed21980f1e61736c7ee2e07a7ca75ec390e12362d",
+      "classification": "OBSERVED_MODEL_REACHABLE",
+      "conversation_id": "conversation-326feb888bb64c02d2ad078eec74d2bf0789fde7413e1c367732ab357a1aead7",
+      "flow_id": "flow-bbf1f530ef18250f0ae2884ef8fb94e677f960c791c4c20fb6e96392df39c1ac",
+      "model_sha256": "9035468d31248812b88cf6e760557d16ac74e627ed9fda35d06717775c971d66",
+      "native_result": {
+        "engine_version": "1.3.0",
+        "model_sha256": "9035468d31248812b88cf6e760557d16ac74e627ed9fda35d06717775c971d66",
+        "observed_destination_port": 502,
+        "query": {
+          "destination_asset_id": "plc",
+          "intervals": [
+            {
+              "diagnostics": null,
+              "end": 502,
+              "reachable": true,
+              "start": 502,
+              "witness": {
+                "destination_asset_id": "plc",
+                "end": 502,
+                "protocol": "tcp",
+                "service_id": "svc_plc",
+                "snapshot_sha256": "9035468d31248812b88cf6e760557d16ac74e627ed9fda35d06717775c971d66",
+                "source_asset_id": "eng",
+                "start": 502,
+                "steps": [
+                  {
+                    "allow_rule_ids": [
+                      "allow_eng_plc"
+                    ],
+                    "conduit_id": null,
+                    "edge_id": "t_eng_plc",
+                    "kind": "transport",
+                    "source": {
+                      "asset_id": "eng",
+                      "ipv4": "192.0.2.10/24",
+                      "placement_zone_id": "control",
+                      "state": {
+                        "interface_id": "eng_net",
+                        "phase": "egress"
+                      }
+                    },
+                    "target": {
+                      "asset_id": "plc",
+                      "ipv4": "192.0.2.20/24",
+                      "placement_zone_id": "control",
+                      "state": {
+                        "interface_id": "plc_net",
+                        "phase": "ingress"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "protocol": "tcp",
+          "service_id": "svc_plc",
+          "source_asset_id": "eng"
+        },
+        "selected_interval": {
+          "diagnostics": null,
+          "end": 502,
+          "reachable": true,
+          "start": 502,
+          "witness": {
+            "destination_asset_id": "plc",
+            "end": 502,
+            "protocol": "tcp",
+            "service_id": "svc_plc",
+            "snapshot_sha256": "9035468d31248812b88cf6e760557d16ac74e627ed9fda35d06717775c971d66",
+            "source_asset_id": "eng",
+            "start": 502,
+            "steps": [
+              {
+                "allow_rule_ids": [
+                  "allow_eng_plc"
+                ],
+                "conduit_id": null,
+                "edge_id": "t_eng_plc",
+                "kind": "transport",
+                "source": {
+                  "asset_id": "eng",
+                  "ipv4": "192.0.2.10/24",
+                  "placement_zone_id": "control",
+                  "state": {
+                    "interface_id": "eng_net",
+                    "phase": "egress"
+                  }
+                },
+                "target": {
+                  "asset_id": "plc",
+                  "ipv4": "192.0.2.20/24",
+                  "placement_zone_id": "control",
+                  "state": {
+                    "interface_id": "plc_net",
+                    "phase": "ingress"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "reason": "The existing engine evaluates this declared initiation and observed port as reachable.",
+      "samples": [
+        {
+          "captured_length": 54,
+          "index": 1,
+          "interface": 0,
+          "offset": 48,
+          "original_length": 54,
+          "section": 0,
+          "timestamp": {
+            "denominator": 1000000,
+            "offset_seconds": 0,
+            "ticks": 1700000000000000
+          }
+        }
+      ]
+    },
+    {
+      "association_decision_ids": [],
+      "capture_sha256": "0c4c4c320bda1bde2991bf3ed21980f1e61736c7ee2e07a7ca75ec390e12362d",
+      "classification": "OBSERVED_MODEL_UNSUPPORTED",
+      "conversation_id": "conversation-7e706f2d074cd82ecbf7ef4c10f77676d4fe1342fbcfdc4969a1ca72a8d2f709",
+      "flow_id": "flow-bf5b790cf8035236fffc03b0e672da8598ce282d3b96417d292c8252c65ea64b",
+      "model_sha256": "9035468d31248812b88cf6e760557d16ac74e627ed9fda35d06717775c971d66",
+      "native_result": null,
+      "reason": "Packet metadata is outside the evaluator's supported IPv4 TCP/UDP scope.",
+      "samples": [
+        {
+          "captured_length": 44,
+          "index": 12,
+          "interface": 0,
+          "offset": 988,
+          "original_length": 44,
+          "section": 0,
+          "timestamp": {
+            "denominator": 1000000,
+            "offset_seconds": 0,
+            "ticks": 1700000000000011
+          }
+        }
+      ]
+    },
+    {
+      "association_decision_ids": [
+        "association_1dc31fe13b12338488894ff9f3e136b999f8714313116fe0a9541fb8043ad207",
+        "association_645bbc3f918a6ec7171cc12c504a15e3e9e5983db6ade6a422f226b97b769367"
+      ],
+      "capture_sha256": "0c4c4c320bda1bde2991bf3ed21980f1e61736c7ee2e07a7ca75ec390e12362d",
+      "classification": "OBSERVED_MODEL_UNSUPPORTED",
+      "conversation_id": "conversation-880645c52d2acaabce74656773766514e0c3ad5abf666475cfd8287c22dc6ba6",
+      "flow_id": "flow-c70778c8bd7fedd434ee430352fe33d3284667d3ffa4ecb8e3e64e4aa9079cdd",
+      "model_sha256": "9035468d31248812b88cf6e760557d16ac74e627ed9fda35d06717775c971d66",
+      "native_result": null,
+      "reason": "Packet metadata is outside the evaluator's supported IPv4 TCP/UDP scope.",
+      "samples": [
+        {
+          "captured_length": 42,
+          "index": 9,
+          "interface": 0,
+          "offset": 740,
+          "original_length": 42,
+          "section": 0,
+          "timestamp": {
+            "denominator": 1000000,
+            "offset_seconds": 0,
+            "ticks": 1700000000000008
+          }
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Observation does not establish authorization, application success or a complete session.",
+    "Reviewed identities are owner assertions bound to this capture and model; NAT, DHCP, address reuse and sensor visibility remain external uncertainties.",
+    "MAC addresses describe captured frame endpoints and never establish IP ownership.",
+    "Only decoded IPv4 TCP initial-SYN observations with reviewed endpoints are evaluated. UDP, midstream TCP, fragments, IPv6, ARP and multihomed origins remain unevaluated.",
+    "Declared-service absence concerns only reviewed decoded destination headers in this capture. Unobserved traffic does not establish blocking or service unavailability.",
+    "Discrepancies identify disagreement with the declared abstraction; they establish neither intrusions nor deployed firewall violations.",
+    "Declared-service absence findings were suppressed because packet interpretation or container coverage is incomplete; skipped bytes may contain relevant traffic."
+  ],
+  "mapping_sha256": "0efcf2fc379014202106ee5bc2d176e2e0db9b2165cb712031ad3d65ef930736",
+  "model_sha256": "9035468d31248812b88cf6e760557d16ac74e627ed9fda35d06717775c971d66",
+  "observations_sha256": "f855b94fb59319edb777a4b30bad3683ac019103dc842e9fa8ae1ffdfc7d76d1",
+  "work": {
+    "edge_rule_atom_checks": 1,
+    "native_evidence_accounted_bytes": 11392,
+    "native_output_accounted_bytes": 7848,
+    "native_query_pairs": 2,
+    "query_atoms": 2,
+    "state_edge_visits": 9
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "cases": {
+    "limited": {
+      "capture_sha256": "0c4c4c320bda1bde2991bf3ed21980f1e61736c7ee2e07a7ca75ec390e12362d",
+      "files": {
+        "comparison.json": "9355aa60bb84ba15809a9efa676e2793d976f7358cd871f65b29f3dce001acfd",
+        "mapping.json": "709967c5685f8c2d300a3d52fbcf2f6792de36d2e5c424717c64b85fec6d5ed3",
+        "observations.json": "66302056dcbd760322b96ab82a15446ea689a2947fc7afa8037f2f14861cdf1a"
+      },
+      "model_sha256": "9035468d31248812b88cf6e760557d16ac74e627ed9fda35d06717775c971d66",
+      "observations_sha256": "f855b94fb59319edb777a4b30bad3683ac019103dc842e9fa8ae1ffdfc7d76d1"
+    },
+    "supported": {
+      "capture_sha256": "f33f01a15fd51fcc59bfaa8effec521e5c703b51a00806de455f53cc89221bcb",
+      "files": {
+        "comparison.json": "e5fbbfc48fe6f8498e6b156add595e50734164e862ae4b327d917096cc499c55",
+        "mapping.json": "65ac4e024004867918782312958b2640ec8bfda4da3f8084c642d9d632658bbd",
+        "observations.json": "8f77082af5af48abed60c13bcc76a8818ec4def96262b234824f9b05417f3315"
+      },
+      "model_sha256": "9035468d31248812b88cf6e760557d16ac74e627ed9fda35d06717775c971d66",
+      "observations_sha256": "d5761264e32e0f5430cb36580f7075665e5eecd87abb5cc9a7cb090fc4fdca71"
+    }
+  },
+  "fictional_only": true,
+  "fixture_version": 1
+}

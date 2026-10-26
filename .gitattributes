@@ -10,3 +10,6 @@ examples/import-studio/projects/** text eol=lf
 *.docx binary
 *.pptx binary
 *.png binary
+
+# Independently produced binary capture fixtures use extension-independent names.
+tests/fixtures/capture-interoperability/*.data binary

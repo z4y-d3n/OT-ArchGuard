@@ -11,6 +11,7 @@ from typer.core import TyperCommand
 
 from otarchguard import __version__
 from otarchguard.api import ValidatedArchitecture, validate_file
+from otarchguard.capture.cli import app as capture_app
 from otarchguard.comparison import compare_architectures, compare_files
 from otarchguard.contract import DiagnosticCategory, ExitCode
 from otarchguard.diagnostics import Diagnostic, ModelError, fail
@@ -101,6 +102,7 @@ app = typer.Typer(
     add_completion=False,
 )
 app.add_typer(import_app, name="import")
+app.add_typer(capture_app, name="capture")
 app.command("quality", cls=TraceCommand)(quality)
 app.command("compare-architecture", cls=TraceCommand)(compare_architecture)
 

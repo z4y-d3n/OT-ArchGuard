@@ -4,7 +4,7 @@ OT-ArchGuard is an offline Python CLI for reviewing declared IT/OT network
 architectures. It validates architecture models, checks communication requirements
 and compares TCP/UDP listener reachability between proposed configurations.
 
-Source version: **1.2.0** (stable-release preparation; unpublished). YAML schema: **1**. Consult the owner-published release
+Source version: **1.3.0** (release candidate; unpublished). YAML schema: **1**. Consult the owner-published release
 record for availability, exact source tag and audited asset checksums.
 
 Development Import Studio now supports offline multi-source projects through
@@ -24,15 +24,19 @@ groups evidence into bounded pages with individual anchors. See the
 [document tutorial](examples/import-studio/documents/README.md) and
 [supported subsets and design decisions](docs/development/v12-06-document-evidence-and-explorer.md).
 PDF/VSDX remain deferred. Grouped reports contain additional sensitive evidence.
-Stable v1.2.0 release readiness still requires actual hosted verification on all
-six OS/Python combinations; local development acceptance does not establish it.
-See [v1.2 release notes](docs/release-notes-1.2.0.md)
+Six-platform hosted CI passed for candidate
+`5c4c18da4711c36f4f5750c03009d429551d0cf0` in
+[run 40246239841](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40246239841).
+The later owner browser review passed four criteria and failed navigation and
+interpretation. The current UX remediation requires fresh exact-source
+verification and a second human review before release approval.
+See [v1.3.0 release notes](docs/release-notes-1.3.0.md)
 and [Gate V11-6 verification](docs/v1.1/gate-v11-6.md).
 
 This development branch adds owner-reviewed CSV/TSV, restricted XLSX and JSON inventories. See the
 [reviewed import walkthrough](docs/import-studio.md) and
 [v1.2 roadmap](docs/development/v1.2-roadmap.md). The published v1.1.0 baseline
-remains immutable. Current release-preparation builds use 1.2.0; the version
+remains immutable. Current release-candidate builds use 1.3.0; the version
 identity alone does not authorize stable publication.
 
 OT-ArchGuard is an independent industrial network architecture analysis tool inspired by general OT cybersecurity good practices, including those addressed by the IEC 62443 series. It does not provide certification, establish normative conformity or imply institutional endorsement.
@@ -52,8 +56,10 @@ Reduced exposure does not cancel a failed operational requirement.
 
 ## Install and run
 
-Python 3.12 or later is required. Local verification covers Windows with Python
-3.12.14 and 3.14.5; see [historical V11-6 verification](docs/v1.1/gate-v11-6.md).
+Python 3.12 or later is required. The historical v1.3 candidate above passed
+Windows, Ubuntu and macOS with Python 3.12/3.14; this is evidence for that exact
+source. Earlier local results are in
+[historical V11-6 verification](docs/v1.1/gate-v11-6.md).
 From a checkout or extracted source distribution:
 
 ~~~powershell
@@ -133,7 +139,7 @@ with optional `--policy-evidence`, `--report PATH` and `--report-format html|jso
 Exit 0 means the exact declared query completed, including unreachable or mixed
 port outcomes. Intents remain unassessed by trace. See the [trace contract](docs/trace.md)
 and [synthetic trace examples](examples/README.md#exact-communication-trace).
-Current release-preparation application and distribution versions are 1.2.0. Evaluate upgrades in a parallel
+Current release-candidate application and distribution versions are 1.3.0. Evaluate upgrades in a parallel
 environment; see [installation and upgrade](docs/installation.md). Consult the
 owner-published release record for available assets, source tag and checksums.
 
@@ -152,3 +158,26 @@ and optional documentary evidence; repeat `--trace SOURCE:SERVICE` for actual ex
 before/after evaluation. Missing documentation never implies a vulnerability.
 See the [offline tutorial](examples/quality-comparison/README.md) and
 [versioned contract](docs/development/v12-07-quality-and-comparison.md).
+## PCAP Evidence Studio
+
+The additive v1.3.0 release candidate supports passive local PCAP/PCAPNG evidence,
+reviewed identity mappings, comparison through the existing evaluator, and offline
+reports. Capture metadata never establishes authorization, host authenticity,
+session success or deployed firewall behavior. ARP sender/target fields retain
+their protocol meaning; an ARP target reference does not establish a device.
+See the [capture guide](docs/pcap-evidence-studio.md),
+[fictional tutorial](examples/capture-studio/README.md), and
+[gate evidence](docs/development/v13-gate-evidence.md).
+Native schema 1 remains supported. Evidence contracts and a read-only consumer are
+documented in [V13-18](docs/development/v13-18-evidence-contract-freeze.md).
+No stable v1.3 release, hosted validation or final owner acceptance is implied by
+the package version.
+
+Interoperability evidence uses independently authored synthetic bytes and
+Wireshark `text2pcap` 4.6.7 output, checked against offline TShark 4.6.7 receipts.
+It demonstrates the [tested subset](docs/pcap-evidence-studio.md#capture-corpus-and-use-policy),
+not every capture producer or real industrial-plant traffic. No authorized real
+industrial capture or downloaded operational/public corpus is part of this validation.
+See the [source and acceptance reconciliation](docs/development/v13-27-source-and-release-provenance.md)
+for historical CI, the original human results and the new candidate boundary.
+

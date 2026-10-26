@@ -1,0 +1,101 @@
+{
+  "association_version": 1,
+  "candidates_sha256": "a13447f7a06b927658aae9d00358ef9f22e6f2b163ac3245741d42a7b66f5445",
+  "capture_sha256": "f33f01a15fd51fcc59bfaa8effec521e5c703b51a00806de455f53cc89221bcb",
+  "model_sha256": "9035468d31248812b88cf6e760557d16ac74e627ed9fda35d06717775c971d66",
+  "observations_sha256": "d5761264e32e0f5430cb36580f7075665e5eecd87abb5cc9a7cb090fc4fdca71",
+  "proposals": [
+    {
+      "candidates": [],
+      "decision": "PENDING",
+      "host_id": "host-1dc2c211e41d4f95bce873d8e37933961e99238356c5999379c1c3cec27360ea",
+      "id": "association_6f9b44fa3233a47ddd3c8b47e3ab23b61c0dac61220f45772c7ef4f6018e965f",
+      "observed_ip": "192.0.2.99",
+      "rationale": "",
+      "reviewer": "",
+      "selected_asset_id": null,
+      "selected_interface_id": null
+    },
+    {
+      "candidates": [
+        {
+          "asset_id": "eng",
+          "interface_id": "eng_net"
+        }
+      ],
+      "decision": "ACCEPT",
+      "host_id": "host-60f25b1d73c65dea626b07efe90abfa1d407745daa2e168c26453bb23c8e6ba7",
+      "id": "association_1dc31fe13b12338488894ff9f3e136b999f8714313116fe0a9541fb8043ad207",
+      "observed_ip": "192.0.2.10",
+      "rationale": "Synthetic fixture assertion only; no operational identity approval.",
+      "reviewer": "fictional-contract-author",
+      "selected_asset_id": "eng",
+      "selected_interface_id": "eng_net"
+    },
+    {
+      "candidates": [],
+      "decision": "PENDING",
+      "host_id": "host-ac8861d4a6b36049c61640a74d408df415d1a0124381b87293d0bd39e63c2181",
+      "id": "association_5e9172a9d7f5e2d294fb94e8d35a5eb3b0ab671a1d63fcb63b1260c43cb2c276",
+      "observed_ip": "2001:db8::20",
+      "rationale": "",
+      "reviewer": "",
+      "selected_asset_id": null,
+      "selected_interface_id": null
+    },
+    {
+      "candidates": [
+        {
+          "asset_id": "plc",
+          "interface_id": "plc_net"
+        }
+      ],
+      "decision": "ACCEPT",
+      "host_id": "host-b0444a5f82771215a8166411dde14a4889099e3f8a6244a34841dcc4b4dfe377",
+      "id": "association_645bbc3f918a6ec7171cc12c504a15e3e9e5983db6ade6a422f226b97b769367",
+      "observed_ip": "192.0.2.20",
+      "rationale": "Synthetic fixture assertion only; no operational identity approval.",
+      "reviewer": "fictional-contract-author",
+      "selected_asset_id": "plc",
+      "selected_interface_id": "plc_net"
+    },
+    {
+      "candidates": [
+        {
+          "asset_id": "hmi",
+          "interface_id": "hmi_net"
+        }
+      ],
+      "decision": "ACCEPT",
+      "host_id": "host-c03322910c1b378c35ce0b2db117563d8f17fb12d46af8ba2c1abd5c82805cf5",
+      "id": "association_c183019c891039be9990c7ded547cd3b0d92a67915edc682df984a12b887fc13",
+      "observed_ip": "192.0.2.11",
+      "rationale": "Synthetic fixture assertion only; no operational identity approval.",
+      "reviewer": "fictional-contract-author",
+      "selected_asset_id": "hmi",
+      "selected_interface_id": "hmi_net"
+    },
+    {
+      "candidates": [],
+      "decision": "PENDING",
+      "host_id": "host-d4570473d39db7190c5a2dac4793c5b881e8bacd459a6ed449adcdce0efb77b4",
+      "id": "association_24df8106667feb367012618541d3404af3db23218e851ceec1be2e3010dcdbaf",
+      "observed_ip": "192.0.2.98",
+      "rationale": "",
+      "reviewer": "",
+      "selected_asset_id": null,
+      "selected_interface_id": null
+    },
+    {
+      "candidates": [],
+      "decision": "PENDING",
+      "host_id": "host-e46962b1be1d112df4cbc0d7e5c6e3cd2b4332a8ec561433a834a0826c1669c5",
+      "id": "association_7531583690d28660fd802dfc10bed3b5b1d114eb665ce311101d8fb21afdcf26",
+      "observed_ip": "2001:db8::10",
+      "rationale": "",
+      "reviewer": "",
+      "selected_asset_id": null,
+      "selected_interface_id": null
+    }
+  ]
+}

@@ -1,0 +1,259 @@
+{
+  "corpus_version": 1,
+  "privacy": "Original fictional documentation addresses only",
+  "license": "Apache-2.0; original fixtures; no redistributed Wireshark code",
+  "writer": "Text2pcap (Wireshark) 4.6.7 (v4.6.7-0-gb439fb7b47a9).",
+  "specimens": [
+    {
+      "file": "spec-le-us.data",
+      "sha256": "6496e24e44140aed2ca52d902df4b5c7865816527dfe6852dcc2a8daec2e7e7f",
+      "bytes": 152,
+      "packets": 2,
+      "error": null,
+      "features": [
+        "pcap",
+        "le",
+        "us",
+        "multiple-packets",
+        "extension-independent"
+      ],
+      "origin": "spec-authored-v1"
+    },
+    {
+      "file": "spec-le-ns.data",
+      "sha256": "a0f0f3e561f86e223a5be3531bd5941bbc5149fbb6532fd962b73bcfb2c3b036",
+      "bytes": 152,
+      "packets": 2,
+      "error": null,
+      "features": [
+        "pcap",
+        "le",
+        "ns",
+        "multiple-packets",
+        "extension-independent"
+      ],
+      "origin": "spec-authored-v1"
+    },
+    {
+      "file": "spec-be-us.data",
+      "sha256": "0cffe2502d0282b06d2fc1c0f0dabf7a701f9f70ed8dd455a643efaf8fffc6b1",
+      "bytes": 152,
+      "packets": 2,
+      "error": null,
+      "features": [
+        "pcap",
+        "be",
+        "us",
+        "multiple-packets",
+        "extension-independent"
+      ],
+      "origin": "spec-authored-v1"
+    },
+    {
+      "file": "spec-be-ns.data",
+      "sha256": "4801b61b2e98f99278743853e6eceb448c8f1bb12f01c15fffb8c74f147200e6",
+      "bytes": 152,
+      "packets": 2,
+      "error": null,
+      "features": [
+        "pcap",
+        "be",
+        "ns",
+        "multiple-packets",
+        "extension-independent"
+      ],
+      "origin": "spec-authored-v1"
+    },
+    {
+      "file": "spec-empty.data",
+      "sha256": "acc530668c8bc60b2d229281130b1899bfc81d70fdada5c34b3236c628f739c8",
+      "bytes": 24,
+      "packets": 0,
+      "error": null,
+      "features": [
+        "pcap",
+        "empty"
+      ],
+      "origin": "spec-authored-v1"
+    },
+    {
+      "file": "spec-unsupported-link.data",
+      "sha256": "26d779d98f1b5c8e507a1760a3bdfc9f7dc0396bfdebb8feb79d28f6a6aa9881",
+      "bytes": 49,
+      "packets": 1,
+      "error": null,
+      "features": [
+        "pcap",
+        "unsupported-linktype"
+      ],
+      "origin": "spec-authored-v1"
+    },
+    {
+      "file": "spec-truncated.data",
+      "sha256": "a35008d6e4d241e16e027ea244c69173e47b1a2a27cf1f9befe0359d3e159104",
+      "bytes": 93,
+      "packets": null,
+      "error": "CAPTURE_INVALID",
+      "features": [
+        "pcap",
+        "truncated-file"
+      ],
+      "origin": "spec-authored-v1"
+    },
+    {
+      "file": "spec-sections.data",
+      "sha256": "ff0ff818c95a0d70e86aed6bf15b684543485785bdd0fa8fd689b633a096aa66",
+      "bytes": 452,
+      "packets": 4,
+      "error": null,
+      "features": [
+        "pcapng",
+        "multiple-sections",
+        "multiple-interfaces",
+        "endianness-transition",
+        "epb",
+        "spb",
+        "binary-resolution",
+        "decimal-resolution",
+        "timestamp-offset",
+        "unknown-block",
+        "unknown-option",
+        "alignment-padding",
+        "mixed-encapsulation"
+      ],
+      "origin": "spec-authored-v1"
+    },
+    {
+      "file": "spec-unsupported-section.data",
+      "sha256": "e69af76a8559dbcb7f1dbcf2faf50ec6ae818ab1bfbfe7c17bc1afa402fef301",
+      "bytes": 28,
+      "packets": null,
+      "error": "CAPTURE_INVALID",
+      "features": [
+        "hostile",
+        "unsupported-section"
+      ],
+      "origin": "spec-authored-v1"
+    },
+    {
+      "file": "spec-inconsistent-length.data",
+      "sha256": "67afc0a3254650c0b253d4bed932696eefc61fce98330e5f9130583b7f5fb0d6",
+      "bytes": 452,
+      "packets": null,
+      "error": "CAPTURE_INVALID",
+      "features": [
+        "hostile",
+        "inconsistent-length"
+      ],
+      "origin": "spec-authored-v1"
+    },
+    {
+      "file": "spec-invalid-interface.data",
+      "sha256": "7dcfaf9f3e7ed448eaf2811b9bebbfb056e2f7024ca861d6a1df553ca25b1119",
+      "bytes": 136,
+      "packets": null,
+      "error": "CAPTURE_INVALID",
+      "features": [
+        "hostile",
+        "invalid-interface"
+      ],
+      "origin": "spec-authored-v1"
+    },
+    {
+      "file": "spec-hostile-block.data",
+      "sha256": "7839e8dc39c1dca972925aa86311686534833bda645ab19bec61832ca3f495b6",
+      "bytes": 12,
+      "packets": null,
+      "error": "LIMIT_EXCEEDED",
+      "features": [
+        "hostile",
+        "hostile-block"
+      ],
+      "origin": "spec-authored-v1"
+    },
+    {
+      "file": "spec-hostile-record.data",
+      "sha256": "c3145d6e8dc95daa0ed6b62b241ef3bc655568c65bbd49b1703d6a6a59a701f7",
+      "bytes": 40,
+      "packets": null,
+      "error": "LIMIT_EXCEEDED",
+      "features": [
+        "hostile",
+        "hostile-record"
+      ],
+      "origin": "spec-authored-v1"
+    },
+    {
+      "file": "text2pcap-pcap.data",
+      "sha256": "b8f745b19bf43c53e068126edb03c04c954437ac63a752f3097512997b5eb1d3",
+      "bytes": 802,
+      "packets": 12,
+      "error": null,
+      "features": [
+        "pcap",
+        "ethernet",
+        "ipv4",
+        "ipv6",
+        "tcp",
+        "udp",
+        "icmp",
+        "icmpv6",
+        "arp",
+        "vlan",
+        "fragmented",
+        "truncated-traffic",
+        "malformed-header",
+        "missing-transport"
+      ],
+      "origin": "Text2pcap (Wireshark) 4.6.7 (v4.6.7-0-gb439fb7b47a9)."
+    },
+    {
+      "file": "text2pcap-nsecpcap.data",
+      "sha256": "2ab8ec40ac48ed68f704934bfeb87fb210c7e6160b3cb389ec713b45d1427b1d",
+      "bytes": 802,
+      "packets": 12,
+      "error": null,
+      "features": [
+        "nsecpcap",
+        "ethernet",
+        "ipv4",
+        "ipv6",
+        "tcp",
+        "udp",
+        "icmp",
+        "icmpv6",
+        "arp",
+        "vlan",
+        "fragmented",
+        "truncated-traffic",
+        "malformed-header",
+        "missing-transport"
+      ],
+      "origin": "Text2pcap (Wireshark) 4.6.7 (v4.6.7-0-gb439fb7b47a9)."
+    },
+    {
+      "file": "text2pcap-pcapng.data",
+      "sha256": "683fde3d8c38a273b2ddedbfa3aacf04d4e50dd74587cf9d84cfa99aef223bee",
+      "bytes": 1296,
+      "packets": 12,
+      "error": null,
+      "features": [
+        "pcapng",
+        "ethernet",
+        "ipv4",
+        "ipv6",
+        "tcp",
+        "udp",
+        "icmp",
+        "icmpv6",
+        "arp",
+        "vlan",
+        "fragmented",
+        "truncated-traffic",
+        "malformed-header",
+        "missing-transport"
+      ],
+      "origin": "Text2pcap (Wireshark) 4.6.7 (v4.6.7-0-gb439fb7b47a9)."
+    }
+  ]
+}
