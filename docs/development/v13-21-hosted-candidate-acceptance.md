@@ -1,107 +1,122 @@
-# V13-21 — Hosted candidate acceptance and authorization boundary
+# V13-21 — Hosted candidate acceptance
 
-Date: 2026-10-25. Status: **FAIL for the published candidate; local correction
-prepared, remaining jobs in progress.** The owner specifically authorized the
-normal push of `38c1ec96d95e274e3b9ebdd30ad42a3e8cb84a9e` to
-`refs/heads/codex/v13-01-capture-foundation`. That exact push succeeded and created
-the remote branch. The owner authorization covers that commit only. PR, merge,
-tags, releases, uploads, settings and any subsequent push remain unauthorized.
+## A. Executive status
 
-## Actual hosted results
+**PASS for the tested candidate only.** Recorded 2026-10-25, America/Santiago.
+[Python verification run 40246239841](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40246239841)
+completed successfully for all six configurations, attempt 1, event push. It started
+2026-10-25T23:46:09Z and concluded by 2026-10-26T00:11:15Z. Raw timestamps are UTC.
 
-| Platform | Python | Final 1.3.0 result | Tested commit / run |
-| --- | --- | --- | --- |
-| Windows | 3.12 | IN PROGRESS | job121324170857 |
-| Windows | 3.14 | IN PROGRESS | job121324170817 |
-| Ubuntu | 3.12 | FAIL: strict mypy | job121324170800 |
-| Ubuntu | 3.14 | FAIL: strict mypy | job121324170894 |
-| macOS | 3.12 | FAIL: strict mypy | job121324170818 |
-| macOS | 3.14 | FAIL: strict mypy | job121324170716 |
+The tested and published candidate is exactly
+`5c4c18da4711c36f4f5750c03009d429551d0cf0`, parent
+`38c1ec96d95e274e3b9ebdd30ad42a3e8cb84a9e`. Its verified public-source SHA-256 is
+`d4c839fc2042e6a77b22831df08668e0317b778dc95d4a5f1c3674d202d50eb7` (327 files).
+Every job and downloaded source receipt identifies that exact candidate.
 
-All cells belong to [Python verification run40244859860](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40244859860),
-attempt1, event push, started2026-10-25T23:27:38Z, exact head38c1ec96d95e274e3b9ebdd30ad42a3e8cb84a9e.
-No historical v1.2 or earlier candidate run is substituted. Local Windows results
-establish no hosted multiplatform PASS. Raw authorization/push/branch/run/job/log
-and downloaded-artifact receipts are retained under `output/v13-hosted/`.
+Human browser acceptance remains pending in V13-17. Hosted success is not owner
+approval, merge verification, a stable tag or release publication.
 
-## Confirmed hosted defect and local correction
+## B. Changes and authorization
 
-Four POSIX cells completed source verification, 1.3.0 wheel/sdist builds, archive
-audits, installed module/console verification, Ruff lint and formatting. Strict
-mypy then reported four undefined Windows ctypes attributes in
-`benchmarks/capture.py`: WinDLL (twice), WinError and get_last_error. Its runtime
-`os.name == "nt"` condition excluded those calls on POSIX, but mypy did not use
-that condition to exclude the Windows-only API declarations. Product analyzer
-modules were not implicated. Later tests/walkthroughs/benchmarks in these cells
-were skipped, not PASS.
+The owner separately authorized two literal, nonforced candidate-branch pushes:
+38c1ec9 and then 5c4c18d. Both succeeded. Only
+`refs/heads/codex/v13-01-capture-foundation` changed. Read-only remote verification
+confirmed main remains at f52c792b683cb499dc7de765b65b5cc897a96854 and all three
+historical tag objects remain unchanged. No PR, merge, tag, release, package upload,
+settings change, workflow dispatch or further push was performed.
 
-The local correction uses `sys.platform == "win32"`, recognized by mypy and
-equivalent for the supported native platforms. No ignores, weakened checks,
-forced Windows typing in hosted POSIX jobs, runtime dependency or production
-module change is introduced. Full strict mypy passes separately with win32,
-linux and darwin targets (155 files each); Ruff/format pass and the real local
-Windows RSS helper returns a positive integer. Receipts:
-`output/v13-platform-typing-fix/receipt.json` and mypy target logs. These static
-cross-target checks do not claim POSIX runtime success. The fixed commit still
-requires owner authorization and a new six-cell run.
+The first [run 40244859860](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40244859860)
+tested 38c1ec9: Windows 3.12/3.14 passed completely, but all four POSIX cells failed
+strict mypy before runtime suites. The Windows-only RSS benchmark used
+`os.name == "nt"`, which did not exclude ctypes.WinDLL/WinError/get_last_error from
+POSIX type analysis. The correction changes one executable line in
+`benchmarks/capture.py` to `sys.platform == "win32"`; three accompanying markdown
+records explained the defect and acceptance snapshot. It does not weaken mypy,
+force Windows typing in POSIX jobs, alter production modules/tests/tools, change
+contracts or introduce dependencies. Local full strict mypy passed win32/linux/
+darwin targets, the Windows RSS helper and nine benchmark workers passed, and the
+fresh corrected six-cell run now supplies actual runtime acceptance.
 
-Four failed-cell integrity ZIPs were retained and their API SHA-256 digests
-matched downloaded bytes. They contain source-checkout, environment, archive
-audit, actual packages and golden/interoperability manifests. Full-suite XML,
-sdist installation, compatibility/consumer/walkthrough/benchmark results are
-absent because mypy stopped execution. Their absence is explicitly recorded.
+These final markdown updates are a separate **local documentation-only acceptance
+record**, identified by the supplemental acceptance manifest. That record has no
+hosted run and is not a new tested/published candidate. Its public tree/hash differs
+from 5c4c18d even though executable/test/tool/benchmark bytes remain identical.
+Do not attach the candidate's CI to that new documentary HEAD. The selected archives
+and immutable source/CI receipts remain those built from 5c4c18d. Publishing or
+integrating any later identity requires separate authorization and validation.
 
-## Prepared workflow
+## C. Independent evidence
 
-`.github/workflows/ci.yml` defines all six cells, read-only contents permission,
-exact-source verification before building, backend-derived wheel/sdist filenames,
-archive/member/source/RECORD/metadata audit, regular wheel installation, complete
-network-denied suite, Ruff/format/strict mypy/dependency checks and native console
-and module hashing. It independently reinstalls the sdist and runs the complete
-suite again, followed by fictional installed-console walkthroughs and fixed
-resource workloads. New capture interoperability, ARP and evidence-consumer tests
-are collected by both complete suites; they must remain in the public manifest.
+| Platform | Matrix / actual Python | Job | Wheel / sdist tests | Result |
+|---|---|---|---:|---|
+| Windows | 3.12 / 3.12.10 | [121328292552](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40246239841/job/121328292552) | 2,746 / 2,746 | PASS |
+| Windows | 3.14 / 3.14.9 | [121328292445](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40246239841/job/121328292445) | 2,746 / 2,746 | PASS |
+| Ubuntu | 3.12 / 3.12.15 | [121328292704](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40246239841/job/121328292704) | 2,746 / 2,746 | PASS |
+| Ubuntu | 3.14 / 3.14.8 | [121328292619](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40246239841/job/121328292619) | 2,746 / 2,746 | PASS |
+| macOS | 3.12 / 3.12.10 | [121328292578](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40246239841/job/121328292578) | 2,746 / 2,746 | PASS |
+| macOS | 3.14 / 3.14.8 | [121328292579](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40246239841/job/121328292579) | 2,746 / 2,746 | PASS |
 
-The prepared historical compatibility step uses the pinned local Git baseline
-`f52c792b683cb499dc7de765b65b5cc897a96854`, a fresh regular baseline environment
-sharing only approved installed dependencies, no-index installation, exact
-installed-baseline hashes, and strict version-aware artifact comparison.
-Historical fixtures, native schema/contract bytes and the narrowly permitted
-current-release assertion are checked before execution. The existing comparison
-tool is reused; arbitrary version-string substitution is forbidden.
+Each job's 28 steps succeeded. Both XML suites independently contain 2,746 cases,
+zero errors, failures or skips; counts overlap and are never added across suites
+or platforms. Each includes 423 capture cases, including the independent producer
+corpus, 62 ARP cases, 28 consumer adversarial cases and three golden-contract cases.
 
-Retained candidate evidence includes source-checkout, environment/module hashes,
-actual archives, archive audit, both suite XML receipts, native compatibility
-captures/comparison, walkthroughs and exact tested-commit/run identifiers. The
-named frozen-consumer step reads the supported and limited golden bundles without
-capture bytes; both JSON receipts, the golden manifest, interoperability corpus
-manifest and independent decoder receipt are retained explicitly. The
-retention step runs even on failure, preserving available diagnostics. Benchmark
-evidence is retained separately. Setup may access approved dependencies; product
-execution and the baseline comparison are network denied. The required repository
-variable `EXPECTED_ROOT_SHA` must already match the independently verified history
-root; this task does not change repository settings.
+All twelve integrity/benchmark ZIP artifacts were downloaded with their GitHub API
+SHA-256 digests, checked before bounded extraction, and independently reopened.
+Per-job package bytes, every wheel/sdist member, exact 327 public source hashes,
+metadata/version/entry point, wheel RECORD evidence, both installed origins and
+60 module hashes agree with the reviewed source. CLI/runtime/distribution/archive
+identity is 1.3.0. The corpus/golden manifests and external TShark receipt are exact.
+No downloaded runtime code was imported to inspect the artifacts.
 
-## Required owner decision
+Every cell also has independently recomputed native compatibility: 45 cases /
+123 analytical artifacts (82 exact, 28 JSON and 13 HTML changes limited to the
+explicit engine_version transition), plus its verified provenance manifest.
+Baseline modules were checked against pinned Git archive f52c792. Both read-only
+golden consumers, project/document/quality/capture/Explorer walkthroughs, denied
+Python networking, deterministic output and negative publication checks passed.
 
-Before requesting authorization, the integration owner must report the exact
-final branch, HEAD, parent commit(s), clean/dirty status, complete changed-file
-list and diff summary, final local receipts, proposed remote destination and
-literal non-forced Git command. Inspect remote destination refs read-only and
-reconcile any existing candidate branch without force-pushing. The final exact
-source identity is in V13-20 and the release manifest, not the starting revision
-of this review.
+Raw run/job/artifact lists, initial failure logs, download receipts, source/archive
+inventories, suite XML, per-cell integrity reviews and benchmark summaries are under
+`output/v13-hosted/`. Root-reviewed cells are in `run-40246239841-root/`; independent
+POSIX 3.14 reviews are in `run-40246239841-review/`. The final
+`acceptance-manifest.json` binds these receipts, all artifact IDs/digests, package
+identities, selected local archives, tested source and local documentary record.
+Original `output/v13-final/` and correction `fix-candidate/` records are preserved;
+neither failed-run nor earlier local evidence substitutes for the corrected run.
 
-The proposed destination is the existing repository
-`https://github.com/z4y-d3n/OT-ArchGuard.git`, candidate branch
-`codex/v13-01-capture-foundation`, subject to the read-only remote-ref check.
-Expected workflow: **Python verification**, six matrix cells. Authorization may
-publish only the exact reviewed candidate branch commit. Protected/historical
-refs, `main`, stable tags and published packages must remain immutable.
+## D. Quality and resources
 
-After authorization and the normal push, inspect every job against the exact
-tested commit and download/verify the retained source, package, suite,
-walkthrough, compatibility and resource evidence. Missing checks stay NOT RUN or
-BLOCKED. Fix actual failures locally and repeat affected validation. A PR requires
-separate specific authorization. Any eventual merge commit requires its own
-source-identity and required-CI verification before publication consideration.
+In every cell native benchmarks completed three profiles and rejected two expected
+limit workloads; quality/comparison completed three deterministic workload sizes
+with identical review bytes and no broken links; capture completed eight workloads
+and rejected the intended cardinality workload with resource_limit diagnostics.
+RSS and traced-allocation measurements remain distinct and positive. These finite
+measurements do not establish universal throughput, maximum capacity or OS memory
+isolation. Unsupported traffic remains unassessed; no analytical scope was expanded.
+
+Different hosts produce different archive container bytes. Each exact downloaded
+archive has its own verified cryptographic identity and matching source; cross-host
+reproducible archive-byte equivalence is not claimed. Selected local package bytes
+are in `output/v13-hosted/fix-candidate/artifacts/` with their original SHA256SUMS.txt.
+They were built from the tested candidate, not renamed old archives or rebuilt from
+the later documentation-only HEAD. Reports and retained network/reviewer metadata
+remain sensitive; hashes provide integrity, not creator authentication or signatures.
+
+## E. Remaining risks and gaps
+
+There is no missing hosted check for the six accepted cells. Human browser
+interaction, focus, zoom, narrow layout and owner visual acceptance remain NOT RUN;
+the owner explicitly replied that review is pending. A browser protocol-policy
+refusal was preserved without a server/proxy/alternate-surface bypass. Finite
+synthetic captures are not broad operational-capture validation or security proof.
+An eventual integration/merge commit has not been created or tested and must not
+inherit this candidate's acceptance automatically.
+
+## F. Next step
+
+Complete the V13-17 owner checklist and correct actual findings. Preserve the
+functional/contract freeze in V13-18/V13-22. The owner separately controls any PR,
+publication of the local documentary record, merge, tag, release, package upload
+or repository setting. Verify the exact resulting integration source and required
+CI before considering publication. No further remote write is authorized here.
