@@ -2,13 +2,20 @@
 
 ## Unreleased — v1.4 local development foundation
 
+- V14-04 adds the source-reproduced offline Historical Evidence & Drift Explorer,
+  complete static domain/finding/evidence navigation, accessible pagination,
+  recorded-versus-generation approval states, bounded diagrams, safe publication,
+  deterministic manifests and separate portable/source-dependent verification.
+  Preserve drift-v1 meanings and all native contracts. Local source/wheel/sdist
+  gates pass; owner browser acceptance and hosted checkpoint CI remain pending.
 - V14-03 adds exact approved-baseline historical comparison, per-domain
   comparability and coverage, bounded directional communication/protocol metadata
   joins, native declaration and equivalent-query assessment differences, and
   standalone drift-v1 reports with atomic publication and full source replay.
   Preserve physical/analytical identity distinctions and revocation authority;
   provide offline CLI summaries and fictional longitudinal/adversarial fixtures.
-  Historical Explorer and final release acceptance remain future milestones.
+  At that checkpoint, Historical Explorer and final release acceptance remained
+  future milestones.
 - V14-02P reduces historical read allocation, repeated dependency validation and
   review-state reconstruction through operation-private validation and fresh
   bounded acquisitions. Preserve canonical producer bytes, complete inventory
