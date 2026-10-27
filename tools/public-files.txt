@@ -19,6 +19,7 @@ benchmarks/protocols.py
 benchmarks/quality_comparison.py
 benchmarks/receipts/v14-02p-scaling.png
 benchmarks/receipts/v14-02p-windows.json
+benchmarks/receipts/v14-03-windows.json
 benchmarks/run.py
 benchmarks/workloads.py
 docs/algorithms.md
@@ -78,6 +79,8 @@ docs/development/v14-01-handoff-es.md
 docs/development/v14-02-handoff-es.md
 docs/development/v14-02p-handoff-es.md
 docs/development/v14-02p-performance.md
+docs/development/v14-03-audit.md
+docs/development/v14-03-handoff-es.md
 docs/development/v14-analysis-revisions-adr.md
 docs/development/v14-architecture.md
 docs/development/v14-drift-contract.md

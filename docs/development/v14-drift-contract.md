@@ -119,6 +119,17 @@ yield model-relative reachability differences. The unchanged native engine uses
 peer model port partitions and retains exact query, intervals and witnesses.
 Missing/non-equivalent/self-origin/unsupported queries abstain, never deny.
 Native results do not establish real packet enforcement or application success.
+Existing capture-to-model artifacts can additionally provide paired unchanged
+assessment support under the exact same model, independently accepted endpoint
+associations and equivalent supported directional IPv4 TCP SYN queries. Missing,
+changed-model or unpaired supported assessments abstain; unsupported classifications
+do not become negative evidence. Exact comparison attachment/flow references
+retain the original replayed witness without duplicating it in every finding.
+
+Coverage differences separately retain raw coverage counters, unknown blocks,
+interface context and observed rational bounds. Protocol accounting is retained
+even when categorical records do not change. Counter differences remain raw
+finite-dataset differences, without exposure normalization or absence claims.
 
 Top-level finding families are declared architecture, observed communication,
 protocol metadata, native assessment, analytical interpretation, coverage and
@@ -178,9 +189,16 @@ writer racing arbitrary directory ancestors. No original PCAP/payload is retaine
 Defaults: 64 selected revisions total, 64 distinct collections, 50,000 accounted
 normalization keys, 20,000 finding records, 50,000 protocol records, 200,000 source
 references, 32 MiB published report, 128 native evaluations and 2,000,000 comparison
-work units. Configurable API limits may narrow these ceilings only. Native graph
-work is additionally bounded by the existing native resource contract and the
-remaining comparison budget. Existing 256 MiB workspace / 64 MiB object / JSON
+work units. Configurable API limits may narrow these ceilings only. Work units
+account for drift normalization/alignment/declaration/query-equivalence operations
+and native query search visits/predicate checks. They exclude lifecycle acquisition,
+validation/replay, native constructor preprocessing, JSON, hashing and I/O. Native
+query search is bounded by the remaining comparison budget. Constructor partition,
+graph, selector and policy preprocessing retains the separate frozen native
+ceilings (including 500,000 rule-edge associations and 2,048 port atoms); the
+2-million counter is not a ceiling on all CPU operations. At most two new native
+engines are live per pair, with construction count bounded by selected pairs and
+charged native evaluations. Existing 256 MiB workspace / 64 MiB object / JSON
 depth 64 / 2,000,000-node lifecycle bounds remain unchanged. Finite canonical and
 intermediate structures are accounted; budgets are not guaranteed resident-memory
 or latency promises. Failures publish no successful report.

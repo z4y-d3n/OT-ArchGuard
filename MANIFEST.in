@@ -19,6 +19,7 @@ include benchmarks/protocols.py
 include benchmarks/quality_comparison.py
 include benchmarks/receipts/v14-02p-scaling.png
 include benchmarks/receipts/v14-02p-windows.json
+include benchmarks/receipts/v14-03-windows.json
 include benchmarks/run.py
 include benchmarks/workloads.py
 include docs/algorithms.md
@@ -78,6 +79,8 @@ include docs/development/v14-01-handoff-es.md
 include docs/development/v14-02-handoff-es.md
 include docs/development/v14-02p-handoff-es.md
 include docs/development/v14-02p-performance.md
+include docs/development/v14-03-audit.md
+include docs/development/v14-03-handoff-es.md
 include docs/development/v14-analysis-revisions-adr.md
 include docs/development/v14-architecture.md
 include docs/development/v14-drift-contract.md

@@ -6,7 +6,8 @@ analytical interpretation independently. Missing traffic does not prove blocking
 or outage. The [technical contract](development/v14-drift-contract.md) defines
 comparability, source authority, report reproduction and resource ceilings.
 
-Run the complete fictional example with a regular installed package:
+From the audited repository root, run the complete fictional example with the
+runtime supplied by a regular installed package:
 
 ```text
 python -m tools.drift_walkthrough --output output/my-drift-walkthrough

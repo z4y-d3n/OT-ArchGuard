@@ -2,7 +2,8 @@
 
 This development workflow is offline. It preserves one physical collection for
 each exact capture SHA, several immutable analytical interpretations, and
-separate local human assertions. It does not perform historical drift analysis.
+separate local human assertions. These lifecycle commands prepare the inputs for
+the separate [V14-03 historical comparison workflow](v14-drift.md).
 See the [versioned contracts and trust limits](development/v14-history-contract.md).
 
 ## Migrate without changing the source
