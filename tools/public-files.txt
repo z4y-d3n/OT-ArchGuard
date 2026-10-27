@@ -71,6 +71,7 @@ docs/development/v13-benchmark-results.md
 docs/development/v13-final-baseline-and-impact.md
 docs/development/v13-gate-evidence.md
 docs/development/v14-01-handoff-es.md
+docs/development/v14-02-handoff-es.md
 docs/development/v14-analysis-revisions-adr.md
 docs/development/v14-architecture.md
 docs/development/v14-enip-s7.md

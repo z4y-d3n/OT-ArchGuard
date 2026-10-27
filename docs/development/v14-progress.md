@@ -28,8 +28,73 @@ is an unauthenticated human assertion, not authenticity, safety or complete
 coverage. Original producer provenance remains unknown where frozen imported
 metadata does not attest it. Drift and historical visualization remain future.
 
-Executed final acceptance and Spanish handoff will be recorded here after the
-installed wheel/sdist gates; historical test totals below are not inherited.
+Final local acceptance on Windows 11 AMD64 / Python 3.14.5:
+
+| Gate actually executed | Result | Local receipt under `output/` |
+|---|---|---|
+| Regular installed wheel full suite | 3,573 PASS; no failures/errors/skips; 727.32 s | `v142-wheel-suite.xml` |
+| Separate regular installed sdist full suite | 3,573 PASS; no failures/errors/skips; 703.12 s | `v142-sdist-suite.xml` |
+| Independent adversarial audit | 38 PASS | `v142-audit.xml` |
+| Final new V14-02 tests on installed wheel | 193 PASS; 30.61 s | `v142-new-final.xml` |
+| Initial focused migration/attachment/revision/review/CLI regression | 244 PASS | `v142-focused.xml` |
+| Ruff lint / format | PASS; 316 Python files formatted | `v142-ruff-*.log` |
+| Strict mypy | PASS; 207 files | `v142-mypy.log` |
+| Dependencies and regular installed source identity | PASS in wheel, sdist and restored default environment | `v142-*-environment.json` |
+| Immutable native compatibility | PASS; 124 captured files | `v142-native-compatibility/comparison.json` |
+| Frozen supported/limited consumers | Both PASS | `v142-reader-*.json` |
+| Installed fictional historical CLI walkthrough | PASS; two independent runs produce identical IDs | `v142-installed-history-walkthrough/walkthrough.json` |
+| Existing evidence/project/Explorer/document/quality/capture walkthroughs and examples | PASS | `v142-*-walkthrough/walkthrough.json`, `v142-examples.log` |
+| Exact committed source and wheel/sdist inventories | PASS; no external captures | `v142-source-checkout.json`, `v142-archive-audit.json`; delivery `v142-delivery-source-checkout.json`, `v142-delivery-archive-audit.json` |
+
+The 3,573 unique cases include 193 new V14-02 cases above the 3,380-test V14-01
+checkpoint. Repeated/overlapping runs are not added to that inventory. Full
+acceptance uses regular installations, not editable installs or `PYTHONPATH=src`;
+Python network operations are denied in child processes. Runtime/test/fixture
+bytes are frozen at implementation commit `3724062`; subsequent delivery changes
+only this record, Spanish handoff and explicit document inventories. Final
+source/archive audits are repeated over the documentation-bearing commit.
+
+Staged local commits: `e714771` (workspace/migration), `acb139f` (attachments and
+analytical identity), `3724062` (human review, lifecycle CLI, independent fixtures,
+walkthrough, benchmark and integration). The final public inventory has 412
+files. No frozen native producer, snapshot-v1 implementation, old golden or
+third-party packet bytes changed. Full [Spanish owner handoff](v14-02-handoff-es.md)
+records architecture, trust limits, commands, Git state and V14-03 inputs.
+
+Finite performance measurement: 16 collections, 32 analyses, 16 model attachments,
+nine baselines and nine reviews occupy 83 files / 721,436 B; snapshots 390,952 B,
+largest object 35,049 B. Avoiding observation copies in 16 revisions saves
+486,560 B. With tracemalloc, migration took 2.982 s, 16 model/revision imports
+167.087 s, completing baseline membership 262.707 s, eight-approval successor
+chain plus revocation 421.685 s, listing 6.496/6.584 s, triple verification
+41.511 s, invalid reference rejection 6.447 s and resource rejection 1.043 s.
+Peak Python allocation was 72,110,561 B; process lifetime peak RSS 124,932,096 B.
+Without tracing, full verification took 5.979 / 6.196 / 6.025 s (18.200 s total).
+Receipts: `v142-history-benchmark-source/benchmark.json` and
+`v142-history-benchmark-source/untraced-verification.json`.
+
+These are small synthetic workloads on a shared local interpreter, not a
+production-capacity guarantee. Reads reserve up to 64 MiB even for small files;
+public operations repeat full inventory/native validation. Smaller bounded read
+buffers and per-operation validated dependency reuse are measured optimization
+follow-ups before increasing scale; no database/index framework was introduced.
+
+Optional read-only lifecycle import of all eight previously acquired hash-pinned
+external Tier-3 captures passed with zero baselines/reviews and unchanged source
+bytes. An existing registry discrepancy remains explicit: `cisa-opcua-gap`
+declares PCAP although its exact known bytes are PCAPNG. The native parser
+detects PCAPNG; the development registry verifier rejects that descriptive
+mismatch. Receipt: `v142-optional-external-lifecycle/receipt.json`. This is no new
+interoperability/production claim and does not authorize redistribution. Existing
+Modbus/DCP/IEC104 external coverage gaps and NULL/SLL support remain separate.
+
+Mandatory local gates 1-10 passed within the documented metadata-only,
+single-writer and unauthenticated-review trust model. Original frozen artifacts
+do not attest original producer source/configuration; the semantics manifest
+honestly binds selected local validation/replay and records that provenance as
+unknown. V14-02 hosted six-platform CI is a separate owner-controlled publication
+gate and remains unexecuted. Drift/coverage-comparability and historical
+visualization remain V14-03/V14-04, respectively.
 
 ## V14-01 historical checkpoint
 
