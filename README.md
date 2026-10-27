@@ -13,8 +13,10 @@ Requires **Python 3.12 or later**. Native YAML schema: **1**.
 
 This branch contains an unfinished **v1.4 development checkpoint**, identified as
 `1.4.0.dev1`; unchanged native evidence retains engine identity `1.3.0`.
-It adds seven bounded industrial header decoders and immutable
-snapshot ingestion. The seven-protocol release candidate is still pending.
+It adds seven bounded industrial header decoders, immutable snapshot ingestion,
+explicit workspace-v2 migration, validated analytical revisions and scoped local
+baseline review with revocation and supersession. The v1.4 release candidate is
+still pending. See the [historical evidence workflow](docs/v14-history.md).
 See the [v1.4 development guide](docs/v14-foundation.md) and
 [acceptance record](docs/development/v14-progress.md).
 

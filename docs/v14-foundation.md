@@ -6,8 +6,10 @@ The legacy Python `__version__` remains that engine alias; use
 `DISTRIBUTION_VERSION`, installed distribution metadata or `--version` for the
 development product identity.
 The stable release is v1.3.0; this modified branch is not a stable distribution.
-The following operations are implemented; historical comparisons and baseline
-approval are not yet available.
+The following operations are implemented. V14-02 adds explicit migration,
+analytical revisions and scoped local baseline review in the
+[historical evidence workflow](v14-history.md). Historical comparisons and
+the historical Explorer remain future milestones.
 
 ## Independent protocol metadata
 

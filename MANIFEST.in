@@ -9,6 +9,7 @@ include THIRD_PARTY_NOTICES.md
 include benchmarks/__init__.py
 include benchmarks/capture.py
 include benchmarks/documents.py
+include benchmarks/evidence_history.py
 include benchmarks/explorer.py
 include benchmarks/profile.py
 include benchmarks/projects.py
@@ -76,6 +77,7 @@ include docs/development/v14-enip-s7.md
 include docs/development/v14-enrichment-contract.md
 include docs/development/v14-evidence-contract.md
 include docs/development/v14-external-corpus.md
+include docs/development/v14-history-contract.md
 include docs/development/v14-iec-opc-dnp.md
 include docs/development/v14-progress.md
 include docs/development/v14-protocol-corpus.md
@@ -111,6 +113,7 @@ include docs/v1.1/gate-v11-5.md
 include docs/v1.1/gate-v11-6.md
 include docs/v1.1/public-contract-inventory.md
 include docs/v14-foundation.md
+include docs/v14-history.md
 include docs/verification.md
 include docs/yaml-schema-v1.md
 include examples/README.md
@@ -201,8 +204,13 @@ include src/otarchguard/diagnostics.py
 include src/otarchguard/diagrams.py
 include src/otarchguard/domain.py
 include src/otarchguard/evidence/__init__.py
+include src/otarchguard/evidence/attachments.py
 include src/otarchguard/evidence/cli.py
+include src/otarchguard/evidence/history.py
+include src/otarchguard/evidence/lifecycle.py
 include src/otarchguard/evidence/observations.py
+include src/otarchguard/evidence/reviews.py
+include src/otarchguard/evidence/revisions.py
 include src/otarchguard/evidence/workspace.py
 include src/otarchguard/explorer.py
 include src/otarchguard/explorer_data.py
@@ -277,6 +285,7 @@ include tests/fixtures/capture-interoperability/spec-unsupported-section.data
 include tests/fixtures/capture-interoperability/text2pcap-nsecpcap.data
 include tests/fixtures/capture-interoperability/text2pcap-pcap.data
 include tests/fixtures/capture-interoperability/text2pcap-pcapng.data
+include tests/fixtures/evidence-history-v1/identity.json
 include tests/fixtures/invalid-interface-placement.yaml
 include tests/fixtures/invalid-missing-reference.yaml
 include tests/fixtures/minimal-valid.yaml
@@ -308,6 +317,12 @@ include tests/test_comparison_properties.py
 include tests/test_console_resolution.py
 include tests/test_contract.py
 include tests/test_diagram_geometry.py
+include tests/test_evidence_attachments.py
+include tests/test_evidence_history.py
+include tests/test_evidence_lifecycle_cli.py
+include tests/test_evidence_reviews.py
+include tests/test_evidence_revisions.py
+include tests/test_evidence_v142_audit.py
 include tests/test_evidence_workspace.py
 include tests/test_explorer.py
 include tests/test_explorer_compact.py
@@ -370,6 +385,7 @@ include tools/capture_workloads.py
 include tools/compare_versioned_contract.py
 include tools/development_disk.py
 include tools/document_walkthrough.py
+include tools/evidence_history_walkthrough.py
 include tools/evidence_identity.py
 include tools/evidence_walkthrough.py
 include tools/explorer_walkthrough.py

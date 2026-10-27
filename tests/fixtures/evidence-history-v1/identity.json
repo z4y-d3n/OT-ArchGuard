@@ -1,0 +1,73 @@
+{
+  "analysis_id": "analysis-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "baseline": {
+    "baseline_id": "baseline-2cc3cd7e5991d7656736d0a56fa74e2bc95c49caf260e85e53687d125ec99ad0",
+    "baseline_version": 1,
+    "kind": "evidence",
+    "limitations": [
+      "Reviewer identity and authority are unauthenticated local assertions.",
+      "Approval does not establish authenticity, safety, deployment or complete visibility.",
+      "Approval applies only to the exact baseline identity and declared scope.",
+      "Labels and rationales may contain sensitive information; review before sharing."
+    ],
+    "members": [
+      {
+        "analysis_id": "analysis-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "capture_sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+      }
+    ],
+    "model_attachment_id": null,
+    "model_sha256": null,
+    "scope": {
+      "coverage": "Unknown outside the selected fictional packets",
+      "environment": "Fictional laboratory",
+      "protocols": [
+        "modbus_tcp"
+      ],
+      "purpose": "Future finite historical comparison",
+      "uncertainties": [
+        "No packet loss measurement"
+      ],
+      "vantage_points": []
+    },
+    "scope_sha256": "4df27c5910bb7aed4a779fe5216bd32d57ffec37767ffe8bbc683f93ba9d93da"
+  },
+  "canonical_baseline_ascii": "{\"domain\":\"otarchguard.baseline\",\"value\":{\"baseline_version\":1,\"kind\":\"evidence\",\"limitations\":[\"Reviewer identity and authority are unauthenticated local assertions.\",\"Approval does not establish authenticity, safety, deployment or complete visibility.\",\"Approval applies only to the exact baseline identity and declared scope.\",\"Labels and rationales may contain sensitive information; review before sharing.\"],\"members\":[{\"analysis_id\":\"analysis-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"capture_sha256\":\"1111111111111111111111111111111111111111111111111111111111111111\"}],\"model_attachment_id\":null,\"model_sha256\":null,\"scope\":{\"coverage\":\"Unknown outside the selected fictional packets\",\"environment\":\"Fictional laboratory\",\"protocols\":[\"modbus_tcp\"],\"purpose\":\"Future finite historical comparison\",\"uncertainties\":[\"No packet loss measurement\"],\"vantage_points\":[]},\"scope_sha256\":\"4df27c5910bb7aed4a779fe5216bd32d57ffec37767ffe8bbc683f93ba9d93da\"}}",
+  "canonical_review_ascii": "{\"domain\":\"otarchguard.review\",\"value\":{\"asserted_at\":null,\"decision\":\"approve\",\"evidence_references\":[\"analysis-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"],\"limitations\":[\"Reviewer identity and authority are unauthenticated local assertions.\",\"Approval does not establish authenticity, safety, deployment or complete visibility.\",\"Approval applies only to the exact baseline identity and declared scope.\",\"Labels and rationales may contain sensitive information; review before sharing.\"],\"predecessor\":null,\"rationale\":\"Explicit test scope\",\"review_version\":1,\"reviewer\":\"Fictional reviewer\",\"scope_sha256\":\"4df27c5910bb7aed4a779fe5216bd32d57ffec37767ffe8bbc683f93ba9d93da\",\"subject_id\":\"baseline-2cc3cd7e5991d7656736d0a56fa74e2bc95c49caf260e85e53687d125ec99ad0\",\"subject_type\":\"baseline\"}}",
+  "capture_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+  "fixture_version": 1,
+  "provenance": "Independently specified complete contract envelopes; Python stdlib hashlib/json only. No production identity builders or canonicalizers used. Digests are fictional already-validated dependency stand-ins for an isolated contract test.",
+  "review": {
+    "asserted_at": null,
+    "decision": "approve",
+    "evidence_references": [
+      "analysis-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    "limitations": [
+      "Reviewer identity and authority are unauthenticated local assertions.",
+      "Approval does not establish authenticity, safety, deployment or complete visibility.",
+      "Approval applies only to the exact baseline identity and declared scope.",
+      "Labels and rationales may contain sensitive information; review before sharing."
+    ],
+    "predecessor": null,
+    "rationale": "Explicit test scope",
+    "review_id": "review-ff179d54ade01ff707b43bd9befdd31457d050ece81587814113159545f2c54e",
+    "review_version": 1,
+    "reviewer": "Fictional reviewer",
+    "scope_sha256": "4df27c5910bb7aed4a779fe5216bd32d57ffec37767ffe8bbc683f93ba9d93da",
+    "subject_id": "baseline-2cc3cd7e5991d7656736d0a56fa74e2bc95c49caf260e85e53687d125ec99ad0",
+    "subject_type": "baseline"
+  },
+  "scope": {
+    "coverage": "Unknown outside the selected fictional packets",
+    "environment": "Fictional laboratory",
+    "protocols": [
+      "modbus_tcp"
+    ],
+    "purpose": "Future finite historical comparison",
+    "uncertainties": [
+      "No packet loss measurement"
+    ],
+    "vantage_points": []
+  }
+}

@@ -1,6 +1,37 @@
 # OT-ArchGuard v1.4 progress and acceptance record
 
-## V14-01 current checkpoint
+## V14-02 current checkpoint
+
+Local branch: `codex/v14-02-evidence-revisions-and-baselines`, starting from
+`bdf51dc54f991ab9edc1a09176b5e55b2ad0df6e`. The starting tree was clean. Remote
+fetch confirmed that exact V14-01 head. Draft PR #18 remains open and unmerged,
+based on Draft PR #17 at `3201f5d39db4c9bb4fbd565dd62fcc28145800b4`; local ancestry
+confirms that relationship. The stable annotated v1.3.0 tag peels to
+`10d7de6c416ec6f0ee364c671ebe9292ee69e672`.
+
+At V14-02 preflight, all six V14-01 checks passed on the exact starting head in
+[run 40417348042](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40417348042).
+This supersedes the then-pending CI state in the preserved historical V14-01
+handoff. It does not establish hosted V14-02 acceptance. No remote write, push,
+PR creation, merge, tag, workflow dispatch or release is authorized or performed.
+
+Implemented: workspace-v2 and explicit byte-preserving v1 migration; four strict
+attachment kinds (enrichment/model/reviewed mapping/native comparison); exact
+analytical revisions and producer-semantics manifests; evidence/architecture
+baseline proposals; immutable locally asserted approval/rejection/revocation/
+supersession; deterministic conflict rejection; full CLI and bounded textual
+review; adversarial tests and a repeated fictional acceptance walkthrough.
+
+Contracts and limitations: [historical evidence contracts](v14-history-contract.md).
+User workflow: [historical evidence guide](../v14-history.md). Baseline authority
+is an unauthenticated human assertion, not authenticity, safety or complete
+coverage. Original producer provenance remains unknown where frozen imported
+metadata does not attest it. Drift and historical visualization remain future.
+
+Executed final acceptance and Spanish handoff will be recorded here after the
+installed wheel/sdist gates; historical test totals below are not inherited.
+
+## V14-01 historical checkpoint
 
 The five remaining bounded decoders are implemented, bringing the inventory to
 seven. Enrichment schema 1 emits decoder revision 2 and strictly accepts legacy
