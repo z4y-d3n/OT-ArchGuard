@@ -17,6 +17,7 @@ from typing import Any
 
 from otarchguard.diagnostics import check_limit, fail
 from otarchguard.evidence.observations import digest
+from otarchguard.evidence.paths import _check_read_path
 from otarchguard.evidence.workspace import (
     EVIDENCE_LIMITS,
     EvidenceLimits,
@@ -96,7 +97,7 @@ def _evidence_limits(limits: HistoryLimits) -> EvidenceLimits:
 
 def _read_bytes(path: Path, limits: HistoryLimits) -> bytes:
     """Read exact regular-file bytes while detecting replacement or modification."""
-    _local(path)
+    _check_read_path(path)
     try:
         before = path.lstat()
         if not stat.S_ISREG(before.st_mode):
@@ -112,7 +113,7 @@ def _read_bytes(path: Path, limits: HistoryLimits) -> bytes:
             # detects growth without reserving the configured maximum.
             data = stream.read(min(opened.st_size, limits.object_bytes) + 1)
             after = os.fstat(stream.fileno())
-        _local(path)
+        _check_read_path(path)
         named = path.lstat()
         if (
             _file_identity(opened) != _file_identity(after)

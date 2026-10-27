@@ -5,6 +5,7 @@ profiling and allocation tracing are deliberately separate execution modes.
 """
 
 import argparse
+import copy
 import cProfile
 import gc
 import hashlib
@@ -28,8 +29,9 @@ from typing import Any
 import otarchguard
 from benchmarks.capture import process_peak_rss_bytes
 from otarchguard.capture.observations import analyze_capture
+from otarchguard.capture.reconciliation import compare_capture
 from otarchguard.diagnostics import ModelError
-from otarchguard.evidence.attachments import build_attachment
+from otarchguard.evidence.attachments import build_attachment, model_architecture
 from otarchguard.evidence.history import (
     HISTORY_LIMITS,
     initialize_history,
@@ -159,6 +161,7 @@ def prepare_fixture(
     *,
     baselines: int | None = None,
     unreferenced_models: int = 0,
+    model_catalog: int | None = None,
 ) -> dict[str, Any]:
     """Construct bounded synthetic evidence with the selected baseline producer.
 
@@ -168,17 +171,29 @@ def prepare_fixture(
     """
     if baselines is None:
         baselines = review_depth
+    catalog = revisions if model_catalog is None else model_catalog
     if not all(
         type(v) is int
-        for v in (collections, revisions, review_depth, packets, baselines, unreferenced_models)
+        for v in (
+            collections,
+            revisions,
+            review_depth,
+            packets,
+            baselines,
+            unreferenced_models,
+            catalog,
+        )
     ):
         raise ValueError("Workload parameters require exact integers")
     if not 0 <= collections <= 256 or not 0 <= revisions <= 256 or not 0 <= review_depth <= 64:
         raise ValueError("Workload parameters exceed the finite benchmark envelope")
     if not 0 <= unreferenced_models <= 256 or not 0 <= baselines <= 256:
         raise ValueError("Attachment or baseline axis exceeds the finite benchmark envelope")
+    if not revisions <= catalog <= 256:
+        raise ValueError("The fixed model catalog must cover every selected revision")
     if not 1 <= packets <= 128 or (
-        collections == 0 and (revisions or review_depth or baselines or unreferenced_models)
+        collections == 0
+        and (revisions or review_depth or baselines or unreferenced_models or catalog)
     ):
         raise ValueError("Invalid workload packet or dependency parameters")
     if review_depth > baselines or baselines > revisions + 1:
@@ -222,16 +237,17 @@ def prepare_fixture(
             attachment = build_attachment("model", model, selected)
             mid = _store(workspace, "attachments", attachment)
             state["attachments"][mid] = attachment
-        for index in range(revisions):
+        for index in range(catalog):
             model = plant_model()
             model["revision"] = f"performance-model-{index}"
             attachment = build_attachment("model", model, selected)
             mid = _store(workspace, "attachments", attachment)
             state["attachments"][mid] = attachment
-            analysis = build_revision(selected, {"model": attachment})
-            aid = _store(workspace, "analyses", analysis)
-            state["analyses"][aid] = analysis
-            revision_ids.append(aid)
+            if index < revisions:
+                analysis = build_revision(selected, {"model": attachment})
+                aid = _store(workspace, "analyses", analysis)
+                state["analyses"][aid] = analysis
+                revision_ids.append(aid)
         scope = {
             "environment": "Fictional finite performance laboratory",
             "purpose": "Synthetic performance review chain",
@@ -270,10 +286,110 @@ def prepare_fixture(
             "review_depth": review_depth,
             "baseline_proposals": baselines,
             "unreferenced_models": unreferenced_models,
+            "model_catalog": catalog,
             "packets": packets,
         },
         "workspace": str(workspace.absolute()),
         "legacy": str(legacy.absolute()),
+        "workspace_manifest_sha256": identity(manifest),
+        "file_sha256": manifest,
+        "verification": verified,
+    }
+    (output / "fixture.json").write_bytes(serialize(receipt))
+    return receipt
+
+
+def prepare_fanout_fixture(output: Path, dense_workspace: Path, branches: int) -> dict[str, Any]:
+    """Grow distinct mapping/comparison tuples over one known fictional capture.
+
+    Mapping/comparison/revision counts grow together; this is a shared-native-model
+    dependency workload, not a claim that one isolated graph edge count varies.
+    No baseline approval records are created.
+    """
+    if type(branches) is not int or not 1 <= branches <= 256:
+        raise ValueError("Fan-out branches must be in 1..256")
+    verify_lifecycle(dense_workspace)
+    source = read_history(dense_workspace)
+    root = Path(__file__).resolve().parents[1]
+    known_capture = hashlib.sha256(
+        (root / "tests/fixtures/protocol-corpus/synthetic-industrial.pcap").read_bytes()
+    ).hexdigest()
+    original_mapping = next(
+        (
+            a
+            for a in source["attachments"].values()
+            if a["kind"] == "mapping" and a["capture_sha256"] == known_capture
+        ),
+        None,
+    )
+    if original_mapping is None or not any(
+        p["decision"] != "PENDING" for p in original_mapping["payload"]["proposals"]
+    ):
+        raise ValueError("Fan-out requires reviewed mapping of the committed fictional capture")
+    snapshot = next(s for s in source["snapshots"].values() if s["capture_sha256"] == known_capture)
+    original_model = source["attachments"][original_mapping["dependencies"]["model"]]
+    model = build_attachment("model", original_model["payload"], snapshot)
+    if canonical(model) != canonical(original_model):
+        raise ValueError("Native model template identity changed")
+    enrichment = next(
+        (
+            a
+            for a in source["attachments"].values()
+            if a["kind"] == "enrichment" and a["capture_sha256"] == known_capture
+        ),
+        None,
+    )
+    validated = model_architecture(model)
+    output.mkdir(exist_ok=False)
+    workspace = output / "history"
+    initialize_history(workspace)
+    shutil.copyfile(
+        dense_workspace / "snapshots" / (snapshot["snapshot_id"] + ".json"),
+        workspace / "snapshots" / (snapshot["snapshot_id"] + ".json"),
+    )
+    _store(workspace, "attachments", model)
+    components = {"model": model}
+    if enrichment is not None:
+        _store(workspace, "attachments", enrichment)
+        components["enrichment"] = enrichment
+    for index in range(branches):
+        reviewed = copy.deepcopy(original_mapping["payload"])
+        for proposal in reviewed["proposals"]:
+            if proposal["decision"] != "PENDING":
+                proposal["reviewer"] = f"Fictional fan-out reviewer {index}"
+                proposal["rationale"] = (
+                    f"Synthetic fan-out branch {index}; no operational assertion"
+                )
+        mapping = build_attachment("mapping", reviewed, snapshot, {"model": model})
+        _store(workspace, "attachments", mapping)
+        native_comparison = compare_capture(snapshot["observations"], validated, reviewed)
+        comparison = build_attachment(
+            "comparison", native_comparison, snapshot, {"model": model, "mapping": mapping}
+        )
+        _store(workspace, "attachments", comparison)
+        analysis = build_revision(
+            snapshot, {**components, "mapping": mapping, "comparison": comparison}
+        )
+        _store(workspace, "analyses", analysis)
+    verified = verify_lifecycle(workspace)
+    manifest = file_manifest(workspace)
+    receipt = {
+        "fixture_version": 1,
+        "generator": "baseline frozen mapping/comparison/revision producers",
+        "parameters": {
+            "collections": 1,
+            "native_models": 1,
+            "enrichment": int(enrichment is not None),
+            "mapping_branches": branches,
+            "comparisons": branches,
+            "analytical_revisions": branches,
+        },
+        "axis_limitations": "Mapping, comparison and revision counts grow together; "
+        "shared capture/model stay exact.",
+        "template_sha256": identity(file_manifest(dense_workspace)),
+        "capture_sha256": known_capture,
+        "model_attachment_id": model["attachment_id"],
+        "workspace": str(workspace.absolute()),
         "workspace_manifest_sha256": identity(manifest),
         "file_sha256": manifest,
         "verification": verified,
@@ -723,6 +839,9 @@ def main() -> None:
     parser.add_argument("--packets", type=int, default=1)
     parser.add_argument("--baselines", type=int)
     parser.add_argument("--unreferenced-models", type=int, default=0)
+    parser.add_argument("--model-catalog", type=int)
+    parser.add_argument("--prepare-fanout", type=Path)
+    parser.add_argument("--fanout", type=int, default=1)
     parser.add_argument("--case", type=Path)
     parser.add_argument("--operation", default="verify")
     args = parser.parse_args()
@@ -731,6 +850,8 @@ def main() -> None:
         args.output.write_bytes(serialize(result))
     elif args.validate:
         result = verify_lifecycle(args.output)
+    elif args.prepare_fanout is not None:
+        result = prepare_fanout_fixture(args.output, args.prepare_fanout, args.fanout)
     elif args.prepare:
         result = prepare_fixture(
             args.output,
@@ -740,6 +861,7 @@ def main() -> None:
             args.packets,
             baselines=args.baselines,
             unreferenced_models=args.unreferenced_models,
+            model_catalog=args.model_catalog,
         )
     elif args.case is not None:
         result = prepare_case(args.case, args.output, args.operation)

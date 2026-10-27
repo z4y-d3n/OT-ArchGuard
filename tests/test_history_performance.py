@@ -15,6 +15,13 @@ from benchmarks.history_performance import (
     summarize,
     workload_operations,
 )
+from otarchguard.capture.observations import analyze_capture
+from otarchguard.capture.protocols import enrich_capture
+from otarchguard.capture.reconciliation import mapping_template
+from otarchguard.evidence.attachments import build_attachment, model_architecture
+from otarchguard.evidence.history import initialize_history, read_history
+from otarchguard.evidence.workspace import build_snapshot, serialize
+from tools.capture_workloads import plant_model
 from tools.history_performance_worker import (
     canonical,
     console_arguments,
@@ -22,6 +29,7 @@ from tools.history_performance_worker import (
     identity,
     measure,
     prepare_case,
+    prepare_fanout_fixture,
     prepare_fixture,
     run_operation,
 )
@@ -218,23 +226,32 @@ def test_independent_fixture_manifest_is_not_an_import_time_or_path_identity(
 
 
 def test_axis_design_isolates_review_depth_baselines_and_unreferenced_attachments() -> None:
-    assert sorted(d for r, d, b, m, p in AXIS_PARAMETERS if (r, b, m, p) == (64, 64, 0, 1)) == [
+    assert sorted(
+        d for r, d, b, m, p, c in AXIS_PARAMETERS if (r, b, m, p, c) == (64, 64, 0, 1, 64)
+    ) == [
         0,
         16,
         32,
         64,
     ]
-    assert sorted(b for r, d, b, m, p in AXIS_PARAMETERS if (r, d, m, p) == (64, 0, 0, 1)) == [
+    assert sorted(
+        b for r, d, b, m, p, c in AXIS_PARAMETERS if (r, d, m, p, c) == (64, 0, 0, 1, 64)
+    ) == [
         0,
         16,
         32,
         64,
     ]
-    assert sorted(m for r, d, b, m, p in AXIS_PARAMETERS if (r, d, b, p) == (0, 0, 0, 1)) == [
+    assert sorted(
+        m for r, d, b, m, p, c in AXIS_PARAMETERS if (r, d, b, p, c) == (0, 0, 0, 1, 0)
+    ) == [
         16,
         64,
         128,
     ]
+    assert sorted(
+        r for r, d, b, m, p, c in AXIS_PARAMETERS if (d, b, m, p, c) == (0, 0, 0, 1, 128)
+    ) == [16, 64, 128]
 
 
 def test_axis_operation_selection_does_not_expand_collection_or_mutating_workflows() -> None:
@@ -263,6 +280,71 @@ def test_review_depth_fixture_changes_only_review_records_at_fixed_baseline_coun
         k: v for k, v in file_manifest(right / "history").items() if not k.startswith("reviews/")
     }
     assert first_files == second_files
+
+
+def test_revision_axis_holds_exact_model_catalog_and_snapshot_bytes(tmp_path: Path) -> None:
+    left, right = tmp_path / "one", tmp_path / "two"
+    first = prepare_fixture(left, 1, 1, model_catalog=2)
+    second = prepare_fixture(right, 1, 2, model_catalog=2)
+    assert first["verification"]["attachments"] == second["verification"]["attachments"] == 2
+    assert first["verification"]["analyses"] == 2
+    assert second["verification"]["analyses"] == 3
+    first_files = {
+        k: v for k, v in file_manifest(left / "history").items() if not k.startswith("analyses/")
+    }
+    second_files = {
+        k: v for k, v in file_manifest(right / "history").items() if not k.startswith("analyses/")
+    }
+    assert first_files == second_files
+
+
+def test_fanout_fixture_keeps_exact_model_capture_and_valid_distinct_replay_joins(
+    tmp_path: Path,
+) -> None:
+    capture = Path(__file__).parent / "fixtures/protocol-corpus/synthetic-industrial.pcap"
+    observations = analyze_capture(capture)
+    snapshot = build_snapshot(observations, "Fictional fan-out template")
+    template = tmp_path / "template"
+    initialize_history(template)
+    model = build_attachment("model", plant_model(), snapshot)
+    mapping = mapping_template(observations, model_architecture(model))
+    for proposal in mapping["proposals"]:
+        proposal["reviewer"] = "Fictional template reviewer"
+        proposal["rationale"] = "Synthetic test only"
+        if proposal["candidates"]:
+            selected = proposal["candidates"][0]
+            proposal.update(
+                decision="ACCEPT",
+                selected_asset_id=selected["asset_id"],
+                selected_interface_id=selected["interface_id"],
+            )
+        else:
+            proposal["decision"] = "REJECT"
+    reviewed = build_attachment("mapping", mapping, snapshot, {"model": model})
+    enrichment = build_attachment("enrichment", enrich_capture(capture), snapshot)
+    for folder, value, key in (
+        ("snapshots", snapshot, "snapshot_id"),
+        ("attachments", model, "attachment_id"),
+        ("attachments", reviewed, "attachment_id"),
+        ("attachments", enrichment, "attachment_id"),
+    ):
+        (template / folder / (value[key] + ".json")).write_bytes(serialize(value))
+    before = file_manifest(template)
+    one = prepare_fanout_fixture(tmp_path / "fanout-one", template, 1)
+    two = prepare_fanout_fixture(tmp_path / "fanout-two", template, 2)
+    assert file_manifest(template) == before
+    assert one["model_attachment_id"] == two["model_attachment_id"] == model["attachment_id"]
+    assert one["capture_sha256"] == two["capture_sha256"] == snapshot["capture_sha256"]
+    assert one["verification"]["analyses"] == 1 and two["verification"]["analyses"] == 2
+    assert two["verification"]["attachments"] == 6
+    assert all(two["file_sha256"].get(k) == v for k, v in one["file_sha256"].items())
+    state = read_history(tmp_path / "fanout-two/history")
+    comparisons = [a for a in state["attachments"].values() if a["kind"] == "comparison"]
+    assert len(comparisons) == 2
+    for comparison in comparisons:
+        selected_mapping = state["attachments"][comparison["dependencies"]["mapping"]]
+        assert selected_mapping["dependencies"]["model"] == model["attachment_id"]
+        assert comparison["payload"]["mapping_sha256"] == selected_mapping["component_sha256"]
 
 
 def test_unreferenced_attachment_axis_keeps_exact_physical_and_analytical_inputs(

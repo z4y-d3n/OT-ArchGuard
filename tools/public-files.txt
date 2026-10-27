@@ -212,6 +212,7 @@ src/otarchguard/evidence/cli.py
 src/otarchguard/evidence/history.py
 src/otarchguard/evidence/lifecycle.py
 src/otarchguard/evidence/observations.py
+src/otarchguard/evidence/paths.py
 src/otarchguard/evidence/reviews.py
 src/otarchguard/evidence/revisions.py
 src/otarchguard/evidence/validation.py
@@ -335,6 +336,7 @@ tests/test_exposure_comparison.py
 tests/test_final_release.py
 tests/test_fixtures.py
 tests/test_history_lifecycle_performance.py
+tests/test_history_path_performance.py
 tests/test_history_performance.py
 tests/test_history_performance_audit.py
 tests/test_history_performance_io.py

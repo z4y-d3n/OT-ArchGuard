@@ -120,6 +120,24 @@ replay while preserving content freshness and exact raw-size accounting.
 Atomic no-replace publication remains unchanged. Idempotent no-ops are fresh
 validated reads and never overwrite existing objects.
 
+The final path refinement is restricted to the pre/post checks inside historical
+byte reads. One fresh non-following metadata record per ancestor supplies the
+same link/reparse checks as the repeated original queries. There is no metadata
+cache. Any observed unsafe component fails immediately; a later safe observation
+cannot erase it. Reparse tags are interpreted only with the reparse attribute.
+Custom Path implementations, replaced concrete-class or OS observers, unsupported
+lexical paths and other filesystem errors delegate to the frozen path policy.
+Observer guards compare exact function identity, including WindowsPath overrides.
+Root/directory, migration and frozen publication checks retain their original
+policy. Independent probes found and corrected prototype observer and unsafe-
+retry counterexamples before integration. Forty-five dedicated product cases
+cover these boundaries; a 292-case focused run passed on both Windows Python
+versions. Existing real junctions and created file/directory/dangling symlinks
+were inspected; creating a new junction was unavailable on this host. Helper-
+only measurements reduced 30 metadata queries to 10 on a ten-component path,
+with roughly 2.5–2.7x helper speedup. These are microbenchmarks, not end-to-end
+claims. Probe receipts remain under `output/v142p-path-candidate-probe/`.
+
 Migration still reopens and compares the source and destination bytes, preserves
 original snapshots verbatim, and publishes the destination manifest last. No
 physical migration integrity check was removed. Failure artifacts remain for
@@ -172,6 +190,11 @@ was intentionally stopped after eight paired rows; its incomplete data remains
 under `output/v142p-primary/` with an interruption note and is not acceptance.
 The conservative UTF-8 floor correction and four independent boundary proofs
 passed on Windows Python 3.12.14 and 3.14.5 before restarting final comparisons.
+
+A second incomplete comparison, `output/v142p-primary-final/`, was stopped after
+28 paired rows to integrate the independently reviewed path refinement. Its
+raw trials and interruption note remain available; it is also excluded from final
+acceptance. Final comparisons use one frozen implementation for every row.
 
 Method references: [Python 3.14 profiling](https://docs.python.org/3.14/library/profile.html),
 [allocation tracing](https://docs.python.org/3.14/library/tracemalloc.html),
