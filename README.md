@@ -22,6 +22,10 @@ See the [v1.4 development guide](docs/v14-foundation.md) and
 The local V14-02P checkpoint reduces repeated historical validation and read
 allocation while preserving frozen analytical identities and complete checks.
 See its [performance and security evidence](docs/development/v14-02p-performance.md).
+V14-03 adds explicit coverage-aware historical comparisons, declared model and
+native assessment differences, and independently reproducible standalone reports.
+See the [offline drift workflow](docs/v14-drift.md). Differences never establish
+an incident, device outage or successful industrial command.
 
 [Capabilities](#capabilities) · [Visual previews](#visual-previews) · [Install and run](#install-and-run) ·
 [Examples](#examples-and-technical-documentation) · [Verification](#release-verification) ·
