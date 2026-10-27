@@ -8,23 +8,20 @@ from pathlib import Path
 from typing import Any
 
 from otarchguard.diagnostics import fail
-from otarchguard.evidence.attachments import build_attachment, validate_attachment
 from otarchguard.evidence.history import (
     HISTORY_LIMITS,
+    _HistoryImage,
+    _publish_from_image,
     _read_bytes,
-    publish_object,
+    _read_image,
     read_document,
-    read_history,
-    verify_history,
 )
 from otarchguard.evidence.reviews import (
-    baseline_summary,
+    _baseline_summary,
+    _build_review,
     build_baseline,
-    build_review,
-    validate_baseline,
-    validate_reviews,
 )
-from otarchguard.evidence.revisions import build_revision, validate_revision
+from otarchguard.evidence.validation import _ValidationContext
 
 
 def _member(state: dict[str, Any], kind: str, identity: str) -> dict[str, Any]:
@@ -42,48 +39,53 @@ def _member(state: dict[str, Any], kind: str, identity: str) -> dict[str, Any]:
     return value  # type: ignore[no-any-return]
 
 
-def _validate_state(state: dict[str, Any]) -> None:
-    """Validate the complete bounded dependency graph, including unselected objects."""
-    snapshots = {s["capture_sha256"]: s for s in state["snapshots"].values()}
-    for _, attachment in sorted(state["attachments"].items()):
-        snapshot = snapshots.get(attachment.get("capture_sha256"))
-        if snapshot is None:
-            fail("EVIDENCE_ATTACHMENT", "$", "Attachment physical collection is unavailable.")
-        dependencies = {
-            name: _member(state, "attachments", aid)
-            for name, aid in attachment.get("dependencies", {}).items()
-            if aid is not None
-        }
-        validate_attachment(attachment, snapshot, dependencies)
-    for _, analysis in sorted(state["analyses"].items()):
-        snapshot = snapshots.get(analysis.get("capture_sha256"))
-        if snapshot is None or snapshot["observations_sha256"] != analysis.get(
-            "observations_sha256"
-        ):
-            fail("EVIDENCE_REVISION", "$", "Exact revision observations are unavailable.")
-        components = {
-            name: _member(state, "attachments", component["attachment_id"])
-            for name, component in analysis.get("components", {}).items()
-            if component is not None and name != "policy"
-        }
-        validate_revision(analysis, snapshot, components)
-    for baseline in state["baselines"].values():
-        validate_baseline(baseline, state)
-    validate_reviews(state)
-
-
 def validate_state(state: dict[str, Any]) -> None:
     """Return only controlled diagnostics for malformed dependency metadata."""
     try:
-        _validate_state(state)
+        _ValidationContext(state).validate()
     except (KeyError, TypeError, ValueError, AttributeError, IndexError, RecursionError):
         fail("EVIDENCE_GRAPH", "$", "Malformed or unsupported historical dependency graph.")
 
 
+def _operation(workspace: Path) -> tuple[_HistoryImage, _ValidationContext]:
+    """Acquire and validate the complete workspace for exactly one public operation.
+
+    The image's parsed objects are owned by this invocation. Its context never
+    escapes, and no cache or mutable validation flag is returned to callers.
+    """
+    image = _read_image(workspace)
+    context = _ValidationContext._from_image(image)
+    try:
+        context.validate()
+    except (KeyError, TypeError, ValueError, AttributeError, IndexError, RecursionError):
+        fail("EVIDENCE_GRAPH", "$", "Malformed or unsupported historical dependency graph.")
+    return image, context
+
+
 def load_state(workspace: Path) -> dict[str, Any]:
-    state = read_history(workspace)
-    validate_state(state)
-    return state
+    _, context = _operation(workspace)
+    return context._state
+
+
+def _publish(
+    workspace: Path,
+    image: _HistoryImage,
+    context: _ValidationContext,
+    kind: str,
+    value: dict[str, Any],
+) -> dict[str, Any]:
+    singular = {
+        "attachments": "attachment",
+        "analyses": "analysis",
+        "baselines": "baseline",
+        "reviews": "review",
+    }[kind]
+    identity = value[singular + "_id"]
+
+    def validate(prospective: dict[str, Any]) -> None:
+        context.add(kind, prospective[kind][identity])
+
+    return _publish_from_image(workspace, kind, value, image, validate)
 
 
 def import_attachment(
@@ -94,16 +96,15 @@ def import_attachment(
     model: str | None = None,
     mapping: str | None = None,
 ) -> dict[str, Any]:
-    state = load_state(workspace)
-    snapshot = _member(state, "snapshots", snapshot_id)
-    dependencies = {
-        name: _member(state, "attachments", aid)
-        for name, aid in {"model": model, "mapping": mapping}.items()
-        if aid is not None
-    }
+    image, context = _operation(workspace)
+    # Preserve legacy selection/error order before reading the new source.
+    _member(context._state, "snapshots", snapshot_id)
+    for identity in (model, mapping):
+        if identity is not None:
+            _member(context._state, "attachments", identity)
     payload = _read_bytes(source, HISTORY_LIMITS) if kind == "model" else read_document(source)
-    attachment = build_attachment(kind, payload, snapshot, dependencies)
-    result = publish_object(workspace, "attachments", attachment, validate_state)
+    attachment = context.build_attachment(kind, payload, snapshot_id, model, mapping)
+    result = _publish(workspace, image, context, "attachments", attachment)
     return {**result, "attachment": {k: v for k, v in attachment.items() if k != "payload"}}
 
 
@@ -116,9 +117,9 @@ def create_revision(
     comparison: str | None = None,
     semantics: Path | None = None,
 ) -> dict[str, Any]:
-    state = load_state(workspace)
+    image, context = _operation(workspace)
     components = {
-        name: _member(state, "attachments", aid)
+        name: aid
         for name, aid in {
             "enrichment": enrichment,
             "model": model,
@@ -127,12 +128,15 @@ def create_revision(
         }.items()
         if aid is not None
     }
-    value = build_revision(
-        _member(state, "snapshots", snapshot_id),
+    for identity in components.values():
+        _member(context._state, "attachments", identity)
+    _member(context._state, "snapshots", snapshot_id)
+    value = context.build_revision(
+        snapshot_id,
         components,
         read_document(semantics) if semantics is not None else None,
     )
-    return {**publish_object(workspace, "analyses", value, validate_state), "analysis": value}
+    return {**_publish(workspace, image, context, "analyses", value), "analysis": value}
 
 
 def list_revisions(workspace: Path, capture: str | None = None) -> dict[str, Any]:
@@ -151,9 +155,10 @@ def list_revisions(workspace: Path, capture: str | None = None) -> dict[str, Any
 
 
 def show_object(workspace: Path, kind: str, identity: str) -> dict[str, Any]:
-    state = load_state(workspace)
+    _, context = _operation(workspace)
+    state = context._state
     value = _member(state, kind, identity)
-    return baseline_summary(value, state) if kind == "baselines" else value
+    return _baseline_summary(value, state, context.statuses) if kind == "baselines" else value
 
 
 def propose_baseline(
@@ -163,10 +168,11 @@ def propose_baseline(
     kind: str = "evidence",
     model: str | None = None,
 ) -> dict[str, Any]:
-    state = load_state(workspace)
+    image, context = _operation(workspace)
+    state = context._state
     value = build_baseline(kind, revisions, read_document(scope_path), state, model)
-    result = publish_object(workspace, "baselines", value, validate_state)
-    return {**result, "baseline": baseline_summary(value, load_state(workspace))}
+    result = _publish(workspace, image, context, "baselines", value)
+    return {**result, "baseline": _baseline_summary(value, context._state, context.statuses)}
 
 
 def record_review(
@@ -178,25 +184,36 @@ def record_review(
     predecessor: str | None = None,
     timestamp: str | None = None,
 ) -> dict[str, Any]:
-    state = load_state(workspace)
-    value = build_review(baseline_id, decision, reviewer, rationale, state, predecessor, timestamp)
-    result = publish_object(workspace, "reviews", value, validate_state)
+    image, context = _operation(workspace)
+    value = _build_review(
+        baseline_id, decision, reviewer, rationale, context._state, predecessor, timestamp
+    )
+    result = _publish(workspace, image, context, "reviews", value)
     return {
         **result,
         "review": value,
-        "baseline_status": validate_reviews(load_state(workspace))[baseline_id],
+        "baseline_status": context.statuses[baseline_id],
     }
 
 
 def list_baselines(workspace: Path) -> dict[str, Any]:
-    state = load_state(workspace)
+    _, context = _operation(workspace)
+    state = context._state
+    histories: dict[str, list[dict[str, Any]]] = {bid: [] for bid in state["baselines"]}
+    for _, review in sorted(state["reviews"].items()):
+        histories[review["subject_id"]].append(review)
+    statuses = context.statuses
     return {
-        "baselines": [baseline_summary(b, state) for _, b in sorted(state["baselines"].items())]
+        "baselines": [
+            _baseline_summary(b, state, statuses, histories[bid])
+            for bid, b in sorted(state["baselines"].items())
+        ]
     }
 
 
 def list_history(workspace: Path) -> dict[str, Any]:
-    state = load_state(workspace)
+    _, context = _operation(workspace)
+    state = context._state
     return {
         "workspace_version": 2,
         "physical_collections": len(state["snapshots"]),
@@ -219,16 +236,21 @@ def list_history(workspace: Path) -> dict[str, Any]:
             for _, a in sorted(state["attachments"].items())
         ],
         "analyses": sorted(state["analyses"]),
-        "baselines": {k: v for k, v in sorted(validate_reviews(state).items())},
+        "baselines": {k: v for k, v in sorted(context.statuses.items())},
     }
 
 
 def verify_lifecycle(workspace: Path) -> dict[str, Any]:
-    result = verify_history(workspace, validate_state)
-    state = load_state(workspace)
-    statuses = list(validate_reviews(state).values())
+    _, context = _operation(workspace)
+    state = context._state
+    statuses = list(context.statuses.values())
     return {
-        **result,
+        "workspace_version": 2,
+        "physical_collections": len(state["snapshots"]),
+        **{
+            kind: len(state[kind])
+            for kind in ("snapshots", "attachments", "analyses", "reviews", "baselines")
+        },
         "status": "VERIFIED_METADATA",
         "analytical_attachments": "STRUCTURALLY_VALIDATED",
         "cross_artifact_consistency": "VERIFIED",

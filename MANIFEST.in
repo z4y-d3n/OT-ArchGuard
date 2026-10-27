@@ -11,6 +11,7 @@ include benchmarks/capture.py
 include benchmarks/documents.py
 include benchmarks/evidence_history.py
 include benchmarks/explorer.py
+include benchmarks/history_performance.py
 include benchmarks/profile.py
 include benchmarks/projects.py
 include benchmarks/protocols.py
@@ -72,6 +73,7 @@ include docs/development/v13-final-baseline-and-impact.md
 include docs/development/v13-gate-evidence.md
 include docs/development/v14-01-handoff-es.md
 include docs/development/v14-02-handoff-es.md
+include docs/development/v14-02p-performance.md
 include docs/development/v14-analysis-revisions-adr.md
 include docs/development/v14-architecture.md
 include docs/development/v14-enip-s7.md
@@ -212,6 +214,7 @@ include src/otarchguard/evidence/lifecycle.py
 include src/otarchguard/evidence/observations.py
 include src/otarchguard/evidence/reviews.py
 include src/otarchguard/evidence/revisions.py
+include src/otarchguard/evidence/validation.py
 include src/otarchguard/evidence/workspace.py
 include src/otarchguard/explorer.py
 include src/otarchguard/explorer_data.py
@@ -331,6 +334,11 @@ include tests/test_exposure_compare_cli.py
 include tests/test_exposure_comparison.py
 include tests/test_final_release.py
 include tests/test_fixtures.py
+include tests/test_history_lifecycle_performance.py
+include tests/test_history_performance.py
+include tests/test_history_performance_audit.py
+include tests/test_history_performance_io.py
+include tests/test_history_validation_context.py
 include tests/test_ingestion.py
 include tests/test_ingestion_cli.py
 include tests/test_ingestion_documents.py
@@ -391,6 +399,7 @@ include tools/evidence_identity.py
 include tools/evidence_walkthrough.py
 include tools/explorer_walkthrough.py
 include tools/freeze_capture_contracts.py
+include tools/history_performance_worker.py
 include tools/independent_capture_corpus.py
 include tools/offline/sitecustomize.py
 include tools/project_walkthrough.py

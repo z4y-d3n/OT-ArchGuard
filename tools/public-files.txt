@@ -11,6 +11,7 @@ benchmarks/capture.py
 benchmarks/documents.py
 benchmarks/evidence_history.py
 benchmarks/explorer.py
+benchmarks/history_performance.py
 benchmarks/profile.py
 benchmarks/projects.py
 benchmarks/protocols.py
@@ -72,6 +73,7 @@ docs/development/v13-final-baseline-and-impact.md
 docs/development/v13-gate-evidence.md
 docs/development/v14-01-handoff-es.md
 docs/development/v14-02-handoff-es.md
+docs/development/v14-02p-performance.md
 docs/development/v14-analysis-revisions-adr.md
 docs/development/v14-architecture.md
 docs/development/v14-enip-s7.md
@@ -212,6 +214,7 @@ src/otarchguard/evidence/lifecycle.py
 src/otarchguard/evidence/observations.py
 src/otarchguard/evidence/reviews.py
 src/otarchguard/evidence/revisions.py
+src/otarchguard/evidence/validation.py
 src/otarchguard/evidence/workspace.py
 src/otarchguard/explorer.py
 src/otarchguard/explorer_data.py
@@ -331,6 +334,11 @@ tests/test_exposure_compare_cli.py
 tests/test_exposure_comparison.py
 tests/test_final_release.py
 tests/test_fixtures.py
+tests/test_history_lifecycle_performance.py
+tests/test_history_performance.py
+tests/test_history_performance_audit.py
+tests/test_history_performance_io.py
+tests/test_history_validation_context.py
 tests/test_ingestion.py
 tests/test_ingestion_cli.py
 tests/test_ingestion_documents.py
@@ -391,6 +399,7 @@ tools/evidence_identity.py
 tools/evidence_walkthrough.py
 tools/explorer_walkthrough.py
 tools/freeze_capture_contracts.py
+tools/history_performance_worker.py
 tools/independent_capture_corpus.py
 tools/offline/sitecustomize.py
 tools/project_walkthrough.py
