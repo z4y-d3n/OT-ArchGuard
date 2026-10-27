@@ -20,6 +20,7 @@ from otarchguard.capture.protocols import enrich_capture
 from otarchguard.capture.reconciliation import mapping_template
 from otarchguard.evidence.attachments import build_attachment, model_architecture
 from otarchguard.evidence.history import initialize_history, read_history
+from otarchguard.evidence.revisions import build_revision
 from otarchguard.evidence.workspace import build_snapshot, serialize
 from tools.capture_workloads import plant_model
 from tools.history_performance_worker import (
@@ -97,6 +98,47 @@ def test_matching_successes_cannot_hide_a_failed_attack_rejection() -> None:
     measured = {"mode": "timing", "outcome": {"exit_code": 0, "result": {}}}
     with pytest.raises(ValueError, match="required rejection"):
         assert_expected_outcome("tampered_object", measured)
+
+
+def test_fresh_write_guards_reject_equal_noop_results_in_api_and_console() -> None:
+    for operation in (
+        "import_attachment",
+        "create_revision",
+        "propose_baseline",
+        "approve",
+        "reject",
+        "supersede",
+        "revoke",
+    ):
+        for mode in ("timing", "console"):
+            measured: dict[str, Any] = {
+                "mode": mode,
+                "outcome": {"exit_code": 0, "result": {"status": "ALREADY_PRESENT"}},
+                "exit_code": 0,
+                "stdout": '{"status":"ALREADY_PRESENT"}',
+                "stderr": "",
+            }
+            with pytest.raises(ValueError, match="required ADDED"):
+                assert_expected_outcome(operation, measured)
+            measured["outcome"]["result"]["status"] = "ADDED"
+            measured["stdout"] = '{"status":"ADDED"}'
+            assert_expected_outcome(operation, measured)
+
+
+def test_reuse_guard_requires_a_real_noop_in_api_and_console() -> None:
+    for mode in ("timing", "console"):
+        measured: dict[str, Any] = {
+            "mode": mode,
+            "outcome": {"exit_code": 0, "result": {"status": "ADDED"}},
+            "exit_code": 0,
+            "stdout": '{"status":"ADDED"}',
+            "stderr": "",
+        }
+        with pytest.raises(ValueError, match="required ALREADY_PRESENT"):
+            assert_expected_outcome("reuse_revision", measured)
+        measured["outcome"]["result"]["status"] = "ALREADY_PRESENT"
+        measured["stdout"] = '{"status":"ALREADY_PRESENT"}'
+        assert_expected_outcome("reuse_revision", measured)
 
 
 def test_case_relocation_changes_only_its_owned_absolute_path_prefix(tmp_path: Path) -> None:
@@ -298,9 +340,9 @@ def test_revision_axis_holds_exact_model_catalog_and_snapshot_bytes(tmp_path: Pa
     assert first_files == second_files
 
 
-def test_fanout_fixture_keeps_exact_model_capture_and_valid_distinct_replay_joins(
+def dense_template(
     tmp_path: Path,
-) -> None:
+) -> tuple[Path, dict[str, Any], dict[str, Any]]:
     capture = Path(__file__).parent / "fixtures/protocol-corpus/synthetic-industrial.pcap"
     observations = analyze_capture(capture)
     snapshot = build_snapshot(observations, "Fictional fan-out template")
@@ -329,6 +371,13 @@ def test_fanout_fixture_keeps_exact_model_capture_and_valid_distinct_replay_join
         ("attachments", enrichment, "attachment_id"),
     ):
         (template / folder / (value[key] + ".json")).write_bytes(serialize(value))
+    return template, snapshot, model
+
+
+def test_fanout_fixture_keeps_exact_model_capture_and_valid_distinct_replay_joins(
+    tmp_path: Path,
+) -> None:
+    template, snapshot, model = dense_template(tmp_path)
     before = file_manifest(template)
     one = prepare_fanout_fixture(tmp_path / "fanout-one", template, 1)
     two = prepare_fanout_fixture(tmp_path / "fanout-two", template, 2)
@@ -345,6 +394,28 @@ def test_fanout_fixture_keeps_exact_model_capture_and_valid_distinct_replay_join
         selected_mapping = state["attachments"][comparison["dependencies"]["mapping"]]
         assert selected_mapping["dependencies"]["model"] == model["attachment_id"]
         assert comparison["payload"]["mapping_sha256"] == selected_mapping["component_sha256"]
+
+
+def test_dense_reuse_prepares_exact_missing_model_only_revision_before_timing(
+    tmp_path: Path,
+) -> None:
+    template, snapshot, model = dense_template(tmp_path)
+    fixture = tmp_path / "dense"
+    prepare_fanout_fixture(fixture, template, 1)
+    source_before = file_manifest(fixture / "history")
+    expected = build_revision(snapshot, {"model": model})
+    assert expected["analysis_id"] not in read_history(fixture / "history")["analyses"]
+    request = prepare_case(fixture, tmp_path / "reuse", "reuse_revision")
+    assert request["analysis_id"] == expected["analysis_id"]
+    case = Path(request["workspace"])
+    assert expected["analysis_id"] in read_history(case)["analyses"]
+    case_before = file_manifest(case)
+    result = run_operation(request)
+    assert result["exit_code"] == 0
+    assert result["result"]["status"] == "ALREADY_PRESENT"
+    assert result["result"]["analysis"] == expected
+    assert file_manifest(case) == case_before
+    assert file_manifest(fixture / "history") == source_before
 
 
 def test_unreferenced_attachment_axis_keeps_exact_physical_and_analytical_inputs(

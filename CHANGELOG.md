@@ -2,6 +2,11 @@
 
 ## Unreleased — v1.4 local development foundation
 
+- V14-02P reduces historical read allocation, repeated dependency validation and
+  review-state reconstruction through operation-private validation and fresh
+  bounded acquisitions. Preserve canonical producer bytes, complete inventory
+  validation, native replay, atomic publication and explicit review authority.
+  Correct only the pinned cisa-opcua-gap registry format from PCAP to PCAPNG.
 - V14-02 adds explicit byte-preserving workspace-v2 migration, four validated
   attachment kinds, immutable analytical revisions with exact producer semantics,
   and evidence/architecture baseline proposals with scoped local human review,

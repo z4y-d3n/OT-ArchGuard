@@ -178,11 +178,14 @@ limited to 4,096 characters; scope strings 1,024, scope list entries/reviewer
 256, rationale 2,048 and scope lists 32 entries. These are work ceilings, not
 performance guarantees.
 
-The finite acceptance workload (83 small files / 721,436 B, 32 analyses) required
+The original V14-02 acceptance workload (83 small files / 721,436 B, 32 analyses) required
 about six seconds per full verification without tracing on the tested machine.
 Every public operation validates the complete inventory and relevant native
-dependencies; repeated validation and up-to-64-MiB read allocation are known
-costs. The rolling acceptance record contains exact traced/untraced measurements.
+dependencies. Repeated validation and up-to-64-MiB read allocation were measured
+costs at that checkpoint. V14-02P replaces those consumer costs with operation-
+private validation reuse and size-appropriate reads while retaining complete
+checks; see the [performance and security supplement](v14-02p-performance.md).
+The rolling acceptance record preserves original traced/untraced measurements.
 Default ceilings do not establish production throughput or justify extrapolation.
 
 Local portable paths only: traversal, UNC/device/alternate-stream names,

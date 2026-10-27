@@ -457,6 +457,15 @@ def prepare_case(fixture: Path, output: Path, operation: str) -> dict[str, Any]:
             semantics = build_semantics(snapshot, selected, require_complete_scan=True)
             (output / "semantics.json").write_bytes(serialize(semantics))
             request["semantics"] = str((output / "semantics.json").absolute())
+        else:
+            # Dense fixtures may contain only enrichment/full-component analyses,
+            # not the exact snapshot+model/default-semantics subject selected here.
+            existing = build_revision(snapshot, selected)
+            aid = existing["analysis_id"]
+            if aid not in state["analyses"]:
+                _store(workspace, "analyses", existing)
+                state["analyses"][aid] = existing
+            request["analysis_id"] = aid
     if operation in {
         "approve",
         "reject",

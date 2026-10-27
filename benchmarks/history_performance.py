@@ -66,6 +66,17 @@ EXPECTED_REJECTIONS = {
     "resource_exhaustion": "LIMIT_EXCEEDED",
     "conflict_approval": "EVIDENCE_REVIEW",
 }
+FRESH_WRITES = frozenset(
+    {
+        "import_attachment",
+        "create_revision",
+        "propose_baseline",
+        "approve",
+        "reject",
+        "supersede",
+        "revoke",
+    }
+)
 SCALING_OPERATIONS = frozenset(
     {"verify", "list_collections", "list_revisions", "list_baselines", "review_state"}
 )
@@ -119,9 +130,17 @@ def assert_expected_outcome(operation: str, measured: dict[str, Any]) -> None:
     if expected is None:
         if exit_code != 0 or diagnostics:
             raise ValueError("A valid benchmark workflow unexpectedly failed")
-        if operation == "reuse_revision" and measured["mode"] != "console":
-            if measured["outcome"]["result"]["status"] != "ALREADY_PRESENT":
-                raise ValueError("The idempotent workload did not actually reuse a revision")
+        if operation == "reuse_revision" or operation in FRESH_WRITES:
+            payload = (
+                json.loads(measured["stdout"])
+                if measured["mode"] == "console"
+                else measured["outcome"]["result"]
+            )
+            status = "ALREADY_PRESENT" if operation == "reuse_revision" else "ADDED"
+            if payload.get("status") != status:
+                raise ValueError(
+                    "Measured write did not produce its required " + status + " status"
+                )
     elif exit_code != 2 or not diagnostics or diagnostics[0]["code"] != expected:
         raise ValueError("A malicious workload did not preserve its required rejection")
 

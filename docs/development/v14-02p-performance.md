@@ -28,6 +28,15 @@ median was 3.146 s; list revisions median 2.938 s. These are fresh baseline
 observations, separate from the prior checkpoint's traced and untraced receipts.
 Raw initial receipt and cProfile: `output/v142p-baseline-profile/`.
 
+Final runtime implementation freeze:
+`4cb2da9b95fab48c9077696dfcde0ecc60e8adb9`. All controlled comparisons below
+bind the original installed production inventory to `bc3ff41` and the optimized
+inventory to this exact production commit. A later fixture-only correction
+prepares a missing idempotent-reuse prerequisite using the original producer;
+it changes no runtime module. Each receipt records its exact harness commit and
+tool hashes separately. Later delivery edits change documentation and measurement
+receipts only; source/package audits distinguish delivery from implementation.
+
 Measured bottlenecks, not inferred solely from elapsed time:
 
 | Work in one original full verification | Actual count |
@@ -168,6 +177,19 @@ persistent artifact byte manifests before accepting its timing samples. Raw
 trials, medians, min/max, spread and median absolute deviation are retained.
 An attractive timing with a differential mismatch is an automatic failure.
 
+Workload names identify the base template. Mutation cases add the minimum
+proposal/review prerequisites outside timing, so not every `original83` case has
+exactly 83 files at its measured boundary; each case's full input manifest binds
+its actual content. `review_state` measures generic inventory integrity followed
+by the public pure review resolver, not complete analytical lifecycle validation.
+`verify`, lifecycle listing/inspection and mutation retain their full documented
+global analytical guarantee. The resolver timing must not be presented as a
+replacement for full verification.
+The `show_baseline_text` label denotes JSON baseline inspection through the direct
+API and actual text rendering through the console; those two rows are separate
+measurements, not identical presentation workloads. Fresh-write benchmarks require
+`ADDED`, while reuse requires `ALREADY_PRESENT`, in API and console modes alike.
+
 Host: Windows 11 AMD64, Intel Core i5-11400H @ 2.70 GHz. The pre-existing active
 power plan was Maximum performance (`2d4d6631-5ed2-452e-9c1a-4df6b43ced8a`).
 Primary before/after comparisons use the same Python 3.14.5 interpreter family
@@ -183,6 +205,22 @@ revision count; unreferenced model count does not add analytical revisions.
 Case parameters and all input byte identities are retained. No linear-complexity
 claim is inferred from a workload that changes more than one axis.
 
+The pure revision axis selects 16/64/128 model-bound revisions from an identical
+128-model catalog. The review-depth axis holds 64 revisions, 64 models and 64
+proposals fixed while adding 16/32/64 review records. Baseline-count comparisons
+include a separate zero-proposal case with that same 64-model catalog. The model
+attachment axis retains identical snapshot/revision bytes and adds unreferenced
+models, which remain subject to full verification. Shared-model fan-out uses
+16/32/64 distinct reviewed mapping/comparison/revision branches over the same
+committed fictional capture and exact model, with no approvals. Those three
+branch counts co-vary and are explicitly reported as a coupled dependency
+workload. The packet/metadata axis also changes observation cardinality; it does
+not isolate JSON padding or claim a pure byte-size cost. Fixtures and input
+manifests retain these parameters rather than labeling every workload by C alone.
+Collection scaling retains one bare analytical revision per physical collection;
+their total counts therefore grow together while revisions per collection stay
+fixed. Pure revision scaling instead holds physical collection count at one.
+
 One experimental aggregate preflight was rejected during independent audit:
 ASCII-escaped estimates could overcharge valid compact UTF-8 snapshots. A real
 21,881-byte accepted workspace reproduced the issue. The first comparison run
@@ -196,12 +234,55 @@ A second incomplete comparison, `output/v142p-primary-final/`, was stopped after
 raw trials and interruption note remain available; it is also excluded from final
 acceptance. Final comparisons use one frozen implementation for every row.
 
+The first complete-matrix attempt on P7, `output/v142p-acceptance/`, stopped at
+the dense idempotent-reuse case after 58 completed rows. Both implementations
+created the requested model-only revision because that exact revision was absent
+from this template. The expected-outcome guard rejected the benchmark rather than
+accepting equal successful writes as evidence of reuse. The correction prepares
+that exact prerequisite with the baseline producer before binding trial inputs;
+a regression checks `ALREADY_PRESENT` and unchanged artifact bytes. The incomplete
+run and its interruption note are retained and excluded from final acceptance.
+
 Method references: [Python 3.14 profiling](https://docs.python.org/3.14/library/profile.html),
 [allocation tracing](https://docs.python.org/3.14/library/tracemalloc.html),
 [Python 3.12 pathlib](https://docs.python.org/3.12/library/pathlib.html) and
 [Python 3.14 pathlib](https://docs.python.org/3.14/library/pathlib.html).
 Local measurements and implementation inspection establish the reported causes;
 documentation is not a substitute for running each interpreter.
+
+## Independent adversarial review and rejected shortcuts
+
+Six responsibilities were covered in coordinated waves with three subagents:
+profiling/acceptance, filesystem/serialization, dependency validation, review
+resolution, independent cache/security challenges and final source audit. The
+integration owner reviewed their interfaces and retained one source freeze.
+
+The audit challenged same-size/mtime replacement, content changed after an
+earlier successful operation, rehashed foreign dependencies, altered mappings,
+scope/approval confusion, invalid unreferenced objects, caller/return-value
+aliasing, cache poisoning, native replay separation and exact error precedence.
+I/O cases cover bounded sentinel reads, truncation/growth, identity replacement,
+duplicate keys, nonregular paths, disk-full/interrupted publication and migration
+source changes. Review cases retain conflict/fork/cycle/terminal-state rejection
+and lack of approval carry-forward. A fresh operation always repeats required
+native validation and replay.
+
+The final read-only auditor checked all 20 directive questions against actual
+source hashes and executed focused receipts. Source/security verdict: no
+unresolved finding within the documented threat model. Full installed acceptance
+and performance were explicitly left pending at that review, rather than inferred
+from source inspection. Its original receipt is
+`output/v142p-final-independent-audit.json`; final dispositions below add executed
+package and measurement evidence without rewriting that earlier observation.
+
+Rejected designs include stat-only freshness, persistent approval/data caches,
+skipping unreferenced objects or native replay, changing producer source hashes,
+removing the second physical publication check and trusting caller validity flags.
+The aggregate-ASCII false rejection and concrete-observer prototype bypass were
+actual counterexamples, corrected and preserved with regression tests. Repeated
+snapshot validation at the storage/semantic boundary remains deliberately intact:
+the private image contains mutable Python values, so skipping the consumer check
+solely because acquisition checked them would require a different ownership proof.
 
 ## Small independent corpus maintenance
 
@@ -213,6 +294,44 @@ and redistribution restrictions remain unchanged. Corpus integrity verification
 now succeeds; 55 corpus/external-tool tests pass. Receipt:
 `output/v142p-corpus-correction.json`. No new decoder support or external capture
 acquisition is part of this work.
+
+## Reproduction commands
+
+Use regular, noneditable installations with the pinned verification dependencies.
+Keep the original environment and original benchmark receipts. The harness rejects
+the wrong interpreter family or source inventory, changed inputs, unexpected
+success/failure, and different public or persistent results. Choose fresh output
+directories; the existing acceptance directories must be preserved. The original
+83-file source can be reproduced with the unchanged `benchmarks/evidence_history.py`
+on the original installation; the dense fictional source comes from the unchanged
+`tools/evidence_history_walkthrough.py` producers. Their identities are recorded
+in the comparison receipts. Synthetic scaling fixtures use only baseline builders.
+
+The following PowerShell commands repeat the final measurement selection:
+
+```powershell
+$perfArgs = @(
+  '--baseline-python', '.venv-v142-wheel/Scripts/python.exe',
+  '--optimized-python', '.venv-v142p-wheel/Scripts/python.exe',
+  '--baseline-commit', 'bc3ff41df4fd7c200ec659724aa8c928f549b443',
+  '--optimized-commit', '4cb2da9b95fab48c9077696dfcde0ecc60e8adb9'
+)
+$fixtureArgs = @(
+  '--reference-workspace', 'output/v142-history-benchmark-source/history',
+  '--dense-workspace', 'output/v142-installed-history-walkthrough/first/history'
+)
+python -m benchmarks.history_performance @perfArgs @fixtureArgs --output output/reproduce-v142p-primary --scales --modes timing console --trials 3
+python -m benchmarks.history_performance @perfArgs --output output/reproduce-v142p-scaling --dense-workspace output/v142-installed-history-walkthrough/first/history --scales 0 1 16 64 128 256 --fanout-scales 16 32 64 --operations verify list_collections list_revisions --axis-operations verify review_state --modes timing --trials 3
+python -m benchmarks.history_performance @perfArgs @fixtureArgs --output output/reproduce-v142p-memory --scales --modes memory --trials 3
+python -m benchmarks.history_performance @perfArgs @fixtureArgs --output output/reproduce-v142p-profile --scales --operations verify --modes profile --trials 1
+```
+
+Run these stages serially, before heavy regression suites. The parent interpreter
+must have the verification dependencies and a regular installed application;
+workers set offline Python hooks and isolated local temporary paths themselves.
+For a new machine, rebuild/install from the declared immutable revisions and
+retain the new environment and power-plan receipts rather than claiming the
+same hardware/cache conditions.
 
 ## Final measured results and acceptance
 
