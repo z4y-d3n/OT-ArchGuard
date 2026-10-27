@@ -66,6 +66,45 @@ EXPECTED_REJECTIONS = {
     "resource_exhaustion": "LIMIT_EXCEEDED",
     "conflict_approval": "EVIDENCE_REVIEW",
 }
+SCALING_OPERATIONS = frozenset(
+    {"verify", "list_collections", "list_revisions", "list_baselines", "review_state"}
+)
+# R=model-bound revisions, D=review-chain depth, B=baseline proposals,
+# M=unreferenced model attachments, P=packets. All axes hold collections at one.
+# R naturally brings its selected model dependency; M independently varies
+# attachment count while holding analytical revision count at one.
+AXIS_PARAMETERS = (
+    (16, 0, 0, 0, 1),
+    (64, 0, 0, 0, 1),
+    (128, 0, 0, 0, 1),
+    (64, 16, 64, 0, 1),
+    (64, 32, 64, 0, 1),
+    (64, 64, 64, 0, 1),
+    (64, 0, 16, 0, 1),
+    (64, 0, 32, 0, 1),
+    (64, 0, 64, 0, 1),
+    (0, 0, 0, 16, 1),
+    (0, 0, 0, 64, 1),
+    (0, 0, 0, 128, 1),
+    (0, 0, 0, 0, 64),
+)
+
+
+def workload_operations(
+    name: str,
+    operations: tuple[str, ...],
+    axis_operations: tuple[str, ...] | None = None,
+) -> tuple[str, ...]:
+    if name in {"workflow", "original83", "dense-native-replay"}:
+        return operations
+    selected = (
+        axis_operations if name.startswith("axis-") and axis_operations is not None else operations
+    )
+    return tuple(
+        op
+        for op in selected
+        if op in SCALING_OPERATIONS and (name != "collections-0" or op != "review_state")
+    )
 
 
 def assert_expected_outcome(operation: str, measured: dict[str, Any]) -> None:
@@ -210,6 +249,7 @@ def run_comparison(
     operations: tuple[str, ...] = ALL_OPERATIONS,
     scales: tuple[int, ...] = (0, 1, 16, 64, 128, 256),
     modes: tuple[str, ...] = ("timing", "console", "memory", "profile"),
+    axis_operations: tuple[str, ...] | None = None,
 ) -> dict[str, Any]:
     if not 1 <= trials <= 9 or not all(0 <= n <= 256 for n in scales):
         raise ValueError("Bounded benchmark needs 1..9 trials and 0..256 collections")
@@ -220,6 +260,8 @@ def run_comparison(
         "profile",
     }:
         raise ValueError("Unknown benchmark operation or mode")
+    if axis_operations is not None and not set(axis_operations) <= SCALING_OPERATIONS:
+        raise ValueError("Axis operations must be supported read-only measurements")
     output = output.absolute()
     baseline_commit = resolve_commit(baseline_commit)
     optimized_commit = resolve_commit(optimized_commit)
@@ -283,10 +325,9 @@ def run_comparison(
     # Independent axes retain physical collection count at one.
     if reference_workspace is None and not any(n > 0 for n in scales):
         raise ValueError("At least one nonempty workload is needed for complete workflows")
-    axis_parameters = [(16, 8, 1), (64, 32, 1), (128, 64, 1), (0, 0, 64)]
     if len(scales) > 2:
-        for revisions, depth, packets in axis_parameters:
-            destination = fixtures / f"axis-r{revisions}-d{depth}-p{packets}"
+        for revisions, depth, baselines, models, packets in AXIS_PARAMETERS:
+            destination = fixtures / f"axis-r{revisions}-d{depth}-b{baselines}-m{models}-p{packets}"
             _worker(
                 baseline_python,
                 [
@@ -301,6 +342,10 @@ def run_comparison(
                     str(depth),
                     "--packets",
                     str(packets),
+                    "--baselines",
+                    str(baselines),
+                    "--unreferenced-models",
+                    str(models),
                 ],
                 environment,
             )
@@ -346,6 +391,12 @@ def run_comparison(
         "workloads": {},
         "packages": packages,
         "comparisons": [],
+        "measurement_selection": {
+            "collection_scales": scales,
+            "operations": operations,
+            "axis_operations": axis_operations,
+            "axis_parameters_r_d_b_m_p": AXIS_PARAMETERS,
+        },
         "limitations": [
             "OS filesystem/antivirus/scheduling caches are uncontrolled confounders; "
             "preserve raw trials and spread.",
@@ -368,24 +419,7 @@ def run_comparison(
             "file_count": len(manifest),
             "bytes": sum(p.stat().st_size for p in (fixture / "history").rglob("*") if p.is_file()),
         }
-        selected_operations = (
-            operations
-            if workload_name in {"workflow", "original83", "dense-native-replay"}
-            else tuple(
-                op
-                for op in operations
-                if op
-                in {
-                    "verify",
-                    "list_collections",
-                    "list_revisions",
-                    "list_baselines",
-                    "review_state",
-                }
-            )
-        )
-        if workload_name == "collections-0":
-            selected_operations = tuple(op for op in selected_operations if op != "review_state")
+        selected_operations = workload_operations(workload_name, operations, axis_operations)
         for operation in selected_operations:
             template = cases / f"c{case_number:04d}"
             case_number += 1
@@ -471,6 +505,7 @@ def main() -> None:
     parser.add_argument("--dense-workspace", type=Path)
     parser.add_argument("--trials", type=int, default=3)
     parser.add_argument("--operations", nargs="*", choices=ALL_OPERATIONS)
+    parser.add_argument("--axis-operations", nargs="*", choices=sorted(SCALING_OPERATIONS))
     parser.add_argument("--scales", nargs="*", type=int, default=[0, 1, 16, 64, 128, 256])
     parser.add_argument(
         "--modes",
@@ -491,6 +526,7 @@ def main() -> None:
         operations=tuple(args.operations) if args.operations else ALL_OPERATIONS,
         scales=tuple(args.scales),
         modes=tuple(args.modes),
+        axis_operations=tuple(args.axis_operations) if args.axis_operations is not None else None,
     )
     print(
         json.dumps(

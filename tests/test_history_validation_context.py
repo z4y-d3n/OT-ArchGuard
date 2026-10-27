@@ -539,3 +539,93 @@ def test_direct_constructor_charges_workspace_bytes_across_objects_not_single_ob
         validation, "HISTORY_LIMITS", replace(HISTORY_LIMITS, object_bytes=64, workspace_bytes=100)
     )
     assert code(lambda: _ValidationContext(s)) == "LIMIT_EXCEEDED"
+
+
+def test_compact_utf8_snapshot_fits_original_raw_storage_budget_and_node_count(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    snapshot = build_snapshot(fixture("observations"), "漢" * 255)
+    raw = json.dumps(snapshot, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    escaped = json.dumps(snapshot, ensure_ascii=True, separators=(",", ":")).encode("ascii")
+    assert len(raw) < len(escaped)
+    pending: list[Any] = [snapshot]
+    nodes = 0
+    while pending:
+        value = pending.pop()
+        nodes += 1
+        if isinstance(value, dict):
+            pending.extend(value.values())
+        elif isinstance(value, list):
+            pending.extend(value)
+    s: dict[str, Any] = {
+        "snapshots": {snapshot["snapshot_id"]: snapshot},
+        "attachments": {},
+        "analyses": {},
+        "baselines": {},
+        "reviews": {},
+    }
+    monkeypatch.setattr(
+        validation,
+        "HISTORY_LIMITS",
+        replace(HISTORY_LIMITS, workspace_bytes=len(raw), nodes=nodes),
+    )
+    context = _ValidationContext(s)
+    context.validate()
+    assert context._state["snapshots"][snapshot["snapshot_id"]] == snapshot
+
+
+@pytest.mark.parametrize("legacy_text", ["\ud800", "\ud800\udc00"])
+def test_utf8_storage_lower_bound_retains_escaped_surrogates_from_frozen_snapshot(
+    monkeypatch: pytest.MonkeyPatch,
+    legacy_text: str,
+) -> None:
+    observations = fixture("observations")
+    observations["limitations"].append("Unassessed legacy text: " + legacy_text)
+    observations["observations_sha256"] = hashlib.sha256(
+        json.dumps(
+            {k: v for k, v in observations.items() if k != "observations_sha256"},
+            sort_keys=True,
+            ensure_ascii=True,
+            separators=(",", ":"),
+        ).encode("ascii")
+    ).hexdigest()
+    snapshot = build_snapshot(observations)
+    # Frozen normalization combines a high/low surrogate pair into one scalar;
+    # its raw UTF-8 representation is smaller than surrogatepass over two code
+    # units. A lone surrogate remains an escaped JSON value instead.
+    raw = json.dumps(snapshot, ensure_ascii=len(legacy_text) == 1, separators=(",", ":")).encode(
+        "utf-8"
+    )
+    snapshot["observations"]["limitations"][-1] = "Unassessed legacy text: " + legacy_text
+    s: dict[str, Any] = {
+        "snapshots": {snapshot["snapshot_id"]: snapshot},
+        "attachments": {},
+        "analyses": {},
+        "baselines": {},
+        "reviews": {},
+    }
+    monkeypatch.setattr(
+        validation, "HISTORY_LIMITS", replace(HISTORY_LIMITS, workspace_bytes=len(raw))
+    )
+    context = _ValidationContext(s)
+    context.validate()
+    retained = context._state["snapshots"][snapshot["snapshot_id"]]
+    assert retained["observations"]["limitations"][-1].endswith(legacy_text)
+
+
+def test_new_object_kinds_keep_ascii_storage_budget_instead_of_utf8_snapshot_rule(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    value = {"text": "漢" * 64}
+    raw = json.dumps(value, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+    s: dict[str, Any] = {
+        "snapshots": {},
+        "attachments": {"attachment-" + "a" * 64: value},
+        "analyses": {},
+        "baselines": {},
+        "reviews": {},
+    }
+    monkeypatch.setattr(
+        validation, "HISTORY_LIMITS", replace(HISTORY_LIMITS, workspace_bytes=len(raw))
+    )
+    assert code(lambda: _ValidationContext(s)) == "LIMIT_EXCEEDED"

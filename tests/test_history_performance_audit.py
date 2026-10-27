@@ -4,6 +4,7 @@ import copy
 import hashlib
 import json
 import os
+from dataclasses import replace
 from importlib.resources import files
 from pathlib import Path
 from typing import Any
@@ -15,10 +16,17 @@ from otarchguard.capture.reconciliation import compare_capture
 from otarchguard.diagnostics import ModelError
 from otarchguard.evidence import history, lifecycle, validation
 from otarchguard.evidence.attachments import build_attachment
+from otarchguard.evidence.observations import digest
 from otarchguard.evidence.reviews import build_baseline, build_review
 from otarchguard.evidence.revisions import build_revision, build_semantics
 from otarchguard.evidence.validation import _ValidationContext
-from otarchguard.evidence.workspace import build_snapshot, serialize
+from otarchguard.evidence.workspace import (
+    EVIDENCE_LIMITS,
+    _decode,
+    build_snapshot,
+    serialize,
+    validate_snapshot,
+)
 from tools.capture_workloads import plant_model
 
 
@@ -358,3 +366,113 @@ def test_mutating_a_returned_public_state_does_not_create_later_approval(tmp_pat
         lifecycle.load_state(workspace)["attachments"][ids["model"]]["payload"]["revision"]
         != "External mutation"
     )
+
+
+def snapshot_state(snapshot: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "snapshots": {snapshot["snapshot_id"]: snapshot},
+        "attachments": {},
+        "analyses": {},
+        "baselines": {},
+        "reviews": {},
+    }
+
+
+def value_node_count(value: object) -> int:
+    """Independent JSON-node definition used by the frozen workspace reader."""
+    pending: list[Any] = [value]
+    nodes = 0
+    while pending:
+        item = pending.pop()
+        nodes += 1
+        if isinstance(item, dict):
+            pending.extend(item.values())
+        elif isinstance(item, list):
+            pending.extend(item)
+    return nodes
+
+
+def test_valid_snapshot_exact_values_only_node_ceiling_matches_frozen_reader(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    snapshot = build_snapshot(fixture("observations"), "Fictional node-boundary test")
+    nodes = value_node_count(snapshot)
+    assert _decode(serialize(snapshot), replace(EVIDENCE_LIMITS, nodes=nodes)) == snapshot
+    monkeypatch.setattr(validation, "HISTORY_LIMITS", replace(history.HISTORY_LIMITS, nodes=nodes))
+    context = _ValidationContext(snapshot_state(snapshot))
+    context.validate()
+    assert len(context._state["snapshots"]) == 1
+
+
+def test_valid_compact_utf8_snapshot_fits_its_exact_raw_workspace_budget(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    snapshot = build_snapshot(fixture("observations"), "漢" * 255)
+    raw = json.dumps(snapshot, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode(
+        "utf-8"
+    )
+    ascii_raw = json.dumps(
+        snapshot, ensure_ascii=True, sort_keys=True, separators=(",", ":")
+    ).encode("ascii")
+    workspace = tmp_path / "compact-utf8-history"
+    history.initialize_history(workspace)
+    (workspace / "snapshots" / (snapshot["snapshot_id"] + ".json")).write_bytes(raw)
+    total = sum(p.stat().st_size for p in workspace.rglob("*") if p.is_file())
+    assert len(ascii_raw) > total
+    limits = replace(
+        history.HISTORY_LIMITS, nodes=value_node_count(snapshot), workspace_bytes=total
+    )
+    accepted = history.read_history(workspace, limits)
+    monkeypatch.setattr(validation, "HISTORY_LIMITS", limits)
+    context = _ValidationContext(accepted)
+    context.validate()
+    assert context._state["snapshots"] == accepted["snapshots"]
+
+
+def test_preflight_preserves_frozen_escaped_surrogate_metadata_acceptance(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    observations = fixture("observations")
+    observations["limitations"].append("\ud800")
+    observations["observations_sha256"] = digest(
+        {k: v for k, v in observations.items() if k != "observations_sha256"}
+    )
+    snapshot = build_snapshot(observations)
+    raw = serialize(snapshot)
+    assert b"\\ud800" in raw and _decode(raw, EVIDENCE_LIMITS) == snapshot
+    monkeypatch.setattr(
+        validation, "HISTORY_LIMITS", replace(history.HISTORY_LIMITS, workspace_bytes=len(raw))
+    )
+    context = _ValidationContext(snapshot_state(snapshot))
+    context.validate()
+    assert context._state["snapshots"][snapshot["snapshot_id"]] == snapshot
+
+
+def test_paired_surrogate_alias_has_same_minimum_budget_as_its_normalized_scalar(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    observations = fixture("observations")
+    observations["limitations"].append("\U00010000" * 255)
+    observations["observations_sha256"] = digest(
+        {k: v for k, v in observations.items() if k != "observations_sha256"}
+    )
+    normalized = build_snapshot(observations)
+    paired = copy.deepcopy(normalized)
+    paired["observations"]["limitations"][-1] = "\ud800\udc00" * 255
+    assert serialize(paired) == serialize(normalized)
+    validate_snapshot(paired)
+    raw = json.dumps(normalized, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode(
+        "utf-8"
+    )
+    workspace = tmp_path / "paired-surrogate-history"
+    history.initialize_history(workspace)
+    (workspace / "snapshots" / (normalized["snapshot_id"] + ".json")).write_bytes(raw)
+    total = sum(p.stat().st_size for p in workspace.rglob("*") if p.is_file())
+    limits = replace(history.HISTORY_LIMITS, workspace_bytes=total)
+    accepted = history.read_history(workspace, limits)
+    # Direct callers may supply this canonical-JSON-equivalent representation.
+    accepted["snapshots"][paired["snapshot_id"]] = paired
+    monkeypatch.setattr(validation, "HISTORY_LIMITS", limits)
+    context = _ValidationContext(accepted)
+    context.validate()
+    assert serialize(context._state["snapshots"][paired["snapshot_id"]]) == serialize(normalized)

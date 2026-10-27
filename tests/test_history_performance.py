@@ -8,10 +8,12 @@ from typing import Any
 import pytest
 
 from benchmarks.history_performance import (
+    AXIS_PARAMETERS,
     _relocate,
     assert_expected_outcome,
     compare_samples,
     summarize,
+    workload_operations,
 )
 from tools.history_performance_worker import (
     canonical,
@@ -213,3 +215,74 @@ def test_independent_fixture_manifest_is_not_an_import_time_or_path_identity(
     first = next(iter(changed))
     changed[first] = "0" * 64
     assert identity(changed) != receipt["workspace_manifest_sha256"]
+
+
+def test_axis_design_isolates_review_depth_baselines_and_unreferenced_attachments() -> None:
+    assert sorted(d for r, d, b, m, p in AXIS_PARAMETERS if (r, b, m, p) == (64, 64, 0, 1)) == [
+        0,
+        16,
+        32,
+        64,
+    ]
+    assert sorted(b for r, d, b, m, p in AXIS_PARAMETERS if (r, d, m, p) == (64, 0, 0, 1)) == [
+        0,
+        16,
+        32,
+        64,
+    ]
+    assert sorted(m for r, d, b, m, p in AXIS_PARAMETERS if (r, d, b, p) == (0, 0, 0, 1)) == [
+        16,
+        64,
+        128,
+    ]
+
+
+def test_axis_operation_selection_does_not_expand_collection_or_mutating_workflows() -> None:
+    operations = ("verify", "approve", "list_collections")
+    axis = ("verify", "review_state")
+    assert workload_operations("workflow", operations, axis) == operations
+    assert workload_operations("collections-16", operations, axis) == ("verify", "list_collections")
+    assert workload_operations("axis-r64-d32-b64-m0-p1", operations, axis) == axis
+    assert workload_operations("collections-0", ("verify", "review_state"), axis) == ("verify",)
+
+
+def test_review_depth_fixture_changes_only_review_records_at_fixed_baseline_count(
+    tmp_path: Path,
+) -> None:
+    left = tmp_path / "depth-one"
+    right = tmp_path / "depth-two"
+    first = prepare_fixture(left, 1, 2, 1, baselines=2)
+    second = prepare_fixture(right, 1, 2, 2, baselines=2)
+    assert first["verification"]["baselines"] == second["verification"]["baselines"] == 2
+    assert first["verification"]["reviews"] == 1
+    assert second["verification"]["reviews"] == 2
+    first_files = {
+        k: v for k, v in file_manifest(left / "history").items() if not k.startswith("reviews/")
+    }
+    second_files = {
+        k: v for k, v in file_manifest(right / "history").items() if not k.startswith("reviews/")
+    }
+    assert first_files == second_files
+
+
+def test_unreferenced_attachment_axis_keeps_exact_physical_and_analytical_inputs(
+    tmp_path: Path,
+) -> None:
+    bare = tmp_path / "bare"
+    models = tmp_path / "models"
+    first = prepare_fixture(bare, 1)
+    second = prepare_fixture(models, 1, unreferenced_models=2)
+    assert first["verification"]["analyses"] == second["verification"]["analyses"] == 1
+    assert (
+        first["verification"]["physical_collections"]
+        == second["verification"]["physical_collections"]
+        == 1
+    )
+    assert second["verification"]["attachments"] == 2
+    first_files = file_manifest(bare / "history")
+    second_files = {
+        k: v
+        for k, v in file_manifest(models / "history").items()
+        if not k.startswith("attachments/")
+    }
+    assert first_files == second_files

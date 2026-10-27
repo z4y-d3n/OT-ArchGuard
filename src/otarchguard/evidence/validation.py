@@ -46,8 +46,10 @@ def _bounded_copy(state: dict[str, Any]) -> dict[str, Any]:
     The file reader already performs these checks for an acquired image. Direct
     Python validation callers need the same finite boundary before ``deepcopy``.
     Unknown root data is not part of lifecycle graph semantics and is ignored,
-    as by the original pure graph validator. The per-object minimum canonical
-    byte estimate never rejects a valid canonical/pretty storage representation.
+    as by the original pure graph validator. The per-object ASCII byte estimate
+    matches the frozen snapshot producer's output bound. Aggregate storage uses
+    a UTF-8 minimum for snapshots, whose exact original bytes may be compact and
+    unescaped, and an ASCII minimum for the canonical-only new object kinds.
     """
     if type(state) is not dict:
         fail("EVIDENCE_GRAPH", "$", "Malformed or unsupported historical dependency graph.")
@@ -64,7 +66,7 @@ def _bounded_copy(state: dict[str, Any]) -> dict[str, Any]:
             check_limit("evidence_text_characters", len(name), 4096)
             stack: list[tuple[Iterator[Any], int, int | None]] = [(iter((value,)), 0, None)]
             active: set[int] = set()
-            nodes = planned = 0
+            nodes = planned = stored_minimum = 0
             while stack:
                 iterator, depth, container_id = stack[-1]
                 try:
@@ -76,6 +78,8 @@ def _bounded_copy(state: dict[str, Any]) -> dict[str, Any]:
                     continue
                 nodes += 1
                 check_limit("evidence_nodes", nodes, HISTORY_LIMITS.nodes)
+                previous_planned = planned
+                unicode_adjustment = 0
                 if type(item) in {dict, list}:
                     check_limit("evidence_depth", depth + 1, HISTORY_LIMITS.depth)
                     if id(item) in active:
@@ -91,7 +95,18 @@ def _bounded_copy(state: dict[str, Any]) -> dict[str, Any]:
                             if type(key) is not str:
                                 fail("EVIDENCE_GRAPH", "$", "Evidence JSON keys must be strings.")
                             check_limit("evidence_text_characters", len(key), 4096)
-                            planned += len(json.dumps(key, ensure_ascii=True))
+                            ascii_bytes = len(json.dumps(key, ensure_ascii=True))
+                            planned += ascii_bytes
+                            if kind == "snapshots" and not key.isascii():
+                                unicode_adjustment += (
+                                    len(
+                                        json.dumps(key, ensure_ascii=False).encode(
+                                            "utf-8", errors="surrogatepass"
+                                        )
+                                    )
+                                    - ascii_bytes
+                                    - sum(0xD800 <= ord(c) <= 0xDFFF for c in key)
+                                )
                             check_limit(
                                 "history_object_bytes", planned, HISTORY_LIMITS.object_bytes
                             )
@@ -101,7 +116,23 @@ def _bounded_copy(state: dict[str, Any]) -> dict[str, Any]:
                     stack.append((children, depth + 1, id(item)))
                 elif type(item) is str:
                     check_limit("evidence_text_characters", len(item), 4096)
-                    planned += len(json.dumps(item, ensure_ascii=True))
+                    ascii_bytes = len(json.dumps(item, ensure_ascii=True))
+                    planned += ascii_bytes
+                    if kind == "snapshots" and not item.isascii():
+                        # Frozen JSON can retain escaped lone surrogates, while
+                        # a high/low pair has the same canonical identity as one
+                        # scalar. Deducting one byte per surrogate gives a safe
+                        # floor for both (two bytes/lone, four bytes/pair). This
+                        # estimates storage only and never changes retained text.
+                        unicode_adjustment += (
+                            len(
+                                json.dumps(item, ensure_ascii=False).encode(
+                                    "utf-8", errors="surrogatepass"
+                                )
+                            )
+                            - ascii_bytes
+                            - sum(0xD800 <= ord(c) <= 0xDFFF for c in item)
+                        )
                 elif item is None:
                     planned += 4
                 elif type(item) is bool:
@@ -121,7 +152,8 @@ def _bounded_copy(state: dict[str, Any]) -> dict[str, Any]:
                 else:
                     fail("EVIDENCE_GRAPH", "$", "Evidence requires exact JSON primitive types.")
                 check_limit("history_object_bytes", planned, HISTORY_LIMITS.object_bytes)
-            total += planned
+                stored_minimum += planned - previous_planned + unicode_adjustment
+            total += stored_minimum
             check_limit("history_workspace_bytes", total, HISTORY_LIMITS.workspace_bytes)
         selected[kind] = objects
     return copy.deepcopy(selected)

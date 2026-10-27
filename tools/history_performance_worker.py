@@ -156,6 +156,9 @@ def prepare_fixture(
     revisions: int = 0,
     review_depth: int = 0,
     packets: int = 1,
+    *,
+    baselines: int | None = None,
+    unreferenced_models: int = 0,
 ) -> dict[str, Any]:
     """Construct bounded synthetic evidence with the selected baseline producer.
 
@@ -163,11 +166,22 @@ def prepare_fixture(
     O(n) series of full-workspace public operations during fixture preparation;
     one final public verification proves the resulting complete workspace.
     """
+    if baselines is None:
+        baselines = review_depth
+    if not all(
+        type(v) is int
+        for v in (collections, revisions, review_depth, packets, baselines, unreferenced_models)
+    ):
+        raise ValueError("Workload parameters require exact integers")
     if not 0 <= collections <= 256 or not 0 <= revisions <= 256 or not 0 <= review_depth <= 64:
         raise ValueError("Workload parameters exceed the finite benchmark envelope")
-    if not 1 <= packets <= 128 or (collections == 0 and (revisions or review_depth)):
+    if not 0 <= unreferenced_models <= 256 or not 0 <= baselines <= 256:
+        raise ValueError("Attachment or baseline axis exceeds the finite benchmark envelope")
+    if not 1 <= packets <= 128 or (
+        collections == 0 and (revisions or review_depth or baselines or unreferenced_models)
+    ):
         raise ValueError("Invalid workload packet or dependency parameters")
-    if review_depth > revisions + 1:
+    if review_depth > baselines or baselines > revisions + 1:
         raise ValueError("Review chain needs distinct selected analytical revisions")
     output.mkdir(exist_ok=False)
     workspace = output / "history"
@@ -202,6 +216,12 @@ def prepare_fixture(
             selected = snapshot
             revision_ids.append(aid)
     if selected is not None:
+        for index in range(unreferenced_models):
+            model = plant_model()
+            model["revision"] = f"unreferenced-performance-model-{index}"
+            attachment = build_attachment("model", model, selected)
+            mid = _store(workspace, "attachments", attachment)
+            state["attachments"][mid] = attachment
         for index in range(revisions):
             model = plant_model()
             model["revision"] = f"performance-model-{index}"
@@ -220,11 +240,14 @@ def prepare_fixture(
             "vantage_points": [],
             "protocols": [],
         }
-        previous = None
-        for index, aid in enumerate(revision_ids[:review_depth]):
+        baseline_ids = []
+        for aid in revision_ids[:baselines]:
             baseline = build_baseline("evidence", [aid], scope, state)
             bid = _store(workspace, "baselines", baseline)
             state["baselines"][bid] = baseline
+            baseline_ids.append(bid)
+        previous = None
+        for index, bid in enumerate(baseline_ids[:review_depth]):
             review = build_review(
                 bid,
                 "approve" if index == 0 else "supersede",
@@ -245,6 +268,8 @@ def prepare_fixture(
             "collections": collections,
             "model_revisions": revisions,
             "review_depth": review_depth,
+            "baseline_proposals": baselines,
+            "unreferenced_models": unreferenced_models,
             "packets": packets,
         },
         "workspace": str(workspace.absolute()),
@@ -696,6 +721,8 @@ def main() -> None:
     parser.add_argument("--revisions", type=int, default=0)
     parser.add_argument("--review-depth", type=int, default=0)
     parser.add_argument("--packets", type=int, default=1)
+    parser.add_argument("--baselines", type=int)
+    parser.add_argument("--unreferenced-models", type=int, default=0)
     parser.add_argument("--case", type=Path)
     parser.add_argument("--operation", default="verify")
     args = parser.parse_args()
@@ -706,7 +733,13 @@ def main() -> None:
         result = verify_lifecycle(args.output)
     elif args.prepare:
         result = prepare_fixture(
-            args.output, args.collections, args.revisions, args.review_depth, args.packets
+            args.output,
+            args.collections,
+            args.revisions,
+            args.review_depth,
+            args.packets,
+            baselines=args.baselines,
+            unreferenced_models=args.unreferenced_models,
         )
     elif args.case is not None:
         result = prepare_case(args.case, args.output, args.operation)
