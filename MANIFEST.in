@@ -12,6 +12,8 @@ include benchmarks/documents.py
 include benchmarks/drift.py
 include benchmarks/evidence_history.py
 include benchmarks/explorer.py
+include benchmarks/historical_explorer.py
+include benchmarks/historical_regression.py
 include benchmarks/history_performance.py
 include benchmarks/profile.py
 include benchmarks/projects.py
@@ -81,6 +83,7 @@ include docs/development/v14-02p-handoff-es.md
 include docs/development/v14-02p-performance.md
 include docs/development/v14-03-audit.md
 include docs/development/v14-03-handoff-es.md
+include docs/development/v14-04-handoff-es.md
 include docs/development/v14-analysis-revisions-adr.md
 include docs/development/v14-architecture.md
 include docs/development/v14-drift-contract.md
@@ -125,6 +128,7 @@ include docs/v1.1/gate-v11-6.md
 include docs/v1.1/public-contract-inventory.md
 include docs/v14-drift.md
 include docs/v14-foundation.md
+include docs/v14-historical-explorer.md
 include docs/v14-history.md
 include docs/verification.md
 include docs/yaml-schema-v1.md
@@ -221,6 +225,9 @@ include src/otarchguard/drift/communications.py
 include src/otarchguard/drift/comparability.py
 include src/otarchguard/drift/contract.py
 include src/otarchguard/drift/engine.py
+include src/otarchguard/drift/explorer.py
+include src/otarchguard/drift/explorer_bundle.py
+include src/otarchguard/drift/explorer_render.py
 include src/otarchguard/drift/protocols.py
 include src/otarchguard/drift/reports.py
 include src/otarchguard/evidence/__init__.py
@@ -359,6 +366,10 @@ include tests/test_exposure_compare_cli.py
 include tests/test_exposure_comparison.py
 include tests/test_final_release.py
 include tests/test_fixtures.py
+include tests/test_historical_explorer.py
+include tests/test_historical_explorer_bundle.py
+include tests/test_historical_explorer_render.py
+include tests/test_historical_explorer_walkthrough.py
 include tests/test_history_lifecycle_performance.py
 include tests/test_history_path_performance.py
 include tests/test_history_performance.py
@@ -426,6 +437,7 @@ include tools/evidence_identity.py
 include tools/evidence_walkthrough.py
 include tools/explorer_walkthrough.py
 include tools/freeze_capture_contracts.py
+include tools/historical_explorer_walkthrough.py
 include tools/history_performance_worker.py
 include tools/independent_capture_corpus.py
 include tools/offline/sitecustomize.py

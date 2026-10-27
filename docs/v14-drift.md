@@ -1,5 +1,8 @@
 # Offline historical evidence comparison
 
+V14-04 adds the [offline Historical Explorer](v14-historical-explorer.md) for
+existing source-reproduced reports: `evidence drift explore WORKSPACE REPORT OUTPUT`.
+
 V14-03 compares an explicitly approved historical baseline with selected analytical
 revisions. It describes declared models, finite captured communications and
 analytical interpretation independently. Missing traffic does not prove blocking

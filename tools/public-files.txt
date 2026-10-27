@@ -12,6 +12,8 @@ benchmarks/documents.py
 benchmarks/drift.py
 benchmarks/evidence_history.py
 benchmarks/explorer.py
+benchmarks/historical_explorer.py
+benchmarks/historical_regression.py
 benchmarks/history_performance.py
 benchmarks/profile.py
 benchmarks/projects.py
@@ -81,6 +83,7 @@ docs/development/v14-02p-handoff-es.md
 docs/development/v14-02p-performance.md
 docs/development/v14-03-audit.md
 docs/development/v14-03-handoff-es.md
+docs/development/v14-04-handoff-es.md
 docs/development/v14-analysis-revisions-adr.md
 docs/development/v14-architecture.md
 docs/development/v14-drift-contract.md
@@ -125,6 +128,7 @@ docs/v1.1/gate-v11-6.md
 docs/v1.1/public-contract-inventory.md
 docs/v14-drift.md
 docs/v14-foundation.md
+docs/v14-historical-explorer.md
 docs/v14-history.md
 docs/verification.md
 docs/yaml-schema-v1.md
@@ -221,6 +225,9 @@ src/otarchguard/drift/communications.py
 src/otarchguard/drift/comparability.py
 src/otarchguard/drift/contract.py
 src/otarchguard/drift/engine.py
+src/otarchguard/drift/explorer.py
+src/otarchguard/drift/explorer_bundle.py
+src/otarchguard/drift/explorer_render.py
 src/otarchguard/drift/protocols.py
 src/otarchguard/drift/reports.py
 src/otarchguard/evidence/__init__.py
@@ -359,6 +366,10 @@ tests/test_exposure_compare_cli.py
 tests/test_exposure_comparison.py
 tests/test_final_release.py
 tests/test_fixtures.py
+tests/test_historical_explorer.py
+tests/test_historical_explorer_bundle.py
+tests/test_historical_explorer_render.py
+tests/test_historical_explorer_walkthrough.py
 tests/test_history_lifecycle_performance.py
 tests/test_history_path_performance.py
 tests/test_history_performance.py
@@ -426,6 +437,7 @@ tools/evidence_identity.py
 tools/evidence_walkthrough.py
 tools/explorer_walkthrough.py
 tools/freeze_capture_contracts.py
+tools/historical_explorer_walkthrough.py
 tools/history_performance_worker.py
 tools/independent_capture_corpus.py
 tools/offline/sitecustomize.py
