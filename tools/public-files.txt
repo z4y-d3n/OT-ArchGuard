@@ -16,6 +16,8 @@ benchmarks/profile.py
 benchmarks/projects.py
 benchmarks/protocols.py
 benchmarks/quality_comparison.py
+benchmarks/receipts/v14-02p-scaling.png
+benchmarks/receipts/v14-02p-windows.json
 benchmarks/run.py
 benchmarks/workloads.py
 docs/algorithms.md
@@ -73,6 +75,7 @@ docs/development/v13-final-baseline-and-impact.md
 docs/development/v13-gate-evidence.md
 docs/development/v14-01-handoff-es.md
 docs/development/v14-02-handoff-es.md
+docs/development/v14-02p-handoff-es.md
 docs/development/v14-02p-performance.md
 docs/development/v14-analysis-revisions-adr.md
 docs/development/v14-architecture.md
