@@ -201,7 +201,10 @@ def test_architecture_prototype_renders_exact_intent_evidence(tmp_path: Path) ->
     )
     candidates = [p.read_text(encoding="utf-8") for p in output.glob("analysis-*.html")]
     exposure = next(text for text in candidates if "Independent intent outcomes" in text)
-    assert 'class="compact-fields"' in exposure and 'class="evidence-group"' in exposure
+    # F1 now uses the requested table-centric prototype; other consumers keep
+    # the preceding compact object layout until separate visual acceptance.
+    assert 'class="exposure-tables"' in exposure and "Retained exposure observations" in exposure
+    assert "<table>" in exposure and 'class="compact-fields"' not in exposure
     site = result["site"]
     assert isinstance(site, dict)
     assert original == source.read_bytes() and site["broken_links"] == 0

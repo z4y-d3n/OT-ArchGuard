@@ -19,9 +19,11 @@ from otarchguard.explorer_data import (
     load_provenance,
     page_id,
 )
+from otarchguard.explorer_exposure import exposure_tables
 from otarchguard.explorer_html import (
     COMPACT_CSS,
     CSS,
+    EXPOSURE_TABLE_CSS,
     SiteWriter,
     compact_value,
     escape,
@@ -520,18 +522,26 @@ class Explorer:
                     [asdict(query)],
                 )
                 queries.append((target, f"{query.source_asset_id} → {query.service_id}"))
-            body = (
-                "<p>Existing exposure engine; origin assumptions, not comprom"
-                "ise or live traffic observations.</p>"
-            )
-            body += self.value(
-                {k: v for k, v in asdict(exposure).items() if k not in {"queries", "intent_checks"}}
-            )
-            body += self.references("Evaluated scenario queries", queries, ["exposure", scenario])
-            # Preserve independent intent outcomes from the existing exposure engine.
-            body += section(
-                "Independent intent outcomes", self.evidence(asdict(exposure.intent_checks))
-            )
+            if self.compact:
+                body = exposure_tables(exposure, self.value, queries)
+            else:
+                body = (
+                    "<p>Existing exposure engine; origin assumptions, not comprom"
+                    "ise or live traffic observations.</p>"
+                )
+                body += self.value(
+                    {
+                        k: v
+                        for k, v in asdict(exposure).items()
+                        if k not in {"queries", "intent_checks"}
+                    }
+                )
+                body += self.references(
+                    "Evaluated scenario queries", queries, ["exposure", scenario]
+                )
+                body += section(
+                    "Independent intent outcomes", self.evidence(asdict(exposure.intent_checks))
+                )
             self.writer.page(name, f"Exposure scenario · {scenario}", body)
 
     def query_page(
@@ -942,7 +952,12 @@ class Explorer:
             else set()
         )
         self.writer.write(
-            "assets.css", (CSS + (COMPACT_CSS if self.compact else "")).encode("utf-8")
+            "assets.css",
+            (
+                CSS
+                + (COMPACT_CSS if self.compact else "")
+                + (EXPOSURE_TABLE_CSS if self.compact and options.scenarios else "")
+            ).encode("utf-8"),
         )
         self.render_analysis(options)
         self.render_native()

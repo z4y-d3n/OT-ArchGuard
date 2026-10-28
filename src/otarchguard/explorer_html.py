@@ -84,6 +84,22 @@ padding-left:1.1rem;margin:.2rem 0;list-style:disc}
 .compact-evidence .evidence-records>li{break-inside:auto}}
 """
 
+# Scoped to the F1 exposure prototype; other tables retain their existing CSS.
+EXPOSURE_TABLE_CSS = """
+.exposure-tables{min-width:0;max-width:100%}
+.exposure-tables table{width:max-content;min-width:100%;max-width:none}
+.exposure-tables th,.exposure-tables td{padding:.35rem .5rem;line-height:1.4;
+overflow-wrap:anywhere;vertical-align:top;min-width:7ch;max-width:36rem}
+.exposure-tables th[scope=row]{width:auto;font-weight:600}
+.exposure-tables h3{margin:1rem 0 .4rem}.exposure-tables h4{margin:.8rem 0 .35rem}
+.exposure-tables p{margin:.4rem 0}.exposure-tables .scroll{margin:.5rem 0 1rem}
+.exposure-tables code{white-space:normal;overflow-wrap:anywhere}
+@media print{.exposure-tables table{width:100%;min-width:0;table-layout:fixed}
+.exposure-tables th,.exposure-tables td{min-width:0;max-width:none;font-size:8pt}
+.exposure-tables .scroll{overflow:visible}.exposure-tables thead{display:table-header-group}
+.exposure-tables tr{break-inside:avoid}.exposure-tables h3,.exposure-tables h4{break-after:avoid}}
+"""
+
 
 def escape(value: object) -> str:
     """Only text and quoted-attribute contexts; never URLs, CSS, markup or JS."""
@@ -101,7 +117,13 @@ def link(path: str, label: object) -> str:
     return f'<a href="{path}">{escape(label)}</a>'
 
 
-def table(caption: str, headings: tuple[str, ...], rows: Sequence[tuple[str, ...]]) -> str:
+def table(
+    caption: str,
+    headings: tuple[str, ...],
+    rows: Sequence[tuple[str, ...]],
+    *,
+    row_headers: bool = False,
+) -> str:
     if not rows:
         return '<p class="muted">None in this view.</p>'
     return (
@@ -112,7 +134,15 @@ def table(caption: str, headings: tuple[str, ...], rows: Sequence[tuple[str, ...
         + "</caption><thead><tr>"
         + "".join(f'<th scope="col">{escape(h)}</th>' for h in headings)
         + "</tr></thead><tbody>"
-        + "".join("<tr>" + "".join(f"<td>{c}</td>" for c in row) + "</tr>" for row in rows)
+        + "".join(
+            "<tr>"
+            + "".join(
+                f'<th scope="row">{cell}</th>' if row_headers and index == 0 else f"<td>{cell}</td>"
+                for index, cell in enumerate(row)
+            )
+            + "</tr>"
+            for row in rows
+        )
         + "</tbody></table></div>"
     )
 

@@ -244,6 +244,7 @@ src/otarchguard/evidence/validation.py
 src/otarchguard/evidence/workspace.py
 src/otarchguard/explorer.py
 src/otarchguard/explorer_data.py
+src/otarchguard/explorer_exposure.py
 src/otarchguard/explorer_html.py
 src/otarchguard/exposure.py
 src/otarchguard/flows.py
@@ -362,6 +363,7 @@ tests/test_evidence_reviews.py
 tests/test_evidence_revisions.py
 tests/test_evidence_v142_audit.py
 tests/test_evidence_workspace.py
+tests/test_exposure_tables_prototype.py
 tests/test_explorer.py
 tests/test_explorer_compact.py
 tests/test_exposure_compare_cli.py
