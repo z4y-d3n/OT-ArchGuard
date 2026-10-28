@@ -61,8 +61,8 @@ padding:1rem;margin:1rem 0;border:1px solid #ccd6df}.table-scroll{overflow-x:aut
 max-width:100%;margin:1rem 0}table{border-collapse:collapse;min-width:100%;width:max-content}
 th,td{border:1px solid #ccd6df;padding:.6rem;text-align:left;vertical-align:top;
 min-width:10ch;max-width:36rem;word-break:normal;overflow-wrap:normal}
-th{background:#e8f0f5;white-space:nowrap}td pre{min-width:22rem;max-width:36rem;
-max-height:18rem;overflow:auto;margin:0}pre{white-space:pre-wrap;overflow-wrap:break-word;
+th{background:#e8f0f5;white-space:nowrap}td pre{min-width:0;max-width:100%;
+margin:0}pre{white-space:pre-wrap;overflow-wrap:anywhere;
 font-size:.85rem}details{margin:1rem 0}summary{cursor:pointer;font-weight:bold;padding:.6rem;
 background:#e8f0f5}figure{margin:1rem 0}figcaption{font-weight:bold;padding:.6rem 0}
 .finding{padding:1rem;border-left:5px solid #a12121}.alert{border:3px solid
@@ -77,6 +77,10 @@ nav{border:1px solid #6b879b;padding:1rem;background:white}nav ul{display:flex;
 flex-wrap:wrap;gap:.5rem 1.5rem;list-style:none;margin:0;padding:0}
 .snapshot{border-top:2px solid #6b879b;margin-top:1.5rem;padding-top:1rem}
 code{overflow-wrap:anywhere}.critical-list{padding-left:1.4rem}.critical-list li{margin:.6rem 0}
+.report-fields{margin:.5rem 0}.report-fields dt{font-weight:600;margin-top:.6rem;
+border-bottom:1px solid #ccd6df;overflow-wrap:anywhere}.report-fields dd{margin:0 0 .5rem;
+overflow-wrap:anywhere;min-width:0}.report-fields ul{padding-left:0;list-style-position:inside}
+.report-record{border-top:2px solid #6b879b;margin:1rem 0}.report-fields code{white-space:pre-wrap}
 .architecture-canvas{border:1px solid #6b879b}summary{border:1px solid #6b879b}
 @media(max-width:640px){body{margin:1rem auto;padding:0 .6rem}section{padding:.7rem}
 nav ul{display:block}nav li{margin:.5rem 0}h1{font-size:1.6rem}}
@@ -219,9 +223,30 @@ def _table(caption: str, rows: list[dict[str, Any]]) -> str:
         return f"<p>{escape(caption)}: none.</p>"
     keys = list(dict.fromkeys(key for row in rows for key in row))
 
+    # Complex evidence needs the full report width, rather than JSON blocks in
+    # competing table cells. Ordinary scalar tables retain their column headers.
+    if len(keys) > 10 or any(
+        isinstance(value, dict)
+        or isinstance(value, (tuple, list))
+        and any(isinstance(item, (dict, tuple, list)) for item in value)
+        for row in rows
+        for value in row.values()
+    ):
+        return (
+            '<div class="report-record"><h3>'
+            + escape(caption)
+            + "</h3>"
+            + "".join(
+                (f"<h4>Record {index}</h4>" if len(rows) > 1 else "")
+                + _field_values({key: row.get(key) for key in keys})
+                for index, row in enumerate(rows, 1)
+            )
+            + "</div>"
+        )
+
     def cell(value: Any) -> str:
         if isinstance(value, (dict, tuple, list)):
-            return "<pre>" + escape(json.dumps(value, sort_keys=True, indent=2)) + "</pre>"
+            return _field_values(value)
         return escape(_value(value))
 
     return (
@@ -236,6 +261,28 @@ def _table(caption: str, rows: list[dict[str, Any]]) -> str:
         )
         + "</tbody></table></div>"
     )
+
+
+def _field_values(value: Any) -> str:
+    """Lossless, unindented native evidence; the exact JSON appendix is unchanged."""
+    if isinstance(value, dict):
+        if not value:
+            return "<code>{}</code>"
+        return (
+            '<dl class="report-fields">'
+            + "".join(
+                "<dt>" + escape(str(key)) + "</dt><dd>" + _field_values(item) + "</dd>"
+                for key, item in value.items()
+            )
+            + "</dl>"
+        )
+    if isinstance(value, (list, tuple)):
+        return (
+            "<ul>" + "".join("<li>" + _field_values(item) + "</li>" for item in value) + "</ul>"
+            if value
+            else "<code>[]</code>"
+        )
+    return "<code>" + escape(_value(value)) + "</code>"
 
 
 def _intent_rows(value: Any, side: str = "architecture") -> list[dict[str, Any]]:
@@ -315,7 +362,7 @@ def _analysis_summary(result: dict[str, Any]) -> str:
         "noncomparable_service_ids",
     ):
         if key in result:
-            parts.append(f"<p>{escape(key)}: {escape(_value(result[key]))}</p>")
+            parts.append(f"<h3>{escape(key)}</h3>" + _field_values(result[key]))
     for key in (
         "observations",
         "destination_assets",

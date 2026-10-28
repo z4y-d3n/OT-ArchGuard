@@ -263,7 +263,8 @@ def test_all_seven_protocol_tables_reserve_columns_and_retain_status(viewport: i
             assert label.split(" · #")[0] in neutral
             assert re.search(r" · #[0-9a-f]{12}$", label)
         else:
-            assert label in neutral
+            assert label.split(" · ")[0] in neutral
+            assert label.endswith(" · " + PROTOCOLS[family])
     pages = _structural_oracle(files)
     ids = [value for p in pages.values() for value in p.ids if value.startswith("f-")]
     assert len(ids) == len(set(ids)) == 15

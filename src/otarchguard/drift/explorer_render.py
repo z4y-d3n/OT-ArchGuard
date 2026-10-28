@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from ipaddress import ip_address
 from typing import Any
 
+from otarchguard.capture.display import timestamp_html
 from otarchguard.diagnostics import check_limit, fail
 from otarchguard.evidence.attachments import canonical
 from otarchguard.explorer_html import escape, identity_details, link, properties, table
@@ -188,7 +189,11 @@ def _value(value: object, *, source_links: dict[str, str] | None = None) -> str:
                 "<dt>"
                 + escape(_label(str(k)))
                 + "</dt><dd>"
-                + _value(v, source_links=source_links)
+                + (
+                    _timestamp_value(v)
+                    if k in {"first_timestamp", "last_timestamp"}
+                    else _value(v, source_links=source_links)
+                )
                 + "</dd>"
                 for k, v in sorted(value.items())
             )
@@ -205,6 +210,12 @@ def _value(value: object, *, source_links: dict[str, str] | None = None) -> str:
     if isinstance(value, str) and source_links and value in source_links:
         return link(source_links[value], value)
     return "<code>" + escape(value) + "</code>"
+
+
+def _timestamp_value(value: object) -> str:
+    if value is None or isinstance(value, str):
+        return timestamp_html(value)
+    return '<span class="muted">Unsupported recorded timestamp</span> ' + _value(value)
 
 
 def _status(value: str) -> str:
@@ -297,6 +308,52 @@ def _modbus_label(record: _Record) -> str | None:
     return label + suffix
 
 
+def _finding_label(record: _Record) -> str:
+    """Describe only retained metadata; never infer identity or operational outcome."""
+    modbus = _modbus_label(record)
+    if modbus is not None:
+        return modbus
+    finding, key = record.finding, record.finding["key"]
+    parts = [_label(finding["subtype"])]
+    if isinstance(key, dict):
+        if record.domain == "communications":
+            endpoints = [key.get("source_ip"), key.get("destination_ip")]
+            try:
+                valid = all(
+                    isinstance(value, str)
+                    and len(value) <= 45
+                    and "%" not in value
+                    and ip_address(value)
+                    for value in endpoints
+                )
+            except ValueError:
+                valid = False
+            if valid:
+                parts.append(f"{endpoints[0]} → {endpoints[1]}")
+            transport = key.get("transport")
+            if isinstance(transport, str) and transport in {"tcp", "udp"}:
+                destination, source = key.get("destination_port"), key.get("source_port")
+                port = (
+                    f"/{destination}"
+                    if type(destination) is int and 0 <= destination <= 65535
+                    else ""
+                )
+                parts.append(str(transport).upper() + port)
+                if type(source) is int and 0 <= source <= 65535:
+                    parts.append(f"source port {source}")
+        elif record.domain == "protocols":
+            protocol = key.get("protocol")
+            if isinstance(protocol, str) and protocol in PROTOCOLS:
+                parts.append(PROTOCOLS[protocol])
+        else:
+            # These are retained comparison descriptors, not guessed device names.
+            for name in ("dimension", "collection", "entity_id", "field"):
+                value = key.get(name)
+                if isinstance(value, str) and value:
+                    parts.append(_label(name) + ": " + value[:80])
+    return " · ".join(parts) + (" · #" + record.identity[2:14] if len(parts) == 1 else "")
+
+
 def _records(report: dict[str, Any]) -> list[_Record]:
     records: list[_Record] = []
     groups: list[tuple[int | None, list[dict[str, Any]]]] = [
@@ -386,11 +443,7 @@ class _Renderer:
         self.output_bytes = len(self.output["style.css"])
         self.page_count = 0
         self.records = _records(report)
-        self.protocol_labels = {
-            record.identity: label
-            for record in self.records
-            if (label := _modbus_label(record)) is not None
-        }
+        self.protocol_labels = {record.identity: _finding_label(record) for record in self.records}
         label_counts = Counter(self.protocol_labels.values())
         for identity, label in self.protocol_labels.items():
             if label_counts[label] > 1:
@@ -681,7 +734,7 @@ class _Renderer:
     def detail(self, record: _Record) -> str:
         f = record.finding
         body = '<section class="record" id="' + record.identity + '"><h2>'
-        body += escape(_label(f["subtype"])) + "</h2>"
+        body += escape(self.protocol_labels[record.identity]) + "</h2>"
         body += '<p><span class="badge">' + escape(f["category"]) + '</span><span class="badge">'
         body += escape(f["comparability"]) + "</span></p><p>" + escape(f["explanation"]) + "</p>"
         body += '<p class="breadcrumbs">' + link(record.domain + ".html", "Back to domain")
@@ -711,7 +764,7 @@ class _Renderer:
                     "<ul>"
                     + "".join(
                         "<li>"
-                        + link(self.locations[other.identity], _label(other.finding["subtype"]))
+                        + link(self.locations[other.identity], self.protocol_labels[other.identity])
                         + " · "
                         + escape(_label(other.finding["category"]))
                         + "</li>"

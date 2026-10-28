@@ -35,16 +35,16 @@ svg{display:block;max-width:none}figure{margin:1.5rem 0}figcaption{padding:.5rem
 .documentary{stroke:#505c66;stroke-dasharray:7 5}.declared{stroke:#174f7b}
 .diagram-line{fill:none;stroke-width:3}.analytical{stroke:#653b78;stroke-width:5}
 .muted{color:#40596b}footer{border-top:1px solid #657b8b;font-size:.9rem}
-.properties{display:grid;grid-template-columns:fit-content(35%) minmax(0,1fr);
-gap:.25rem .85rem;margin:.5rem 0}.properties>dt{font-weight:600;min-width:0;
+.properties{display:block;margin:.5rem 0}.properties>dt{font-weight:600;min-width:0;
+margin-top:.6rem;border-bottom:1px solid #c1cbd2;
 overflow-wrap:anywhere}.properties>dt::first-letter{text-transform:uppercase}
-.properties>dt::after{content:":"}.properties>dd{margin:0;min-width:0}
-.properties>dd>.properties{margin-top:0}.properties>dd>ul{margin:.2rem 0;padding-left:1.2rem}
+.properties>dt::after{content:":"}.properties>dd{margin:0 0 .5rem;min-width:0}
+.properties .properties{margin:.2rem 0}.properties ul{margin:.2rem 0;padding-left:0;
+list-style-position:inside}.properties li{margin:.35rem 0}
 details{margin:.5rem 0}summary{cursor:pointer;font-weight:600}.identity code{font-size:.85em}
 @media(max-width:640px){header,nav,main,footer{padding:1rem}h1{font-size:1.5rem}
 nav ul{gap:1rem}.cards{display:block}.cards li{margin:.6rem 0}}
-@media(max-width:480px){.properties{grid-template-columns:minmax(0,1fr);gap:.1rem}
-.properties>dt{margin-top:.4rem}}
+@media(max-width:480px){.properties>dt{margin-top:.4rem}}
 @media print{html{background:white;color:black}nav,.skip{display:none}a{color:black}
 .scroll{overflow:visible}svg{max-width:100%;height:auto}table{min-width:0}}
 """

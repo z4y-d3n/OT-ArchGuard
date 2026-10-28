@@ -515,8 +515,13 @@ def _render_comparison(
                     )
                 rows.append((escape(kind), link(name, identity)))
         summary = diagram_summary(snapshot)
-        svg = spatial_svg(snapshot, summary["mode"] == "summary", escape, namespace=side + "-")
-        svg = svg.replace(' stroke-dasharray="8 4"', "")
+        svg = spatial_svg(
+            snapshot,
+            summary["mode"] == "summary",
+            escape,
+            namespace=side + "-",
+            forwarding_dashed=False,
+        )
         diagram = (
             '<h2>Declared architecture</h2><figure><div class="scroll" tabindex="0" '
             'role="region" aria-label="Declared architecture diagram">'

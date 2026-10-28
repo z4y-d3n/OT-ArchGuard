@@ -587,5 +587,6 @@ def test_identical_descriptions_use_existing_ids_and_other_families_stay_unchang
     findings[9]["key"]["protocol"] = "profinet_dcp"
     other = render(report, verified)
     assert (
-        _FindingLinks(other["protocol-profinet-dcp.html"]).labels[0][1] == "Candidate only metadata"
+        _FindingLinks(other["protocol-profinet-dcp.html"]).labels[0][1]
+        == "Candidate only metadata · PROFINET DCP"
     )

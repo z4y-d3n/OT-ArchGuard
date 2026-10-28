@@ -3,7 +3,7 @@
 import heapq
 import re
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from textwrap import wrap
 from typing import Literal
 
@@ -460,7 +460,13 @@ def calculate_layout(
     )
 
 
-def serialize_svg(layout: Layout, escape: Callable[[str], str], namespace: str = "") -> str:
+def serialize_svg(
+    layout: Layout,
+    escape: Callable[[str], str],
+    namespace: str = "",
+    *,
+    forwarding_dashed: bool = True,
+) -> str:
     """Serialize frozen geometry only; namespaces isolate SVGs in comparisons."""
     if namespace and re.fullmatch(r"[a-z][a-z0-9_-]*", namespace) is None:
         raise ValueError("Invalid SVG namespace")
@@ -483,7 +489,16 @@ def serialize_svg(layout: Layout, escape: Callable[[str], str], namespace: str =
             f'clip-path="url(#{clip_id})">{escape(value.visible_text)}</text></g>'
         )
 
-    parts.extend(label(value) for value in layout.labels)
+    for value in layout.labels:
+        # Only generated overview/legend labels live here. Asset and zone names
+        # are serialized separately and must never undergo text substitution.
+        if not forwarding_dashed:
+            value = replace(
+                value,
+                full_text=value.full_text.replace("Purple dashed:", "Purple solid:"),
+                visible_text=value.visible_text.replace("Purple dashed:", "Purple solid:"),
+            )
+        parts.append(label(value))
     for zone in layout.zones:
         parts.append(
             f'<g data-zone-id="{escape(zone.zone_id)}"><title>Interface placement zone '
@@ -528,7 +543,7 @@ def serialize_svg(layout: Layout, escape: Callable[[str], str], namespace: str =
         )
         marker = "forward" if edge.kind == "forwarding" else "transport"
         color = "#7946a0" if edge.kind == "forwarding" else "#246c98"
-        dash = ' stroke-dasharray="8 4"' if edge.kind == "forwarding" else ""
+        dash = ' stroke-dasharray="8 4"' if edge.kind == "forwarding" and forwarding_dashed else ""
         title = (
             f"{edge.edge_id}: {edge.source.interface_id} {edge.source.phase} → "
             f"{edge.target.interface_id} {edge.target.phase}; {edge.kind}; "
@@ -574,5 +589,11 @@ def spatial_svg(
     *,
     requested: tuple[str, ...] = (),
     namespace: str = "",
+    forwarding_dashed: bool = True,
 ) -> str:
-    return serialize_svg(calculate_layout(snapshot, summarized, requested), escape, namespace)
+    return serialize_svg(
+        calculate_layout(snapshot, summarized, requested),
+        escape,
+        namespace,
+        forwarding_dashed=forwarding_dashed,
+    )

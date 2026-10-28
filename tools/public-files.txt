@@ -394,6 +394,7 @@ tests/test_policy_evidence.py
 tests/test_preparation.py
 tests/test_presentation.py
 tests/test_product_presentation.py
+tests/test_presentation_remediation.py
 tests/test_protocol_corpus.py
 tests/test_protocol_enip_s7.py
 tests/test_protocol_enrichment.py
