@@ -1,4 +1,4 @@
-"""Opt-in hybrid evidence structure and scope; not browser visual acceptance."""
+"""Compatibility coverage for prototype API arguments now using production layouts."""
 
 import copy
 import json
@@ -53,7 +53,7 @@ def test_simple_fields_have_associated_inline_pairs_without_a_grid() -> None:
         assert node.nodes("dd")[0].text == expected
     assert not dom.nodes("ul") and not dom.nodes("section") and not dom.nodes("details")
     assert "display:inline" in COMPACT_CSS and "grid" not in COMPACT_CSS
-    assert "COMPACT" not in CSS and "compact-fields" not in CSS
+    assert "compact-fields" in CSS
 
 
 @pytest.mark.parametrize("depth", [1, 3, 8, 24])
@@ -118,11 +118,14 @@ def test_witness_steps_are_numbered_in_exact_input_order() -> None:
         "other_records": [{"id": "one"}, {"id": "two"}],
     }
     dom = DOM(compact_value(value, leaf, sort_keys=True).encode()).root
-    (sequence,) = dom.nodes("ol")
-    assert sequence.attrs.get("role") == "list"
-    assert [item.text for item in sequence.nodes("dd")] == ["z_last_lexically", "a_first_lexically"]
-    assert [heading.text for heading in sequence.nodes("h4")] == ["Step 1", "Step 2"]
-    assert len(dom.nodes("ul", "evidence-records")) == 1
+    tables = dom.nodes("table")
+    assert len(tables) == 2 and not dom.nodes("ol")
+    assert "Ordered witness steps" in tables[-1].text
+    assert [cell.text for cell in tables[-1].nodes("td")] == [
+        "z_last_lexically",
+        "a_first_lexically",
+    ]
+    assert [cell.text for cell in tables[-1].nodes("tbody")[0].nodes("th")] == ["1", "2"]
 
 
 def test_historical_prototype_changes_only_pair_pages_and_keeps_exact_utc() -> None:
@@ -146,10 +149,11 @@ def test_historical_prototype_changes_only_pair_pages_and_keeps_exact_utc() -> N
     for name in before:
         if name not in {"pair-1.html", "style.css", "verification.html"}:
             assert before[name] == after[name], name
+    assert before == after
     after["report.json"] = canonical(report)
     after["verification.json"] = canonical(verification)
     assert audit_files(after)["broken_links"] == 0
-    assert "not a canonical Historical Explorer publication" in pages["verification.html"].text
+    assert "not a canonical Historical Explorer publication" not in pages["verification.html"].text
     assert report == original
 
 
@@ -163,11 +167,11 @@ def test_native_trace_prototype_retains_exact_json_and_default_output() -> None:
     exact = trace_json(result)
     default = trace_html(result)
     assert default == trace_html(result, compact_prototype=False)
-    assert "compact-fields" not in default.decode()
+    assert 'class="compact-evidence"' in default.decode()
     raw = trace_html(result, compact_prototype=True)
     dom = DOM(raw).root
     assert (
-        'class="compact-fields"' in raw.decode()
+        'class="compact-evidence"' in raw.decode()
         and "<pre>" not in raw.decode().split('<section id="policy">')[1].split("</section>")[0]
     )
     assert json.loads(dom.nodes("pre")[-1].text) == json.loads(exact)
@@ -186,7 +190,7 @@ def test_capture_prototype_has_ordered_witness_and_unchanged_canonical_json(tmp_
         compact_prototype=True,
     )
     text = "".join(path.read_text(encoding="utf-8") for path in output.glob("evidence*.html"))
-    assert 'class="compact-fields"' in text and '<ol class="evidence-records"' in text
+    assert 'class="compact-evidence"' in text and "Ordered witness steps" in text
     assert source == before and result["audit"]["broken_links"] == 0
     for name, data in source.items():
         assert json.loads((output / (name + ".json")).read_bytes()) == data
@@ -228,7 +232,7 @@ def test_simple_documentary_nodes_keep_descriptive_navigation(tmp_path: Path) ->
     assert nodes and any(node.nodes("dl", "compact-fields") for node in nodes)
     assert any("Documented only" in link.text for node in nodes for link in node.nodes("a"))
     candidates = [p.read_text(encoding="utf-8") for p in output.glob("candidate-*.html")]
-    assert all('class="compact-evidence"' not in text for text in candidates)
+    assert all('class="compact-fields"' in text for text in candidates)
 
 
 def test_comparison_keeps_canonical_review_and_exact_links(
@@ -247,5 +251,5 @@ def test_comparison_keeps_canonical_review_and_exact_links(
     )
     assert (output / "review.json").read_bytes() == expected
     records = [p.read_text(encoding="utf-8") for p in output.glob("record-*.html")]
-    assert any('class="compact-fields"' in text for text in records)
+    assert any('class="compact-evidence"' in text for text in records)
     assert result["site"]["broken_links"] == 0

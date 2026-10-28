@@ -43,7 +43,7 @@ class Navigation(HTMLParser):
                 assert value and value.startswith("url(#") and value.endswith(")")
                 self.targets.append(value[5:-1])
             if tag == "th":
-                assert ("scope", "col") in attrs
+                assert ("scope", "col") in attrs or ("scope", "row") in attrs
         self.tables += tag == "table"
         self.captions += tag == "caption"
         self.heads += tag == "thead"

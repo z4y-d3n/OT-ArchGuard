@@ -52,15 +52,17 @@ def test_nested_evidence_retains_width_order_and_exact_values(depth: int, consum
     dom = DOM(html.encode()).root
     assert hostile in dom.text and "a" * 64 in dom.text
     assert not dom.nodes("script")
-    assert len(dom.nodes("dt")) == 4 + 3 * depth
+    assert len(dom.nodes("dt")) == 4
+    assert len(dom.nodes("table")) == depth
+    assert all(not t.nodes("table") for t in dom.nodes("table"))
     assert value == before and len(html) < 80_000
     # Every nested object/list retains full parent width at every target size.
     for viewport in (1440, 1024, 768, 720, 390, 375):
         css = rules(CSS, viewport)
-        assert css[".properties"]["display"] == "block"
+        assert css[".compact-fields"]["display"] == "flex"
         assert "grid-template-columns" not in css[".properties"]
-        assert css[".properties ul"]["padding-left"] == "0"
-    assert rules(CSS, 1440, print_mode=True)[".properties"]["display"] == "block"
+        assert css[".compact-fields>div>dt"]["display"] == "inline"
+    assert rules(CSS, 1440, print_mode=True)[".compact-fields"]["display"] == "flex"
 
 
 def test_native_complex_records_are_lossless_full_width_fields() -> None:
@@ -83,7 +85,8 @@ def test_native_complex_records_are_lossless_full_width_fields() -> None:
     before = copy.deepcopy(rows)
     html = _table("Exact diagnostic records", rows)
     dom = DOM(html.encode()).root
-    assert not dom.nodes("table") and not dom.nodes("pre") and not dom.nodes("script")
+    assert dom.nodes("table") and not dom.nodes("pre") and not dom.nodes("script")
+    assert all(not t.nodes("table") for t in dom.nodes("table"))
     for value in (
         "deny_exact",
         "b" * 64,
@@ -96,23 +99,34 @@ def test_native_complex_records_are_lossless_full_width_fields() -> None:
         "unsupported",
     ):
         assert value in dom.text
-    assert [node.text for node in dom.nodes("h4")] == ["Record 1", "Record 2"]
-    assert [node.text for node in dom.nodes("dt")].count("rule") == 2
+    assert any("Record 1" in node.text for node in dom.nodes("h4"))
+    assert any("Record 2" in node.text for node in dom.nodes("h4"))
     assert rows == before
-    assert rules(_STYLE, 390)[".report-fields dd"]["margin"] == "0 0 .5rem"
+    assert rules(_STYLE, 390)[".compact-fields>div>dd"]["display"] == "inline"
     assert rules(_STYLE, 1440, print_mode=True)["pre"]["max-height"] == "none"
 
 
 def test_native_scalar_headers_and_wide_counters() -> None:
     html = _table("Intervals", [{"start": 502, "end": 503, "reachable": False}])
     dom = DOM(html.encode()).root
-    assert [node.text for node in dom.nodes("th")] == ["start", "end", "reachable"]
-    assert all(node.attrs["scope"] == "col" for node in dom.nodes("th"))
-    assert "scroll horizontally" in html and 'tabindex="0"' in html
+    assert [node.text for node in dom.nodes("thead")[0].nodes("th")] == [
+        "Record",
+        "Start",
+        "End",
+        "Reachable",
+    ]
+    assert all(node.attrs["scope"] == "col" for node in dom.nodes("thead")[0].nodes("th"))
+    assert dom.nodes("tbody")[0].nodes("th")[0].attrs["scope"] == "row"
+    assert 'role="region"' in html and 'tabindex="0"' in html
     counters = {f"counter_{index}": index for index in range(17)}
     wide = DOM(_table("Resource ceilings", [counters]).encode()).root
-    assert [node.text for node in wide.nodes("dt")] == list(counters)
-    assert not wide.nodes("table")
+    assert len(wide.nodes("table")) == 3
+    assert [
+        node.text
+        for head in wide.nodes("thead")
+        for node in head.nodes("th")
+        if node.text != "Record"
+    ] == [f"Counter {i}" for i in range(17)]
     assert "none" in _table("Unsupported results", [])
 
 
@@ -124,7 +138,7 @@ def test_native_trace_json_and_embedded_exact_appendix_are_unchanged() -> None:
     dom = DOM(html).root
     assert "Finite diagnostic scope and findings" in dom.text
     assert "Accepted resource ceilings for this run" in dom.text
-    assert 'class="report-fields"' in html.decode()
+    assert 'class="compact-evidence"' in html.decode()
     assert json.loads(dom.nodes("pre")[-1].text) == json.loads(before)
     assert trace_json(result) == before and trace_html(result) == html
     assert "Content-Security-Policy" in html.decode() and not dom.nodes("script")

@@ -469,13 +469,13 @@ def test_nested_properties_keep_links_repeated_values_long_unicode_and_inert_tex
     html = explorer.value(values)
     assert explorer.value(values) == html and values == original
     page = Rendered(html)
-    assert page.max_dl_depth == 3 and page.dl_depth == 0
+    assert page.max_dl_depth == 1 and page.dl_depth == 0
     assert "".join(page.text).count("same") == 2 and "界" * 3500 in "".join(page.text)
     assert attack in "".join(page.text) and "script" not in page.tags
     assert explorer.native_paths["services", "svc_plc"] in page.links
-    assert page.tags.count("dt") == page.tags.count("dd") == 8
-    assert ".properties>dd{margin:0 0 .5rem;min-width:0}" in CSS
-    assert ".properties{display:block" in CSS
+    assert page.tags.count("dt") == page.tags.count("dd") == 5
+    assert ".compact-fields>div>dt,.compact-fields>div>dd{display:inline" in CSS
+    assert ".compact-fields{display:flex" in CSS
     assert "grid-template-columns:fit-content(35%)" not in CSS
     assert "@media(max-width:480px)" in CSS
     output = tmp_path / "native"

@@ -132,21 +132,18 @@ def retained_contract(node: Element, css: str, width: float) -> None:
     groups = node.nodes("dl")
     assert groups
     for group in groups:
-        assert group.attrs.get("class") == "retained-fields", (
+        assert "compact-fields" in str(group.attrs.get("class")), (
             "Nested evidence uses a shrinking grid"
         )
-        assert cascade[".retained-fields"]["display"] == "block"
-        assert "grid-template-columns" not in cascade[".retained-fields"]
-        children = [n for n in group.children if isinstance(n, Element)]
-        assert len(children) % 2 == 0
-        assert [n.tag for n in children] == ["dt", "dd"] * (len(children) // 2)
-    assert cascade[".retained-fields>dd"]["margin"] == "0"
-    assert not any("padding" in key for key in cascade[".retained-fields"])
-    for sequence in node.nodes("ul", "retained-list"):
-        assert sequence.attrs.get("role") == "list"
-        assert cascade[".retained-list"]["padding"] == "0"
+        assert not group.nodes("dl"), "Nested evidence uses a shrinking grid"
+        for pair in group.children:
+            if isinstance(pair, Element):
+                assert [n.tag for n in pair.children if isinstance(n, Element)] == ["dt", "dd"]
+    for table in node.nodes("table"):
+        assert not table.nodes("table"), "Nested evidence uses a shrinking grid"
+        assert table.nodes("caption") and table.nodes("thead") and table.nodes("tbody")
+    assert cascade[".compact-fields>div>dt"]["display"] == "inline"
     assert cascade["code"]["overflow-wrap"] == "anywhere"
-    assert cascade["dt"]["overflow-wrap"] == "break-word"
 
 
 def table_contract(node: Element, css: str, viewport: int) -> None:
@@ -289,7 +286,7 @@ def test_original_failure_patterns_are_rejected_by_layout_oracles() -> None:
     report, verified, _ = deep_fixture(6)
     files = render(report, verified)
     css = files["style.css"].decode()
-    broken = files["native.html"].replace(b'class="retained-fields"', b'class="properties"')
+    broken = files["native.html"].replace(b'class="compact-fields"', b'class="properties"')
     with pytest.raises(AssertionError, match="shrinking grid"):
         retained_contract(DOM(broken).root, css, 300)
     broken = files["protocol-modbus-tcp.html"].replace(

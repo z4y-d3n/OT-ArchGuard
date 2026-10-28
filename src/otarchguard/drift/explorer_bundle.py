@@ -314,7 +314,8 @@ def _identity(files: dict[str, bytes], identity: dict[str, Any]) -> None:
         if type(identity[key]) is not str or not _HEX.fullmatch(identity[key]):
             fail("HISTORICAL_IDENTITY", "$", "Malformed source digest.")
     if (
-        identity["renderer_version"] != "1.4.0-historical-explorer.1"
+        identity["renderer_version"]
+        not in {"1.4.0-historical-explorer.1", "1.4.0-historical-explorer.2"}
         or identity["report_sha256"] != hashlib.sha256(files["report.json"]).hexdigest()
         or type(identity["report_bytes"]) is not int
         or identity["report_bytes"] != len(files["report.json"])

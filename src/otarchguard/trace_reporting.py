@@ -3,7 +3,6 @@
 import json
 from dataclasses import asdict
 
-from otarchguard.explorer_html import COMPACT_CSS
 from otarchguard.reporting import _STYLE, _query_evidence, _query_rows, _table, escape
 from otarchguard.trace import TraceResult
 
@@ -81,7 +80,6 @@ def trace_html(result: TraceResult, *, compact_prototype: bool = False) -> bytes
         '<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; '
         'style-src &#39;unsafe-inline&#39;; base-uri &#39;none&#39;; form-action &#39;none&#39;">'
         f"<title>OT-ArchGuard exact trace</title><style>{_STYLE}"
-        + (COMPACT_CSS if compact_prototype else "")
         + "</style></head><body>"
         + body
         + "</body></html>\n"

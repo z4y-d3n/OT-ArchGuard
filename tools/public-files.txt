@@ -118,6 +118,7 @@ docs/release-publication-1.1.0.md
 docs/release-publication-1.2.0.md
 docs/reporting.md
 docs/requirements.md
+docs/semantic-html-presentation.md
 docs/testing-strategy.md
 docs/trace.md
 docs/v1.1/gate-v11-1.md
@@ -415,6 +416,7 @@ tests/test_release_transition.py
 tests/test_reporting.py
 tests/test_resource_envelope.py
 tests/test_review_bundle.py
+tests/test_semantic_presentation.py
 tests/test_source_checkout.py
 tests/test_summaries.py
 tests/test_trace.py

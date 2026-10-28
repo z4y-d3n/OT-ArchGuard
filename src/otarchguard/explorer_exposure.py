@@ -1,4 +1,4 @@
-"""Schema-aware F1 exposure tables, used only by the opt-in Explorer prototype."""
+"""Schema-aware F1 exposure tables, the production Architecture Explorer view."""
 
 import json
 from collections.abc import Callable, Sequence

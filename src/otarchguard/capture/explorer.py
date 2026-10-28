@@ -22,10 +22,8 @@ from otarchguard.capture.views import (
 )
 from otarchguard.diagnostics import check_limit, fail
 from otarchguard.explorer_html import (
-    COMPACT_CSS,
     CSS,
     audit_site,
-    compact_value,
     escape,
     link,
     properties,
@@ -190,7 +188,7 @@ def _json(value: object) -> str:
 
 
 def _properties(title: str, value: object) -> str:
-    return "<h2>" + escape(title) + "</h2><pre>" + _json(value) + "</pre>"
+    return "<h2>" + escape(title) + "</h2>" + render_value(value)
 
 
 def _evidence_target(index: int, flow_id: str, rows_per_page: int) -> str:
@@ -337,6 +335,39 @@ def _record_table(
 ) -> str:
     if not rows:
         return '<p class="muted">None recorded in this view.</p>'
+    complex_columns = {
+        i
+        for _, cells in rows
+        for i, cell in enumerate(cells)
+        if any(marker in cell for marker in ("<dl", "<table", '<div class="compact-evidence"'))
+    }
+    if complex_columns:
+        simple = [i for i in range(len(headings)) if i not in complex_columns]
+        summary = (
+            _record_table(
+                title,
+                tuple(headings[i] for i in simple),
+                [(anchor, tuple(cells[i] for i in simple)) for anchor, cells in rows],
+            )
+            if simple
+            else ""
+        )
+        if not simple:
+            summary = _record_table(
+                title, ("Record",), [(anchor, (str(i),)) for i, (anchor, _) in enumerate(rows, 1)]
+            )
+        return summary + "".join(
+            '<section class="evidence-group"><h3>'
+            + escape(f"{title} · Record {number}")
+            + "</h3><p>"
+            + link("#" + anchor, "Related summary record")
+            + "</p>"
+            + "".join(
+                "<h4>" + escape(headings[i]) + "</h4>" + cells[i] for i in sorted(complex_columns)
+            )
+            + "</section>"
+            for number, (anchor, cells) in enumerate(rows, 1)
+        )
     return (
         '<div class="scroll" tabindex="0" role="region" aria-label="'
         + escape(title)
@@ -600,7 +631,7 @@ def generate_site(
                         introduction + nav + _record_table(title, headings, rows),
                     )
 
-            write("assets.css", (CAPTURE_CSS + (COMPACT_CSS if compact_prototype else "")).encode())
+            write("assets.css", CAPTURE_CSS.encode())
             write("observations.json", serialize(observations))
             if comparison is not None:
                 write("comparison.json", serialize(comparison))
@@ -1048,12 +1079,7 @@ def generate_site(
                             "firewall behavior. Frontier diagnostics are not a unique "
                             "root cause or a guaranteed fix.</p>"
                         )
-                        native_display = (
-                            (lambda value: compact_value(value, lambda item, _: render_value(item)))
-                            if compact_prototype
-                            else render_value
-                        )
-                        body += native_display(
+                        body += render_value(
                             {
                                 "source_asset": native["query"]["source_asset_id"],
                                 "destination_asset": native["query"]["destination_asset_id"],
@@ -1066,7 +1092,7 @@ def generate_site(
                                 "<details><summary>Selected interval: complete witness or "
                                 "diagnostic</summary>"
                             )
-                            + native_display(native["selected_interval"])
+                            + render_value(native["selected_interval"])
                             + "</details>"
                             + _technical("Complete original native evaluator record", native)
                         )

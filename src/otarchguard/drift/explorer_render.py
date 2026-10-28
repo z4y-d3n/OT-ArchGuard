@@ -14,16 +14,16 @@ from otarchguard.capture.display import timestamp_html
 from otarchguard.diagnostics import check_limit, fail
 from otarchguard.evidence.attachments import canonical
 from otarchguard.explorer_html import (
-    COMPACT_CSS,
-    compact_value,
+    SEMANTIC_CSS,
     escape,
     identity_details,
     link,
     properties,
+    structured_value,
     table,
 )
 
-RENDERER_VERSION = "1.4.0-historical-explorer.1"
+RENDERER_VERSION = "1.4.0-historical-explorer.2"
 # Leave space for the canonical report, verification receipt and completion manifest.
 MAX_PAGES = 4090
 MAX_PAGE_BYTES = 2 * 1024 * 1024
@@ -109,19 +109,10 @@ padding:1rem;background:#fff;border:1px solid #9aadb5}.record{margin:1.5rem 0;pa
 border:1px solid #9aadb5;background:#fff;scroll-margin-top:1rem}.record>h2{margin-top:0}
 .badge{display:inline-block;padding:.15rem .5rem;border:1px solid #536b77;
 font-size:.85rem;font-weight:650;background:#edf3f5;margin:.15rem .3rem .15rem 0}
-.properties{display:grid;grid-template-columns:fit-content(34%) minmax(0,1fr);
-gap:.25rem .85rem;margin:.5rem 0}.properties>dt{font-weight:650;min-width:0}
-.properties>dd{margin:0;min-width:0}.properties>dd>.properties{margin-top:0}
-.retained-fields{display:block;margin:.5rem 0;min-width:0}
-.retained-fields>dt{font-weight:650;margin-top:.75rem}
-.retained-fields>dd{margin:0;min-width:0}
-.retained-fields>dd>.retained-fields{margin:0;border-top:1px solid #c3ced3;
-border-bottom:1px solid #c3ced3}
-.retained-list{list-style:none;padding:0;margin:.5rem 0;min-width:0}
-.retained-list>li+li{border-top:1px solid #c3ced3;margin-top:.5rem;padding-top:.5rem}
+.properties{min-width:0;margin:.5rem 0}
 code{font-family:ui-monospace,Consolas,monospace;font-size:.9em}
 dd,dt,td,th,p,li,h1,h2,h3,a,summary{overflow-wrap:break-word}
-code,.properties a,.retained-fields a{overflow-wrap:anywhere;word-break:normal}
+code,.properties a{overflow-wrap:anywhere;word-break:normal}
 ul{padding-left:1.4rem}details{margin:.65rem 0}summary{cursor:pointer;font-weight:650}
 .scroll{overflow:auto;max-width:100%;border:1px solid #9aadb5;background:white}
 .finding-table,.pair-table{min-width:0;max-width:100%}
@@ -142,8 +133,7 @@ svg text{font:14px system-ui,sans-serif;fill:#182c3b}svg rect{fill:#edf3f5;strok
 footer{border-top:1px solid #9aadb5;font-size:.9rem}figure{margin:1rem 0}figcaption{padding:.5rem 0}
 @media(max-width:700px){header,nav,main,footer{padding:1rem}h1{font-size:1.65rem}
 .cards{grid-template-columns:minmax(0,1fr)}}
-@media(max-width:480px){.properties{grid-template-columns:minmax(0,1fr);gap:.1rem}
-.properties>dt{margin-top:.45rem}.record{padding:.75rem}}
+@media(max-width:480px){.record{padding:.75rem}}
 @media print{html{background:white;color:black}nav,.skip{display:none}a{color:black}
 .scroll{overflow:visible}table{min-width:0}.compare{display:block}.record{break-inside:avoid}
 .finding-table table,.pair-table table{min-width:0}
@@ -186,34 +176,15 @@ def _value(value: object, *, source_links: dict[str, str] | None = None) -> str:
         return '<span class="muted">Not retained or not available on this side</span>'
     if type(value) is bool:
         return "Yes" if value else "No"
-    if isinstance(value, dict):
-        if not value:
-            return '<span class="muted">No retained fields</span>'
-        # Each nested value keeps its full parent width. Reapplying the two-column
-        # summary property grid at every depth collapses native witness evidence.
-        return (
-            '<dl class="retained-fields">'
-            + "".join(
-                "<dt>"
-                + escape(_label(str(k)))
-                + "</dt><dd>"
-                + (
-                    _timestamp_value(v)
-                    if k in {"first_timestamp", "last_timestamp"}
-                    else _value(v, source_links=source_links)
-                )
-                + "</dd>"
-                for k, v in sorted(value.items())
-            )
-            + "</dl>"
-        )
-    if isinstance(value, list):
-        if not value:
-            return '<span class="muted">None retained</span>'
-        return (
-            '<ul class="retained-list" role="list">'
-            + "".join("<li>" + _value(v, source_links=source_links) + "</li>" for v in value)
-            + "</ul>"
+    if isinstance(value, (dict, list)):
+        return structured_value(
+            value,
+            lambda item, field: (
+                _timestamp_value(item)
+                if field in {"first_timestamp", "last_timestamp"}
+                else _value(item, source_links=source_links)
+            ),
+            sort_keys=True,
         )
     if isinstance(value, str) and source_links and value in source_links:
         return link(source_links[value], value)
@@ -454,10 +425,7 @@ class _Renderer:
         compact_prototype: bool = False,
     ) -> None:
         self.report, self.verification, self.size = report, verification, size
-        self.compact = compact_prototype
-        self.output: dict[str, bytes] = {
-            "style.css": (CSS + (COMPACT_CSS if self.compact else "")).encode("utf-8")
-        }
+        self.output: dict[str, bytes] = {"style.css": (CSS + SEMANTIC_CSS).encode("utf-8")}
         self.output_bytes = len(self.output["style.css"])
         self.page_count = 0
         self.records = _records(report)
@@ -663,17 +631,7 @@ class _Renderer:
         )
 
     def pair_value(self, value: object, *, source_links: dict[str, str] | None = None) -> str:
-        if not self.compact:
-            return _value(value, source_links=source_links)
-        return compact_value(
-            value,
-            lambda item, field: (
-                _timestamp_value(item)
-                if field in {"first_timestamp", "last_timestamp"}
-                else _value(item, source_links=source_links)
-            ),
-            sort_keys=True,
-        )
+        return _value(value, source_links=source_links)
 
     def scope(self) -> None:
         body = "<h2>Declared reference scope</h2>" + _value(
@@ -994,17 +952,6 @@ class _Renderer:
         body += "approval state. The saved site remains a historical presentation snapshot; "
         body += "verification does not rewrite it.</p><p><code>otarchguard evidence drift "
         body += "explore-verify OUTPUT_DIRECTORY --workspace WORKSPACE</code></p>"
-        if self.compact:
-            body = (
-                "<h2>Compact presentation prototype</h2><p>Owner visual acceptance is pending. "
-                "This preview is not a canonical Historical Explorer publication. Its "
-                "prototype-manifest.json records the preview files, source report digest and "
-                "renderer identities; the release bundle verifier does not apply to it.</p>"
-                "<h3>Source-dependent verification</h3><p>The retained report and verification "
-                "receipt remain available as report.json and verification.json. Source "
-                "reproduction verifies analytical evidence separately from this proposed "
-                "layout; it does not establish visual acceptance or source authenticity.</p>"
-            )
         body += "<h2>Canonical report identity</h2>" + properties(
             [
                 ("Drift identity", escape(self.report["drift_id"])),

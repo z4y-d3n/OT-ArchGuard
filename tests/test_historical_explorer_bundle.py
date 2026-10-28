@@ -83,6 +83,37 @@ def _publish(
     return bundle.publish(files, identity, output, before_publish=lambda: None)
 
 
+def test_semantic_renderer_revision_keeps_portable_version_one_integrity(
+    inputs: tuple[dict[str, bytes], dict[str, Any]],
+    tmp_path: Path,
+) -> None:
+    files, identity = copy.deepcopy(inputs)
+    identity["renderer_version"] = "1.4.0-historical-explorer.2"
+    output = tmp_path / "semantic"
+    result = bundle.publish(files, identity, output, before_publish=lambda: None)
+    assert bundle.verify_bundle(output)["bundle_id"] == result["bundle_id"]
+
+
+@pytest.mark.parametrize("name", ["explorer_html", "capture.display"])
+def test_renderer_identity_binds_shared_presentation_sources(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    name: str,
+) -> None:
+    import importlib
+
+    from otarchguard.drift.explorer import _renderer_identity
+
+    module = importlib.import_module("otarchguard." + name)
+    assert module.__file__ is not None
+    original = Path(module.__file__)
+    before = _renderer_identity()
+    changed = tmp_path / original.name
+    changed.write_bytes(original.read_bytes() + b"\n# presentation identity probe\n")
+    monkeypatch.setattr(module, "__file__", str(changed))
+    assert _renderer_identity() != before
+
+
 def test_portable_deterministic_complete_read_only_bundle(
     inputs: tuple[dict[str, bytes], dict[str, Any]],
     tmp_path: Path,

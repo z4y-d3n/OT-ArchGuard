@@ -207,7 +207,7 @@ class _Page(HTMLParser):
         if tag == "h1":
             self.h1 += 1
         if tag == "th":
-            assert values.get("scope") == "col"
+            assert values.get("scope") in {"col", "row"}
             self.headers += 1
         if tag == "div" and values.get("class") == "scroll":
             assert values.get("role") == "region"

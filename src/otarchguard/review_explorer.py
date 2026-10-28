@@ -13,14 +13,12 @@ from otarchguard.diagnostics import fail
 from otarchguard.diagrams import spatial_svg
 from otarchguard.explorer_data import load_model, page_id
 from otarchguard.explorer_html import (
-    COMPACT_CSS,
     CSS,
     SiteWriter,
-    compact_value,
     escape,
     identity_details,
     link,
-    properties,
+    structured_value,
     table,
 )
 from otarchguard.ingestion.project import _no_links
@@ -108,14 +106,10 @@ def _json_value(value: object) -> str:
 
 def _value(value: object) -> str:
     """Readable values retain nesting, every item and inert source text."""
-    if isinstance(value, dict):
-        return properties([(k.replace("_", " "), _value(v)) for k, v in sorted(value.items())])
-    if isinstance(value, (list, tuple)):
-        return (
-            "<ul>" + "".join("<li>" + _value(v) + "</li>" for v in value) + "</ul>"
-            if value
-            else '<p class="muted">No values recorded.</p>'
-        )
+    if isinstance(value, (list, tuple)) and not value:
+        return '<p class="muted">No values recorded.</p>'
+    if isinstance(value, (dict, list, tuple)):
+        return structured_value(value, lambda item, _: _value(item), sort_keys=True)
     if value is None:
         return "<code>null</code>"
     if isinstance(value, bool):
@@ -586,12 +580,7 @@ def _render_comparison(
         writer.page(
             name,
             "Exact analytical comparison",
-            "<h3>Query, model bindings, native results and interval deltas</h3>"
-            + (
-                compact_value(result, lambda value, _: _value(value), sort_keys=True)
-                if compact_prototype
-                else _value(result)
-            ),
+            "<h3>Query, model bindings, native results and interval deltas</h3>" + _value(result),
         )
         rows.append(
             (
@@ -715,7 +704,7 @@ def generate_review(
                 if proposed
                 else None,
             )
-            writer.write("assets.css", (CSS + (COMPACT_CSS if compact_prototype else "")).encode())
+            writer.write("assets.css", CSS.encode())
             data = canonical(report)
             writer.write("review.json", data)
             if proposed:

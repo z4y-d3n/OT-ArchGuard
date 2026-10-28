@@ -5,6 +5,8 @@ from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
+from otarchguard import explorer_html
+from otarchguard.capture import display
 from otarchguard.diagnostics import fail
 from otarchguard.drift import explorer_bundle, explorer_render
 from otarchguard.drift.contract import DRIFT_LIMITS
@@ -21,7 +23,7 @@ from otarchguard.evidence.paths import _check_read_path
 from otarchguard.evidence.workspace import _decode, serialize
 
 EXPLORER_VERSION = 1
-RENDERER_VERSION = "1.4.0-historical-explorer.1"
+RENDERER_VERSION = explorer_render.RENDERER_VERSION
 _REPORT_LIMITS = replace(HISTORY_LIMITS, object_bytes=DRIFT_LIMITS.report_bytes)
 
 
@@ -32,7 +34,13 @@ def _report(path: Path) -> tuple[bytes, dict[str, Any]]:
 
 def _renderer_identity() -> str:
     """Bind installed Python renderer sources, identically in source/wheel/sdist."""
-    modules = (Path(__file__), Path(explorer_render.__file__), Path(explorer_bundle.__file__))
+    modules = (
+        Path(__file__),
+        Path(explorer_render.__file__),
+        Path(explorer_bundle.__file__),
+        Path(explorer_html.__file__),
+        Path(display.__file__),
+    )
     return hashlib.sha256(
         canonical({p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in modules})
     ).hexdigest()

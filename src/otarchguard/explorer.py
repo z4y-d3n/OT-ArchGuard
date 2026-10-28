@@ -21,14 +21,12 @@ from otarchguard.explorer_data import (
 )
 from otarchguard.explorer_exposure import exposure_tables
 from otarchguard.explorer_html import (
-    COMPACT_CSS,
     CSS,
     EXPOSURE_TABLE_CSS,
     SiteWriter,
-    compact_value,
     escape,
     link,
-    properties,
+    structured_value,
     table,
 )
 from otarchguard.exposure import exposure_architecture
@@ -106,7 +104,6 @@ class Explorer:
         writer: SiteWriter,
     ) -> None:
         self.validated = validated
-        self.compact = False
         self.model = validated.model
         self.provenance = provenance
         self.writer = writer
@@ -246,17 +243,13 @@ class Explorer:
                 self.related[target].add(origin)
 
     def value(self, value: object, field: str = "") -> str:
-        if isinstance(value, dict):
-            return properties([(k, self.value(v, k)) for k, v in sorted(value.items())])
-        if isinstance(value, (tuple, list)):
-            return "<ul>" + "".join(f"<li>{self.value(v, field)}</li>" for v in value) + "</ul>"
+        if isinstance(value, (dict, tuple, list)):
+            return structured_value(value, self.value, sort_keys=True, field=field)
         target = self.native_paths.get((REFERENCES.get(field, ""), str(value)))
         return link(target, value) if target else escape("Not declared" if value is None else value)
 
     def evidence(self, value: object) -> str:
-        return (
-            compact_value(value, self.value, sort_keys=True) if self.compact else self.value(value)
-        )
+        return self.value(value)
 
     def listings(self, title: str, entries: list[tuple[str, str]], stem: str) -> str:
         """Paginate every unbounded collection, including reverse evidence references."""
@@ -522,26 +515,7 @@ class Explorer:
                     [asdict(query)],
                 )
                 queries.append((target, f"{query.source_asset_id} → {query.service_id}"))
-            if self.compact:
-                body = exposure_tables(exposure, self.value, queries)
-            else:
-                body = (
-                    "<p>Existing exposure engine; origin assumptions, not comprom"
-                    "ise or live traffic observations.</p>"
-                )
-                body += self.value(
-                    {
-                        k: v
-                        for k, v in asdict(exposure).items()
-                        if k not in {"queries", "intent_checks"}
-                    }
-                )
-                body += self.references(
-                    "Evaluated scenario queries", queries, ["exposure", scenario]
-                )
-                body += section(
-                    "Independent intent outcomes", self.evidence(asdict(exposure.intent_checks))
-                )
+            body = exposure_tables(exposure, self.value, queries)
             self.writer.page(name, f"Exposure scenario · {scenario}", body)
 
     def query_page(
@@ -940,7 +914,6 @@ class Explorer:
         return self._node_keys
 
     def render(self, options: ExploreOptions) -> dict[str, object]:
-        self.compact = options.compact_prototype
         self._node_keys = (
             {
                 (s.id, n.scope_id, n.element_id)
@@ -953,11 +926,7 @@ class Explorer:
         )
         self.writer.write(
             "assets.css",
-            (
-                CSS
-                + (COMPACT_CSS if self.compact else "")
-                + (EXPOSURE_TABLE_CSS if self.compact and options.scenarios else "")
-            ).encode("utf-8"),
+            (CSS + (EXPOSURE_TABLE_CSS if options.scenarios else "")).encode("utf-8"),
         )
         self.render_analysis(options)
         self.render_native()

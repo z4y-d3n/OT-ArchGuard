@@ -35,16 +35,10 @@ svg{display:block;max-width:none}figure{margin:1.5rem 0}figcaption{padding:.5rem
 .documentary{stroke:#505c66;stroke-dasharray:7 5}.declared{stroke:#174f7b}
 .diagram-line{fill:none;stroke-width:3}.analytical{stroke:#653b78;stroke-width:5}
 .muted{color:#40596b}footer{border-top:1px solid #657b8b;font-size:.9rem}
-.properties{display:block;margin:.5rem 0}.properties>dt{font-weight:600;min-width:0;
-margin-top:.6rem;border-bottom:1px solid #c1cbd2;
-overflow-wrap:anywhere}.properties>dt::first-letter{text-transform:uppercase}
-.properties>dt::after{content:":"}.properties>dd{margin:0 0 .5rem;min-width:0}
-.properties .properties{margin:.2rem 0}.properties ul{margin:.2rem 0;padding-left:0;
-list-style-position:inside}.properties li{margin:.35rem 0}
+.properties{min-width:0;margin:.5rem 0}
 details{margin:.5rem 0}summary{cursor:pointer;font-weight:600}.identity code{font-size:.85em}
 @media(max-width:640px){header,nav,main,footer{padding:1rem}h1{font-size:1.5rem}
 nav ul{gap:1rem}.cards{display:block}.cards li{margin:.6rem 0}}
-@media(max-width:480px){.properties>dt{margin-top:.4rem}}
 @media print{html{background:white;color:black}nav,.skip{display:none}a{color:black}
 .scroll{overflow:visible}svg{max-width:100%;height:auto}table{min-width:0}}
 """
@@ -59,32 +53,29 @@ _ALLOWED_ELEMENTS = frozenset(
     "desc defs marker path clippath rect g text circle details summary h4 ol".split()
 )
 
-# Opt-in prototype styles only. CSS and properties() retain their existing output.
+# Shared passive evidence presentation, including compact scalar properties.
 COMPACT_CSS = """
 .compact-evidence{min-width:0;max-width:100%;overflow-wrap:anywhere}
-.compact-evidence .compact-fields{display:flex;flex-wrap:wrap;align-items:baseline;
+.compact-fields{display:flex;flex-wrap:wrap;align-items:baseline;
 gap:.2rem 1.25rem;margin:.3rem 0 .5rem;padding:0}
-.compact-evidence .compact-field{flex:0 1 auto;min-width:0;max-width:100%}
-.compact-evidence .compact-wide{flex-basis:100%}
-.compact-evidence .compact-field>dt,.compact-evidence .compact-field>dd{display:inline;
+.compact-fields>div{flex:0 1 auto;min-width:0;max-width:100%}
+.compact-fields>.compact-wide{flex-basis:100%}
+.compact-fields>div>dt,.compact-fields>div>dd{display:inline;
 margin:0;padding:0;overflow-wrap:anywhere;white-space:normal}
-.compact-evidence .compact-field>dt{font-weight:650}
+.compact-fields>div>dt{font-weight:650}
 .compact-evidence .evidence-group{margin:.4rem 0;padding:0;border:0;background:transparent}
 .compact-evidence .evidence-heading{font-size:1rem;line-height:1.35;margin:.45rem 0 .25rem;
 padding:0 0 .15rem;border-bottom:1px solid #c1cbd2;overflow-wrap:anywhere}
-.compact-evidence .evidence-records{list-style:none;padding:0;margin:.35rem 0}
-.compact-evidence .evidence-records>li{margin:.4rem 0;padding:0;border:0}
 .compact-evidence .evidence-values{display:flex;flex-wrap:wrap;gap:.1rem 1.4rem;
 padding-left:1.1rem;margin:.2rem 0;list-style:disc}
 .compact-evidence .evidence-values>li{margin:0;max-width:100%;overflow-wrap:anywhere}
 .compact-evidence code{white-space:normal;overflow-wrap:anywhere}
 .compact-evidence details{margin:.2rem 0}
-@media(max-width:480px){.compact-evidence .compact-fields{gap:.2rem .8rem}}
-@media print{.compact-evidence .evidence-heading{break-after:avoid}
-.compact-evidence .evidence-records>li{break-inside:auto}}
+@media(max-width:480px){.compact-fields{gap:.2rem .8rem}}
+@media print{.compact-evidence .evidence-heading{break-after:avoid}}
 """
 
-# Scoped to the F1 exposure prototype; other tables retain their existing CSS.
+# Accepted F1 layout; scoped so other analytical tables keep their own widths.
 EXPOSURE_TABLE_CSS = """
 .exposure-tables{min-width:0;max-width:100%}
 .exposure-tables table{width:max-content;min-width:100%;max-width:none}
@@ -99,6 +90,23 @@ overflow-wrap:anywhere;vertical-align:top;min-width:7ch;max-width:36rem}
 .exposure-tables .scroll{overflow:visible}.exposure-tables thead{display:table-header-group}
 .exposure-tables tr{break-inside:avoid}.exposure-tables h3,.exposure-tables h4{break-after:avoid}}
 """
+
+
+SEMANTIC_CSS = (
+    COMPACT_CSS
+    + """
+.compact-evidence table{width:max-content;min-width:100%;max-width:none}
+.compact-evidence th,.compact-evidence td{min-width:8ch;max-width:32rem;
+overflow-wrap:anywhere;white-space:normal;padding:.35rem .5rem}
+.compact-evidence th[scope=row]{width:auto}
+.compact-evidence .scroll{margin:.5rem 0 1rem;overflow:auto;max-width:100%;
+border:1px solid #657b8b;background:white}
+@media print{.compact-evidence table{width:100%;min-width:0;table-layout:fixed}
+.compact-evidence th,.compact-evidence td{min-width:0;font-size:8pt}
+.compact-evidence thead{display:table-header-group}.compact-evidence tr{break-inside:avoid}}
+"""
+)
+CSS += SEMANTIC_CSS
 
 
 def escape(value: object) -> str:
@@ -123,16 +131,53 @@ def table(
     rows: Sequence[tuple[str, ...]],
     *,
     row_headers: bool = False,
+    _checked_labels: bool = False,
 ) -> str:
     if not rows:
         return '<p class="muted">None in this view.</p>'
+    # Only derived labels whose ORIGINAL source strings already passed escape()
+    # may bypass the per-source scalar limit. Their markup is still escaped.
+    label_escape = html.escape if _checked_labels else escape
+    safe_caption = label_escape(caption)
+    safe_headings = tuple(label_escape(h) for h in headings)
+    # Structured evidence belongs below its identifying row, at the available
+    # page width. Never put another table into a competing narrow table cell.
+    complex_columns = {
+        index
+        for row in rows
+        for index, cell in enumerate(row)
+        if any(
+            marker in cell
+            for marker in ("<table", "<dl", "<section", '<div class="compact-evidence"')
+        )
+    }
+    if complex_columns:
+        simple = [index for index in range(len(headings)) if index not in complex_columns]
+        parts = []
+        for number, row in enumerate(rows, 1):
+            context = f"{html.unescape(safe_caption)} · Record {number}"
+            parts.append('<section class="evidence-group"><h3>' + html.escape(context) + "</h3>")
+            if simple:
+                parts.append(
+                    table(
+                        context,
+                        tuple(html.unescape(safe_headings[i]) for i in simple),
+                        [tuple(row[i] for i in simple)],
+                        row_headers=row_headers,
+                        _checked_labels=True,
+                    )
+                )
+            for index in sorted(complex_columns):
+                parts.append("<h4>" + safe_headings[index] + "</h4>" + row[index])
+            parts.append("</section>")
+        return "".join(parts)
     return (
         '<div class="scroll" tabindex="0" role="region" aria-label="'
-        + escape(caption)
+        + safe_caption
         + '"><table><caption>'
-        + escape(caption)
+        + safe_caption
         + "</caption><thead><tr>"
-        + "".join(f'<th scope="col">{escape(h)}</th>' for h in headings)
+        + "".join(f'<th scope="col">{h}</th>' for h in safe_headings)
         + "</tr></thead><tbody>"
         + "".join(
             "<tr>"
@@ -147,13 +192,184 @@ def table(
     )
 
 
-def properties(rows: Sequence[tuple[str, str]]) -> str:
-    """Semantic nested properties; values are already escaped renderer markup."""
-    return (
-        '<dl class="properties">'
-        + "".join(f"<dt>{escape(label)}</dt><dd>{value}</dd>" for label, value in rows)
-        + "</dl>"
-    )
+def properties(rows: Sequence[tuple[str, str]], *, _checked_labels: bool = False) -> str:
+    """Compact associated fields; values are already escaped renderer markup."""
+    label_escape = html.escape if _checked_labels else escape
+    parts: list[str] = []
+    fields: list[str] = []
+
+    def flush() -> None:
+        if fields:
+            parts.append('<dl class="compact-fields">' + "".join(fields) + "</dl>")
+            fields.clear()
+
+    for label, value in rows:
+        if any(
+            marker in value
+            for marker in ("<table", "<dl", "<section", '<div class="compact-evidence"')
+        ):
+            flush()
+            parts.append(
+                '<section class="evidence-group"><h3>'
+                + label_escape(label)
+                + "</h3>"
+                + value
+                + "</section>"
+            )
+        else:
+            wide = "compact-wide" if "<ul" in value or len(value) > 180 else ""
+            fields.append(
+                ('<div class="compact-wide">' if wide else "<div>")
+                + "<dt>"
+                + label_escape(label)
+                + ": </dt><dd>"
+                + value
+                + "</dd></div>"
+            )
+    flush()
+    return "".join(parts)
+
+
+def structured_value(
+    value: object,
+    leaf: Callable[[object, str], str],
+    *,
+    sort_keys: bool = False,
+    field: str = "",
+) -> str:
+    """Render arbitrary retained evidence without nested tables or indentation.
+
+    Known analytical sequences keep their input order and numbered rows. Uniform
+    records share tables of at most six source fields; structured children are
+    identified separately at full width. Heterogeneous records keep individual
+    sections. Scalar identity lists remain real lists. No value is discarded.
+    Callers retain their own leaf escaping, links, timestamps and empty semantics.
+    """
+
+    def label(key: str) -> str:
+        key = html.unescape(escape(key))
+        acronyms = {
+            "id": "ID",
+            "ip": "IP",
+            "ipv4": "IPv4",
+            "ipv6": "IPv6",
+            "sha256": "SHA-256",
+            "tcp": "TCP",
+            "udp": "UDP",
+            "utc": "UTC",
+        }
+        text = " ".join(acronyms.get(w, w) for w in key.replace("_", " ").split())
+        return text[:1].upper() + text[1:]
+
+    def structured(item: object) -> bool:
+        return isinstance(item, (dict, list, tuple)) and bool(item)
+
+    group_number = 0
+
+    def render(item: object, key: str, context: str) -> str:
+        nonlocal group_number
+        if isinstance(item, dict) and item:
+            parts: list[str] = []
+            fields: list[tuple[str, str]] = []
+
+            def flush() -> None:
+                if fields:
+                    parts.append(properties(fields, _checked_labels=True))
+                    fields.clear()
+
+            entries = sorted(item.items()) if sort_keys else item.items()
+            for name, child in entries:
+                name = str(name)
+                if structured(child):
+                    flush()
+                    # Local group references preserve parent association in a
+                    # flat DOM without repeating an ever-growing ancestor path.
+                    group_number += 1
+                    group = f"Group {group_number}"
+                    record = re.findall(r"(?:Step|Record) [0-9]+", context)
+                    if record:
+                        group += " · " + record[-1]
+                    title = label(name)
+                    parts.append(
+                        '<section class="evidence-group"><h4 class="evidence-heading">'
+                        + html.escape(title)
+                        + " · "
+                        + html.escape(group)
+                        + "</h4>"
+                    )
+                    if context:
+                        parts.append('<p class="muted">Within: ' + html.escape(context) + "</p>")
+                    parts.append("</section>")
+                    parts.append(render(child, name, group))
+                else:
+                    fields.append((label(name), render(child, name, context)))
+            flush()
+            return "".join(parts)
+        if isinstance(item, (list, tuple)) and item:
+            numbered = "Step" if key in {"steps", "permitted_steps"} else "Record"
+            if all(isinstance(child, dict) and child for child in item):
+                records = list(item)
+                schema = list(records[0])
+                uniform = all(set(child) == set(schema) for child in records)
+                if uniform:
+                    if sort_keys:
+                        schema.sort()
+                    scalar = [
+                        name for name in schema if all(not structured(row[name]) for row in records)
+                    ]
+                    nested = [name for name in schema if name not in scalar]
+                    parts = []
+                    for offset in range(0, max(1, len(scalar)), 6):
+                        columns = scalar[offset : offset + 6]
+                        caption = context or "Retained records"
+                        if numbered == "Step":
+                            caption += " · Ordered witness steps"
+                        if len(scalar) > 6:
+                            caption += f" · Fields {offset + 1}–{offset + len(columns)}"
+                        parts.append(
+                            table(
+                                caption,
+                                (numbered,) + tuple(label(str(c)) for c in columns),
+                                [
+                                    (str(i),)
+                                    + tuple(render(row[c], str(c), context) for c in columns)
+                                    for i, row in enumerate(records, 1)
+                                ],
+                                row_headers=True,
+                                _checked_labels=True,
+                            )
+                        )
+                    for i, row in enumerate(records, 1):
+                        for name in nested:
+                            title = f"{context} · {numbered} {i} · {label(str(name))}"
+                            parts.append(
+                                '<h4 class="evidence-heading">' + html.escape(title) + "</h4>"
+                            )
+                            parts.append(render(row[name], str(name), title))
+                    return "".join(parts)
+            if any(structured(child) for child in item):
+                return "".join(
+                    '<h4 class="evidence-heading">'
+                    + html.escape(f"{context} · {numbered} {i}")
+                    + "</h4>"
+                    + render(child, key, f"{context} · {numbered} {i}")
+                    for i, child in enumerate(item, 1)
+                )
+            return (
+                '<ul class="evidence-values">'
+                + "".join("<li>" + render(child, key, context) + "</li>" for child in item)
+                + "</ul>"
+            )
+        if isinstance(item, dict):
+            return "<code>{}</code>"
+        if isinstance(item, (list, tuple)):
+            return "<code>[]</code>"
+        return leaf(item, key)
+
+    body = render(value, field, label(field))
+    if isinstance(value, dict) and all(not structured(child) for child in value.values()):
+        return body
+    return '<div class="compact-evidence">' + body + "</div>"
 
 
 def compact_value(
@@ -162,89 +378,8 @@ def compact_value(
     *,
     sort_keys: bool = False,
 ) -> str:
-    """Opt-in evidence prototype; leaf markup must use the caller's trusted escaping.
-
-    Adjacent scalar fields share a compact definition list. Objects retain their
-    section hierarchy without horizontal indentation. Structured collections keep
-    list semantics; only explicit witness-step fields become ordered sequences.
-    No evidence is summarized away, reordered within a sequence, or hidden.
-    """
-
-    def label(key: str) -> str:
-        words = key.replace("_", " ").split()
-        acronyms = {"id": "ID", "ip": "IP", "sha256": "SHA-256", "tcp": "TCP", "utc": "UTC"}
-        text = " ".join(acronyms.get(word, word) for word in words)
-        return text[:1].upper() + text[1:]
-
-    def structured(item: object) -> bool:
-        return isinstance(item, (dict, list, tuple)) and bool(item)
-
-    def render(item: object, field: str, depth: int) -> str:
-        if isinstance(item, dict) and item:
-            parts: list[str] = []
-            fields: list[str] = []
-
-            def flush() -> None:
-                if fields:
-                    parts.append('<dl class="compact-fields">' + "".join(fields) + "</dl>")
-                    fields.clear()
-
-            entries = sorted(item.items()) if sort_keys else item.items()
-            for key, child in entries:
-                key = str(key)
-                if structured(child):
-                    flush()
-                    heading = "h3" if depth == 0 else "h4"
-                    parts.append(
-                        '<section class="evidence-group" aria-label="'
-                        + escape(label(key))
-                        + '">'
-                        + f'<{heading} class="evidence-heading">'
-                        + escape(label(key))
-                        + f"</{heading}>"
-                        + render(child, key, depth + 1)
-                        + "</section>"
-                    )
-                else:
-                    wide = " compact-wide" if isinstance(child, str) and len(child) > 120 else ""
-                    fields.append(
-                        '<div class="compact-field'
-                        + wide
-                        + '"><dt>'
-                        + escape(label(key))
-                        + ": </dt><dd>"
-                        + render(child, key, depth + 1)
-                        + "</dd></div>"
-                    )
-            flush()
-            return "".join(parts)
-        if isinstance(item, (list, tuple)) and item:
-            if any(structured(child) for child in item):
-                ordered = field in {"steps", "permitted_steps"}
-                tag, name = ("ol", "Step") if ordered else ("ul", "Record")
-                return (
-                    f'<{tag} class="evidence-records" role="list">'
-                    + "".join(
-                        '<li><h4 class="evidence-heading">'
-                        + f"{name} {index}</h4>"
-                        + render(child, field, depth + 1)
-                        + "</li>"
-                        for index, child in enumerate(item, 1)
-                    )
-                    + f"</{tag}>"
-                )
-            return (
-                '<ul class="evidence-values">'
-                + "".join("<li>" + render(child, field, depth + 1) + "</li>" for child in item)
-                + "</ul>"
-            )
-        if isinstance(item, dict):
-            return "<code>{}</code>"
-        if isinstance(item, (list, tuple)):
-            return "<code>[]</code>"
-        return leaf(item, field)
-
-    return '<div class="compact-evidence">' + render(value, "", 0) + "</div>"
+    """Compatibility alias for the former opt-in presentation prototype."""
+    return structured_value(value, leaf, sort_keys=sort_keys)
 
 
 def identity_details(label: str, value: str) -> str:
