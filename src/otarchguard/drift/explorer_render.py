@@ -13,7 +13,15 @@ from typing import Any
 from otarchguard.capture.display import timestamp_html
 from otarchguard.diagnostics import check_limit, fail
 from otarchguard.evidence.attachments import canonical
-from otarchguard.explorer_html import escape, identity_details, link, properties, table
+from otarchguard.explorer_html import (
+    COMPACT_CSS,
+    compact_value,
+    escape,
+    identity_details,
+    link,
+    properties,
+    table,
+)
 
 RENDERER_VERSION = "1.4.0-historical-explorer.1"
 # Leave space for the canonical report, verification receipt and completion manifest.
@@ -437,9 +445,19 @@ def _document(title: str, body: str, drift_id: str) -> bytes:
 
 
 class _Renderer:
-    def __init__(self, report: dict[str, Any], verification: dict[str, Any], size: int) -> None:
+    def __init__(
+        self,
+        report: dict[str, Any],
+        verification: dict[str, Any],
+        size: int,
+        *,
+        compact_prototype: bool = False,
+    ) -> None:
         self.report, self.verification, self.size = report, verification, size
-        self.output: dict[str, bytes] = {"style.css": CSS.encode("utf-8")}
+        self.compact = compact_prototype
+        self.output: dict[str, bytes] = {
+            "style.css": (CSS + (COMPACT_CSS if self.compact else "")).encode("utf-8")
+        }
         self.output_bytes = len(self.output["style.css"])
         self.page_count = 0
         self.records = _records(report)
@@ -644,6 +662,19 @@ class _Renderer:
             + "</div>"
         )
 
+    def pair_value(self, value: object, *, source_links: dict[str, str] | None = None) -> str:
+        if not self.compact:
+            return _value(value, source_links=source_links)
+        return compact_value(
+            value,
+            lambda item, field: (
+                _timestamp_value(item)
+                if field in {"first_timestamp", "last_timestamp"}
+                else _value(item, source_links=source_links)
+            ),
+            sort_keys=True,
+        )
+
     def scope(self) -> None:
         body = "<h2>Declared reference scope</h2>" + _value(
             self.report["inputs"]["baseline"]["scope"]
@@ -658,14 +689,14 @@ class _Renderer:
             assessment = pair["comparability"]
             context = contexts[index - 1]
             body = '<p class="breadcrumbs">' + link("scope.html", "Back to all pairs") + "</p>"
-            body += "<h2>Exact evidence selection</h2>" + _value(
+            body += "<h2>Exact evidence selection</h2>" + self.pair_value(
                 {k: v for k, v in pair.items() if k not in {"comparability", "findings"}},
                 source_links=self.source_links,
             )
-            body += "<h2>Reviewed alignment and candidate scope</h2>" + _value(
+            body += "<h2>Reviewed alignment and candidate scope</h2>" + self.pair_value(
                 context, source_links=self.source_links
             )
-            body += "<h2>Comparator assessment</h2>" + _value(
+            body += "<h2>Comparator assessment</h2>" + self.pair_value(
                 {k: v for k, v in assessment.items() if k != "dimensions"}
             )
             for dim_index, dimension in enumerate(assessment["dimensions"], 1):
@@ -673,7 +704,7 @@ class _Renderer:
                 body += (
                     escape(_label(dimension["dimension"]))
                     + "</h2>"
-                    + _value(
+                    + self.pair_value(
                         {k: v for k, v in dimension.items() if k != "dimension"},
                         source_links=self.source_links,
                     )
@@ -963,6 +994,17 @@ class _Renderer:
         body += "approval state. The saved site remains a historical presentation snapshot; "
         body += "verification does not rewrite it.</p><p><code>otarchguard evidence drift "
         body += "explore-verify OUTPUT_DIRECTORY --workspace WORKSPACE</code></p>"
+        if self.compact:
+            body = (
+                "<h2>Compact presentation prototype</h2><p>Owner visual acceptance is pending. "
+                "This preview is not a canonical Historical Explorer publication. Its "
+                "prototype-manifest.json records the preview files, source report digest and "
+                "renderer identities; the release bundle verifier does not apply to it.</p>"
+                "<h3>Source-dependent verification</h3><p>The retained report and verification "
+                "receipt remain available as report.json and verification.json. Source "
+                "reproduction verifies analytical evidence separately from this proposed "
+                "layout; it does not establish visual acceptance or source authenticity.</p>"
+            )
         body += "<h2>Canonical report identity</h2>" + properties(
             [
                 ("Drift identity", escape(self.report["drift_id"])),
@@ -1001,7 +1043,11 @@ class _Renderer:
 
 
 def render(
-    report: dict[str, Any], verification: dict[str, Any], *, page_size: int = 50
+    report: dict[str, Any],
+    verification: dict[str, Any],
+    *,
+    page_size: int = 50,
+    compact_prototype: bool = False,
 ) -> dict[str, bytes]:
     """Render one operation-owned source-reproduced report without reading or writing files.
 
@@ -1013,6 +1059,6 @@ def render(
     _checked_tree(report)
     _checked_tree(verification)
     try:
-        return _Renderer(report, verification, page_size).run()
+        return _Renderer(report, verification, page_size, compact_prototype=compact_prototype).run()
     except (KeyError, TypeError, ValueError, AttributeError, IndexError, RecursionError):
         fail("HISTORICAL_DISPLAY", "$", "Malformed or unsupported historical display input.")

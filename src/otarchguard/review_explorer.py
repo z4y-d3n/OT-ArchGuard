@@ -13,8 +13,10 @@ from otarchguard.diagnostics import fail
 from otarchguard.diagrams import spatial_svg
 from otarchguard.explorer_data import load_model, page_id
 from otarchguard.explorer_html import (
+    COMPACT_CSS,
     CSS,
     SiteWriter,
+    compact_value,
     escape,
     identity_details,
     link,
@@ -433,7 +435,12 @@ def _render_quality(writer: SiteWriter, report: dict[str, Any]) -> None:
 
 
 def _render_comparison(
-    writer: SiteWriter, report: dict[str, Any], baseline: Path, proposed: Path
+    writer: SiteWriter,
+    report: dict[str, Any],
+    baseline: Path,
+    proposed: Path,
+    *,
+    compact_prototype: bool = False,
 ) -> None:
     layer_summary = _comparison_summary(report)
     change_rows: dict[str, list[tuple[str, ...]]] = {
@@ -579,7 +586,12 @@ def _render_comparison(
         writer.page(
             name,
             "Exact analytical comparison",
-            "<h3>Query, model bindings, native results and interval deltas</h3>" + _value(result),
+            "<h3>Query, model bindings, native results and interval deltas</h3>"
+            + (
+                compact_value(result, lambda value, _: _value(value), sort_keys=True)
+                if compact_prototype
+                else _value(result)
+            ),
         )
         rows.append(
             (
@@ -639,6 +651,7 @@ def generate_review(
     proposed_profile: Path | None = None,
     mapping: Path | None = None,
     queries: tuple[ReviewQuery, ...] = (),
+    compact_prototype: bool = False,
 ) -> dict[str, Any]:
     """Publish JSON and static human views as one bounded, audited fresh directory."""
     started = time.perf_counter()
@@ -702,11 +715,13 @@ def generate_review(
                 if proposed
                 else None,
             )
-            writer.write("assets.css", CSS.encode())
+            writer.write("assets.css", (CSS + (COMPACT_CSS if compact_prototype else "")).encode())
             data = canonical(report)
             writer.write("review.json", data)
             if proposed:
-                _render_comparison(writer, report, architecture, proposed)
+                _render_comparison(
+                    writer, report, architecture, proposed, compact_prototype=compact_prototype
+                )
             else:
                 _render_quality(writer, report)
             result = writer.finish(

@@ -343,6 +343,7 @@ tests/test_capture_ux_integrity.py
 tests/test_capture_views.py
 tests/test_check_cli.py
 tests/test_cli.py
+tests/test_compact_evidence_prototype.py
 tests/test_comparison_properties.py
 tests/test_console_resolution.py
 tests/test_contract.py

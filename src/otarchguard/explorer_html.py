@@ -6,7 +6,7 @@ import json
 import re
 import time
 from collections import defaultdict
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from html.parser import HTMLParser
 from pathlib import Path, PurePosixPath
 
@@ -56,8 +56,33 @@ _BIDI = frozenset(range(0x202A, 0x202F)) | frozenset(range(0x2066, 0x206A))
 _ALLOWED_ELEMENTS = frozenset(
     "html head meta link title body a header p h1 h2 h3 nav ul li main section dl dt dd div "
     "table caption thead tr th tbody td aside footer figure figcaption pre code br svg "
-    "desc defs marker path clippath rect g text circle details summary".split()
+    "desc defs marker path clippath rect g text circle details summary h4 ol".split()
 )
+
+# Opt-in prototype styles only. CSS and properties() retain their existing output.
+COMPACT_CSS = """
+.compact-evidence{min-width:0;max-width:100%;overflow-wrap:anywhere}
+.compact-evidence .compact-fields{display:flex;flex-wrap:wrap;align-items:baseline;
+gap:.2rem 1.25rem;margin:.3rem 0 .5rem;padding:0}
+.compact-evidence .compact-field{flex:0 1 auto;min-width:0;max-width:100%}
+.compact-evidence .compact-wide{flex-basis:100%}
+.compact-evidence .compact-field>dt,.compact-evidence .compact-field>dd{display:inline;
+margin:0;padding:0;overflow-wrap:anywhere;white-space:normal}
+.compact-evidence .compact-field>dt{font-weight:650}
+.compact-evidence .evidence-group{margin:.4rem 0;padding:0;border:0;background:transparent}
+.compact-evidence .evidence-heading{font-size:1rem;line-height:1.35;margin:.45rem 0 .25rem;
+padding:0 0 .15rem;border-bottom:1px solid #c1cbd2;overflow-wrap:anywhere}
+.compact-evidence .evidence-records{list-style:none;padding:0;margin:.35rem 0}
+.compact-evidence .evidence-records>li{margin:.4rem 0;padding:0;border:0}
+.compact-evidence .evidence-values{display:flex;flex-wrap:wrap;gap:.1rem 1.4rem;
+padding-left:1.1rem;margin:.2rem 0;list-style:disc}
+.compact-evidence .evidence-values>li{margin:0;max-width:100%;overflow-wrap:anywhere}
+.compact-evidence code{white-space:normal;overflow-wrap:anywhere}
+.compact-evidence details{margin:.2rem 0}
+@media(max-width:480px){.compact-evidence .compact-fields{gap:.2rem .8rem}}
+@media print{.compact-evidence .evidence-heading{break-after:avoid}
+.compact-evidence .evidence-records>li{break-inside:auto}}
+"""
 
 
 def escape(value: object) -> str:
@@ -99,6 +124,97 @@ def properties(rows: Sequence[tuple[str, str]]) -> str:
         + "".join(f"<dt>{escape(label)}</dt><dd>{value}</dd>" for label, value in rows)
         + "</dl>"
     )
+
+
+def compact_value(
+    value: object,
+    leaf: Callable[[object, str], str],
+    *,
+    sort_keys: bool = False,
+) -> str:
+    """Opt-in evidence prototype; leaf markup must use the caller's trusted escaping.
+
+    Adjacent scalar fields share a compact definition list. Objects retain their
+    section hierarchy without horizontal indentation. Structured collections keep
+    list semantics; only explicit witness-step fields become ordered sequences.
+    No evidence is summarized away, reordered within a sequence, or hidden.
+    """
+
+    def label(key: str) -> str:
+        words = key.replace("_", " ").split()
+        acronyms = {"id": "ID", "ip": "IP", "sha256": "SHA-256", "tcp": "TCP", "utc": "UTC"}
+        text = " ".join(acronyms.get(word, word) for word in words)
+        return text[:1].upper() + text[1:]
+
+    def structured(item: object) -> bool:
+        return isinstance(item, (dict, list, tuple)) and bool(item)
+
+    def render(item: object, field: str, depth: int) -> str:
+        if isinstance(item, dict) and item:
+            parts: list[str] = []
+            fields: list[str] = []
+
+            def flush() -> None:
+                if fields:
+                    parts.append('<dl class="compact-fields">' + "".join(fields) + "</dl>")
+                    fields.clear()
+
+            entries = sorted(item.items()) if sort_keys else item.items()
+            for key, child in entries:
+                key = str(key)
+                if structured(child):
+                    flush()
+                    heading = "h3" if depth == 0 else "h4"
+                    parts.append(
+                        '<section class="evidence-group" aria-label="'
+                        + escape(label(key))
+                        + '">'
+                        + f'<{heading} class="evidence-heading">'
+                        + escape(label(key))
+                        + f"</{heading}>"
+                        + render(child, key, depth + 1)
+                        + "</section>"
+                    )
+                else:
+                    wide = " compact-wide" if isinstance(child, str) and len(child) > 120 else ""
+                    fields.append(
+                        '<div class="compact-field'
+                        + wide
+                        + '"><dt>'
+                        + escape(label(key))
+                        + ": </dt><dd>"
+                        + render(child, key, depth + 1)
+                        + "</dd></div>"
+                    )
+            flush()
+            return "".join(parts)
+        if isinstance(item, (list, tuple)) and item:
+            if any(structured(child) for child in item):
+                ordered = field in {"steps", "permitted_steps"}
+                tag, name = ("ol", "Step") if ordered else ("ul", "Record")
+                return (
+                    f'<{tag} class="evidence-records" role="list">'
+                    + "".join(
+                        '<li><h4 class="evidence-heading">'
+                        + f"{name} {index}</h4>"
+                        + render(child, field, depth + 1)
+                        + "</li>"
+                        for index, child in enumerate(item, 1)
+                    )
+                    + f"</{tag}>"
+                )
+            return (
+                '<ul class="evidence-values">'
+                + "".join("<li>" + render(child, field, depth + 1) + "</li>" for child in item)
+                + "</ul>"
+            )
+        if isinstance(item, dict):
+            return "<code>{}</code>"
+        if isinstance(item, (list, tuple)):
+            return "<code>[]</code>"
+        return leaf(item, field)
+
+    return '<div class="compact-evidence">' + render(value, "", 0) + "</div>"
 
 
 def identity_details(label: str, value: str) -> str:

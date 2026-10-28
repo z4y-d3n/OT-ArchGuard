@@ -21,7 +21,16 @@ from otarchguard.capture.views import (
     protocols_view,
 )
 from otarchguard.diagnostics import check_limit, fail
-from otarchguard.explorer_html import CSS, audit_site, escape, link, properties, table
+from otarchguard.explorer_html import (
+    COMPACT_CSS,
+    CSS,
+    audit_site,
+    compact_value,
+    escape,
+    link,
+    properties,
+    table,
+)
 from otarchguard.ingestion.project import _no_links
 from otarchguard.ingestion.workflow import serialize, write_new_file
 
@@ -431,6 +440,7 @@ def generate_site(
     limits: CaptureLimits = CAPTURE_LIMITS,
     *,
     mapping: dict[str, Any] | None = None,
+    compact_prototype: bool = False,
 ) -> dict[str, Any]:
     """Render indexed human views without modifying canonical analytical evidence."""
     fresh_destination(output)
@@ -590,7 +600,7 @@ def generate_site(
                         introduction + nav + _record_table(title, headings, rows),
                     )
 
-            write("assets.css", CAPTURE_CSS.encode())
+            write("assets.css", (CAPTURE_CSS + (COMPACT_CSS if compact_prototype else "")).encode())
             write("observations.json", serialize(observations))
             if comparison is not None:
                 write("comparison.json", serialize(comparison))
@@ -1038,7 +1048,12 @@ def generate_site(
                             "firewall behavior. Frontier diagnostics are not a unique "
                             "root cause or a guaranteed fix.</p>"
                         )
-                        body += render_value(
+                        native_display = (
+                            (lambda value: compact_value(value, lambda item, _: render_value(item)))
+                            if compact_prototype
+                            else render_value
+                        )
+                        body += native_display(
                             {
                                 "source_asset": native["query"]["source_asset_id"],
                                 "destination_asset": native["query"]["destination_asset_id"],
@@ -1051,7 +1066,7 @@ def generate_site(
                                 "<details><summary>Selected interval: complete witness or "
                                 "diagnostic</summary>"
                             )
-                            + render_value(native["selected_interval"])
+                            + native_display(native["selected_interval"])
                             + "</details>"
                             + _technical("Complete original native evaluator record", native)
                         )

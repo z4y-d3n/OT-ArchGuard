@@ -218,9 +218,21 @@ def _value(value: Any) -> str:
     return value if isinstance(value, str) else json.dumps(value, sort_keys=True, ensure_ascii=True)
 
 
-def _table(caption: str, rows: list[dict[str, Any]]) -> str:
+def _table(caption: str, rows: list[dict[str, Any]], *, compact_prototype: bool = False) -> str:
     if not rows:
         return f"<p>{escape(caption)}: none.</p>"
+    if compact_prototype:
+        from otarchguard.explorer_html import compact_value
+
+        return (
+            "<div><h3>"
+            + escape(caption)
+            + "</h3>"
+            + compact_value(
+                rows[0] if len(rows) == 1 else rows, lambda value, _: _field_values(value)
+            )
+            + "</div>"
+        )
     keys = list(dict.fromkeys(key for row in rows for key in row))
 
     # Complex evidence needs the full report width, rather than JSON blocks in

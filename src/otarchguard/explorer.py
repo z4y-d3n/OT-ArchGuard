@@ -19,7 +19,16 @@ from otarchguard.explorer_data import (
     load_provenance,
     page_id,
 )
-from otarchguard.explorer_html import CSS, SiteWriter, escape, link, properties, table
+from otarchguard.explorer_html import (
+    COMPACT_CSS,
+    CSS,
+    SiteWriter,
+    compact_value,
+    escape,
+    link,
+    properties,
+    table,
+)
 from otarchguard.exposure import exposure_architecture
 from otarchguard.ingestion.project import _no_links
 from otarchguard.ingestion.reconciliation import catalog
@@ -84,6 +93,7 @@ class ExploreOptions:
     traces: tuple[tuple[str, str], ...] = ()
     check: bool = False
     scenarios: tuple[str, ...] = ()
+    compact_prototype: bool = False
 
 
 class Explorer:
@@ -94,6 +104,7 @@ class Explorer:
         writer: SiteWriter,
     ) -> None:
         self.validated = validated
+        self.compact = False
         self.model = validated.model
         self.provenance = provenance
         self.writer = writer
@@ -239,6 +250,11 @@ class Explorer:
             return "<ul>" + "".join(f"<li>{self.value(v, field)}</li>" for v in value) + "</ul>"
         target = self.native_paths.get((REFERENCES.get(field, ""), str(value)))
         return link(target, value) if target else escape("Not declared" if value is None else value)
+
+    def evidence(self, value: object) -> str:
+        return (
+            compact_value(value, self.value, sort_keys=True) if self.compact else self.value(value)
+        )
 
     def listings(self, title: str, entries: list[tuple[str, str]], stem: str) -> str:
         """Paginate every unbounded collection, including reverse evidence references."""
@@ -514,7 +530,7 @@ class Explorer:
             body += self.references("Evaluated scenario queries", queries, ["exposure", scenario])
             # Preserve independent intent outcomes from the existing exposure engine.
             body += section(
-                "Independent intent outcomes", self.value(asdict(exposure.intent_checks))
+                "Independent intent outcomes", self.evidence(asdict(exposure.intent_checks))
             )
             self.writer.page(name, f"Exposure scenario · {scenario}", body)
 
@@ -821,7 +837,7 @@ class Explorer:
                     node_key = (source.id, node.scope_id, node.element_id)
                     target = path("node", node_key)
                     nodes.append((target, f"{node.scope_id} · {node.element_id} · {node.label}"))
-                    node_body = self.value(
+                    node_body = self.evidence(
                         {
                             "source": source.id,
                             "scope": node.scope_id,
@@ -914,6 +930,7 @@ class Explorer:
         return self._node_keys
 
     def render(self, options: ExploreOptions) -> dict[str, object]:
+        self.compact = options.compact_prototype
         self._node_keys = (
             {
                 (s.id, n.scope_id, n.element_id)
@@ -924,7 +941,9 @@ class Explorer:
             if self.provenance
             else set()
         )
-        self.writer.write("assets.css", CSS.encode("utf-8"))
+        self.writer.write(
+            "assets.css", (CSS + (COMPACT_CSS if self.compact else "")).encode("utf-8")
+        )
         self.render_analysis(options)
         self.render_native()
         self.render_evidence()
