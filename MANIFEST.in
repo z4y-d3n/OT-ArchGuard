@@ -118,6 +118,7 @@ include docs/release-publication-1.1.0.md
 include docs/release-publication-1.2.0.md
 include docs/reporting.md
 include docs/requirements.md
+include docs/semantic-html-presentation.md
 include docs/testing-strategy.md
 include docs/trace.md
 include docs/v1.1/gate-v11-1.md
