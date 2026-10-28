@@ -84,6 +84,7 @@ include docs/development/v14-02p-performance.md
 include docs/development/v14-03-audit.md
 include docs/development/v14-03-handoff-es.md
 include docs/development/v14-04-handoff-es.md
+include docs/development/v14-04-visual-remediation-es.md
 include docs/development/v14-analysis-revisions-adr.md
 include docs/development/v14-architecture.md
 include docs/development/v14-drift-contract.md
@@ -368,6 +369,7 @@ include tests/test_final_release.py
 include tests/test_fixtures.py
 include tests/test_historical_explorer.py
 include tests/test_historical_explorer_bundle.py
+include tests/test_historical_explorer_layout.py
 include tests/test_historical_explorer_render.py
 include tests/test_historical_explorer_walkthrough.py
 include tests/test_history_lifecycle_performance.py

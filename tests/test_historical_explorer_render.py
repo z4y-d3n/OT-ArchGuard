@@ -180,8 +180,12 @@ class _Page(HTMLParser):
         self.main = 0
         self.h1 = 0
         self.skip = False
+        self.text = ""
         self.feed(raw.decode("utf-8"))
         self.close()
+
+    def handle_data(self, data: str) -> None:
+        self.text += data
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         values = dict(attrs)
@@ -233,7 +237,8 @@ def test_complete_navigation_and_semantic_counts() -> None:
     assert '<span class="metric">13</span>' in overview
     assert '<span class="metric">1</span>' in overview
     assert "REVOKED" in overview and "APPROVED" in overview
-    assert "INDETERMINATE" in overview and "PARTIALLY_COMPARABLE" in overview
+    assert "INDETERMINATE" in pages["index.html"].text
+    assert "PARTIALLY_COMPARABLE" in pages["index.html"].text
     all_ids = [
         identity for page in pages.values() for identity in page.ids if identity.startswith("f-")
     ]

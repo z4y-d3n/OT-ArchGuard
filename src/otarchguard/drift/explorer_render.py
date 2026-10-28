@@ -93,7 +93,8 @@ padding:.8rem 1.1rem;border-left:5px solid #8d5b15;background:#fff4dd}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));gap:1rem;
 list-style:none;padding:0}.cards li{padding:1rem;background:white;border:1px solid #9aadb5}
 .metric{font-size:1.8rem;font-weight:750;display:block}.compare{display:grid;
-grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.compare>section{min-width:0;
+grid-template-columns:repeat(auto-fit,minmax(min(100%,32rem),1fr));gap:1rem}
+.compare>section{min-width:0;
 padding:1rem;background:#fff;border:1px solid #9aadb5}.record{margin:1.5rem 0;padding:1rem;
 border:1px solid #9aadb5;background:#fff;scroll-margin-top:1rem}.record>h2{margin-top:0}
 .badge{display:inline-block;padding:.15rem .5rem;border:1px solid #536b77;
@@ -101,10 +102,24 @@ font-size:.85rem;font-weight:650;background:#edf3f5;margin:.15rem .3rem .15rem 0
 .properties{display:grid;grid-template-columns:fit-content(34%) minmax(0,1fr);
 gap:.25rem .85rem;margin:.5rem 0}.properties>dt{font-weight:650;min-width:0}
 .properties>dd{margin:0;min-width:0}.properties>dd>.properties{margin-top:0}
+.retained-fields{display:block;margin:.5rem 0;min-width:0}
+.retained-fields>dt{font-weight:650;margin-top:.75rem}
+.retained-fields>dd{margin:0;min-width:0}
+.retained-fields>dd>.retained-fields{margin:0;border-top:1px solid #c3ced3;
+border-bottom:1px solid #c3ced3}
+.retained-list{list-style:none;padding:0;margin:.5rem 0;min-width:0}
+.retained-list>li+li{border-top:1px solid #c3ced3;margin-top:.5rem;padding-top:.5rem}
 code{font-family:ui-monospace,Consolas,monospace;font-size:.9em}
-code,dd,dt,td,th,p,li,h1,h2,h3,a,summary{overflow-wrap:anywhere}
+dd,dt,td,th,p,li,h1,h2,h3,a,summary{overflow-wrap:break-word}
+code,.properties a,.retained-fields a{overflow-wrap:anywhere;word-break:normal}
 ul{padding-left:1.4rem}details{margin:.65rem 0}summary{cursor:pointer;font-weight:650}
 .scroll{overflow:auto;max-width:100%;border:1px solid #9aadb5;background:white}
+.finding-table,.pair-table{min-width:0;max-width:100%}
+.finding-table table{table-layout:fixed;min-width:60rem}
+.finding-table th:nth-child(1){width:14rem}.finding-table th:nth-child(2){width:16rem}
+.finding-table th:nth-child(3){width:13rem}
+.pair-table table{table-layout:fixed;min-width:62rem}.pair-table th:first-child{width:6rem}
+.status-part{display:inline-block;overflow-wrap:normal;word-break:normal}
 table{width:100%;border-collapse:collapse;min-width:34rem}caption{text-align:left;
 padding:.8rem;font-weight:700}th,td{padding:.65rem;text-align:left;vertical-align:top;
 border-bottom:1px solid #c3ced3}th{background:#e5edf1}.pagination{padding:.75rem 0}
@@ -116,11 +131,14 @@ svg text{font:14px system-ui,sans-serif;fill:#182c3b}svg rect{fill:#edf3f5;strok
 .candidate-edge{stroke-dasharray:2 4}.common-edge{stroke-width:5}
 footer{border-top:1px solid #9aadb5;font-size:.9rem}figure{margin:1rem 0}figcaption{padding:.5rem 0}
 @media(max-width:700px){header,nav,main,footer{padding:1rem}h1{font-size:1.65rem}
-.compare{grid-template-columns:minmax(0,1fr)}.cards{grid-template-columns:minmax(0,1fr)}}
+.cards{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:480px){.properties{grid-template-columns:minmax(0,1fr);gap:.1rem}
 .properties>dt{margin-top:.45rem}.record{padding:.75rem}}
 @media print{html{background:white;color:black}nav,.skip{display:none}a{color:black}
 .scroll{overflow:visible}table{min-width:0}.compare{display:block}.record{break-inside:avoid}
+.finding-table table,.pair-table table{min-width:0}
+.finding-table th:nth-child(1){width:22%}.finding-table th:nth-child(2){width:24%}
+.finding-table th:nth-child(3){width:22%}.pair-table th:first-child{width:8%}
 .diagram-scroll svg{min-width:0;width:100%;max-width:100%}}
 """
 
@@ -161,23 +179,42 @@ def _value(value: object, *, source_links: dict[str, str] | None = None) -> str:
     if isinstance(value, dict):
         if not value:
             return '<span class="muted">No retained fields</span>'
-        return properties(
-            [
-                (_label(str(k)), _value(v, source_links=source_links))
+        # Each nested value keeps its full parent width. Reapplying the two-column
+        # summary property grid at every depth collapses native witness evidence.
+        return (
+            '<dl class="retained-fields">'
+            + "".join(
+                "<dt>"
+                + escape(_label(str(k)))
+                + "</dt><dd>"
+                + _value(v, source_links=source_links)
+                + "</dd>"
                 for k, v in sorted(value.items())
-            ]
+            )
+            + "</dl>"
         )
     if isinstance(value, list):
         if not value:
             return '<span class="muted">None retained</span>'
         return (
-            "<ul>"
+            '<ul class="retained-list" role="list">'
             + "".join("<li>" + _value(v, source_links=source_links) + "</li>" for v in value)
             + "</ul>"
         )
     if isinstance(value, str) and source_links and value in source_links:
         return link(source_links[value], value)
     return "<code>" + escape(value) + "</code>"
+
+
+def _status(value: str) -> str:
+    """Allow a line break at status separators, retaining the exact text/code."""
+    parts = value.split("_")
+    return "".join(
+        '<span class="status-part">'
+        + escape(part + ("_" if i < len(parts) - 1 else ""))
+        + "</span>"
+        for i, part in enumerate(parts)
+    )
 
 
 def _domain(finding: dict[str, Any]) -> str:
@@ -395,15 +432,19 @@ class _Renderer:
         return (
             link(self.locations[record.identity], _label(f["subtype"])),
             escape(_label(f["category"])),
-            escape(f["comparability"]),
+            _status(f["comparability"]),
             escape(f["explanation"]),
         )
 
     def record_table(self, title: str, records: list[_Record]) -> str:
-        return table(
-            title,
-            ("Finding and evidence", "Canonical category", "Comparability", "Meaning"),
-            [self.row(record) for record in records],
+        return (
+            '<div class="finding-table">'
+            + table(
+                title,
+                ("Finding and evidence", "Canonical category", "Comparability", "Meaning"),
+                [self.row(record) for record in records],
+            )
+            + "</div>"
         )
 
     def overview(self) -> None:
@@ -476,19 +517,23 @@ class _Renderer:
         self.put("index.html", "Historical comparison overview", body)
 
     def pair_table(self) -> str:
-        return table(
-            "Selected comparison pairs",
-            ("Pair", "Overall", "Communications", "Protocol metadata", "Asset continuity"),
-            [
-                (
-                    link(f"pair-{index}.html", f"Pair {index}"),
-                    escape(p["comparability"]["overall"]),
-                    escape(p["comparability"]["communication_metadata"]),
-                    escape(p["comparability"]["protocol_metadata"]),
-                    escape(p["comparability"]["asset_continuity"]),
-                )
-                for index, p in enumerate(self.report["comparisons"], 1)
-            ],
+        return (
+            '<div class="pair-table">'
+            + table(
+                "Selected comparison pairs",
+                ("Pair", "Overall", "Communications", "Protocol metadata", "Asset continuity"),
+                [
+                    (
+                        link(f"pair-{index}.html", f"Pair {index}"),
+                        _status(p["comparability"]["overall"]),
+                        _status(p["comparability"]["communication_metadata"]),
+                        _status(p["comparability"]["protocol_metadata"]),
+                        _status(p["comparability"]["asset_continuity"]),
+                    )
+                    for index, p in enumerate(self.report["comparisons"], 1)
+                ],
+            )
+            + "</div>"
         )
 
     def scope(self) -> None:
