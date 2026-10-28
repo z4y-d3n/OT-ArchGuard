@@ -7,6 +7,7 @@ creates new findings. Record buckets copy the version-1 summary vocabulary only.
 import hashlib
 from collections import Counter, defaultdict
 from dataclasses import dataclass
+from ipaddress import ip_address
 from typing import Any
 
 from otarchguard.diagnostics import check_limit, fail
@@ -254,6 +255,48 @@ class _Record:
     domain: str
 
 
+def _modbus_label(record: _Record) -> str | None:
+    """Describe retained header recognition, never infer a function's outcome."""
+    finding, key = record.finding, record.finding["key"]
+    if (
+        finding["category"] != "PROTOCOL_METADATA_DIFFERENCE"
+        or not isinstance(key, dict)
+        or key.get("protocol") != "modbus_tcp"
+    ):
+        return None
+    neutral = _label(finding["subtype"])
+    suffix = " · #" + record.identity[2:14]
+    if key.get("status") != "STRUCTURALLY_VALID" or key.get("recognition_method") != (
+        "HEADER_STRUCTURE"
+    ):
+        return neutral + suffix
+    header = key.get("header_metadata")
+    function = header.get("function_code") if isinstance(header, dict) else None
+    categories = {
+        "read_type": "Read-type",
+        "write_type": "Write-type",
+        "read_write_type": "Read/write-type",
+        "diagnostic_type": "Diagnostic-type",
+        "exception_response": "Exception-response",
+    }
+    category_key = key.get("message_category")
+    category = categories.get(category_key) if isinstance(category_key, str) else None
+    if type(function) is not int or not 0 <= function <= 255 or category is None:
+        return neutral + suffix
+    label = neutral.removesuffix(" metadata") + f" · FC{function:02d} {category}"
+    if key.get("endpoint_scope") == "OBSERVED_IP_HEADER":
+        endpoints = [key.get("source_ip"), key.get("destination_ip")]
+        try:
+            for endpoint in endpoints:
+                if not isinstance(endpoint, str) or len(endpoint) > 45 or "%" in endpoint:
+                    return label + suffix
+                ip_address(endpoint)
+        except ValueError:
+            return label + suffix
+        return label + f" · {endpoints[0]} → {endpoints[1]}"
+    return label + suffix
+
+
 def _records(report: dict[str, Any]) -> list[_Record]:
     records: list[_Record] = []
     groups: list[tuple[int | None, list[dict[str, Any]]]] = [
@@ -343,6 +386,15 @@ class _Renderer:
         self.output_bytes = len(self.output["style.css"])
         self.page_count = 0
         self.records = _records(report)
+        self.protocol_labels = {
+            record.identity: label
+            for record in self.records
+            if (label := _modbus_label(record)) is not None
+        }
+        label_counts = Counter(self.protocol_labels.values())
+        for identity, label in self.protocol_labels.items():
+            if label_counts[label] > 1:
+                self.protocol_labels[identity] = label + " · #" + identity[2:14]
         summary = report["summary"]
         buckets = Counter(_bucket(record.finding) for record in self.records)
         if (
@@ -430,7 +482,10 @@ class _Renderer:
     def row(self, record: _Record) -> tuple[str, ...]:
         f = record.finding
         return (
-            link(self.locations[record.identity], _label(f["subtype"])),
+            link(
+                self.locations[record.identity],
+                self.protocol_labels.get(record.identity, _label(f["subtype"])),
+            ),
             escape(_label(f["category"])),
             _status(f["comparability"]),
             escape(f["explanation"]),

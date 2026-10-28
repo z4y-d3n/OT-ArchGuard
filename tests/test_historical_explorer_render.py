@@ -3,6 +3,7 @@
 import copy
 import re
 from html.parser import HTMLParser
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -434,3 +435,157 @@ def test_incremental_rendering_budget_fails_closed(
     monkeypatch.setattr(explorer_render, limit, 1)
     with pytest.raises(ModelError):
         render(report, verification)
+
+
+class _FindingLinks(HTMLParser):
+    """Read first-column link text independently of the production label helper."""
+
+    def __init__(self, page: bytes) -> None:
+        super().__init__(convert_charrefs=True)
+        self.labels: list[tuple[str, str]] = []
+        self.cell = 0
+        self.href: str | None = None
+        self.value = ""
+        self.feed(page.decode())
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag == "tr":
+            self.cell = 0
+        elif tag == "td":
+            self.cell += 1
+        elif tag == "a" and self.cell == 1:
+            self.href = dict(attrs).get("href")
+            self.value = ""
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag == "a" and self.href is not None:
+            self.labels.append((self.href, self.value))
+            self.href = None
+        elif tag == "table":
+            self.cell = 0
+
+    def handle_data(self, data: str) -> None:
+        if self.href is not None:
+            self.value += data
+
+
+def _modbus_key() -> dict[str, Any]:
+    return {
+        "protocol": "modbus_tcp",
+        "status": "STRUCTURALLY_VALID",
+        "recognition_method": "HEADER_STRUCTURE",
+        "message_category": "read_type",
+        "header_metadata": {"function_code": 3, "unit_id": 1},
+        "endpoint_scope": "OBSERVED_IP_HEADER",
+        "source_ip": "192.0.2.10",
+        "destination_ip": "192.0.2.20",
+    }
+
+
+def test_four_canonical_modbus_findings_have_distinct_supported_labels(tmp_path: Path) -> None:
+    from otarchguard.drift.engine import compare
+    from otarchguard.drift.reports import verify_report
+    from tools.drift_walkthrough import canonical, comparison_context, prepare
+
+    selected = prepare(tmp_path / "fictional", variations=False)
+    workspace = Path(selected["workspace"])
+    reference = selected["periods"]["reference"]["analysis_id"]
+    candidate = selected["periods"]["candidate"]["analysis_id"]
+    report = compare(
+        workspace,
+        selected["baseline_id"],
+        [candidate],
+        comparison_context(reference, candidate, selected["scope"]),
+    )
+    original = canonical(report)
+    path = tmp_path / "drift.json"
+    path.write_bytes(original)
+    verified = verify_report(workspace, path)
+    files = render(report, verified)
+    links = _FindingLinks(files["protocol-modbus-tcp.html"]).labels
+    assert [label for _, label in links] == [
+        "Reference only · FC03 Read-type · 192.0.2.10 → 192.0.2.20",
+        "Reference only · FC03 Read-type · 192.0.2.11 → 192.0.2.20",
+        "Candidate only · FC03 Read-type · 192.0.2.99 → 192.0.2.20",
+        "Candidate only · FC06 Write-type · 192.0.2.11 → 192.0.2.20",
+    ]
+    assert len({label for _, label in links}) == len({href for href, _ in links}) == 4
+    pages = _structural_oracle(files)
+    identities = [
+        identity for page in pages.values() for identity in page.ids if identity.startswith("f-")
+    ]
+    assert len(identities) == len(set(identities)) == 14
+    assert canonical(report) == path.read_bytes() == original
+    assert all(href.partition("#")[2] in pages["protocols.html"].ids for href, _ in links)
+    assert (
+        b"Write-type function metadata does not prove successful command execution."
+        in (files["protocols.html"])
+    )
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [
+        {"header_metadata": None},
+        {"header_metadata": {"function_code": True}},
+        {"header_metadata": {"function_code": -1}},
+        {"header_metadata": {"function_code": 256}},
+        {"message_category": "executed_write"},
+        {"message_category": []},
+        {"status": "PORT_HINT"},
+        {"status": "UNSUPPORTED_VARIANT"},
+        {"status": "TRUNCATED"},
+        {"status": "MALFORMED"},
+        {"recognition_method": "PORT_ASSOCIATION"},
+    ],
+)
+def test_missing_or_unsupported_modbus_metadata_stays_neutral(changes: dict[str, Any]) -> None:
+    report, verified = _fixture()
+    finding = report["comparisons"][0]["findings"][8]
+    finding.update(subtype="REFERENCE_ONLY_METADATA", key=_modbus_key() | changes)
+    files = render(report, verified)
+    (link,) = _FindingLinks(files["protocol-modbus-tcp.html"]).labels
+    assert re.fullmatch(r"Reference only metadata · #[0-9a-f]{12}", link[1])
+    assert link[1].endswith("#" + link[0].split("#f-")[1][:12])
+    assert files == render(copy.deepcopy(report), copy.deepcopy(verified))
+
+
+@pytest.mark.parametrize(
+    "endpoint", [None, "javascript:evil", "<script>x</script>", "fe80::1%eth0"]
+)
+def test_missing_ip_context_uses_short_id_without_invented_direction(endpoint: object) -> None:
+    report, verified = _fixture()
+    finding = report["comparisons"][0]["findings"][8]
+    finding["key"] = _modbus_key() | {"destination_ip": endpoint}
+    files = render(report, verified)
+    ((_, label),) = _FindingLinks(files["protocol-modbus-tcp.html"]).labels
+    assert re.fullmatch(r"Candidate only · FC03 Read-type · #[0-9a-f]{12}", label)
+    assert "→" not in label
+    _structural_oracle(files)
+
+
+def test_identical_descriptions_use_existing_ids_and_other_families_stay_unchanged() -> None:
+    report, verified = _fixture()
+    findings = report["comparisons"][0]["findings"]
+    for i, finding in enumerate(findings[8:10]):
+        finding["key"] = _modbus_key()
+        finding["key"]["header_metadata"]["unit_id"] = i + 1
+    files = render(report, verified)
+    labels = _FindingLinks(files["protocol-modbus-tcp.html"]).labels
+    assert len({label for _, label in labels}) == 2
+    for href, label in labels:
+        assert re.fullmatch(
+            r"Candidate only · FC03 Read-type · 192.0.2.10 → 192.0.2.20 · #[0-9a-f]{12}", label
+        )
+        assert label.endswith("#" + href.split("#f-")[1][:12])
+    baseline_report, baseline_verified = _fixture()
+    baseline = render(baseline_report, baseline_verified)
+    for family in ("ethernet_ip", "s7comm", "iec104", "opcua_binary", "dnp3"):
+        name = "protocol-" + family.replace("_", "-") + ".html"
+        assert files[name] == baseline[name]
+    # An FC-shaped field in another family must not acquire a Modbus label.
+    findings[9]["key"]["protocol"] = "profinet_dcp"
+    other = render(report, verified)
+    assert (
+        _FindingLinks(other["protocol-profinet-dcp.html"]).labels[0][1] == "Candidate only metadata"
+    )
