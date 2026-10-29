@@ -211,7 +211,7 @@ def _reviewed_explorer_header_change(before: bytes, after: bytes) -> bool:
 
 
 def _reviewed_additional_presentation_change(name: str, before: bytes, after: bytes) -> bool:
-    """Allow only the two additional, explicitly reviewed presentation-test diffs."""
+    """Allow only exact reviewed presentation assertions and trace-documentation repair."""
     changes: tuple[tuple[bytes, bytes], ...]
     if name == "tests/test_presentation.py":
         changes = (
@@ -234,6 +234,21 @@ def _reviewed_additional_presentation_change(name: str, before: bytes, after: by
                 b"in CSS\n"
                 b'    assert ".compact-fields{display:flex" in CSS\n'
                 b'    assert "grid-template-columns:fit-content(35%)" not in CSS\n',
+            ),
+            (
+                b'    readme = (root / "README.md").read_text(encoding="utf-8")\n'
+                b"    exit_section = readme[\n"
+                b'        readme.index("| Exit | Meaning |") : '
+                b'readme.index("## Examples and technical documentation")\n'
+                b"    ]\n"
+                b'    assert "Trace exit 0" in exit_section and "unreachable" in exit_section\n',
+                b'    contract = " ".join(guide.split())\n'
+                b'    assert "Exit 0 means a supported query completed, '
+                b'including unreachable or mixed results." in (\n'
+                b"        contract\n"
+                b"    )\n"
+                b'    assert "| status | literal `complete`; '
+                b'does not assert reachability |" in contract\n',
             ),
         )
     else:
