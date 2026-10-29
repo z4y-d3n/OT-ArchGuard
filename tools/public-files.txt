@@ -101,6 +101,7 @@ docs/development/v14-06-packaging-audit.md
 docs/development/v14-06-parent-ci.json
 docs/development/v14-06-performance.md
 docs/development/v14-06-pipeline-audit.md
+docs/development/v14-06-public-documentation-es.md
 docs/development/v14-06-publication-runbook-es.md
 docs/development/v14-06-readiness.md
 docs/development/v14-06-security-audit.md

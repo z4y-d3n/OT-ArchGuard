@@ -29,7 +29,7 @@ not PASS merely because all local tests passed.
       `python -m tools.prepare_release --output output/release-review`.
 - [ ] Reopen/re-audit the four completed assets with
       `python -m tools.prepare_release --output output/release-review --verify`.
-- [ ] Authorize the owner-controlled Draft PR, then verify six hosted jobs for its
+- [ ] Authorize the update to the existing V14-06 Draft PR, then verify six hosted jobs for its
       exact source SHA, event, matrix, conclusions, skips and retained artifacts.
 - [ ] Integrate the stack in the documented order; identify the resulting `main`
       SHA/tree and verify it independently, especially after squash/rebase/conflicts.
@@ -40,6 +40,11 @@ not PASS merely because all local tests passed.
 
 V14-04 visual acceptance and the six successful V14-05 parent jobs are relevant
 prior evidence, not hosted acceptance of a changed V14-06 or integrated source.
+The owner also reports six jobs for checkpoint `5c70ae09904687070ecce9374546aff8ae806588`
+on Draft PR #24. The [public-documentation handoff](development/v14-06-public-documentation-es.md)
+records focused checks for the later documentation source; that source still
+requires its own hosted CI. Pure documentation changes use proportionate local
+checks; the final integrated release retains the full acceptance gates below.
 No final stable tag or public v1.4 assets are created by this checklist/rehearsal.
 
 ## Reusable exact-source checks

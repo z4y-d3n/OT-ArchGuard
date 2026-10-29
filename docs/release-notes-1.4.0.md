@@ -66,7 +66,7 @@ Use the audited local candidate assets identified by the handoff:
 as a published release. Verify all checksums and source identity, then install
 one distribution into a new environment alongside the known-good v1.3.0 environment.
 See [wheel/sdist/offline installation](installation.md) and the
-[README first run](../README.md#install-and-run).
+[README first run](../README.md#quick-start--5-minutes).
 
 Python metadata is `>=3.12`. The required hosted matrix is Windows, Ubuntu and
 macOS with Python 3.12/3.14. Admission by metadata is distinct from testing every
@@ -105,6 +105,11 @@ See the [protocol guide](v14-foundation.md), [history](v14-history.md),
 The exact V14-05 parent `ac893bc3174f0a7ace67454d19ad6e61116425af` passed
 [push run 40880668115](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40880668115),
 six Windows/Ubuntu/macOS × Python 3.12/3.14 jobs. These results belong to the parent.
+For V14-06, the owner reports six successful hosted jobs for
+`5c70ae09904687070ecce9374546aff8ae806588` on Draft PR #24. The later
+[documentation pass](development/v14-06-public-documentation-es.md) requires CI
+for its own exact SHA; the supplied checkpoint status was not queried remotely
+during that local-only pass.
 V14-04 semantic HTML received owner visual acceptance, including high-zoom review.
 Static automated checks alone do not establish browser, keyboard, focus or print
 acceptance; materially changed pages require renewed targeted human inspection.
@@ -114,8 +119,9 @@ offline workflows, historical verifier results, performance evidence and skips.
 Repeated executions are not additional unique tests. Do not infer final candidate
 CI results from parent CI or final merged-source acceptance from a Draft PR.
 
-The owner must review the local candidate, authorize a Draft PR, verify six hosted
-jobs for its exact SHA, integrate the stack, accept the exact resulting release
+The owner must review the local documentation candidate, authorize its push to
+the existing V14-06 Draft PR, verify six hosted jobs for its exact SHA, integrate
+the stack, accept the exact resulting release
 source and rebuild/audit its assets before separately authorizing tag/publication.
 See the [release checklist](release-checklist.md).
 

@@ -2,6 +2,14 @@
 
 ## V1.4 release-candidate evidence
 
+For the public-documentation pass, the owner reports that checkpoint
+`5c70ae09904687070ecce9374546aff8ae806588` on Draft PR #24 passed all six hosted
+jobs. That supplied report is not a new remote query or acceptance of the later
+documentation commit. The [documentation handoff](development/v14-06-public-documentation-es.md)
+records focused local onboarding, link and source/package checks, plus the
+outstanding genuine browser capture. The earlier engineering evidence follows
+with its original source identities.
+
 The current local candidate distribution/CLI is `1.4.0`; native engine and the
 historical `__version__` alias remain `1.3.0`. The exact V14-05 parent
 `ac893bc3174f0a7ace67454d19ad6e61116425af` passed

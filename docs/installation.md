@@ -14,8 +14,12 @@ a claim that every future Python release has been tested.
 
 Stable users can download the four assets from the published v1.3.0 release page.
 For candidate review, obtain the four **local** files identified by the exact-source
-V14-06 handoff. Repository reviewers find them in `output/v146/release-assets/`
-after the local rehearsal. Copy all four to `artifacts/` in a review directory:
+documentation handoff. Repository reviewers find the new documentation-source
+assets in `output/v146-docs/release-assets/` after its source-bound rehearsal.
+See the [documentation handoff](development/v14-06-public-documentation-es.md).
+The earlier `output/v146/release-assets/` set is preserved historical evidence
+for the preceding source; its hashes do not describe the new documentation commit.
+Copy all four matching files to `artifacts/` in a review directory:
 
 | Candidate file | Purpose |
 |---|---|
@@ -130,6 +134,54 @@ that denies Python network operations is evidence for tested workflows, not a
 physical air-gap guarantee.
 
 ## Verify declarations and reports
+
+For a first report from a wheel and matching source archive, use the
+[candidate Quick Start](../README.md#quick-start--5-minutes). The source archive
+contains the fictional models; the wheel contains the runtime application.
+Extracting examples does not install the source or require Git. Choose fresh
+environment and report directories.
+
+### Stable v1.3.0 first run
+
+Obtain and verify the published v1.3.0 wheel and source archive using that
+release's manifest and `SHA256SUMS.txt`. In a fresh folder with both archives
+under `artifacts/`, use Python >=3.12 and Windows PowerShell:
+
+```powershell
+python -m venv .venv-stable
+.\.venv-stable\Scripts\python.exe -m pip install artifacts/otarchguard-1.3.0-py3-none-any.whl
+.\.venv-stable\Scripts\python.exe -m pip check
+.\.venv-stable\Scripts\otarchguard.exe --version
+tar -xf artifacts/otarchguard-1.3.0.tar.gz
+.\.venv-stable\Scripts\otarchguard.exe explore otarchguard-1.3.0/examples/remote-support/proposed.yaml --output stable-report
+Invoke-Item .\stable-report\index.html
+```
+
+This uses the existing published release, not the v1.4 candidate. Expected
+`--version` output: `1.3.0`. The native `explore` command produces a local
+declared-model browser; it does not evaluate all operational intents.
+
+### Candidate first report on Linux/macOS
+
+After obtaining and verifying the local candidate assets as above, use a fresh
+folder and an installed Python 3.12 (or select Python 3.14 explicitly):
+
+```bash
+python3.12 -m venv .venv
+.venv/bin/python -m pip install artifacts/otarchguard-1.4.0-py3-none-any.whl
+.venv/bin/python -m pip check
+.venv/bin/otarchguard --version
+tar -xf artifacts/otarchguard-1.4.0.tar.gz
+.venv/bin/otarchguard explore otarchguard-1.4.0/examples/remote-support/proposed.yaml --output report
+```
+
+Open `report/index.html` in a local browser: `open report/index.html` on macOS
+or `xdg-open report/index.html` on a Linux desktop. The Windows candidate
+sequence is executed in the documentation handoff; these POSIX equivalents
+require native hosted verification for the new source. They are not a claim
+of a local Linux/macOS run. All report resources are local.
+
+### Further native checks
 
 After installation, preserve the full environment paths and verify identity:
 
