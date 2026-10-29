@@ -171,9 +171,8 @@ def audit(wheel: Path, sdist: Path, source_root: Path | None = None) -> dict[str
     ):
         if wheel_metadata.get_all(field) != [expected_value]:
             raise ValueError(f"Unexpected pure-Python wheel metadata: {field}")
-    if len(metadata.get_all("Metadata-Version", [])) != 1:
-        raise ValueError("Wheel metadata requires exactly one Metadata-Version")
     for field, expected_value in (
+        ("Metadata-Version", "2.4"),
         ("Name", project["name"]),
         ("Version", project["version"]),
         ("License-Expression", "Apache-2.0"),

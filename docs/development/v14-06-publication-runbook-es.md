@@ -126,8 +126,11 @@ $env:PIP_NO_INDEX = '1'
 ```
 
 Use destinos nuevos para cada ejecución. El hook no demuestra un air gap físico.
-La suite sdist debe ejecutarse desde su extracción auditada con el paquete sdist
-instalado regularmente; nunca agregue `src` a PYTHONPATH para esa aceptación.
+La suite sdist usa las pruebas del checkout aceptado con el paquete sdist
+instalado regularmente, como la CI: algunas pruebas necesitan los pins de Git.
+Verifique el import en su site-packages independiente; nunca agregue `src` a
+PYTHONPATH para esa aceptación. Ejecute además los ejemplos desde la extracción
+auditada del sdist cuando no necesiten el historial Git.
 
 ## F. Revisar notas y checksums
 

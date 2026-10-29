@@ -59,6 +59,8 @@ def _metadata(data: bytes, field: str, mutation: str) -> bytes:
         del lines[index]
     elif mutation == "identical":
         lines.insert(index + 1, lines[index])
+    elif mutation.startswith("replace:"):
+        lines[index] = prefix + mutation.removeprefix("replace:").encode()
     else:
         lines.insert(index + 1, prefix + b"unreviewed-conflicting-value")
     return newline.join(lines) + separator + description
@@ -188,4 +190,19 @@ def test_entry_points_equal_project_scripts_even_if_both_archives_agree(
     _rewrite_wheel(wheel, changed_wheel, "", "", member="entry_points.txt", replacement=replacement)
     _rewrite_sdist(sdist, changed_sdist, "entrypoints", "", "", replacement=replacement)
     with pytest.raises(ValueError, match="entry point metadata"):
+        release.audit(changed_wheel, changed_sdist, source)
+
+
+@pytest.mark.parametrize("version", ["garbage", "9.9"])
+def test_metadata_format_requires_reviewed_value_even_if_all_three_records_agree(
+    archives: tuple[Path, Path, Path], tmp_path: Path, version: str
+) -> None:
+    source, wheel, sdist = archives
+    changed_wheel = tmp_path / wheel.name
+    intermediate, changed_sdist = tmp_path / "root-pkginfo.tar.gz", tmp_path / sdist.name
+    mutation = "replace:" + version
+    _rewrite_wheel(wheel, changed_wheel, "Metadata-Version", mutation)
+    _rewrite_sdist(sdist, intermediate, "sdist-root", "Metadata-Version", mutation)
+    _rewrite_sdist(intermediate, changed_sdist, "sdist-egg", "Metadata-Version", mutation)
+    with pytest.raises(ValueError, match="metadata"):
         release.audit(changed_wheel, changed_sdist, source)

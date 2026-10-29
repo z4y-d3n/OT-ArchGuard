@@ -9,7 +9,7 @@ de vincular los paquetes finales con el freeze y las instalaciones verificadas.
 
 | ID / gravedad | Reproducción independiente y resultado anterior | Corrección y prueba | Límite residual |
 |---|---|---|---|
-| V146-E01 / P1 | Sobre wheel y sdist reales del padre, agregar `Version: 9.9.9` como segunda cabecera en METADATA y ambos PKG-INFO; recalcular RECORD. La auditoría aceptaba la identidad ambigua. También aceptaba un comando adicional en ambos entry_points y cambios a Wheel-Version, Root-Is-Purelib o Tag. Se esperaba rechazo. | `tools/audit_release.py` exige una sola cabecera de identidad con su valor revisado, Metadata-Version único y consistente, perfil wheel `1.0` / `true` / `py3-none-any`, y tabla `console_scripts` exactamente igual a `project.scripts`. Rechaza defaults, secciones/comandos extra, duplicados, cambios de mayúsculas y sintaxis inválida. Generator no se fija artificialmente. 39 regresiones pasan usando archivos reales construidos desde una copia aislada de las fuentes públicas. | No es autenticación del editor ni firma criptográfica. No se amplía la lista de dependencias ni de miembros permitidos. |
+| V146-E01 / P1 | Sobre wheel y sdist reales del padre, agregar `Version: 9.9.9` como segunda cabecera en METADATA y ambos PKG-INFO; recalcular RECORD. La auditoría aceptaba la identidad ambigua. También aceptaba un comando adicional en ambos entry_points y cambios a Wheel-Version, Root-Is-Purelib o Tag. Se esperaba rechazo. | `tools/audit_release.py` exige una sola cabecera de identidad con su valor revisado, Metadata-Version único y exactamente `2.4`, perfil wheel `1.0` / `true` / `py3-none-any`, y tabla `console_scripts` exactamente igual a `project.scripts`. Rechaza defaults, secciones/comandos extra, duplicados, cambios de mayúsculas y sintaxis inválida. Generator no se fija artificialmente. 41 regresiones usan archivos reales construidos desde una copia aislada de las fuentes públicas. | No es autenticación del editor ni firma criptográfica. No se amplía la lista de dependencias ni de miembros permitidos. |
 | V146-E02 / P1 | El nuevo ensamblador invocaba dos hooks usando `sys.argv[1]`; setuptools altera argv durante el primero. El sdist se generaba en `bdist_wheel/`, aunque el proceso terminaba con código cero. | El integrador guarda el destino antes de ejecutar los hooks. La auditoría/reapertura posterior debe encontrar ambos archivos en el destino solicitado. | El ensayo final desde commit limpio pertenece a la aceptación del integrador; una construcción aislada no lo sustituye. |
 | V146-E03 / P2 | Los avisos de herramientas nombraban versiones antiguas de pip mientras el entorno aprobado usa 26.2.2. | Corrección acotada en `THIRD_PARTY_NOTICES.md`. | Las versiones resueltas futuras requieren otra revisión. |
 
@@ -80,17 +80,21 @@ todas las herramientas de desarrollo instaladas. No añade red al producto.
 
 ```powershell
 .venv/Scripts/python.exe -m pytest tests/test_v146_packaging_audit.py -q --tb=short `
-  --basetemp=output/v146/packaging-audit-final-tmp `
-  --junitxml=output/v146/packaging-audit-final.xml
+  --basetemp=output/v146/packaging-audit-review-tmp `
+  --junitxml=output/v146/packaging-audit-review.xml
 .venv/Scripts/python.exe -m ruff check tools/audit_release.py tests/test_v146_packaging_audit.py
 .venv/Scripts/python.exe -m ruff format --check tools/audit_release.py tests/test_v146_packaging_audit.py
 .venv/Scripts/python.exe -m mypy tools/audit_release.py tests/test_v146_packaging_audit.py
 ```
 
-Resultado focalizado: **39 PASS**, sin skips/fallos/errores; Ruff lint/format y mypy
+Resultado focalizado: **41 PASS**, sin skips/fallos/errores; Ruff lint/format y mypy
 estricto pasan. No se suman estas ejecuciones a los casos únicos de la suite final.
 La prueba de archivos intactos confirma aceptación antes de las mutaciones;
 los ataques recalculan RECORD y, para entrypoints, coordinan ambos formatos.
+La revisión final añadió un contraejemplo coordinado: Metadata-Version `garbage`
+o `9.9` en las tres copias seguía pasando cuando sólo se exigía unicidad.
+El integrador fijó el perfil revisado `2.4` y dos casos nuevos verifican su rechazo,
+conservando la prueba de aceptación de archivos intactos.
 Los fallos iniciales del propio harness (argv y separadores CRLF) se corrigieron
 antes de esta aceptación; no se ocultaron ajustando el comportamiento del producto.
 
