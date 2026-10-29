@@ -122,6 +122,7 @@ include docs/domain-model.md
 include docs/images/README.md
 include docs/images/architecture-explorer-overview.png
 include docs/images/flat-plant-proposed.png
+include docs/images/historical-explorer-v14.png
 include docs/images/pcap-evidence-studio-overview.png
 include docs/images/remote-support-proposed.png
 include docs/import-studio.md

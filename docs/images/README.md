@@ -1,58 +1,58 @@
 # Product visuals and provenance
 
-## V1.4 Historical Explorer browser capture — owner action
+## V1.4 Historical Explorer browser screenshot
 
-No genuine v1.4 browser screenshot is committed. During the public-documentation
-pass, Windows Computer Use stopped because it could not determine the current
-browser URL confidently enough to enforce policy. No alternate browser route,
-local server, mockup or image generator was used to replace that blocked capture.
-The README retains an explicitly labelled v1.3 diagram preview with its original
-credits and provenance below.
+<a id="v14-historical-explorer-browser-capture--owner-action"></a>
 
-The installed `1.4.0` candidate generated the existing fictional acceptance
-scenario using this command from the repository root (the output must be fresh):
+[Historical Explorer screenshot](historical-explorer-v14.png) is the owner's
+supplied genuine v1.4 browser capture, now used near the beginning of the README.
+It shows the **Investigate a domain / Complete domain navigation** table of a
+fictional historical comparison, with canonical record counts and interpretation
+limits for communications, protocols, declarations, native assessments and
+coverage. Counts are evidence records, not incidents or proof of deployed change.
+
+| Property | Recorded value |
+| --- | --- |
+| Image | `docs/images/historical-explorer-v14.png` |
+| Dimensions / encoding | 1892 × 899 pixels, 8-bit RGB PNG |
+| Size | 113569 bytes |
+| SHA-256 | `d6f3879ecab8043eff41db6a5c46837431962b674c12412aadce63250d723bc6` |
+| Source scenario | `tools.historical_explorer_walkthrough.scenario`, normal comparison; reuses `tools.drift_walkthrough.prepare` and its fictional packet/model producer |
+| Matching local source HTML | `output/v146-docs/historical-explorer/normal/index.html`, domain navigation table |
+| Local HTML SHA-256 | `3b6b5cf3e9271c3e6322e0c5551b17f94355333cd683d05d655a84f565d3447c` |
+| Browser / version / zoom / viewport | Not supplied; unknown |
+| Capture method / original crop | Owner-provided browser screenshot; exact method and crop coordinates not supplied |
+| Integration processing | Original supplied PNG bytes preserved; no crop, resizing, annotations or evidence edits |
+
+The image contains the report-content region without browser chrome. Its visible
+table matches the available local HTML, including domain counts 3, 4, 3, 2, 1, 1
+and 0 and the explicit uncertainty notes. This correspondence identifies the
+matching report section; it does not independently authenticate the owner's
+capture session or establish unknown browser settings.
+
+The preceding documentation pass generated the local report with the regular
+installed candidate using this command from the repository root (the output
+must be fresh when reproducing):
 
 ```powershell
 .\.venv-v146-wheel\Scripts\python.exe -m tools.historical_explorer_walkthrough --output output/v146-docs/historical-explorer
 ```
 
-Producer source: `5c70ae09904687070ecce9374546aff8ae806588`; distribution/CLI
-`1.4.0`, native engine `1.3.0`, native schema `1`. Fixture:
-`tools.historical_explorer_walkthrough.scenario`, reusing
-`tools.drift_walkthrough.prepare` and its fictional packet/model producer.
-All reviewer decisions in that harness are authored teaching assertions.
-The candidate runtime modules are checked against this source; the documentation
-pass changes no runtime modules or analytical semantics.
+Report producer source: `5c70ae09904687070ecce9374546aff8ae806588`;
+distribution/CLI `1.4.0`, native engine `1.3.0`, native schema `1`. All fixture
+packets, models and reviewer assertions are fictional. The normal report has
+14 findings: 12 differences, one unchanged-support record and one abstention.
+The harness subsequently revokes its fictional baseline; approval recorded at
+generation is separate from a later current-approval check. The screenshot does
+not confer approval on real evidence or prove an incident, successful industrial
+command or deployed network change.
 
-Owner capture instructions:
-
-1. Open `output/v146-docs/historical-explorer/normal/index.html` directly in a
-   permitted browser. Keep the entire generated directory for navigation.
-2. Inspect `communications.html` and follow a finding's evidence link. Prefer
-   the page/region that shows readable findings, source links and the qualified
-   interpretation. The normal example has 14 findings: 12 differences, one
-   unchanged-support record and one abstention. These counts are not incidents.
-3. Keep comparability, uncertainty and interpretation warnings visible. Inspect
-   `coverage.html` and `verification.html` before choosing the final crop. The
-   harness deliberately revokes the fictional baseline after normal generation;
-   recorded approval and a subsequent current approval check may differ.
-4. Capture at 100% browser zoom, approximately 1400 pixels wide. Exclude browser
-   profile controls, the filesystem address bar and unrelated desktop content.
-   Do not edit findings, hide qualifications or label the image as current
-   approval. Do not redistribute operational captures.
-5. Save an optimized PNG/WebP, for example
-   `docs/images/historical-explorer-v14-fictional.png`. Record the exact HTML
-   page/hash, browser/version, viewport, zoom, capture method, dimensions, byte
-   count and any crop/resizing. Add descriptive alt text when replacing the
-   legacy preview near the README opening.
-6. Add that exact image to `tools/public-files.txt` and `MANIFEST.in`, rerun
-   source/package/link checks and obtain CI for the new exact commit. There is
-   intentionally no unresolved image reference in the README.
-
-The source HTML is a real generated report. A screenshot has **not** been
-captured, cropped, resized or visually accepted in this pass. Local receipts,
-exact Windows acceptance paths and hashes are in the
-[Spanish documentation handoff](../development/v14-06-public-documentation-es.md).
+See the [Historical Explorer guide](../v14-historical-explorer.md) and the
+[preceding Spanish documentation handoff](../development/v14-06-public-documentation-es.md)
+for report generation and its earlier capture limitation. That handoff describes
+the state before the owner supplied this image. The legacy anchor above preserves
+its link; the screenshot is now integrated, without claiming a new browser,
+keyboard or accessibility acceptance review.
 
 ## Stable v1.3.0 previews
 
