@@ -95,6 +95,8 @@ jobs:
           python -m tools.protocol_corpus --manifest tests/fixtures/protocol-corpus/manifest.json --verify synthetic-industrial --file tests/fixtures/protocol-corpus/synthetic-industrial.pcap
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python -m tools.evidence_walkthrough --output output/evidence-walkthrough
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m tools.evidence_history_walkthrough --output output/evidence-history-walkthrough
       - name: Verify installed sdist and project walkthrough offline
         env:
           OTARCHGUARD_OFFLINE_CHECK: '1'
@@ -143,6 +145,7 @@ jobs:
             output/quality-walkthrough/walkthrough.json
             output/capture-walkthrough/walkthrough.json
             output/evidence-walkthrough/walkthrough.json
+            output/evidence-history-walkthrough/walkthrough.json
             output/ci-revision.json
             output/native-compatibility/comparison.json
             output/native-compatibility/command-*.stdout

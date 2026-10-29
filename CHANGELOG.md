@@ -2,6 +2,11 @@
 
 ## Unreleased — v1.4 local development foundation
 
+- V14-02 adds explicit byte-preserving workspace-v2 migration, four validated
+  attachment kinds, immutable analytical revisions with exact producer semantics,
+  and evidence/architecture baseline proposals with scoped local human review,
+  revocation, supersession and conflict detection. Historical drift and its
+  visualization remain future milestones.
 - V14-01 adds EtherNet/IP/limited CIP, classic S7comm, IEC-104, OPC UA Binary
   outer framing and CRC-checked DNP3 to complete seven bounded header subsets.
 - Preserve enrichment schema 1; emit decoder revision 2 and strictly consume
@@ -17,8 +22,8 @@
   duplicate identification, listing, inspection and integrity verification.
 - Establish a three-tier development corpus provenance manifest and independent
   synthetic reference checks. External real-world validation remains pending.
-- Keep the remaining five protocols, approved baselines, historical comparisons,
-  historical Explorer and final release acceptance explicitly unfinished. See the
+- Keep historical comparisons, historical Explorer and final release acceptance
+  explicitly unfinished. See the
   [rolling v1.4 acceptance record](docs/development/v14-progress.md).
 
 ## 1.3.0 — 2026-10-26 (stable)

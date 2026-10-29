@@ -9,6 +9,7 @@ THIRD_PARTY_NOTICES.md
 benchmarks/__init__.py
 benchmarks/capture.py
 benchmarks/documents.py
+benchmarks/evidence_history.py
 benchmarks/explorer.py
 benchmarks/profile.py
 benchmarks/projects.py
@@ -70,12 +71,14 @@ docs/development/v13-benchmark-results.md
 docs/development/v13-final-baseline-and-impact.md
 docs/development/v13-gate-evidence.md
 docs/development/v14-01-handoff-es.md
+docs/development/v14-02-handoff-es.md
 docs/development/v14-analysis-revisions-adr.md
 docs/development/v14-architecture.md
 docs/development/v14-enip-s7.md
 docs/development/v14-enrichment-contract.md
 docs/development/v14-evidence-contract.md
 docs/development/v14-external-corpus.md
+docs/development/v14-history-contract.md
 docs/development/v14-iec-opc-dnp.md
 docs/development/v14-progress.md
 docs/development/v14-protocol-corpus.md
@@ -111,6 +114,7 @@ docs/v1.1/gate-v11-5.md
 docs/v1.1/gate-v11-6.md
 docs/v1.1/public-contract-inventory.md
 docs/v14-foundation.md
+docs/v14-history.md
 docs/verification.md
 docs/yaml-schema-v1.md
 examples/README.md
@@ -201,8 +205,13 @@ src/otarchguard/diagnostics.py
 src/otarchguard/diagrams.py
 src/otarchguard/domain.py
 src/otarchguard/evidence/__init__.py
+src/otarchguard/evidence/attachments.py
 src/otarchguard/evidence/cli.py
+src/otarchguard/evidence/history.py
+src/otarchguard/evidence/lifecycle.py
 src/otarchguard/evidence/observations.py
+src/otarchguard/evidence/reviews.py
+src/otarchguard/evidence/revisions.py
 src/otarchguard/evidence/workspace.py
 src/otarchguard/explorer.py
 src/otarchguard/explorer_data.py
@@ -277,6 +286,7 @@ tests/fixtures/capture-interoperability/spec-unsupported-section.data
 tests/fixtures/capture-interoperability/text2pcap-nsecpcap.data
 tests/fixtures/capture-interoperability/text2pcap-pcap.data
 tests/fixtures/capture-interoperability/text2pcap-pcapng.data
+tests/fixtures/evidence-history-v1/identity.json
 tests/fixtures/invalid-interface-placement.yaml
 tests/fixtures/invalid-missing-reference.yaml
 tests/fixtures/minimal-valid.yaml
@@ -308,6 +318,12 @@ tests/test_comparison_properties.py
 tests/test_console_resolution.py
 tests/test_contract.py
 tests/test_diagram_geometry.py
+tests/test_evidence_attachments.py
+tests/test_evidence_history.py
+tests/test_evidence_lifecycle_cli.py
+tests/test_evidence_reviews.py
+tests/test_evidence_revisions.py
+tests/test_evidence_v142_audit.py
 tests/test_evidence_workspace.py
 tests/test_explorer.py
 tests/test_explorer_compact.py
@@ -370,6 +386,7 @@ tools/capture_workloads.py
 tools/compare_versioned_contract.py
 tools/development_disk.py
 tools/document_walkthrough.py
+tools/evidence_history_walkthrough.py
 tools/evidence_identity.py
 tools/evidence_walkthrough.py
 tools/explorer_walkthrough.py
