@@ -8,8 +8,9 @@ development product identity.
 The stable release is v1.3.0; this modified branch is not a stable distribution.
 The following operations are implemented. V14-02 adds explicit migration,
 analytical revisions and scoped local baseline review in the
-[historical evidence workflow](v14-history.md). Historical comparisons and
-the historical Explorer remain future milestones.
+[historical evidence workflow](v14-history.md). V14-03 adds the separate
+[historical comparison workflow](v14-drift.md). The historical Explorer remains
+a future milestone.
 
 ## Independent protocol metadata
 
@@ -95,9 +96,11 @@ metadata text. Review it before sharing. Hashes provide integrity, not authentic
 The lifecycle storage consumer rejects unknown extension fields and never rewrites
 the source observation to remove them; its v1 policy is narrower than the frozen
 read-only probe. Unknown codes in supported text fields do not become assessments.
-The lifecycle currently imports observations only: enrichment attachments, reviewed
-associations, native comparisons, explicit baselines, drift, reports and bundles
-require subsequent contracts. No association is carried across capture periods.
+The workspace-v1 snapshot workflow described here imports observations only.
+Enrichment attachments, reviewed associations, native comparisons and explicit
+baselines use the later workspace-v2 contracts; historical comparisons use the
+separate drift-report contract linked above. No association is automatically
+carried across capture periods. Portable bundles remain a later milestone.
 
 See [architecture decisions](development/v14-architecture.md),
 [corpus provenance](development/v14-protocol-corpus.md) and

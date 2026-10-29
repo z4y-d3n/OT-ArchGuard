@@ -1,5 +1,50 @@
 # OT-ArchGuard v1.4 progress and acceptance record
 
+## V14-03 current local checkpoint
+
+**READY_WITH_NONBLOCKING_LIMITATIONS** — 2026-10-27. Branch
+`codex/v14-03-historical-drift-analysis` starts at verified local/remote V14-02P
+`b25347494a74fb0b2952b11c4cbb69b0a9eb75d6`. Runtime freeze:
+`1750f275b0808380ef942184f40cf6a8ba2d5402`; later delivery edits are docs/data and
+public inventories only. Native engine 1.3.0, all historical producers/consumers,
+goldens, approvals and storage contracts retain their accepted meanings/bytes.
+
+Implemented: exact currently approved reference selection, explicit one-to-one
+candidate alignment, per-dimension comparability, finite directional communication
+and seven-family protocol metadata differences, canonical native declarations,
+equivalent native query assessments, analytical/coverage separation, bounded
+provenance, standalone drift-v1 publication and full source-dependent reproduction.
+Revoked/superseded references lose current authority without rewriting old reports.
+No incident, device outage, command success or physical ownership is inferred.
+
+Final offline source3.14/wheel3.14/sdist3.14/wheel3.12 suites each pass the same
+**3,901 unique cases**, 137 added over V14-02P; no failures/errors/skips. Ruff
+lint/format350, strictmypy234, pip checks, exact93-module installed inventories,
+native124 compatibility, both frozen readers, examples/corpus and all old/new
+walkthroughs pass. Three3.14 reports reproduce byte-canonically in3.12 with current
+revocation correctly disclosed. Repeated executions do not increase unique tests.
+
+Historical regression passes112 paired rows /672 measured workers, with336 exact
+baseline/candidate trials independently rechecked. Original83 verify API:
+0.683552→0.684163s (+0.09%); traced median2,393,802→2,392,659B. Slower migration,
+revocation and small-workflow trials and all ranges remain disclosed. Drift scales
+1/16/64 measure0.105027/0.166907/0.375117s median; larger512 case2.361868s for513
+relationships/capture and525 records. Exact narrowed key/finding ceilings accept,
+one less rejects. Existing native5/quality3/capture9 benchmark gates also pass,
+including expected resource-limit rejections. Timing/allocation/count trials are
+separate; no global capacity, universal latency or total-CPU guarantee is claimed.
+
+Authoritative [drift contract](v14-drift-contract.md), [offline workflow](../v14-drift.md),
+[independent22-question audit](v14-03-audit.md), [Spanish handoff A–O](v14-03-handoff-es.md),
+and [checked performance receipt](../../benchmarks/receipts/v14-03-windows.json).
+Local raw QA/package/reproduction evidence is under `output/v143-*`.
+
+Preflight found all six V14-02 and V14-02P hosted checks successful at their exact
+heads (runs40502021558/40502140514). V14-03 hosted CI remains pending owner-controlled
+publication. No push, PR mutation/creation, merge, tag, release or workflow dispatch
+was performed. V14-04 receives validated offline data interfaces; its historical
+Explorer is not implemented. Earlier entries below preserve their historical wording.
+
 ## V14-02P current local checkpoint
 
 **READY_WITH_NONBLOCKING_LIMITATIONS** — 2026-10-27. Branch

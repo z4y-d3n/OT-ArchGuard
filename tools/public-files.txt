@@ -9,6 +9,7 @@ THIRD_PARTY_NOTICES.md
 benchmarks/__init__.py
 benchmarks/capture.py
 benchmarks/documents.py
+benchmarks/drift.py
 benchmarks/evidence_history.py
 benchmarks/explorer.py
 benchmarks/history_performance.py
@@ -18,6 +19,7 @@ benchmarks/protocols.py
 benchmarks/quality_comparison.py
 benchmarks/receipts/v14-02p-scaling.png
 benchmarks/receipts/v14-02p-windows.json
+benchmarks/receipts/v14-03-windows.json
 benchmarks/run.py
 benchmarks/workloads.py
 docs/algorithms.md
@@ -77,8 +79,11 @@ docs/development/v14-01-handoff-es.md
 docs/development/v14-02-handoff-es.md
 docs/development/v14-02p-handoff-es.md
 docs/development/v14-02p-performance.md
+docs/development/v14-03-audit.md
+docs/development/v14-03-handoff-es.md
 docs/development/v14-analysis-revisions-adr.md
 docs/development/v14-architecture.md
+docs/development/v14-drift-contract.md
 docs/development/v14-enip-s7.md
 docs/development/v14-enrichment-contract.md
 docs/development/v14-evidence-contract.md
@@ -118,6 +123,7 @@ docs/v1.1/gate-v11-4.md
 docs/v1.1/gate-v11-5.md
 docs/v1.1/gate-v11-6.md
 docs/v1.1/public-contract-inventory.md
+docs/v14-drift.md
 docs/v14-foundation.md
 docs/v14-history.md
 docs/verification.md
@@ -209,6 +215,14 @@ src/otarchguard/contract.py
 src/otarchguard/diagnostics.py
 src/otarchguard/diagrams.py
 src/otarchguard/domain.py
+src/otarchguard/drift/__init__.py
+src/otarchguard/drift/architecture.py
+src/otarchguard/drift/communications.py
+src/otarchguard/drift/comparability.py
+src/otarchguard/drift/contract.py
+src/otarchguard/drift/engine.py
+src/otarchguard/drift/protocols.py
+src/otarchguard/drift/reports.py
 src/otarchguard/evidence/__init__.py
 src/otarchguard/evidence/attachments.py
 src/otarchguard/evidence/cli.py
@@ -325,6 +339,13 @@ tests/test_comparison_properties.py
 tests/test_console_resolution.py
 tests/test_contract.py
 tests/test_diagram_geometry.py
+tests/test_drift_adversarial.py
+tests/test_drift_alignment.py
+tests/test_drift_architecture.py
+tests/test_drift_cli.py
+tests/test_drift_observations.py
+tests/test_drift_security.py
+tests/test_drift_walkthrough.py
 tests/test_evidence_attachments.py
 tests/test_evidence_history.py
 tests/test_evidence_lifecycle_cli.py
@@ -399,6 +420,7 @@ tools/capture_workloads.py
 tools/compare_versioned_contract.py
 tools/development_disk.py
 tools/document_walkthrough.py
+tools/drift_walkthrough.py
 tools/evidence_history_walkthrough.py
 tools/evidence_identity.py
 tools/evidence_walkthrough.py

@@ -11,10 +11,17 @@ from typer.core import TyperCommand, TyperGroup
 
 from otarchguard.contract import DiagnosticCategory, ExitCode
 from otarchguard.diagnostics import Diagnostic, ModelError
+from otarchguard.drift.reports import (
+    generate_report,
+    inspect_report,
+    summarize,
+    verify_report,
+)
 from otarchguard.evidence.history import (
     add_collection,
     initialize_history,
     migrate_workspace,
+    read_document,
     workspace_version,
 )
 from otarchguard.evidence.lifecycle import (
@@ -220,6 +227,84 @@ baseline_app = typer.Typer(
 )
 app.add_typer(revision_app, name="revision")
 app.add_typer(baseline_app, name="baseline")
+
+drift_app = typer.Typer(
+    cls=EvidenceGroup,
+    no_args_is_help=True,
+    add_completion=False,
+    pretty_exceptions_enable=False,
+    help="Explicit historical comparisons, conservative interpretation and source replay.",
+)
+app.add_typer(drift_app, name="drift")
+
+
+@drift_app.command("compare", cls=EvidenceCommand)
+def drift_compare(
+    workspace: Annotated[Path, typer.Argument()],
+    baseline_id: Annotated[str, typer.Argument(help="Exact currently approved baseline ID.")],
+    context: Annotated[Path, typer.Option(help="Version-1 explicit collection alignment JSON.")],
+    output: Annotated[Path, typer.Option(help="Fresh standalone JSON file outside the workspace.")],
+    candidate: Annotated[
+        list[str] | None, typer.Option(help="Exact candidate revision; repeat.")
+    ] = None,
+    reference: Annotated[
+        list[str] | None, typer.Option(help="Selected baseline member; repeat.")
+    ] = None,
+    candidate_model: Annotated[
+        str | None, typer.Option(help="Exact candidate model attachment.")
+    ] = None,
+    mode: Annotated[str, typer.Option(help="strict, qualified or descriptive.")] = "qualified",
+    text: Annotated[bool, typer.Option(help="Display a bounded human summary.")] = False,
+) -> None:
+    """Validate exact sources, assess comparability and publish immutable comparison evidence."""
+    _execute(
+        lambda: generate_report(
+            workspace,
+            baseline_id,
+            candidate or [],
+            read_document(context),
+            output,
+            mode=mode,
+            reference_members=reference,
+            candidate_model=candidate_model,
+        ),
+        summarize if text else None,
+    )
+
+
+@drift_app.command("verify", cls=EvidenceCommand)
+def drift_verify(
+    workspace: Annotated[Path, typer.Argument()],
+    report: Annotated[Path, typer.Argument()],
+) -> None:
+    """Reproduce a report and separately resolve current baseline approval."""
+    _execute(lambda: verify_report(workspace, report))
+
+
+@drift_app.command("inspect", cls=EvidenceCommand)
+def drift_inspect(
+    workspace: Annotated[Path, typer.Argument()],
+    report: Annotated[Path, typer.Argument()],
+) -> None:
+    """Inspect canonical report content only after complete source replay."""
+    _execute(lambda: inspect_report(workspace, report))
+
+
+@drift_app.command("summarize", cls=EvidenceCommand)
+def drift_summarize(
+    workspace: Annotated[Path, typer.Argument()],
+    report: Annotated[Path, typer.Argument()],
+) -> None:
+    """Present verified findings with current authority and explicit limitations."""
+    _execute(
+        lambda: inspect_report(workspace, report),
+        lambda result: (
+            "Current baseline status: "
+            + result["verification"]["current_baseline_status"]
+            + "\n"
+            + summarize(result["report"])
+        ),
+    )
 
 
 @revision_app.command("create", cls=EvidenceCommand)
