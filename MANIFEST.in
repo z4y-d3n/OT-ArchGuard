@@ -92,6 +92,18 @@ include docs/development/v14-05-handoff-es.md
 include docs/development/v14-05-interoperability.md
 include docs/development/v14-05-performance.md
 include docs/development/v14-05-validation-matrix.md
+include docs/development/v14-06-baseline.json
+include docs/development/v14-06-contracts.md
+include docs/development/v14-06-documentation-audit.md
+include docs/development/v14-06-handoff-es.md
+include docs/development/v14-06-native-audit.md
+include docs/development/v14-06-packaging-audit.md
+include docs/development/v14-06-parent-ci.json
+include docs/development/v14-06-performance.md
+include docs/development/v14-06-pipeline-audit.md
+include docs/development/v14-06-publication-runbook-es.md
+include docs/development/v14-06-readiness.md
+include docs/development/v14-06-security-audit.md
 include docs/development/v14-analysis-revisions-adr.md
 include docs/development/v14-architecture.md
 include docs/development/v14-drift-contract.md
@@ -121,6 +133,7 @@ include docs/release-notes-1.1.0.md
 include docs/release-notes-1.2.0.md
 include docs/release-notes-1.3-draft.md
 include docs/release-notes-1.3.0.md
+include docs/release-notes-1.4.0.md
 include docs/release-publication-1.1.0.md
 include docs/release-publication-1.2.0.md
 include docs/reporting.md
@@ -441,6 +454,12 @@ include tests/test_v145_corpus.py
 include tests/test_v145_historical_integrity.py
 include tests/test_v145_interoperability.py
 include tests/test_v145_performance.py
+include tests/test_v146_native_audit.py
+include tests/test_v146_packaging_audit.py
+include tests/test_v146_pipeline_audit.py
+include tests/test_v146_release_assembly.py
+include tests/test_v146_security_audit.py
+include tests/test_v146_version_gate.py
 include tests/test_v14_independent_audit.py
 include tests/test_v14_integration.py
 include tests/test_validate_cli.py
@@ -463,6 +482,7 @@ include tools/historical_explorer_walkthrough.py
 include tools/history_performance_worker.py
 include tools/independent_capture_corpus.py
 include tools/offline/sitecustomize.py
+include tools/prepare_release.py
 include tools/project_walkthrough.py
 include tools/protocol_corpus.py
 include tools/protocol_external.py

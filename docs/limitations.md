@@ -7,6 +7,10 @@ boundaries. The published scope is summarized in the
 [PCAP guide](pcap-evidence-studio.md) specifies capture observations separately
 from the native evaluator.
 
+This branch additionally prepares the unpublished [v1.4 candidate](release-notes-1.4.0.md)
+with bounded industrial metadata, historical lifecycle, drift and its offline
+Explorer. The limits below apply alongside those feature-specific guides.
+
 ## Import Studio and Architecture Explorer
 
 Document support is restricted text/structure extraction, without rendered page
@@ -31,6 +35,9 @@ not completed browser/assistive-technology acceptance. Keep that historical scop
 separate from the final PCAP Evidence Explorer's second real human review, which
 passed all six criteria. Neither structural tests nor those finite human checks
 establish universal accessibility, browser-network behavior or WCAG certification.
+The later V14-04 semantic HTML also received owner visual acceptance, including
+high-zoom inspection. That evidence remains bound to the accepted presentation;
+later source/package and integrated-release acceptance are separate.
 See the [Explorer ADRs](development/v12-05-architecture-explorer.md).
 
 ## Native declared-model analysis
@@ -72,8 +79,11 @@ replaced.
 ## Passive capture evidence
 
 PCAP Evidence Studio is not live monitoring, active discovery or intrusion
-detection. It performs no TCP stream reassembly, deep industrial-protocol
-inspection or application-payload decoding. Port associations remain hints.
+detection. Its observations perform no TCP stream reassembly or complete
+industrial/application decoding. Port associations remain hints. The separate
+v1.4 enrichment command recognizes seven bounded header/metadata subsets without
+application values or command-success verification; see
+[protocol boundaries](v14-foundation.md). DLT_NULL and Linux SLL are unsupported.
 Observed traffic does not prove authorization, session/application success, actual
 packet routes or deployed firewall behavior. Missing traffic does not prove
 blocking. ARP target references do not prove device existence, ownership or response.
@@ -111,6 +121,25 @@ and fuzzy identity inference are unsupported. See the
 [seven ADRs](development/v12-07-quality-and-comparison.md) for versioned schemas,
 coverage denominators, query comparability, resource ceilings and compact views.
 
-Historical analysis, architecture drift detection and multi-capture evidence
-lifecycle management are future work, not implemented v1.3 capabilities. Optional
-industrial-protocol enrichment requires a separate feasibility review.
+## V1.4 historical and industrial boundaries
+
+Historical lifecycle, coverage-aware drift and Historical Explorer are implemented
+in the unpublished v1.4 candidate, beyond the published v1.3.0 scope. A changed
+decoder interpretation does not prove a physical change. Incomplete, unsupported,
+unaligned or incomparable sources retain explicit qualification. No observed
+evidence, no declared path, explicit denial and unsupported evaluation differ.
+
+Analytical revisions bind exact producer source. The final distribution-only
+version transition does not migrate development analyses or approvals. Preserve
+the original environment/workspace for replay and create a fresh final-version
+workspace with new revisions and explicit review. Portable bundle integrity is
+separate from source-dependent reproduction; see
+[upgrade and recovery](installation.md#historical-workspaces-and-upgrade).
+
+Review labels are unauthenticated local assertions. Single-writer workspaces,
+hashes and source replay do not provide general forensic authenticity or protect
+against a malicious concurrent administrator. No industrial security certification,
+production-plant validation or independent professional penetration test is claimed.
+External positive Modbus TCP, PROFINET DCP and IEC-104 validation remains incomplete.
+External-corpus analysis approval grants no redistribution right or complete
+collection-provenance guarantee; no third-party capture bytes are packaged.

@@ -6,8 +6,11 @@ Service labels/ports identify synthetic listeners; no actual protocol behavior,
 authentication, return traffic, compromise or process impact is verified.
 Owner criticality and completeness assertions are descriptive only.
 
-Run from the verified v1.3.0 source distribution or matching checkout root after
-installing the regular package with the [installation guide](../docs/installation.md):
+Run from the verified source distribution or matching candidate checkout root
+after installing its regular package with the [installation guide](../docs/installation.md).
+The commands below assume the selected environment is named `.venv`; substitute
+your actual environment's full executable path if it has another name (for
+example `.venv-otarchguard-1.4.0` for parallel candidate evaluation):
 
 ```powershell
 .\.venv\Scripts\python.exe examples/run_examples.py

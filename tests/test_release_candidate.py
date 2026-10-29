@@ -19,7 +19,7 @@ from otarchguard.trace import trace_file
 from tools.compare_versioned_contract import compare_artifact, compare_captures
 
 ROOT = Path(__file__).resolve().parents[1]
-RELEASE_VERSION = "1.4.0.dev1"
+RELEASE_VERSION = "1.4.0"
 ENGINE_VERSION = "1.3.0"
 
 

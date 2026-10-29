@@ -11,25 +11,18 @@ compare supported capture observations with the architecture model.
 **Latest stable release: [v1.3.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0).**
 Requires **Python 3.12 or later**. Native YAML schema: **1**.
 
-This branch contains an unfinished **v1.4 development checkpoint**, identified as
-`1.4.0.dev1`; unchanged native evidence retains engine identity `1.3.0`.
-It adds seven bounded industrial header decoders, immutable snapshot ingestion,
-explicit workspace-v2 migration, validated analytical revisions and scoped local
-baseline review with revocation and supersession. The v1.4 release candidate is
-still pending. See the [historical evidence workflow](docs/v14-history.md).
-See the [v1.4 development guide](docs/v14-foundation.md) and
-[acceptance record](docs/development/v14-progress.md).
-The local V14-02P checkpoint reduces repeated historical validation and read
-allocation while preserving frozen analytical identities and complete checks.
-See its [performance and security evidence](docs/development/v14-02p-performance.md).
-V14-03 adds explicit coverage-aware historical comparisons, declared model and
-native assessment differences, and independently reproducible standalone reports.
-See the [offline drift workflow](docs/v14-drift.md) and
-[Historical Evidence Explorer](docs/v14-historical-explorer.md). V14-04 presents
-existing reports after exact source replay, with offline finding/evidence navigation
-and independently verifiable publication bundles. Owner browser acceptance remains
-pending. Differences never establish an incident, device outage or successful
-industrial command.
+This branch prepares the **v1.4.0 release candidate**. It has not been published
+as stable. Package metadata and CLI identity are `1.4.0`; unchanged native
+evidence and the historical Python `__version__` alias retain engine identity
+`1.3.0`. See the [candidate release notes](docs/release-notes-1.4.0.md) and
+[source-bound release handoff](docs/development/v14-06-handoff-es.md).
+
+Version 1.4 adds seven bounded industrial header/metadata subsets, immutable
+historical evidence, analytical revisions, explicit baseline review and
+coverage-aware drift. Static offline Explorers connect findings to retained
+evidence. V14-04's semantic HTML received owner visual acceptance; the V14-05
+parent passed six hosted jobs. These prior acceptances do not accept a later
+candidate commit or its eventual integrated `main` source automatically.
 
 [Capabilities](#capabilities) · [Visual previews](#visual-previews) · [Install and run](#install-and-run) ·
 [Examples](#examples-and-technical-documentation) · [Verification](#release-verification) ·
@@ -43,6 +36,9 @@ industrial command.
 | **Import Studio** | Combine supported inventories, diagrams and documentary observations through explicit owner review | [Import guide](docs/import-studio.md), [multi-source walkthrough](examples/import-studio/projects/README.md) |
 | **Architecture Explorer** | Navigate zones, assets, interfaces, provenance and explicit analytical queries in offline reports | [Explorer walkthrough](examples/explorer/README.md) |
 | **PCAP Evidence Studio** | Inspect supported captures, review address associations and reconcile observations with the declared model | [Capture guide](docs/pcap-evidence-studio.md), [fictional tutorial](examples/capture-studio/README.md) |
+| **Industrial metadata** | Inspect seven explicitly bounded header subsets with separate hints, structural evidence and abstentions | [Protocol guide](docs/v14-foundation.md) |
+| **Historical evidence and baselines** | Retain immutable observations and exact analytical revisions; explicitly propose, review, supersede or revoke baselines | [Lifecycle workflow](docs/v14-history.md) |
+| **Historical drift and Explorer** | Compare selected reviewed evidence with coverage/comparability limits; navigate and verify offline bundles | [Drift workflow](docs/v14-drift.md), [Historical Explorer](docs/v14-historical-explorer.md) |
 
 ### Visual previews
 
@@ -141,7 +137,7 @@ findings and complete paginated navigation. UTC timestamps preserve the exact
 original precision, and canonical JSON remains available as technical evidence.
 ARP panels distinguish sender fields, target references and Ethernet delivery.
 
-Port-based industrial protocol names are hints, not confirmed payload decoding.
+Port-based industrial protocol names in observations remain hints.
 Observed traffic does not establish authorization, host authenticity, session
 success or deployed firewall behavior. ARP target references do not prove device
 existence, ownership or response; missing traffic does not prove blocking.
@@ -150,26 +146,53 @@ See the [capture guide](docs/pcap-evidence-studio.md),
 [fictional tutorial](examples/capture-studio/README.md) and
 [frozen evidence contracts](docs/development/v13-18-evidence-contract-freeze.md).
 
+### Industrial metadata and historical evidence
+
+`otarchguard capture enrich CAPTURE --output NEW.json` independently inspects
+supported Modbus TCP, PROFINET DCP, EtherNet/IP with limited CIP, classic S7comm,
+IEC-104, OPC UA Binary outer framing and DNP3/TCP headers. These are bounded
+metadata subsets, not full protocol implementations. `STRUCTURALLY_VALID` means
+the supported frame subset passed validation; hints, malformed/truncated records
+and unsupported variants never establish a successful application command.
+
+Historical workspace-v2 stores observations, optional validated attachments,
+immutable analytical revisions and explicit local human baseline decisions.
+Changed interpretation has a new identity and requires its own review.
+Drift separates finite observation changes, declaration changes, analytical
+reinterpretation and incomparable sources. Missing traffic is not proof of
+absence. A portable Explorer verification checks bundle integrity; verification
+with the source workspace separately replays the analytical evidence and returns
+current approval status.
+
+Preserve the exact `1.4.0.dev1` environment and its workspace when upgrading a
+development checkpoint: revisions bind exact producer source, including the
+distribution identity module. The final version change does not migrate those
+analyses or approvals. Start a fresh `1.4.0` workspace from preserved observations
+and authorized sources, create new analyses and review explicitly. See
+[upgrade and recovery](docs/installation.md#historical-workspaces-and-upgrade).
+
 ## Install and run
 
-Download the published [v1.3.0 release assets](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0)
-and verify them against `SHA256SUMS.txt` before installation. The
+Use the published [v1.3.0 release assets](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0)
+for stable operation. For local v1.4 review, obtain the four audited candidate
+assets identified in the handoff and verify `SHA256SUMS.txt` before installation. The
 [installation guide](docs/installation.md) covers wheel/sdist installation,
 parallel upgrades, checksum verification and a prepared offline wheelhouse.
 
-The following example runs from a verified v1.3.0 checkout or extracted source
-distribution, which includes `examples/`. A wheel does not include these models;
-wheel-only users must supply their own model and its declared IDs.
+The following candidate example runs from the verified v1.4 checkout or extracted
+source distribution, with the candidate wheel copied to `artifacts/`.
+The source distribution includes `examples/`; a wheel does not include these models.
+Wheel-only users must supply their own model and its declared IDs.
 
 ~~~powershell
-py -3.12 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install .
-.\.venv\Scripts\python.exe -m pip check
-.\.venv\Scripts\otarchguard.exe --version
-.\.venv\Scripts\otarchguard.exe validate examples/remote-support/baseline.yaml
-.\.venv\Scripts\otarchguard.exe check examples/remote-support/baseline.yaml
+py -3.12 -m venv .venv-otarchguard-1.4.0
+.\.venv-otarchguard-1.4.0\Scripts\python.exe -m pip install artifacts/otarchguard-1.4.0-py3-none-any.whl
+.\.venv-otarchguard-1.4.0\Scripts\python.exe -m pip check
+.\.venv-otarchguard-1.4.0\Scripts\otarchguard.exe --version
+.\.venv-otarchguard-1.4.0\Scripts\otarchguard.exe validate examples/remote-support/baseline.yaml
+.\.venv-otarchguard-1.4.0\Scripts\otarchguard.exe check examples/remote-support/baseline.yaml
 New-Item -ItemType Directory -Force output | Out-Null
-.\.venv\Scripts\otarchguard.exe exposure examples/remote-support/baseline.yaml --scenario support_scope --report output/exposure.html
+.\.venv-otarchguard-1.4.0\Scripts\otarchguard.exe exposure examples/remote-support/baseline.yaml --scenario support_scope --report output/exposure.html
 ~~~
 
 Installation may need network access to obtain compatible dependencies and build
@@ -215,6 +238,15 @@ Earlier design and verification records retain their historical context.
 
 ## Release verification
 
+The V14-05 parent
+[`ac893bc3174f0a7ace67454d19ad6e61116425af`](https://github.com/z4y-d3n/OT-ArchGuard/commit/ac893bc3174f0a7ace67454d19ad6e61116425af)
+passed [run 40880668115](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40880668115)
+on push: Windows, Ubuntu and macOS × Python 3.12/3.14, six successful jobs.
+V14-06 local results, exact source identities, package audits and remaining
+owner gates are recorded in the [Spanish handoff](docs/development/v14-06-handoff-es.md).
+The candidate still requires owner review, hosted checks for its exact SHA and
+separate acceptance of the integrated release source before tagging/publication.
+
 Stable v1.3.0 is published from
 [`10d7de6c416ec6f0ee364c671ebe9292ee69e672`](https://github.com/z4y-d3n/OT-ArchGuard/commit/10d7de6c416ec6f0ee364c671ebe9292ee69e672).
 Its [final integration CI](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40273411275)
@@ -238,15 +270,20 @@ The tool evaluates finite declared initiation paths. It does not verify deployed
 inventory, sessions, return traffic, authentication, vulnerabilities, compromise,
 availability, physical risk or process safety. Completeness, classification and
 criticality are user assertions; security-level evidence remains unassessed.
-It provides no TCP stream reassembly, deep industrial protocol inspection or
-application payload decoding.
+It provides no TCP stream reassembly, full industrial protocol decoding,
+application-value extraction or command-success verification. DLT_NULL and Linux
+SLL are unsupported. Incomplete visibility, unsupported framing and incomparable
+sources must remain qualified; they are not successful negative detections.
 
-Capture interoperability evidence uses independently authored synthetic bytes and
-Wireshark `text2pcap` 4.6.7 output, checked against offline TShark 4.6.7 receipts.
-It covers the [tested subset](docs/pcap-evidence-studio.md#capture-corpus-and-use-policy),
-not every capture producer or real industrial-plant traffic. No authorized real
-industrial capture or downloaded operational/public corpus is part of that
-validation. Network metadata and review text may be sensitive.
+Capture evidence includes original synthetic fixtures, independently generated
+reference captures and explicitly approved local laboratory corpus checks.
+External positive validation remains incomplete for Modbus TCP, PROFINET DCP and
+IEC-104. Third-party captures are not redistributed. This covers the
+[documented subset](docs/v14-foundation.md), not every capture producer or
+production-plant traffic. Network metadata and review text may be sensitive.
+Human review labels are unauthenticated local assertions. Workspaces assume a
+single writer and do not provide general forensic authenticity. Internal security
+checks are not an independent professional penetration test.
 See [known limitations](docs/limitations.md).
 
 OT-ArchGuard is an independent industrial network architecture analysis tool
@@ -256,4 +293,9 @@ conformity or imply institutional endorsement.
 
 Project code and documentation use [Apache-2.0](LICENSE). Dependencies retain
 their own [licenses and notices](THIRD_PARTY_NOTICES.md).
+
+Report defects through [GitHub issues](https://github.com/z4y-d3n/OT-ArchGuard/issues)
+using minimal fictional reproductions and exact versions/exits. Never attach
+operational captures, credentials or identifying review text. No private intake
+or response-time guarantee is asserted.
 

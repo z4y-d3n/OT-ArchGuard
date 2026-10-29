@@ -28,7 +28,7 @@ def inputs() -> AnalysisInputs:
 
 
 def test_distribution_advances_without_changing_native_engine_evidence() -> None:
-    assert DISTRIBUTION_VERSION == "1.4.0.dev1"
+    assert DISTRIBUTION_VERSION == "1.4.0"
     assert __version__ == "1.3.0"
     assert NATIVE_ENGINE_VERSION == "1.3.0"
     path = ROOT / "tests/fixtures/minimal-valid.yaml"

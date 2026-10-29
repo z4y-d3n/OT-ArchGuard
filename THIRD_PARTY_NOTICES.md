@@ -40,7 +40,7 @@ pytest 9.1.1, Ruff 0.17.1, mypy 1.20.2, setuptools 84.2.1, iniconfig 2.3.1,
 pluggy 1.7.0, mypy_extensions 1.1.0 and librt 0.16.0 report MIT licenses.
 types-PyYAML 6.0.12.20260906 is Apache-2.0; packaging 26.3 is
 Apache-2.0 OR BSD-2-Clause; pathspec 1.1.1 is MPL-2.0. Pip is MIT
-(25.0.1 / 26.1.1 in the respective interpreters). These tools are not application
+(26.2.2 in the current approved verification environments). These tools are not application
 runtime dependencies. Setuptools and pip carry their own vendored notices;
 redistributing those tools requires preserving their complete distributions.
 The types-PyYAML/typeshed license file also retains an MIT notice for parts of

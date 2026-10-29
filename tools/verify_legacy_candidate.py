@@ -64,6 +64,47 @@ def _check_presentation_installation(installed: dict[str, Any], expected: dict[s
         raise ValueError("Installed presentation package differs from the exact approved commit")
 
 
+def _candidate_module_hashes(approved: dict[str, bytes]) -> dict[str, str]:
+    """Derive candidate bytes from the immutable approval, never current HEAD.
+
+    Exactly one distribution literal changes. Native identity, renderer bytes,
+    module inventory and every other byte remain independently pinned.
+    """
+    name = "src/otarchguard/__init__.py"
+    original = b'DISTRIBUTION_VERSION = "1.4.0.dev1"\n'
+    replacement = b'DISTRIBUTION_VERSION = "1.4.0"\n'
+    if approved[name].count(original) != 1:
+        raise ValueError("Approved distribution source has an unexpected version literal")
+    candidate = {**approved, name: approved[name].replace(original, replacement, 1)}
+    return _module_hashes(candidate)
+
+
+def _check_candidate_installation(installed: dict[str, Any], expected: dict[str, str]) -> None:
+    """Require the stable distribution's exact regular installed source identity."""
+    module = Path(installed["module"]).resolve()
+    if (
+        installed["version"] != "1.3.0"
+        or installed["distribution_version"] != "1.4.0"
+        or installed["hashes"] != expected
+        or module != Path(installed["distribution_module"]).resolve()
+        or module.is_relative_to(ROOT / "src")
+        or installed["editable"]
+    ):
+        raise ValueError("Installed candidate differs from the exact reviewed transition")
+
+
+def _check_candidate_source(expected: dict[str, str]) -> None:
+    source = ROOT / "src/otarchguard"
+    files = list(source.rglob("*.py"))
+    if any(p.is_symlink() or not p.is_file() for p in files):
+        raise ValueError("Candidate source must contain regular reviewed modules")
+    hashes = {
+        p.relative_to(source).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest() for p in files
+    }
+    if hashes != expected:
+        raise ValueError("Candidate source differs from the exact reviewed distribution transition")
+
+
 def _analytical_view(source: Path, target: Path) -> None:
     """Copy analytical bytes unchanged; retain original full captures separately.
 
@@ -94,7 +135,10 @@ def _analytical_view(source: Path, target: Path) -> None:
 
 
 def _compare_reviewed_captures(
-    output: Path, baseline_hashes: dict[str, str], approved_hashes: dict[str, str]
+    output: Path,
+    baseline_hashes: dict[str, str],
+    approved_hashes: dict[str, str],
+    candidate_hashes: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     """Require approved HTML bytes AND the immutable v1.2 analytical contract."""
     baseline, candidate, approved = (
@@ -103,7 +147,7 @@ def _compare_reviewed_captures(
     for folder, hashes in (
         (baseline, baseline_hashes),
         (approved, approved_hashes),
-        (candidate, approved_hashes),
+        (candidate, approved_hashes if candidate_hashes is None else candidate_hashes),
     ):
         if {p.name for p in folder.glob("*.html")} != _PRESENTATION_HTML:
             raise ValueError("Unreviewed HTML capture inventory")
@@ -214,7 +258,7 @@ def verify(output: Path, baseline_python: Path | None = None) -> dict[str, Any]:
         if name == "tests/test_release_candidate.py":
             before = before.replace(
                 b'RELEASE_VERSION = "1.2.0"',
-                b'RELEASE_VERSION = "1.4.0.dev1"\nENGINE_VERSION = "1.3.0"',
+                b'RELEASE_VERSION = "1.4.0"\nENGINE_VERSION = "1.3.0"',
             )
             for field in (
                 b"__version__",
@@ -239,7 +283,7 @@ def verify(output: Path, baseline_python: Path | None = None) -> dict[str, Any]:
     for name in ("docs/yaml-schema-v1.md", "src/otarchguard/contract.py"):
         if baseline[name] != (ROOT / name).read_bytes():
             raise ValueError(f"Historical native contract changed: {name}")
-    project = baseline["pyproject.toml"].replace(b'version = "1.2.0"', b'version = "1.4.0.dev1"')
+    project = baseline["pyproject.toml"].replace(b'version = "1.2.0"', b'version = "1.4.0"')
     if project != (ROOT / "pyproject.toml").read_bytes():
         raise ValueError("Project changes exceed the approved package version transition")
     environment = {
@@ -309,9 +353,14 @@ def verify(output: Path, baseline_python: Path | None = None) -> dict[str, Any]:
     if baseline_python is None:
         baseline_python = install_reference(archive_bytes, "baseline")
     probe = (
-        "import hashlib,json,pathlib,otarchguard; "
+        "import hashlib,json,pathlib,otarchguard,importlib.metadata as m; "
         "r=pathlib.Path(otarchguard.__file__).parent; "
+        "d=m.distribution('otarchguard'); "
         "print(json.dumps({'version':otarchguard.__version__,"
+        "'distribution_version':d.version,"
+        "'distribution_module':str(d.locate_file('otarchguard')),"
+        "'editable':json.loads(d.read_text('direct_url.json') or '{}')"
+        ".get('dir_info',{}).get('editable',False),"
         "'module':str(r),'hashes':{p.relative_to(r).as_posix():"
         "hashlib.sha256(p.read_bytes()).hexdigest() for p in r.rglob('*.py')}},sort_keys=True))"
     )
@@ -321,6 +370,8 @@ def verify(output: Path, baseline_python: Path | None = None) -> dict[str, Any]:
     presentation_archive = subprocess.check_output(["git", "archive", PRESENTATION], cwd=ROOT)
     approved_files = _archive_files(presentation_archive)
     approved_hashes = _module_hashes(approved_files)
+    candidate_hashes = _candidate_module_hashes(approved_files)
+    _check_candidate_source(candidate_hashes)
     if (ROOT / "tools/capture_contract.py").read_bytes() != approved_files[
         "tools/capture_contract.py"
     ]:
@@ -328,7 +379,10 @@ def verify(output: Path, baseline_python: Path | None = None) -> dict[str, Any]:
     approved_python = install_reference(presentation_archive, "approved")
     for python in (approved_python, Path(sys.executable)):
         observed = json.loads(run(python, "-c", probe))
-        _check_presentation_installation(observed, approved_hashes)
+        if python == approved_python:
+            _check_presentation_installation(observed, approved_hashes)
+        else:
+            _check_candidate_installation(observed, candidate_hashes)
         if python == approved_python and not Path(observed["module"]).is_relative_to(
             approved_python.parent.parent
         ):
@@ -341,12 +395,14 @@ def verify(output: Path, baseline_python: Path | None = None) -> dict[str, Any]:
         (Path(sys.executable), "candidate"),
     ):
         run(python, "-m", "tools.capture_contract", str(output / name), timeout=600)
-    comparison = _compare_reviewed_captures(output, expected, approved_hashes)
+    comparison = _compare_reviewed_captures(output, expected, approved_hashes, candidate_hashes)
     comparison.update(
         baseline_commit=BASELINE,
         baseline_installed_module=installed["module"],
         baseline_module_sha256=expected,
         approved_package_sha256=approved_hashes,
+        candidate_package_sha256=candidate_hashes,
+        distribution_transition="1.4.0.dev1 -> 1.4.0; __init__.py literal only",
         historical_test_files=len(historical_tests),
         historical_test_exception=(
             "Exact distribution assertion, four fixed 1.3.0 engine/API assertions, "

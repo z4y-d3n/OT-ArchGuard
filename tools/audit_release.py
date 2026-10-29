@@ -12,6 +12,8 @@ import tarfile
 import tomllib
 import zipfile
 from collections.abc import Mapping
+from configparser import ConfigParser
+from configparser import Error as ConfigError
 from email.parser import BytesParser
 from pathlib import Path, PurePosixPath
 
@@ -44,6 +46,11 @@ GENERATED = frozenset(
         )
     }
 )
+
+
+class _EntryPoints(ConfigParser):
+    def optionxform(self, optionstr: str) -> str:
+        return optionstr
 
 
 def check_member(name: str, *, wheel: bool) -> None:
@@ -156,17 +163,34 @@ def audit(wheel: Path, sdist: Path, source_root: Path | None = None) -> dict[str
         raise ValueError("Wheel member inventory differs from reviewed contents")
     project = tomllib.loads((source_root / "pyproject.toml").read_text(encoding="utf-8"))["project"]
     metadata = BytesParser().parsebytes(wheel_files[f"{DIST_INFO}/METADATA"])
+    wheel_metadata = BytesParser().parsebytes(wheel_files[f"{DIST_INFO}/WHEEL"])
+    for field, expected_value in (
+        ("Wheel-Version", "1.0"),
+        ("Root-Is-Purelib", "true"),
+        ("Tag", "py3-none-any"),
+    ):
+        if wheel_metadata.get_all(field) != [expected_value]:
+            raise ValueError(f"Unexpected pure-Python wheel metadata: {field}")
+    if len(metadata.get_all("Metadata-Version", [])) != 1:
+        raise ValueError("Wheel metadata requires exactly one Metadata-Version")
     for field, expected_value in (
         ("Name", project["name"]),
         ("Version", project["version"]),
         ("License-Expression", "Apache-2.0"),
         ("Requires-Python", ">=3.12"),
     ):
-        if metadata[field] != expected_value:
+        if metadata.get_all(field) != [expected_value]:
             raise ValueError(f"Unexpected wheel metadata: {field}")
     for name in ("PKG-INFO", "src/otarchguard.egg-info/PKG-INFO"):
         source_metadata = BytesParser().parsebytes(source_files[name])
-        for field in ("Name", "Version", "License-Expression", "Requires-Python", "Requires-Dist"):
+        for field in (
+            "Metadata-Version",
+            "Name",
+            "Version",
+            "License-Expression",
+            "Requires-Python",
+            "Requires-Dist",
+        ):
             if source_metadata.get_all(field) != metadata.get_all(field):
                 raise ValueError(f"Source/wheel metadata differs: {field}")
     runtime = {
@@ -179,8 +203,17 @@ def audit(wheel: Path, sdist: Path, source_root: Path | None = None) -> dict[str
     for name in ("LICENSE", "THIRD_PARTY_NOTICES.md"):
         if wheel_files[f"{DIST_INFO}/licenses/{name}"] != source_files[name]:
             raise ValueError(f"License document differs: {name}")
-    if b"otarchguard = otarchguard.cli:app" not in wheel_files[f"{DIST_INFO}/entry_points.txt"]:
-        raise ValueError("Missing console entry point")
+    entry_points = _EntryPoints(interpolation=None)
+    try:
+        entry_points.read_string(wheel_files[f"{DIST_INFO}/entry_points.txt"].decode("utf-8"))
+    except (ConfigError, UnicodeError) as error:
+        raise ValueError("Invalid console entry point metadata") from error
+    if (
+        entry_points.defaults()
+        or entry_points.sections() != ["console_scripts"]
+        or dict(entry_points.items("console_scripts", raw=True)) != project["scripts"]
+    ):
+        raise ValueError("Console entry point metadata differs from the reviewed project scripts")
     for name in expected_modules:
         if wheel_files[name] != source_files["src/" + name]:
             raise ValueError(f"Wheel/source module differs: {name}")

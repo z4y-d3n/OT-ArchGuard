@@ -1,5 +1,49 @@
 # Verification strategy
 
+## V1.4 release-candidate evidence
+
+The current local candidate distribution/CLI is `1.4.0`; native engine and the
+historical `__version__` alias remain `1.3.0`. The exact V14-05 parent
+`ac893bc3174f0a7ace67454d19ad6e61116425af` passed
+[push run 40880668115](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40880668115),
+six Windows/Ubuntu/macOS × Python 3.12/3.14 jobs. Candidate results, actual skips
+and exact package identities belong in the
+[V14-06 handoff](development/v14-06-handoff-es.md); parent results do not validate
+the child source or the eventual integrated release source.
+
+At candidate freeze, run the complete suite once against the frozen source and
+again using independently regular-installed wheel and sdist payloads. Keep
+interpreter/import paths, exact module hashes, unique collection counts,
+PASS/FAIL/ERROR/SKIP, durations and source identity with each receipt. Repeated
+wheel/sdist/source executions overlap and are not additional unique tests.
+Run focused adversarial/native/protocol/history checks during development;
+rerun broader acceptance when a material subsequent change invalidates it.
+
+The legacy verifier retains independent immutable native-v1.2 and V14-04 pins.
+The final transition permits only the reviewed `1.4.0.dev1` → `1.4.0` distribution
+literal in the exact approved source. Approved-reference and candidate installed
+identities are checked separately. All other module bytes/inventories, native
+semantics, canonical evidence, HTML appendices and reviewed historical assertions
+remain fail-closed. Test forged digests and matched-but-forged outputs as well as
+ordinary corruption; agreement between two modified modern copies is not proof.
+
+Historical analytical revisions independently bind exact producer source. A
+distribution source change does not authorize rewriting their hashes or approval
+chains. Test the explicit [development-workspace upgrade boundary](installation.md#historical-workspaces-and-upgrade).
+
+After committing the complete reviewed public inventory, rehearse four-asset
+assembly with `python -m tools.prepare_release --output NEW_DIRECTORY` and reopen
+it with `--verify`. Confirm clean source, exact commit/tree, audited wheel/sdist
+members, installed payload equality and all three checksum entries. Do not claim
+byte-identical archives unless a separate build comparison demonstrated it.
+
+V14-04 semantic HTML already received owner visual acceptance, including high-zoom
+inspection. Unchanged renderer bytes let that acceptance remain relevant; static
+link/markup checks do not establish a new browser, keyboard, focus or print review.
+Changed presentation requires targeted renewed owner inspection.
+
+## Published v1.3 baseline and common verification
+
 The published v1.3.0 source is `10d7de6c416ec6f0ee364c671ebe9292ee69e672`.
 Its [release integration CI](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40273411275)
 passed all six Windows/Ubuntu/macOS × Python 3.12/3.14 configurations. Each
