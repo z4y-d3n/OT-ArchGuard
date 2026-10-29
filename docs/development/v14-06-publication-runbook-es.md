@@ -79,6 +79,7 @@ git switch main
 git pull --ff-only origin main
 git rev-parse HEAD
 git rev-parse 'HEAD^{tree}'
+git diff --name-status codex/v14-06-final-release-readiness HEAD
 git diff codex/v14-06-final-release-readiness HEAD -- src tests tools pyproject.toml
 ```
 
@@ -142,12 +143,18 @@ tamaños y SHA-256. Verificación independiente de los tres checksums sin hash c
 $assetDirectory = Resolve-Path output/release-1.4.0-final
 $checksumLines = @(Get-Content (Join-Path $assetDirectory 'SHA256SUMS.txt'))
 if ($checksumLines.Count -ne 3) { throw 'Se esperaban tres checksums' }
+$expectedAssets = @('otarchguard-1.4.0-py3-none-any.whl','otarchguard-1.4.0.tar.gz','release-manifest.json')
+$seenAssets = @()
 foreach ($line in $checksumLines) {
-    $parts = $line -split '  ', 2
-    if ($parts.Count -ne 2 -or $parts[1] -notin @('otarchguard-1.4.0-py3-none-any.whl','otarchguard-1.4.0.tar.gz','release-manifest.json')) { throw 'Nombre inesperado' }
-    $actual = (Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $assetDirectory $parts[1])).Hash.ToLowerInvariant()
-    if ($actual -ne $parts[0]) { throw 'Checksum incorrecto' }
+    if ($line -notmatch '^([0-9a-f]{64})  ([A-Za-z0-9._-]+)$') { throw 'Formato incorrecto' }
+    $expectedHash = $Matches[1]
+    $assetName = $Matches[2]
+    if ($assetName -notin $expectedAssets -or $assetName -in $seenAssets) { throw 'Nombre inesperado o repetido' }
+    $seenAssets += $assetName
+    $actual = (Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $assetDirectory $assetName)).Hash.ToLowerInvariant()
+    if ($actual -ne $expectedHash) { throw 'Checksum incorrecto' }
 }
+if ($seenAssets.Count -ne $expectedAssets.Count) { throw 'Lista incompleta' }
 ```
 
 Revise [release notes](../release-notes-1.4.0.md), versión CLI/metadata/motor,
@@ -157,20 +164,29 @@ son prueba de publicación. Hashes prueban identidad, no autoría ni firma.
 ## G. Tag y GitHub Release: solamente con autorización final
 
 Después de todos los gates anteriores, compruebe que `v1.4.0` no existe y que HEAD
-es exactamente el SHA de `main` aceptado. Sustituya el placeholder por ese SHA:
+es exactamente el SHA de `main` aceptado. Introduzca ese SHA cuando se solicite:
 
 ```powershell
-git tag --list v1.4.0
-git ls-remote --tags origin v1.4.0
-# Detenerse si existe cualquiera de ellos.
-git tag -a v1.4.0 <SHA_MAIN_ACEPTADO> -m 'OT-ArchGuard v1.4.0'
+$existingLocalTag = git tag --list v1.4.0
+if ($LASTEXITCODE -ne 0) { throw 'No se pudo consultar el tag local' }
+$existingRemoteTag = git ls-remote --tags origin refs/tags/v1.4.0
+if ($LASTEXITCODE -ne 0) { throw 'No se pudo consultar el tag remoto' }
+if ($existingLocalTag -or $existingRemoteTag) { throw 'El tag ya existe; no reemplazarlo' }
+$AcceptedMainSha = Read-Host 'SHA completo de main que usted ya aceptó'
+if ($AcceptedMainSha -notmatch '^[0-9a-f]{40}$') { throw 'SHA inválido' }
+if ((git branch --show-current) -ne 'main') { throw 'Seleccione main aceptado' }
+if ((git rev-parse HEAD) -ne $AcceptedMainSha) { throw 'HEAD no coincide con su aceptación' }
+if (git status --porcelain) { throw 'El árbol debe estar limpio' }
+git tag -a v1.4.0 $AcceptedMainSha -m 'OT-ArchGuard v1.4.0'
+if ($LASTEXITCODE -ne 0) { throw 'No se pudo crear el tag; detener publicación' }
 git show --no-patch v1.4.0
 git push origin refs/tags/v1.4.0
 ```
 
 En GitHub: **Releases → Draft a new release**, seleccione ese tag existente,
 revise el target, copie las notas aceptadas y adjunte exactamente los cuatro
-assets reconstruidos. Revise primero el Draft. Solamente el propietario decide
+assets reconstruidos. Revise primero el Draft y adapte las frases de candidato/no
+publicado al hecho que usted está autorizando. Solamente el propietario decide
 **Publish release** y su designación de latest. No modifique v1.3.0. No publique
 un artifact de V14-06 si no está vinculado al source final aceptado.
 
@@ -180,7 +196,8 @@ Desde una descarga nueva, compruebe el tag público, SHA al que resuelve, los
 cuatro nombres/tamaños/hashes y manifiesto. Instale el wheel descargado en otro
 entorno, ejecute `--version`, valide el ejemplo nativo y abra un reporte offline.
 Confirme que README, instalación y notas públicas corresponden al source/tag
-publicado. Si se corrige la documentación después, no afirme que cambió el tag ni
+publicado. Actualice el estado público del README solamente después de publicar,
+en un commit documental separado. Si se corrige la documentación después, no afirme que cambió el tag ni
 sus assets originales. Conserve recibos y ruta de recuperación.
 
 ## I. Recuperación

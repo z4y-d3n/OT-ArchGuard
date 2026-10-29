@@ -1,5 +1,11 @@
 # V14-06 release-readiness register
 
+Final functional acceptance at `40ffbeab422dcf13f57d4fb9bc6e61a95d08642e`:
+three complete suites each report 4,370 PASS and one environmental SKIP, no
+FAIL/ERROR. The final current R01–R32 matrix is in
+[the Spanish handoff](v14-06-handoff-es.md). The initial table below preserves
+the starting assessment rather than claiming those gates are still unexecuted.
+
 Candidate preparation only. Published stable remains v1.3.0. Parent:
 `ac893bc3174f0a7ace67454d19ad6e61116425af`; exact public-source baseline and
 97 production hashes are retained in `output/v146/parent-source.json` and
@@ -36,12 +42,12 @@ limits. Unexecuted gates never count as passes.
 
 | ID / severity | Capability; reproduction; expected versus actual | Source and disposition | Verification / residual |
 |---|---|---|---|
-| V146-R01 / P0 preparation blocker | Stable distribution with preserved native semantics should pass the legacy gate; old gate required the dev1 approved package hash and distribution assertions | `verify_legacy_candidate.py`: derive exactly one literal delta from unchanged approved pin; separate approved/candidate installs; bind full source inventory | 16 new gate cases plus existing forged-capture/historical-test cases; exact installed final reproduction pending freeze |
+| V146-R01 / P0 preparation blocker | Stable distribution with preserved native semantics should pass the legacy gate; old gate required the dev1 approved package hash and distribution assertions | `verify_legacy_candidate.py`: derive exactly one literal delta from unchanged approved pin; separate approved/candidate installs; bind full source inventory | CLOSED: 16 new gate cases plus existing adversaries; installed legacy reproduction passes 110 analytical artifacts and 13 exact approved HTML files |
 | V146-E01 / P1 | Recomputed RECORD with duplicated singleton metadata, extra matched console script or wrong WHEEL profile should reject; original auditor accepted these manipulated real archives | Narrow archive metadata/entrypoint validation; agent E report provides real fixtures and dispositions | Focused adversarial regressions and final full archive/install campaign; no runtime module change |
-| V146-B01 / P1 documentation | Development historical workspace should have an explicit upgrade boundary; exact changed init identity rejects interpretation while storage bytes survive | Preserve exact-source fail-closed policy; installation/history/notes now require retained dev environment and fresh stable revisions/review | Four new pipeline cases; independent final review must examine this concrete deferral; no automatic migration promised |
+| V146-B01 / P1 documentation | Development historical workspace should have an explicit upgrade boundary; exact changed init identity rejects interpretation while storage bytes survive | Preserve exact-source fail-closed policy; installation/history/notes now require retained dev environment and fresh stable revisions/review | CLOSED/documented limitation: four pipeline cases and independent review accept this contract boundary; no automatic migration promised |
 | V146-E02 / P1 | New rehearsal's two backend hooks reused mutable `sys.argv`; sdist was written outside requested staging path | Cache destination before either build hook; staged assets remain unavailable until completed audit | Real four-asset rehearsal passes on first freeze; caught before candidate acceptance |
-| V146-F01 / P1 | Independent reviewer coordinated one malformed Metadata-Version across all three records; uniqueness-only validation still accepted it | Require exact reviewed core metadata profile 2.4, justified by approved setuptools/PEP 639 license fields; add coordinated malformed/unknown cases | Initial just-started full runs interrupted and retained separately; refreeze and complete rerun required |
-| V146-A01 / P2 | Full inclusive port-domain extrema and partial intent outcomes need independent release examples | Five native counterexamples; no engine modification | Focused 229 PASS; final candidate suite still required |
+| V146-F01 / P1 | Independent reviewer coordinated one malformed Metadata-Version across all three records; uniqueness-only validation still accepted it | Require exact reviewed core metadata profile 2.4, justified by approved setuptools/PEP 639 license fields; add coordinated malformed/unknown cases | Initial just-started runs interrupted and retained; corrected freeze passes all three full suites and 41 packaging cases |
+| V146-A01 / P2 | Full inclusive port-domain extrema and partial intent outcomes need independent release examples | Five native counterexamples; no engine modification | CLOSED: focused 229 PASS and all three final candidate suites pass |
 | V146-SEC-001 / P2 | Late hostile ZIP member must reject before any XML tree allocation | 15 cross-adapter preallocation cases; no parser modification | Focused 430 PASS / one environmental junction SKIP; finite internal assurance |
 | V146-D01–D03 / P1 documentation | Primary guides described implemented history/drift as future or prior visual/CI acceptance as pending, and omitted source upgrade boundary | Current guidance corrected; historical milestone records retained | Local links/PowerShell parsing and installed candidate examples; no new browser acceptance claim |
 
