@@ -15,6 +15,7 @@ from otarchguard.capture.cli import app as capture_app
 from otarchguard.comparison import compare_architectures, compare_files
 from otarchguard.contract import DiagnosticCategory, ExitCode
 from otarchguard.diagnostics import Diagnostic, ModelError, fail
+from otarchguard.evidence.cli import app as evidence_app
 from otarchguard.explorer import ExploreOptions, generate_explorer
 from otarchguard.exposure import QueryScope, exposure_architecture, exposure_file
 from otarchguard.ingestion.cli import app as import_app
@@ -103,6 +104,7 @@ app = typer.Typer(
 )
 app.add_typer(import_app, name="import")
 app.add_typer(capture_app, name="capture")
+app.add_typer(evidence_app, name="evidence")
 app.command("quality", cls=TraceCommand)(quality)
 app.command("compare-architecture", cls=TraceCommand)(compare_architecture)
 

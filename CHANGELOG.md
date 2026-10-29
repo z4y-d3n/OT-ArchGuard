@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased — v1.4 local development foundation
+
+- Add independent bounded Modbus TCP and Layer-2 PROFINET DCP header enrichment
+  through `capture enrich`, preserving observation v2 and reconciliation semantics.
+- Add metadata-only immutable evidence workspace initialization, snapshot import,
+  duplicate identification, listing, inspection and integrity verification.
+- Establish a three-tier development corpus provenance manifest and independent
+  synthetic reference checks. External real-world validation remains pending.
+- Keep the remaining five protocols, approved baselines, historical comparisons,
+  historical Explorer and final release acceptance explicitly unfinished. See the
+  [rolling v1.4 acceptance record](docs/development/v14-progress.md).
+
 ## 1.3.0 — 2026-10-26 (stable)
 
 Published [v1.3.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0)
