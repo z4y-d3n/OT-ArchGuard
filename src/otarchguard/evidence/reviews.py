@@ -207,13 +207,32 @@ def build_review(
     timestamp: str | None = None,
 ) -> dict[str, Any]:
     """Build a decision only after checking the entire prospective review graph."""
-    value = _review_content(
+    result = _build_review(
         baseline_id, decision, reviewer, rationale, state, predecessor, timestamp
     )
-    result = {**value, "review_id": _id("review", value)}
     prospective = {**state, "reviews": {**state["reviews"], result["review_id"]: result}}
     validate_reviews(prospective)
     return result
+
+
+def _build_review(
+    baseline_id: str,
+    decision: str,
+    reviewer: str,
+    rationale: str,
+    state: dict[str, Any],
+    predecessor: str | None = None,
+    timestamp: str | None = None,
+) -> dict[str, Any]:
+    """Build content for private orchestration; its prospective graph must validate.
+
+    Public callers use build_review. Lifecycle publication validates the complete
+    prospective review graph once, before publishing or returning this record.
+    """
+    value = _review_content(
+        baseline_id, decision, reviewer, rationale, state, predecessor, timestamp
+    )
+    return {**value, "review_id": _id("review", value)}
 
 
 def validate_reviews(state: dict[str, Any]) -> dict[str, str]:
@@ -313,12 +332,24 @@ def validate_reviews(state: dict[str, Any]) -> dict[str, str]:
 
 def baseline_summary(baseline: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
     """A bounded review summary; no packet arrays need to be read by a human."""
-    status = validate_reviews(state)[baseline["baseline_id"]]
+    return _baseline_summary(baseline, state, validate_reviews(state))
+
+
+def _baseline_summary(
+    baseline: dict[str, Any],
+    state: dict[str, Any],
+    statuses: dict[str, str],
+    history: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    """Present an operation's already-resolved exact review graph without recomputing it."""
+    status = statuses[baseline["baseline_id"]]
     return {
         **baseline,
         "status": status,
         "physical_collections": len(baseline["members"]),
-        "review_history": [
+        "review_history": history
+        if history is not None
+        else [
             r
             for _, r in sorted(state["reviews"].items())
             if r["subject_id"] == baseline["baseline_id"]

@@ -1,6 +1,38 @@
 # OT-ArchGuard v1.4 progress and acceptance record
 
-## V14-02 current checkpoint
+## V14-02P current local checkpoint
+
+**READY_WITH_NONBLOCKING_LIMITATIONS** — 2026-10-27. Branch
+codex/v14-02p-history-performance-hardening starts at exact V14-02 bc3ff41.
+Production is frozen at 4cb2da9; final corrected measurement tooling at c237f4e.
+The original V14-02 branch, native v1.3.0 tag, benchmark code and receipts remain.
+
+Actual independent acceptance: 280 paired comparisons / 1,740 measured workers
+across six completed stages. Original83 verify API 5.708→0.764 s (7.47x), console
+6.191→1.588 s (3.90x); revision creation 6.99x and proposal 9.27x. Verify traced
+peak 65.873→2.281 MiB; lifetime RSS 108.730→44.660 MiB. C256 (513 files / 3.37 MB)
+verifies 22.822→2.242 s; shared-model K64 case 37.795→0.852 s. Inputs, identities,
+public outcomes and stored bytes match exactly. Five slower initialization
+medians across two studies and +88-KiB init RSS are retained explicitly.
+
+All three regular installed offline suites PASS the same 3,764 unique tests,
+including all original 3,573 plus 191 added; zero failures/errors/skips: Windows
+3.14 wheel+sdist and Windows 3.12 wheel. Ruff/format329, strictmypy217, pip/source
+checks, native124 compatibility, frozen readers, history+six old walkthroughs,
+examples and corpus correction pass. Final delivery adds only docs/data/chart
+and audited inventories over the tested source. Native semantics, producer bytes,
+global checks, exact replay, explicit review and atomic publication are preserved.
+
+See [technical evidence and full tables](v14-02p-performance.md),
+[Spanish owner handoff A–J](v14-02p-handoff-es.md), and the
+[complete measurement receipt](../../benchmarks/receipts/v14-02p-windows.json).
+Raw local execution/audit/package receipts remain under output/v142p-*.
+Hosted Windows/Ubuntu/macOS × Python3.12/3.14 is pending owner-controlled
+publication. No V14-02P remote mutation or release occurred. No drift or historical
+Explorer was added. The following V14-02 record is preserved as historical evidence.
+
+
+## V14-02 completed local checkpoint (historical)
 
 Local branch: `codex/v14-02-evidence-revisions-and-baselines`, starting from
 `bdf51dc54f991ab9edc1a09176b5e55b2ad0df6e`. The starting tree was clean. Remote

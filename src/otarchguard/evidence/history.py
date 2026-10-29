@@ -17,6 +17,7 @@ from typing import Any
 
 from otarchguard.diagnostics import check_limit, fail
 from otarchguard.evidence.observations import digest
+from otarchguard.evidence.paths import _check_read_path
 from otarchguard.evidence.workspace import (
     EVIDENCE_LIMITS,
     EvidenceLimits,
@@ -66,6 +67,23 @@ HistoryState = dict[str, Any]
 StateValidator = Callable[[HistoryState], None]
 
 
+@dataclass(frozen=True, slots=True)
+class _HistoryImage:
+    """One operation's bounded, verified acquisition, never a persistent cache.
+
+    Only private lifecycle orchestration retains this image. Returned public
+    states carry no reusable filesystem authority. Raw buffers are released as
+    each file is decoded; receipts retain only exact byte length and SHA-256.
+    """
+
+    path: Path
+    limits: HistoryLimits
+    state: HistoryState
+    inventories: dict[str, tuple[str, ...]]
+    files: dict[str, tuple[int, str]]
+    total_bytes: int
+
+
 def _evidence_limits(limits: HistoryLimits) -> EvidenceLimits:
     return replace(
         EVIDENCE_LIMITS,
@@ -79,7 +97,7 @@ def _evidence_limits(limits: HistoryLimits) -> EvidenceLimits:
 
 def _read_bytes(path: Path, limits: HistoryLimits) -> bytes:
     """Read exact regular-file bytes while detecting replacement or modification."""
-    _local(path)
+    _check_read_path(path)
     try:
         before = path.lstat()
         if not stat.S_ISREG(before.st_mode):
@@ -90,9 +108,12 @@ def _read_bytes(path: Path, limits: HistoryLimits) -> bytes:
             opened = os.fstat(stream.fileno())
             if _file_identity(opened) != _file_identity(before):
                 fail("EVIDENCE_CHANGED", "$", "Evidence changed while opening.")
-            data = stream.read(limits.object_bytes + 1)
+            # A read(size) can allocate the entire requested buffer even when
+            # the regular file is tiny. One byte past the verified open size
+            # detects growth without reserving the configured maximum.
+            data = stream.read(min(opened.st_size, limits.object_bytes) + 1)
             after = os.fstat(stream.fileno())
-        _local(path)
+        _check_read_path(path)
         named = path.lstat()
         if (
             _file_identity(opened) != _file_identity(after)
@@ -101,6 +122,7 @@ def _read_bytes(path: Path, limits: HistoryLimits) -> bytes:
             # Windows lstat/fstat may expose different ctime meanings; compare
             # ctime only between observations made through the same API.
             or before.st_ctime_ns != named.st_ctime_ns
+            or len(data) != opened.st_size
         ):
             fail("EVIDENCE_CHANGED", "$", "Evidence changed during reading.")
     except OSError:
@@ -219,7 +241,7 @@ def _manifest(value: dict[str, Any], limits: HistoryLimits) -> None:
         captures.add(entry["capture_sha256"])
 
 
-def read_history(path: Path, limits: HistoryLimits = HISTORY_LIMITS) -> HistoryState:
+def _read_image(path: Path, limits: HistoryLimits = HISTORY_LIMITS) -> _HistoryImage:
     """Validate bounded inventory and content IDs; lifecycle validates semantic joins.
 
     This API does not confer analytical meaning on an attachment merely because
@@ -231,10 +253,12 @@ def read_history(path: Path, limits: HistoryLimits = HISTORY_LIMITS) -> HistoryS
         fail("EVIDENCE_INTERRUPTED", "$", "Uncommitted workspace requires manual inspection.")
     if names != {"workspace.json", *_KINDS}:
         fail("EVIDENCE_WORKSPACE", "$", "Unexpected workspace-v2 root members.")
+    inventories = {"": tuple(member.name for member in members)}
     manifest_bytes = _read_bytes(path / "workspace.json", limits)
     manifest = _decode(manifest_bytes, _evidence_limits(limits))
     _manifest(manifest, limits)
     state: HistoryState = {"manifest": manifest}
+    files = {"workspace.json": (len(manifest_bytes), hashlib.sha256(manifest_bytes).hexdigest())}
     byte_hashes: dict[str, str] = {}
     total_bytes = len(manifest_bytes)
     captures: set[str] = set()
@@ -242,6 +266,7 @@ def read_history(path: Path, limits: HistoryLimits = HISTORY_LIMITS) -> HistoryS
         objects: dict[str, dict[str, Any]] = {}
         state[kind] = objects
         entries = _members(path / kind, getattr(limits, kind))
+        inventories[kind] = tuple(entry.name for entry in entries)
         check_limit("history_" + kind, len(entries), getattr(limits, kind))
         for entry in entries:
             if entry.name.startswith(".pending-"):
@@ -249,6 +274,7 @@ def read_history(path: Path, limits: HistoryLimits = HISTORY_LIMITS) -> HistoryS
             if re.fullmatch(singular + r"-[0-9a-f]{64}\.json", entry.name) is None:
                 fail("EVIDENCE_WORKSPACE", "$", "Unexpected historical object filename.")
             raw = _read_bytes(entry, limits)
+            files[kind + "/" + entry.name] = (len(raw), hashlib.sha256(raw).hexdigest())
             total_bytes += len(raw)
             check_limit("history_workspace_bytes", total_bytes, limits.workspace_bytes)
             value = _decode(raw, _evidence_limits(limits))
@@ -260,7 +286,7 @@ def read_history(path: Path, limits: HistoryLimits = HISTORY_LIMITS) -> HistoryS
                 if value["capture_sha256"] in captures:
                     fail("EVIDENCE_WORKSPACE", "$", "Duplicate physical collection identity.")
                 captures.add(value["capture_sha256"])
-                byte_hashes[identity] = hashlib.sha256(raw).hexdigest()
+                byte_hashes[identity] = files[kind + "/" + entry.name][1]
             elif raw != serialize(value):
                 fail(
                     "EVIDENCE_INTEGRITY",
@@ -282,7 +308,34 @@ def read_history(path: Path, limits: HistoryLimits = HISTORY_LIMITS) -> HistoryS
                 )
             ):
                 fail("EVIDENCE_MIGRATION", "$", "Preserved migration member is missing or changed.")
-    return state
+    return _HistoryImage(path.absolute(), limits, state, inventories, files, total_bytes)
+
+
+def read_history(path: Path, limits: HistoryLimits = HISTORY_LIMITS) -> HistoryState:
+    """Acquire and validate a fresh complete inventory for each public operation.
+
+    Content identity is not analytical authority; lifecycle checks the complete
+    semantic graph before using this state. No image survives this public read.
+    """
+    return _read_image(path, limits).state
+
+
+def _check_image(workspace: Path, image: _HistoryImage) -> None:
+    """Reacquire exact bytes before publication; metadata alone never grants reuse."""
+    if workspace.absolute() != image.path:
+        fail("EVIDENCE_PATH", "$", "A historical acquisition belongs to one workspace.")
+    for folder, previous in image.inventories.items():
+        maximum = len(_KINDS) + 2 if not folder else getattr(image.limits, folder)
+        current = tuple(member.name for member in _members(workspace / folder, maximum))
+        if current != previous:
+            fail("EVIDENCE_CHANGED", "$", "Workspace inventory changed before publication.")
+    total_bytes = 0
+    for name, (size, sha256) in image.files.items():
+        raw = _read_bytes(workspace / name, image.limits)
+        total_bytes += len(raw)
+        check_limit("history_workspace_bytes", total_bytes, image.limits.workspace_bytes)
+        if len(raw) != size or hashlib.sha256(raw).hexdigest() != sha256:
+            fail("EVIDENCE_CHANGED", "$", "Workspace content changed before publication.")
 
 
 def _reserve(path: Path) -> None:
@@ -414,14 +467,11 @@ def migrate_workspace(
     }
 
 
-def publish_object(
-    workspace: Path,
+def _prepare_object(
     kind: str,
     value: dict[str, Any],
-    validate: StateValidator | None = None,
-    limits: HistoryLimits = HISTORY_LIMITS,
-) -> dict[str, Any]:
-    """Validate a prospective complete state and append one canonical object."""
+    limits: HistoryLimits,
+) -> tuple[bytes, dict[str, Any], str]:
     if kind not in _KINDS:
         fail("EVIDENCE_OBJECT", "$", "Unsupported historical object kind.")
     # Roundtrip prevents alias mutation and bounds direct Python API inputs.
@@ -433,13 +483,29 @@ def publish_object(
     check_limit("history_object_bytes", len(raw), limits.object_bytes)
     _object(kind, value, limits)
     identity = _id(kind, value)
-    state = read_history(workspace, limits)
+    return raw, value, identity
+
+
+def _publish_prepared(
+    workspace: Path,
+    kind: str,
+    prepared: tuple[bytes, dict[str, Any], str],
+    image: _HistoryImage,
+    validate: StateValidator | None,
+) -> dict[str, Any]:
+    raw, value, identity = prepared
+    if workspace.absolute() != image.path:
+        fail("EVIDENCE_PATH", "$", "A historical acquisition belongs to one workspace.")
+    limits = image.limits
+    state = image.state
     existing = state[kind].get(identity)
     if existing is not None:
         if serialize(existing) != raw:
             fail("EVIDENCE_EXISTS", "$", "Existing evidence cannot be overwritten.")
         if validate is not None:
             validate(state)
+        # An idempotent no-op is a validated read, not a publication boundary.
+        # Like public inspection it uses this operation's freshly acquired bytes.
         return {"status": "ALREADY_PRESENT", "object_id": identity}
     if kind == "snapshots" and any(
         old["capture_sha256"] == value["capture_sha256"] for old in state[kind].values()
@@ -450,21 +516,41 @@ def publish_object(
             "Physical collection already exists; create a revision.",
         )
     check_limit("history_" + kind, len(state[kind]) + 1, getattr(limits, kind))
-    state[kind][identity] = value
+    state = {**state, kind: {**state[kind], identity: value}}
     if validate is not None:
         validate(state)
-    total = len(_read_bytes(workspace / "workspace.json", limits))
-    for folder in _KINDS:
-        for oid in state[folder]:
-            # Migrated snapshots may deliberately retain noncanonical formatting.
-            total += (
-                len(raw)
-                if oid == identity
-                else len(_read_bytes(workspace / folder / (oid + ".json"), limits))
-            )
-    check_limit("history_workspace_bytes", total, limits.workspace_bytes)
+    check_limit("history_workspace_bytes", image.total_bytes + len(raw), limits.workspace_bytes)
+    # Keep a second physical acquisition at the write boundary. Reuse avoids
+    # re-decoding/re-validating unchanged objects, never checking only size/mtime.
+    _check_image(workspace, image)
     _publish(workspace / kind / (identity + ".json"), raw)
     return {"status": "ADDED", "object_id": identity}
+
+
+def _publish_from_image(
+    workspace: Path,
+    kind: str,
+    value: dict[str, Any],
+    image: _HistoryImage,
+    validate: StateValidator | None = None,
+) -> dict[str, Any]:
+    """Append within one private lifecycle operation using its original acquisition."""
+    return _publish_prepared(
+        workspace, kind, _prepare_object(kind, value, image.limits), image, validate
+    )
+
+
+def publish_object(
+    workspace: Path,
+    kind: str,
+    value: dict[str, Any],
+    validate: StateValidator | None = None,
+    limits: HistoryLimits = HISTORY_LIMITS,
+) -> dict[str, Any]:
+    """Validate a fresh prospective complete state and append one canonical object."""
+    # Preserve invalid-object diagnostics before inspecting the workspace.
+    prepared = _prepare_object(kind, value, limits)
+    return _publish_prepared(workspace, kind, prepared, _read_image(workspace, limits), validate)
 
 
 def add_collection(
@@ -477,7 +563,8 @@ def add_collection(
     snapshot = build_snapshot(
         read_document(observations_path, limits), label, _evidence_limits(limits)
     )
-    state = read_history(workspace, limits)
+    image = _read_image(workspace, limits)
+    state = image.state
     for previous in state["snapshots"].values():
         if previous["capture_sha256"] == snapshot["capture_sha256"]:
             return {
@@ -487,7 +574,7 @@ def add_collection(
                 == snapshot["observations_sha256"],
                 "label_match": previous["label"] == label,
             }
-    result = publish_object(workspace, "snapshots", snapshot, validate, limits)
+    result = _publish_from_image(workspace, "snapshots", snapshot, image, validate)
     return {**result, "snapshot_id": snapshot["snapshot_id"]}
 
 

@@ -402,7 +402,7 @@
     },
     {
       "attribution": "Repository copyright 2023 Battelle Energy Alliance, LLC; retain root LICENSE.txt and NOTICE.txt if separately authorized to redistribute.",
-      "capture_type": "pcap",
+      "capture_type": "pcapng",
       "expected_negative": [
         "No device identity, successful operation, owner approval or native reachability conclusion."
       ],
