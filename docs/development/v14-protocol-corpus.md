@@ -1,5 +1,11 @@
 # V14 protocol corpus provenance
 
+Current V14-01 inventory and actual external laboratory validation supersede the
+historical V14-00 review below: see [external corpus evidence](v14-external-corpus.md).
+The manifest now includes reviewed local-analysis references with actual byte
+identities; their raw bytes remain outside Git and release archives. Tier 2 is
+still empty because redistribution rights are not established per capture.
+
 This is the initial V14-00 corpus review, dated 2026-10-26. Real-world industrial
 capture validation remains pending. No external packet bytes are redistributed.
 

@@ -1,5 +1,12 @@
 # V14-00 architecture decision: independent evidence layers
 
+V14-01 update: the original decisions below describe the preserved V14-00
+checkpoint. Seven decoders are now integrated. Distribution/CLI identity is
+`1.4.0.dev1` with native engine `1.3.0`; see the implemented
+[version ADR](v14-version-identity-adr.md) and the proposed
+[analysis/review identity ADR](v14-analysis-revisions-adr.md).
+Actual external laboratory evidence is recorded in [the corpus review](v14-external-corpus.md).
+
 Status: implemented foundation, development contract. This is not a release candidate.
 
 ## Baseline and compatibility

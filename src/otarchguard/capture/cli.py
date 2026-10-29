@@ -119,7 +119,11 @@ def enrich(
         Path | None, typer.Option("--output", help="Optional fresh enrichment JSON file.")
     ] = None,
 ) -> None:
-    """Emit independent protocol metadata; existing observations and approvals are unchanged."""
+    """Emit bounded Modbus, DCP, EtherNet/IP, S7comm, IEC104, OPC UA and DNP3 headers.
+
+    Structural recognition never authorizes communication or proves command execution.
+    TCP uses standard ports; DCP uses Layer-2 framing. No TCP stream reassembly.
+    """
 
     def run() -> dict[str, Any]:
         if output is not None:

@@ -5,8 +5,9 @@ import json
 from dataclasses import asdict
 from typing import Any
 
-from otarchguard.capture.protocols import SUPPORTED_PROTOCOLS, digest
+from otarchguard.capture.protocols import LEGACY_PROTOCOLS, SUPPORTED_PROTOCOLS, digest
 from otarchguard.capture.protocols.contract import ENRICHMENT_LIMITS, Status
+from otarchguard.capture.protocols.header_validation import validate_header
 
 _FIELDS = {
     "modbus_tcp": {
@@ -69,6 +70,10 @@ def _ip(value: object) -> bool:
 def _positive(item: dict[str, Any]) -> None:
     protocol, fields = item["protocol"], item["fields"]
     _require(item["recognition_method"] == "HEADER_STRUCTURE")
+    if protocol not in LEGACY_PROTOCOLS:
+        _require(item["reason"] is None and isinstance(item["message_category"], str))
+        validate_header(protocol, fields, item["message_category"])
+        return
     _require(item["reason"] is None and item["message_category"] in _CATEGORIES[protocol])
     _require(set(fields) == _FIELDS[protocol])
     if protocol == "modbus_tcp":
@@ -151,14 +156,15 @@ def _validate(value: dict[str, Any]) -> None:
         <= limits["output_bytes"]
     )
     _require(type(value["enrichment_version"]) is int and value["enrichment_version"] == 1)
-    _require(type(value["decoder_version"]) is int and value["decoder_version"] == 1)
+    _require(type(value["decoder_version"]) is int and value["decoder_version"] in {1, 2})
     _require(_sha(value["enrichment_sha256"]) and _sha(value["capture_sha256"]))
     _require(
         digest({k: v for k, v in value.items() if k != "enrichment_sha256"})
         == value["enrichment_sha256"]
     )
     _require(value["observations_sha256"] is None)
-    _require(value["supported_protocols"] == list(SUPPORTED_PROTOCOLS))
+    protocols = LEGACY_PROTOCOLS if value["decoder_version"] == 1 else SUPPORTED_PROTOCOLS
+    _require(value["supported_protocols"] == list(protocols))
     _require(_texts(value["limitations"]))
     capture = value["capture"]
     _require(type(capture) is dict)
@@ -253,7 +259,7 @@ def _validate(value: dict[str, Any]) -> None:
             }
         )
         protocol = item["protocol"]
-        _require(protocol in SUPPORTED_PROTOCOLS and type(item["fields"]) is dict)
+        _require(protocol in protocols and type(item["fields"]) is dict)
         _require(item["status"] in {s.value for s in Status})
         _require(
             item["recognition_method"]
@@ -311,11 +317,14 @@ def _validate(value: dict[str, Any]) -> None:
         _require(ref["offset"] + ref["captured_length"] <= capture["size_bytes"])
         _require(item["record_offset"] <= ref["captured_length"])
         if item["status"] == Status.STRUCTURALLY_VALID:
-            size = (
-                item["fields"]["adu_length"]
-                if protocol == "modbus_tcp"
-                else (12 + item["fields"]["data_length"])
-            )
+            if protocol not in LEGACY_PROTOCOLS:
+                size = validate_header(protocol, item["fields"], item["message_category"])
+            else:
+                size = (
+                    item["fields"]["adu_length"]
+                    if protocol == "modbus_tcp"
+                    else 12 + item["fields"]["data_length"]
+                )
             _require(item["record_offset"] + size <= ref["captured_length"])
             _require(item["record_offset"] + size <= limits["view_bytes"])
             if protocol == "profinet_dcp":

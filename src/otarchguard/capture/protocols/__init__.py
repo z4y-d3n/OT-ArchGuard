@@ -18,8 +18,13 @@ from otarchguard.capture.protocols.contract import (
     Status,
 )
 from otarchguard.capture.protocols.dcp import decode_dcp
+from otarchguard.capture.protocols.dnp3 import decode_dnp3
+from otarchguard.capture.protocols.enip import decode_enip
+from otarchguard.capture.protocols.iec104 import decode_iec104
 from otarchguard.capture.protocols.modbus import decode_modbus
+from otarchguard.capture.protocols.opcua import decode_opcua
 from otarchguard.capture.protocols.packet import packet_view
+from otarchguard.capture.protocols.s7comm import decode_s7comm
 from otarchguard.diagnostics import check_limit
 
 __all__ = [
@@ -33,14 +38,15 @@ __all__ = [
     "validate_enrichment",
 ]
 
-SUPPORTED_PROTOCOLS = ("modbus_tcp", "profinet_dcp")
+LEGACY_PROTOCOLS = ("modbus_tcp", "profinet_dcp")
+SUPPORTED_PROTOCOLS = LEGACY_PROTOCOLS + ("ethernet_ip", "s7comm", "iec104", "opcua_binary", "dnp3")
 _LIMITATIONS = (
     "Independent header metadata; frozen observations and owner approvals are not changed.",
     "Structural validation is not authenticity, authorization or successful command execution.",
     "No application values, network access, reassembly or speculative offset matching.",
     "Packet/record counts are observations; duplicates and multi-interface copies "
     "are not deduplicated.",
-    "Only Modbus TCP on port 502 and PROFINET DCP are integrated in this development slice.",
+    "Seven documented header subsets; TCP standard ports and Layer-2 PROFINET DCP only.",
     "IPv6 extension headers and unsupported outer frames remain unassessed.",
 )
 
@@ -61,7 +67,19 @@ def decode(
 ) -> tuple[EnrichmentRecord, ...]:
     """Decode only at offset zero; no protocol search or retained packet state."""
     if view.transport == "tcp":
-        return decode_modbus(view, limits)
+        # Preserve legacy Modbus precedence; never search arbitrary payload offsets.
+        for decoder in (
+            decode_modbus,
+            decode_enip,
+            decode_s7comm,
+            decode_iec104,
+            decode_opcua,
+            decode_dnp3,
+        ):
+            result = decoder(view, limits)
+            if result:
+                return result
+        return ()
     return decode_dcp(view, limits)
 
 
@@ -119,7 +137,7 @@ def enrich_capture(
     capture = scan_capture(path, consume, capture_limits)
     report: dict[str, Any] = {
         "enrichment_version": 1,
-        "decoder_version": 1,
+        "decoder_version": 2,
         "capture_sha256": capture["sha256"],
         "capture": capture,
         "observations_sha256": None,

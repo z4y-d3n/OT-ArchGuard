@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
-from otarchguard import __version__
+from otarchguard import DISTRIBUTION_VERSION as __version__
 from otarchguard.cli import app
 
 runner = CliRunner(env={"NO_COLOR": "1", "TERM": "dumb"})

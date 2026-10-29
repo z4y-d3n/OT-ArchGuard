@@ -9,7 +9,7 @@ from typing import Annotated, Any
 import typer
 from typer.core import TyperCommand
 
-from otarchguard import __version__
+from otarchguard import DISTRIBUTION_VERSION, __version__
 from otarchguard.api import ValidatedArchitecture, validate_file
 from otarchguard.capture.cli import app as capture_app
 from otarchguard.comparison import compare_architectures, compare_files
@@ -207,7 +207,7 @@ def main(
 ) -> None:
     """Validate declarations and check intents within the supported initiation model."""
     if version:
-        typer.echo(__version__)
+        typer.echo(DISTRIBUTION_VERSION)
         raise typer.Exit(ExitCode.SUCCESS)
 
 

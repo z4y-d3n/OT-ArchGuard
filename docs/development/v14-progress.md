@@ -1,5 +1,36 @@
 # OT-ArchGuard v1.4 progress and acceptance record
 
+## V14-01 current checkpoint
+
+The five remaining bounded decoders are implemented, bringing the inventory to
+seven. Enrichment schema 1 emits decoder revision 2 and strictly accepts legacy
+revision 1. The package/CLI uses `1.4.0.dev1`; native evidence and the historical
+Python version alias retain engine `1.3.0`, preserving frozen analytical sources.
+Workspace/snapshot v1 and its duplicate-capture rule remain unchanged.
+
+Local V14-01 acceptance: final installed wheel and separate installed sdist each
+pass **3,380 unique tests**, zero failures/errors/skips (711.66 s / 728.38 s).
+There are 388 additional cases over V14-00; repeated runs are not added to the
+unique inventory. The 565-case focused V14 suite, Ruff lint/format, strict mypy,
+dependency checks, frozen consumers, 124-file immutable native comparison and
+all final offline walkthroughs pass. Source/archive manifests and installed
+module-byte equality are verified; the final documentation-only commit repeats
+the source/archive audit. No hosted V14-01 acceptance is claimed.
+
+Eight external parser-reference captures were acquired locally, with actual
+hashes, pinned source revisions, rights review and TShark 4.6.7 receipts. Five
+supported captures yielded 615 positive records and 2,194 matching safe-field
+comparisons across ENIP/S7/OPC UA/DNP3. Three unsupported NULL/SLL captures are
+retained as unsupported outcomes. Raw external bytes are excluded from Git and
+packages; per-capture redistribution remains unknown. Modbus/DCP/IEC104 external
+coverage is still pending. No production-plant provenance is claimed.
+
+The consolidated owner-facing record is [V14-01 handoff in Spanish](v14-01-handoff-es.md),
+with exact local gate results, protocol matrix, provenance, architectural ADRs,
+performance measurements and prioritized V14-02 acceptance requirements.
+The V14-00 sections below preserve historical checkpoint evidence; their older
+inventory, package-version and pending-corpus statements describe that checkpoint.
+
 This is the single rolling implementation/acceptance record. Documentation and code
 are in English; owner-facing delivery summaries use Spanish. No v1.4 release,
 remote branch, pull request or tag is authorized by this local development work.

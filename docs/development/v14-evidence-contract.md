@@ -1,5 +1,10 @@
 # V14-00 evidence workspace development contract
 
+V14-01 preserves this exact workspace/snapshot-v1 contract, including duplicate
+capture rejection. [The analytical revision ADR](v14-analysis-revisions-adr.md)
+defines the explicit additive transition required for V14-02; it is not a silent
+extension of these stored objects.
+
 Status: implemented development contract for local review, not the final v1.4
 contract freeze. The [v1.3 evidence freeze](v13-18-evidence-contract-freeze.md)
 remains authoritative for capture and observation meanings. This document describes

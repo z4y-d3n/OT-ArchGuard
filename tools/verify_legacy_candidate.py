@@ -37,13 +37,30 @@ def verify(output: Path, baseline_python: Path | None = None) -> dict[str, Any]:
     for name in historical_tests:
         before, after = baseline[name], (ROOT / name).read_bytes()
         if name == "tests/test_release_candidate.py":
-            before = before.replace(b'RELEASE_VERSION = "1.2.0"', b'RELEASE_VERSION = "1.3.0"')
+            before = before.replace(
+                b'RELEASE_VERSION = "1.2.0"',
+                b'RELEASE_VERSION = "1.4.0.dev1"\nENGINE_VERSION = "1.3.0"',
+            )
+            for field in (
+                b"__version__",
+                b'legacy["engine_version"]',
+                b"trace.engine_version",
+                b'payload["engine_version"]',
+            ):
+                before = before.replace(
+                    field + b" == RELEASE_VERSION", field + b" == ENGINE_VERSION"
+                )
+        if name == "tests/test_cli.py":
+            before = before.replace(
+                b"from otarchguard import __version__",
+                b"from otarchguard import DISTRIBUTION_VERSION as __version__",
+            )
         if before != after:
             raise ValueError(f"Unreviewed historical test change: {name}")
     for name in ("docs/yaml-schema-v1.md", "src/otarchguard/contract.py"):
         if baseline[name] != (ROOT / name).read_bytes():
             raise ValueError(f"Historical native contract changed: {name}")
-    project = baseline["pyproject.toml"].replace(b'version = "1.2.0"', b'version = "1.3.0"')
+    project = baseline["pyproject.toml"].replace(b'version = "1.2.0"', b'version = "1.4.0.dev1"')
     if project != (ROOT / "pyproject.toml").read_bytes():
         raise ValueError("Project changes exceed the approved package version transition")
     environment = {
@@ -115,7 +132,10 @@ def verify(output: Path, baseline_python: Path | None = None) -> dict[str, Any]:
         baseline_installed_module=installed["module"],
         baseline_module_sha256=expected,
         historical_test_files=len(historical_tests),
-        historical_test_exception="Exact current RELEASE_VERSION assertion only",
+        historical_test_exception=(
+            "Exact distribution assertion, four fixed 1.3.0 engine/API assertions, "
+            "and CLI version-test import only"
+        ),
         commands=commands,
     )
     (output / "comparison.json").write_text(

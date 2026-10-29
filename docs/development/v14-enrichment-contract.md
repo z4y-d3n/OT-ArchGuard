@@ -1,8 +1,10 @@
-# V14-00 protocol enrichment contract (development version 1)
+# V14-01 protocol enrichment contract (development schema 1, decoder revision 2)
 
 This is the implemented development slice, not the final v1.4 release freeze.
-Only Modbus TCP and PROFINET DCP have decoders here. The other five requested
-families remain outstanding. Frozen observation version 2, capture version 1,
+Seven bounded decoders are implemented. The original Modbus/DCP subsets below
+remain unchanged; [EtherNet/IP/S7](v14-enip-s7.md) and
+[IEC104/OPC UA/DNP3](v14-iec-opc-dnp.md) specify the five added subsets and exact
+safe fields. Frozen observation version 2, capture version 1,
 association version 1 and native comparison version 1 are unchanged. The new
 artifact neither approves identities nor changes reachability or owner decisions.
 
@@ -78,18 +80,20 @@ declared data length, but no additional coalesced DCP record interpretation.
 methods are `PORT_ASSOCIATION`, `ETHERTYPE` or `EXPLICIT_PROTOCOL_SELECTION`.
 No probabilities or generic confirmed-protocol label are generated. Each record
 has a bounded reason and explicit limitations. Nonpositive records contain no
-decoded header fields or operation category. Encrypted/opaque protocol families
-are outside this two-decoder slice, so no such positive decoder is claimed.
+decoded header fields or operation category. Positive OPC UA secure-channel
+framing remains opaque and unassessed; a positive EtherNet/IP encapsulation
+separately labels whether supported CIP metadata was recognized, unsupported or
+opaque. These are scoped framing claims, not validation of the whole application.
 
 ## Artifact and identity
 
 The `protocol-enrichment.json` root has exactly these fields:
 
-- `enrichment_version: 1`, `decoder_version: 1`.
+- `enrichment_version: 1`, `decoder_version: 2` for new output.
 - `capture_sha256`, original frozen `capture` metadata.
 - `observations_sha256: null`: this independent scan binds the capture, without
   claiming that an observation artifact was validated or owner-approved.
-- `supported_protocols: ["modbus_tcp", "profinet_dcp"]`.
+- `supported_protocols: ["modbus_tcp", "profinet_dcp", "ethernet_ip", "s7comm", "iec104", "opcua_binary", "dnp3"]`.
 - `records`, `counts`, `packets_with_records`, `skipped_packets`.
 - `limits`, `limitations`, `enrichment_sha256`.
 
@@ -113,7 +117,17 @@ JSON uses sorted keys, ASCII escaping, two-space indentation and one final LF.
 The digest is SHA-256 over compact sorted-key ASCII JSON, separators `,`/`:`,
 excluding only `enrichment_sha256`. No filename, absolute path, import time,
 wall-clock generation time, payload or local execution duration enters identity.
-The same capture bytes and same limits produce the same artifact and digest.
+The same capture bytes, decoder revision and limits produce the same artifact
+and digest. Revision 1 artifacts retain their original two-protocol inventory
+and strict validation. A rehashed revision-1 artifact cannot introduce revision-2
+protocols. Unknown revisions are rejected. The explicit revision change means
+new enrichment identity is expected; frozen native observation identity is not.
+
+TCP selection uses standard ports only. Existing explicit Modbus selection and
+Modbus precedence remain unchanged. Other decoders are dispatched in inventory
+order; a packet whose two ports name different families uses the first selected
+family and does not trigger speculative multi-protocol scanning. UDP implicit
+I/O and all general TCP reassembly remain outside this revision.
 
 `validate_enrichment` checks version, canonical digest, safe fields, categories,
 count denominators, ordering, packet bounds, interface joins and exact timestamp
@@ -150,6 +164,7 @@ challenge service IDs, malformed response shape and recomputed-hash tampering.
 
 The corpus manifest separately records public-source licensing/provenance
 research. The committed fixture and its TShark receipt are synthetic evidence,
-not real-world industrial interoperability validation. External industrial
-captures, a broader DCP service matrix, the remaining five protocols, hostile
-real-world segmentation, hosted CI and final release freeze remain outstanding.
+not real-world industrial interoperability validation. Actual external laboratory
+captures and unsupported-case receipts are recorded in [the V14-01 corpus review](v14-external-corpus.md).
+A broader DCP service matrix, additional externally authorized families, hostile
+stream reconstruction, V14-01 hosted CI and final release freeze remain outstanding.

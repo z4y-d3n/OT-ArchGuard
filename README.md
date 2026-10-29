@@ -11,9 +11,9 @@ compare supported capture observations with the architecture model.
 **Latest stable release: [v1.3.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0).**
 Requires **Python 3.12 or later**. Native YAML schema: **1**.
 
-This branch contains an unfinished **v1.4 development foundation**, retaining
-the 1.3.0 package identity while the frozen native evidence transition is reviewed.
-It adds independent Modbus TCP / PROFINET DCP header metadata and immutable
+This branch contains an unfinished **v1.4 development checkpoint**, identified as
+`1.4.0.dev1`; unchanged native evidence retains engine identity `1.3.0`.
+It adds seven bounded industrial header decoders and immutable
 snapshot ingestion. The seven-protocol release candidate is still pending.
 See the [v1.4 development guide](docs/v14-foundation.md) and
 [acceptance record](docs/development/v14-progress.md).
