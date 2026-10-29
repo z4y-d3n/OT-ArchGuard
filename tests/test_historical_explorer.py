@@ -167,14 +167,27 @@ def test_mutation_during_rendering_leaves_no_successful_publication(
 def test_missing_source_member_and_output_within_workspace_rejected(
     case: tuple[Path, Path, dict[str, Any]], tmp_path: Path
 ) -> None:
-    workspace, report, _ = case
+    workspace, report, selected = case
     with pytest.raises(ModelError):
         explorer.generate_explorer(workspace, report, workspace / "site")
-    next((workspace / "analyses").iterdir()).unlink()
+    assert not (workspace / "site").exists()
+    reference_id = selected["periods"]["reference"]["analysis_id"]
+    reference = workspace / "analyses" / (reference_id + ".json")
+    candidate = workspace / "analyses" / (selected["periods"]["candidate"]["analysis_id"] + ".json")
+    assert reference.is_file() and candidate.is_file() and reference != candidate
+    assert json.loads(reference.read_bytes())["analysis_id"] == reference_id
+    assert reference_id in {
+        source["analysis_id"] for source in read_report(report)["inputs"]["reference_sources"]
+    }
+    reference.unlink()
+    assert not reference.exists() and candidate.is_file()
     result = CliRunner().invoke(
         app,
         ["evidence", "drift", "explore", str(workspace), str(report), str(tmp_path / "missing")],
     )
     assert result.exit_code == 2
-    assert json.loads(result.stderr)["code"].startswith("EVIDENCE")
+    diagnostic = json.loads(result.stderr)
+    assert diagnostic["code"] == "EVIDENCE_REVIEW"
+    assert diagnostic["message"] == "Baseline analytical dependency is unavailable."
+    assert result.stdout == ""
     assert not (tmp_path / "missing").exists()
