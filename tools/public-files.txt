@@ -23,6 +23,7 @@ benchmarks/quality_comparison.py
 benchmarks/receipts/v14-02p-scaling.png
 benchmarks/receipts/v14-02p-windows.json
 benchmarks/receipts/v14-03-windows.json
+benchmarks/receipts/v14-05-windows.json
 benchmarks/run.py
 benchmarks/workloads.py
 docs/algorithms.md
@@ -87,7 +88,9 @@ docs/development/v14-03-handoff-es.md
 docs/development/v14-04-handoff-es.md
 docs/development/v14-04-visual-remediation-es.md
 docs/development/v14-05-corpus-coverage.md
+docs/development/v14-05-handoff-es.md
 docs/development/v14-05-interoperability.md
+docs/development/v14-05-performance.md
 docs/development/v14-05-validation-matrix.md
 docs/development/v14-analysis-revisions-adr.md
 docs/development/v14-architecture.md

@@ -1,5 +1,52 @@
 # OT-ArchGuard v1.4 progress and acceptance record
 
+## V14-05 corpus, interoperability and integrity hardening
+
+**READY_FOR_OWNER_REVIEW_WITH_DOCUMENTED_LIMITATIONS** — 2026-10-29. Exact
+parent `d898516e24dec922179696e4cb50a262b3466a46`, with all six successful hosted
+jobs in run 40808096253. Local branch
+`codex/v14-05-corpus-interoperability-hardening`; implementation freeze
+`e4d8234acd504ca30d6d0aef66f316b8cf1c86d0`. Delivery documentation/data do not
+change the frozen runtime, tests or measurement harnesses.
+
+Added original 28-packet seven-family corpus, literal expected fields and
+TShark 4.6.9 receipt: 36 selected safe-field agreements across 14 positive
+packets, seven truncated and seven unsupported cases. New composed regressions
+cover privacy, misleading framing/ports, resource/publication boundaries,
+physical-versus-analytical identity, supersession, missing dependencies and
+source/review mutation during rendering. No production defect was demonstrated;
+all 97 production modules and the strict historical compatibility gate remain
+byte-identical. No decoder, native semantic or visual redesign was introduced.
+
+Final complete offline repository suite: 4,272 PASS, one environmental
+junction-creation SKIP, zero failures/errors; 4,273 unique cases, including
+81 new ones. Focused integration: 589 PASS/one SKIP; Python 3.12: 128 PASS.
+Global Ruff/format, strict mypy256, dependencies, source/archive inventories,
+installed wheel/sdist and 3.12 identities, frozen readers, examples, historical
+walkthroughs and exact 124-file native/approved-presentation compatibility pass.
+Python 3.12 reproduces a 3.14 report and exposes current revocation in an old site.
+
+Matched performance keeps the same inputs, interpreter and ceilings. All
+60 historical trial pairs / 120 workers have exact outcomes and stored bytes.
+Protocol, drift/replay/native and Explorer studies retain ranges and slower
+rows; separate allocation trials are not latency claims. All ten manifests and
+their file hashes per Explorer scale 1/64/512 agree. No optimization or industrial
+capacity claim is made for the identical production source.
+
+Eight ignored external capture hashes and current enrichment digests reproduce
+their pinned historical receipts; external TShark 4.6.7 comparisons remain
+historical. Modbus/DCP/IEC104 external positives, NULL/SLL support, authenticated
+reviews, production validation and the pre-v1.5 public adversarial campaign
+remain outside this completed local evidence checkpoint. No external capture
+bytes are redistributed. Candidate six-platform hosted CI is owner-controlled
+and NOT EXECUTED; there were no remote mutations.
+
+See [acceptance matrix](v14-05-validation-matrix.md),
+[corpus/provenance](v14-05-corpus-coverage.md),
+[matched performance](v14-05-performance.md),
+[compact receipt](../../benchmarks/receipts/v14-05-windows.json) and
+[Spanish owner handoff](v14-05-handoff-es.md). Earlier entries remain historical.
+
 ## V14-04 historical Explorer checkpoint
 
 **READY_FOR_OWNER_REVIEW** — 2026-10-27. Implementation starts from V14-03
