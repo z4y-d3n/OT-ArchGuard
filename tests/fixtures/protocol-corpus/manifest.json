@@ -434,6 +434,46 @@
       "source_url": "https://raw.githubusercontent.com/cisagov/icsnpp-opcua-binary/d7fd8894d23baabcaf59989abc3cbab6b469c074/testing/traces/opcua_with-gap_with-handshake.pcap",
       "tier": 3,
       "upstream_revision": "d7fd8894d23baabcaf59989abc3cbab6b469c074"
+    },
+    {
+      "attribution": "Original literal fictional fixtures in v145-cases.json; independent builder tools/v145_corpus.py.",
+      "capture_type": "pcap",
+      "expected_negative": [
+        "Packets 15-21: incomplete candidate framing, empty fields and no operation category.",
+        "Packets 22-28: unsupported variants, empty fields and no operation category."
+      ],
+      "expected_positive": [
+        "Packets 1-14: two positive supported forms for each of seven families; exact literal safe fields and selected TShark metadata joined by original packet index."
+      ],
+      "id": "v145-equivalence",
+      "known_limitations": [
+        "Original synthetic data, not external or deployment validation.",
+        "Zero IPv4/TCP checksums; framing only, no checksum or session-success claim.",
+        "Selected TShark fields are an independent partial oracle; literal expectations cover remaining safe fields."
+      ],
+      "license": "Apache-2.0",
+      "original_author": "OT-ArchGuard v1.4 contributors",
+      "original_filename": "v145-equivalence.pcap",
+      "parser_identity": "enrichment_version 1; decoder_version 2; unchanged V14-04 bounded subsets",
+      "protocol_families": [
+        "modbus_tcp",
+        "profinet_dcp",
+        "ethernet_ip",
+        "s7comm",
+        "iec104",
+        "opcua_binary",
+        "dnp3"
+      ],
+      "redistribution": "original",
+      "reference_tool": "TShark (Wireshark) 4.6.9 (v4.6.9-0-g2d548b197c75).",
+      "review_status": "approved_synthetic",
+      "sensitivity_review": "fictional",
+      "sha256": "9035464f34c6d2b45c528678b1f1d2af87b4d428b6707c395564239bfe0de3c2",
+      "size_bytes": 2460,
+      "source_organization": "OT-ArchGuard",
+      "source_url": null,
+      "tier": 1,
+      "upstream_revision": null
     }
   ],
   "manifest_version": 1,

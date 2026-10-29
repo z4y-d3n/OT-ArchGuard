@@ -17,6 +17,7 @@ include benchmarks/historical_regression.py
 include benchmarks/history_performance.py
 include benchmarks/profile.py
 include benchmarks/projects.py
+include benchmarks/protocol_regression.py
 include benchmarks/protocols.py
 include benchmarks/quality_comparison.py
 include benchmarks/receipts/v14-02p-scaling.png
@@ -85,6 +86,9 @@ include docs/development/v14-03-audit.md
 include docs/development/v14-03-handoff-es.md
 include docs/development/v14-04-handoff-es.md
 include docs/development/v14-04-visual-remediation-es.md
+include docs/development/v14-05-corpus-coverage.md
+include docs/development/v14-05-interoperability.md
+include docs/development/v14-05-validation-matrix.md
 include docs/development/v14-analysis-revisions-adr.md
 include docs/development/v14-architecture.md
 include docs/development/v14-drift-contract.md
@@ -245,6 +249,7 @@ include src/otarchguard/evidence/validation.py
 include src/otarchguard/evidence/workspace.py
 include src/otarchguard/explorer.py
 include src/otarchguard/explorer_data.py
+include src/otarchguard/explorer_exposure.py
 include src/otarchguard/explorer_html.py
 include src/otarchguard/exposure.py
 include src/otarchguard/flows.py
@@ -325,6 +330,9 @@ include tests/fixtures/protocol-corpus/external-tshark-receipts.json
 include tests/fixtures/protocol-corpus/manifest.json
 include tests/fixtures/protocol-corpus/synthetic-industrial.pcap
 include tests/fixtures/protocol-corpus/tshark-receipt.json
+include tests/fixtures/protocol-corpus/v145-cases.json
+include tests/fixtures/protocol-corpus/v145-equivalence.pcap
+include tests/fixtures/protocol-corpus/v145-tshark-receipt.json
 include tests/fixtures/unsupported-model.yaml
 include tests/test_capture_arp_semantics.py
 include tests/test_capture_cli.py
@@ -344,6 +352,7 @@ include tests/test_capture_ux_integrity.py
 include tests/test_capture_views.py
 include tests/test_check_cli.py
 include tests/test_cli.py
+include tests/test_compact_evidence_prototype.py
 include tests/test_comparison_properties.py
 include tests/test_console_resolution.py
 include tests/test_contract.py
@@ -366,6 +375,7 @@ include tests/test_explorer.py
 include tests/test_explorer_compact.py
 include tests/test_exposure_compare_cli.py
 include tests/test_exposure_comparison.py
+include tests/test_exposure_tables_prototype.py
 include tests/test_final_release.py
 include tests/test_fixtures.py
 include tests/test_historical_explorer.py
@@ -394,6 +404,7 @@ include tests/test_normalization.py
 include tests/test_policy_evidence.py
 include tests/test_preparation.py
 include tests/test_presentation.py
+include tests/test_presentation_remediation.py
 include tests/test_product_presentation.py
 include tests/test_protocol_corpus.py
 include tests/test_protocol_enip_s7.py
@@ -412,6 +423,7 @@ include tests/test_release_transition.py
 include tests/test_reporting.py
 include tests/test_resource_envelope.py
 include tests/test_review_bundle.py
+include tests/test_semantic_presentation.py
 include tests/test_source_checkout.py
 include tests/test_summaries.py
 include tests/test_trace.py
@@ -422,6 +434,10 @@ include tests/test_v141_cross_audit.py
 include tests/test_v141_enip_s7_audit.py
 include tests/test_v141_identity.py
 include tests/test_v141_protocol_integration.py
+include tests/test_v145_corpus.py
+include tests/test_v145_historical_integrity.py
+include tests/test_v145_interoperability.py
+include tests/test_v145_performance.py
 include tests/test_v14_independent_audit.py
 include tests/test_v14_integration.py
 include tests/test_validate_cli.py
@@ -457,6 +473,7 @@ include tools/synthetic_explorer.py
 include tools/synthetic_graphs.py
 include tools/synthetic_inventories.py
 include tools/synthetic_projects.py
+include tools/v145_corpus.py
 include tools/verification-requirements.txt
 include tools/verify_environment.py
 include tools/verify_legacy_candidate.py

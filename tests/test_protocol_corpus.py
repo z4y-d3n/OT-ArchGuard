@@ -180,7 +180,7 @@ def test_manifest_and_verification_cli() -> None:
         text=True,
         check=True,
     )
-    assert json.loads(completed.stdout)["approved"] == 9
+    assert json.loads(completed.stdout)["approved"] == 10
 
 
 def test_symlink_input_rejected(tmp_path: Path) -> None:

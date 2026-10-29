@@ -17,6 +17,7 @@ benchmarks/historical_regression.py
 benchmarks/history_performance.py
 benchmarks/profile.py
 benchmarks/projects.py
+benchmarks/protocol_regression.py
 benchmarks/protocols.py
 benchmarks/quality_comparison.py
 benchmarks/receipts/v14-02p-scaling.png
@@ -85,6 +86,9 @@ docs/development/v14-03-audit.md
 docs/development/v14-03-handoff-es.md
 docs/development/v14-04-handoff-es.md
 docs/development/v14-04-visual-remediation-es.md
+docs/development/v14-05-corpus-coverage.md
+docs/development/v14-05-interoperability.md
+docs/development/v14-05-validation-matrix.md
 docs/development/v14-analysis-revisions-adr.md
 docs/development/v14-architecture.md
 docs/development/v14-drift-contract.md
@@ -326,6 +330,9 @@ tests/fixtures/protocol-corpus/external-tshark-receipts.json
 tests/fixtures/protocol-corpus/manifest.json
 tests/fixtures/protocol-corpus/synthetic-industrial.pcap
 tests/fixtures/protocol-corpus/tshark-receipt.json
+tests/fixtures/protocol-corpus/v145-cases.json
+tests/fixtures/protocol-corpus/v145-equivalence.pcap
+tests/fixtures/protocol-corpus/v145-tshark-receipt.json
 tests/fixtures/unsupported-model.yaml
 tests/test_capture_arp_semantics.py
 tests/test_capture_cli.py
@@ -364,11 +371,11 @@ tests/test_evidence_reviews.py
 tests/test_evidence_revisions.py
 tests/test_evidence_v142_audit.py
 tests/test_evidence_workspace.py
-tests/test_exposure_tables_prototype.py
 tests/test_explorer.py
 tests/test_explorer_compact.py
 tests/test_exposure_compare_cli.py
 tests/test_exposure_comparison.py
+tests/test_exposure_tables_prototype.py
 tests/test_final_release.py
 tests/test_fixtures.py
 tests/test_historical_explorer.py
@@ -397,8 +404,8 @@ tests/test_normalization.py
 tests/test_policy_evidence.py
 tests/test_preparation.py
 tests/test_presentation.py
-tests/test_product_presentation.py
 tests/test_presentation_remediation.py
+tests/test_product_presentation.py
 tests/test_protocol_corpus.py
 tests/test_protocol_enip_s7.py
 tests/test_protocol_enrichment.py
@@ -427,6 +434,10 @@ tests/test_v141_cross_audit.py
 tests/test_v141_enip_s7_audit.py
 tests/test_v141_identity.py
 tests/test_v141_protocol_integration.py
+tests/test_v145_corpus.py
+tests/test_v145_historical_integrity.py
+tests/test_v145_interoperability.py
+tests/test_v145_performance.py
 tests/test_v14_independent_audit.py
 tests/test_v14_integration.py
 tests/test_validate_cli.py
@@ -462,6 +473,7 @@ tools/synthetic_explorer.py
 tools/synthetic_graphs.py
 tools/synthetic_inventories.py
 tools/synthetic_projects.py
+tools/v145_corpus.py
 tools/verification-requirements.txt
 tools/verify_environment.py
 tools/verify_legacy_candidate.py
