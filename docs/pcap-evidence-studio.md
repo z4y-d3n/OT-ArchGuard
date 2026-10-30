@@ -1,5 +1,13 @@
 # PCAP Evidence Studio — v1.3.0
 
+This guide preserves the published capture-observation/reconciliation contract.
+The unpublished v1.4 candidate adds separate
+[bounded industrial header enrichment](v14-foundation.md),
+[historical evidence](v14-history.md), [drift](v14-drift.md) and
+[Historical Explorer](v14-historical-explorer.md). Those features do not turn the
+port hints or TCP initiation evidence described here into proof of successful
+application exchanges or deployed authorization.
+
 PCAP Evidence Studio reads local fictional or authorized PCAP evidence without
 initiating network communications. It answers what was observed, which owner-reviewed
 identities and declarations can be compared, and which uncertainties need review.

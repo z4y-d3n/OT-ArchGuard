@@ -1,0 +1,49 @@
+{
+  "attempt": 1,
+  "conclusion": "success",
+  "event": "push",
+  "jobs": [
+    {
+      "conclusion": "success",
+      "id": 123471001610,
+      "name": "verify (windows-latest, 3.14)",
+      "skipped_steps": []
+    },
+    {
+      "conclusion": "success",
+      "id": 123471001904,
+      "name": "verify (ubuntu-latest, 3.14)",
+      "skipped_steps": []
+    },
+    {
+      "conclusion": "success",
+      "id": 123471001984,
+      "name": "verify (windows-latest, 3.12)",
+      "skipped_steps": []
+    },
+    {
+      "conclusion": "success",
+      "id": 123471002102,
+      "name": "verify (ubuntu-latest, 3.12)",
+      "skipped_steps": []
+    },
+    {
+      "conclusion": "success",
+      "id": 123471002240,
+      "name": "verify (macos-latest, 3.14)",
+      "skipped_steps": []
+    },
+    {
+      "conclusion": "success",
+      "id": 123471002345,
+      "name": "verify (macos-latest, 3.12)",
+      "skipped_steps": []
+    }
+  ],
+  "note": "Parent evidence only; does not validate V14-06.",
+  "parent_sha": "ac893bc3174f0a7ace67454d19ad6e61116425af",
+  "published_branch_head": "ac893bc3174f0a7ace67454d19ad6e61116425af",
+  "run_id": 40880668115,
+  "test_level_skips_independently_recounted": false,
+  "test_skip_note": "skipped_steps records workflow-step status only, not pytest skips"
+}

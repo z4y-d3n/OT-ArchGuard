@@ -1,10 +1,17 @@
 # Historical evidence and explicit baseline review
 
-This development workflow is offline. It preserves one physical collection for
+This offline v1.4 candidate workflow preserves one physical collection for
 each exact capture SHA, several immutable analytical interpretations, and
 separate local human assertions. These lifecycle commands prepare the inputs for
 the separate [V14-03 historical comparison workflow](v14-drift.md).
 See the [versioned contracts and trust limits](development/v14-history-contract.md).
+
+Analytical revisions bind exact producer implementation hashes. The final
+`1.4.0.dev1` → `1.4.0` distribution change alters that source identity even while
+native semantics remain unchanged. Keep the original development environment and
+workspace for old replay; use a fresh final-version workspace, new revisions and
+explicit review for new work. Do not rehash old IDs or transfer approval claims.
+See [upgrade and recovery](installation.md#historical-workspaces-and-upgrade).
 
 ## Migrate without changing the source
 

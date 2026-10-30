@@ -522,11 +522,11 @@ def test_trace_documentation_qualifies_completed_queries() -> None:
     root = Path(__file__).resolve().parents[1]
     guide = (root / "docs/trace.md").read_text(encoding="utf-8")
     assert "application version string (1.1.0)" not in guide
-    readme = (root / "README.md").read_text(encoding="utf-8")
-    exit_section = readme[
-        readme.index("| Exit | Meaning |") : readme.index("## Examples and technical documentation")
-    ]
-    assert "Trace exit 0" in exit_section and "unreachable" in exit_section
+    contract = " ".join(guide.split())
+    assert "Exit 0 means a supported query completed, including unreachable or mixed results." in (
+        contract
+    )
+    assert "| status | literal `complete`; does not assert reachability |" in contract
 
 
 @pytest.mark.parametrize(

@@ -1,16 +1,24 @@
-# v1.4 development foundation
+# v1.4 protocol metadata and evidence foundation
 
-This is a local v1.4 development checkpoint, package/CLI `1.4.0.dev1`.
+This branch prepares the unpublished v1.4 release candidate, package/CLI `1.4.0`.
 The unchanged native engine retains identity `1.3.0` to preserve frozen evidence.
 The legacy Python `__version__` remains that engine alias; use
 `DISTRIBUTION_VERSION`, installed distribution metadata or `--version` for the
-development product identity.
-The stable release is v1.3.0; this modified branch is not a stable distribution.
+distribution identity.
+Published stable remains v1.3.0; local candidate preparation does not publish it.
 The following operations are implemented. V14-02 adds explicit migration,
 analytical revisions and scoped local baseline review in the
 [historical evidence workflow](v14-history.md). V14-03 adds the separate
-[historical comparison workflow](v14-drift.md). The historical Explorer remains
-a future milestone.
+[historical comparison workflow](v14-drift.md). The implemented
+[Historical Explorer](v14-historical-explorer.md) presents source-reproduced
+comparisons and independently verifies portable publication bundles.
+V14-04 semantic HTML received owner visual acceptance, and the exact V14-05
+parent passed six hosted jobs; neither accepts a changed V14-06 commit by itself.
+See [candidate release notes](release-notes-1.4.0.md).
+
+The final distribution transition changes exact producer source identity.
+Preserve development environments/workspaces for old analytical replay;
+follow the [historical upgrade boundary](installation.md#historical-workspaces-and-upgrade).
 
 ## Independent protocol metadata
 
@@ -51,6 +59,14 @@ addresses are protocol addresses. See the exact [EtherNet/IP/S7 subsets](develop
 and [IEC104/OPC UA/DNP3 subsets](development/v14-iec-opc-dnp.md),
 [external capture evidence](development/v14-external-corpus.md) and
 [version decision](development/v14-version-identity-adr.md).
+
+External positive validation remains incomplete for Modbus TCP, PROFINET DCP and
+IEC-104. DLT_NULL and Linux SLL are unsupported; TCP stream reassembly is absent.
+The corpus registry separates original fictional fixtures, local-analysis-approved
+external references and unapproved candidates. Analysis approval does not grant
+redistribution rights or establish collection authenticity. No third-party capture
+bytes are distributed with the candidate, and laboratory references do not claim
+validation against a production plant.
 
 ## Immutable snapshot import
 

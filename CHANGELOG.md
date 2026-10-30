@@ -1,6 +1,49 @@
 # Changelog
 
-## Unreleased — v1.4 local development foundation
+## 1.4.0 — release candidate preparation (unpublished)
+
+Published stable remains [v1.3.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0).
+This entry describes the local v1.4 candidate, not an authorized tag or release.
+See the [candidate notes](docs/release-notes-1.4.0.md) and
+[source-bound handoff](docs/development/v14-06-handoff-es.md) for exact acceptance.
+
+- Industrial metadata: seven bounded header subsets for Modbus TCP, PROFINET DCP,
+  EtherNet/IP/limited CIP, classic S7comm, IEC-104, OPC UA Binary and DNP3/TCP.
+  Separate structural header evidence from hints, malformed/truncated input and
+  unsupported variants; preserve enrichment-v1 and decoder-revision-1 consumption.
+- Historical lifecycle: immutable metadata collections, explicit workspace-v2
+  migration, validated optional attachments, exact analytical revisions and
+  scoped local baseline review with revocation and supersession.
+- Historical drift: coverage-aware finite evidence comparisons, declared-model
+  and equivalent native-query changes, explicit source comparability and replay.
+- Historical Explorer: static offline domain/finding/evidence navigation, bounded
+  diagrams, recorded/current approval distinctions and separately verifiable
+  portable bundles and source-dependent reproduction.
+- Semantic HTML: accessible structured summaries, tables and contextual evidence
+  replace primary raw JSON presentation across the product while retaining the
+  canonical evidence. V14-04 owner visual acceptance was completed.
+- Corpus and integrity assurance: independent original corpus and composed
+  adversarial checks cover protocol framing, evidence binding, forged metadata,
+  resource ceilings and publication failure. No third-party capture bytes added.
+- Compatibility and performance: retain native schema 1, engine `1.3.0`, canonical
+  analytical contracts and bounded resource meanings; operation-private historical
+  validation reduces repeated work without weakening whole-inventory validation.
+- Release engineering: distribution/CLI advance to `1.4.0`, with strict pinned
+  historical verification, audited wheel/sdist assembly and explicit owner gates.
+  Document exact-source development-workspace upgrade limits and rollback.
+
+Bounded headers do not prove command success. External positive Modbus/DCP/IEC-104
+coverage remains incomplete; DLT_NULL, Linux SLL and TCP reassembly are unsupported.
+Review labels remain local unauthenticated assertions under a single-writer model.
+The V14-05 parent passed six hosted jobs; V14-06 and final integrated-source
+acceptance remain separate gates. No industrial certification or external pentest
+is claimed.
+
+## Historical v1.4 development checkpoint notes
+
+The entries below preserve their original milestone context. Their then-pending
+browser/CI wording does not describe the current candidate: V14-04 visual
+acceptance and the exact V14-05 six-job parent run have since completed.
 
 - V14-04 adds the source-reproduced offline Historical Evidence & Drift Explorer,
   complete static domain/finding/evidence navigation, accessible pagination,

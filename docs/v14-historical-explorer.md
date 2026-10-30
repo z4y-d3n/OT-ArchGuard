@@ -1,9 +1,13 @@
-# Historical Evidence & Drift Explorer (V14-04 development checkpoint)
+# Historical Evidence & Drift Explorer
 
 The historical Explorer presents an **existing** drift-v1 comparison, after exact
 source-dependent reproduction against an existing workspace-v2. It creates no
 baseline, approval or analytical comparison. Native engine `1.3.0` and drift
 engine `1.4.0-drift.1` retain their accepted semantics.
+
+The v1.4 candidate includes the owner-accepted V14-04 semantic presentation.
+Previous browser acceptance applies to the reviewed presentation, while candidate
+source/package checks and eventual integrated-source acceptance remain separate.
 
 ```console
 otarchguard evidence drift explore WORKSPACE REPORT.json NEW_DIRECTORY
@@ -43,6 +47,12 @@ dependencies, checks deterministic rendering and returns current approval
 separately. It does not rewrite the bundle or authenticate its claimed generation
 time/status. Another renderer implementation requires regeneration with the
 supported version; it must not silently reinterpret an old presentation.
+
+Exact producer-source binding also applies to stored analytical revisions.
+Preserve a compatible development environment for `1.4.0.dev1` workspace replay;
+the `1.4.0` distribution transition does not migrate prior analyses or approvals.
+Portable integrity checks alone do not remove that
+[upgrade boundary](installation.md#historical-workspaces-and-upgrade).
 
 `explorer-manifest.json` independently versions the publication as
 `historical_explorer_version: 1`. It binds exact drift bytes/ID, baseline and

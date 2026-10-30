@@ -28,7 +28,7 @@ def inputs() -> AnalysisInputs:
 
 
 def test_distribution_advances_without_changing_native_engine_evidence() -> None:
-    assert DISTRIBUTION_VERSION == "1.4.0.dev1"
+    assert DISTRIBUTION_VERSION == "1.4.0"
     assert __version__ == "1.3.0"
     assert NATIVE_ENGINE_VERSION == "1.3.0"
     path = ROOT / "tests/fixtures/minimal-valid.yaml"
@@ -142,7 +142,14 @@ def test_legacy_header_exception_requires_one_exact_original_assertion(
 
 
 @pytest.mark.parametrize(
-    "mutation", [None, "tests/test_explorer.py", "tests/test_cli.py", "baseline"]
+    "mutation",
+    [
+        None,
+        "tests/test_explorer.py",
+        "tests/test_cli.py",
+        "tests/test_product_presentation.py",
+        "baseline",
+    ],
 )
 def test_legacy_header_exception_preserves_full_verifier_guards(
     pinned_legacy_files: tuple[bytes, dict[str, bytes]],
@@ -222,6 +229,16 @@ def test_legacy_additional_presentation_exceptions_are_exact(
         assert changed != after
         assert not legacy._reviewed_additional_presentation_change(name, before, changed)
     assert not legacy._reviewed_additional_presentation_change("tests/test_cli.py", before, after)
+    if name == "tests/test_product_presentation.py":
+        for clause in (
+            b"Exit 0 means a supported query completed",
+            b"including unreachable or mixed results.",
+            b"does not assert reachability",
+        ):
+            assert after.count(clause) == 1
+            assert not legacy._reviewed_additional_presentation_change(
+                name, before, after.replace(clause, b"weakened contract", 1)
+            )
 
 
 @pytest.fixture(scope="module")
