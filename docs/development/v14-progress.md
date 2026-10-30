@@ -1,5 +1,21 @@
 # OT-ArchGuard v1.4 progress and acceptance record
 
+## V14-04 historical Explorer checkpoint
+
+**READY_FOR_OWNER_REVIEW** — 2026-10-27. Implementation starts from V14-03
+`6f3abb2084e40ae4a90d4d01200b7f79a617463c`
+on local branch `codex/v14-04-historical-explorer`. All six hosted checks of that
+exact parent succeeded. The new source-reproduced, read-only offline presentation
+is independently versioned and preserves the native/drift analytical engines.
+Commit `a6ac5ef99396c894352801b227e6d655a5a26526` passes 3,993 tests with one
+environmental junction-creation skip in each full source/wheel/sdist suite;
+3,994 unique tests total. Python 3.12 focused drift/Explorer: 229 PASS, one SKIP.
+Ruff, strict mypy, package audits, 124-file native compatibility and installed
+walkthroughs pass. Owner browser acceptance and new hosted CI remain PENDING.
+See [usage and trust contract](../v14-historical-explorer.md) and
+[Spanish acceptance handoff](v14-04-handoff-es.md) for executed gates and pending
+owner review. Earlier checkpoint records below remain historical.
+
 ## V14-03 current local checkpoint
 
 **READY_WITH_NONBLOCKING_LIMITATIONS** — 2026-10-27. Branch

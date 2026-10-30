@@ -596,7 +596,8 @@ def test_executive_summary_metrics_match_canonical_denominators(tmp_path: Path, 
             siblings = definition.parent.children
             index = siblings.index(definition)
             assert index + 1 < len(siblings) and siblings[index + 1].tag == "dd"
-            displayed[definition.text().strip()] = siblings[index + 1].text().strip()
+            label = definition.text().strip().removesuffix(":")
+            displayed[label] = siblings[index + 1].text().strip()
     obs, comparison = value["observations"], value["comparison"]
     expected = {
         "Total packet records": obs["coverage"]["packets"],

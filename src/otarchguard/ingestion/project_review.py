@@ -193,9 +193,39 @@ def project_summary(
 
 
 def _safe(value: object) -> str:
-    text = html.escape(str(value), quote=True)
-    text = re.sub(r"([\\`*_{}\[\]()#+.!|>~-])", r"\\\1", text)
-    return text.replace("\r", " ").replace("\n", " ")
+    text = str(value).replace("\r", " ").replace("\n", " ")
+    text = re.sub(r"([\\`*_{}\[\]()#+.!|~-])", r"\\\1", text)
+    # Escape Markdown first. Escaping the generated entity's '#' would display
+    # the entity literally; quotes need no HTML escaping in a text context.
+    return html.escape(text, quote=False)
+
+
+def _markdown_field(label: str, value: object, indent: int = 0) -> list[str]:
+    """Retain every location/diagnostic field as safely escaped Markdown text."""
+    prefix = " " * indent + "- " + _safe(label) + ":"
+    if isinstance(value, dict):
+        return (
+            [prefix]
+            + [
+                line
+                for key, item in value.items()
+                for line in _markdown_field(str(key), item, indent + 2)
+            ]
+            if value
+            else [prefix + " No fields recorded"]
+        )
+    if isinstance(value, (list, tuple)):
+        return (
+            [prefix]
+            + [
+                line
+                for index, item in enumerate(value, 1)
+                for line in _markdown_field(str(index), item, indent + 2)
+            ]
+            if value
+            else [prefix + " None recorded"]
+        )
+    return [prefix + " " + ("Not recorded" if value is None else _safe(value))]
 
 
 def review_markdown(draft: ProjectDraft, group_id: str | None = None) -> bytes:
@@ -209,11 +239,9 @@ def review_markdown(draft: ProjectDraft, group_id: str | None = None) -> bytes:
         "owner decision. Matching labels and addresses do not establish physical identity.",
         "",
     ]
-    lines.extend(
-        f"- {k}: {_safe(v)}"
-        for k, v in project_summary(draft).items()
-        if k not in {"scope", "accounting"}
-    )
+    for key, value in project_summary(draft).items():
+        if key not in {"scope", "accounting"}:
+            lines.extend(_markdown_field(key, value))
     groups = (*draft.conflicts, *draft.proposals)
     if group_id:
         groups = tuple(g for g in groups if g.group_id == group_id)
@@ -240,7 +268,8 @@ def review_markdown(draft: ProjectDraft, group_id: str | None = None) -> bytes:
                     "row": candidate.row_id,
                 }
             )
-            lines.append("- " + _safe(key) + " (" + _safe(source_id) + ") " + _safe(location))
+            lines.append("- " + _safe(key) + " (" + _safe(source_id) + ")")
+            lines.extend(_markdown_field("Source location", location, 2))
         lines += [
             "",
             "Action: put same-entity members in one decision, or retain separate decisions "
@@ -256,7 +285,7 @@ def review_markdown(draft: ProjectDraft, group_id: str | None = None) -> bytes:
         lines += ["", "## Source diagnostics", ""]
         for source in draft.sources:
             for diagnostic in source.evidence.diagnostics:
-                lines.append("- " + _safe(source.id) + ": " + _safe(diagnostic.model_dump()))
+                lines.extend(_markdown_field(source.id, diagnostic.model_dump()))
         lines += ["", "## Preferred evidence suggestions", ""]
         for field, preferred_source in sorted(draft.manifest.preferred_sources.items()):
             lines.append(

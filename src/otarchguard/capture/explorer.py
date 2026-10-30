@@ -21,7 +21,14 @@ from otarchguard.capture.views import (
     protocols_view,
 )
 from otarchguard.diagnostics import check_limit, fail
-from otarchguard.explorer_html import CSS, audit_site, escape, link, properties, table
+from otarchguard.explorer_html import (
+    CSS,
+    audit_site,
+    escape,
+    link,
+    properties,
+    table,
+)
 from otarchguard.ingestion.project import _no_links
 from otarchguard.ingestion.workflow import serialize, write_new_file
 
@@ -181,7 +188,7 @@ def _json(value: object) -> str:
 
 
 def _properties(title: str, value: object) -> str:
-    return "<h2>" + escape(title) + "</h2><pre>" + _json(value) + "</pre>"
+    return "<h2>" + escape(title) + "</h2>" + render_value(value)
 
 
 def _evidence_target(index: int, flow_id: str, rows_per_page: int) -> str:
@@ -328,6 +335,39 @@ def _record_table(
 ) -> str:
     if not rows:
         return '<p class="muted">None recorded in this view.</p>'
+    complex_columns = {
+        i
+        for _, cells in rows
+        for i, cell in enumerate(cells)
+        if any(marker in cell for marker in ("<dl", "<table", '<div class="compact-evidence"'))
+    }
+    if complex_columns:
+        simple = [i for i in range(len(headings)) if i not in complex_columns]
+        summary = (
+            _record_table(
+                title,
+                tuple(headings[i] for i in simple),
+                [(anchor, tuple(cells[i] for i in simple)) for anchor, cells in rows],
+            )
+            if simple
+            else ""
+        )
+        if not simple:
+            summary = _record_table(
+                title, ("Record",), [(anchor, (str(i),)) for i, (anchor, _) in enumerate(rows, 1)]
+            )
+        return summary + "".join(
+            '<section class="evidence-group"><h3>'
+            + escape(f"{title} · Record {number}")
+            + "</h3><p>"
+            + link("#" + anchor, "Related summary record")
+            + "</p>"
+            + "".join(
+                "<h4>" + escape(headings[i]) + "</h4>" + cells[i] for i in sorted(complex_columns)
+            )
+            + "</section>"
+            for number, (anchor, cells) in enumerate(rows, 1)
+        )
     return (
         '<div class="scroll" tabindex="0" role="region" aria-label="'
         + escape(title)
@@ -431,6 +471,7 @@ def generate_site(
     limits: CaptureLimits = CAPTURE_LIMITS,
     *,
     mapping: dict[str, Any] | None = None,
+    compact_prototype: bool = False,
 ) -> dict[str, Any]:
     """Render indexed human views without modifying canonical analytical evidence."""
     fresh_destination(output)

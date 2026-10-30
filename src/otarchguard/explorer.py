@@ -19,7 +19,16 @@ from otarchguard.explorer_data import (
     load_provenance,
     page_id,
 )
-from otarchguard.explorer_html import CSS, SiteWriter, escape, link, properties, table
+from otarchguard.explorer_exposure import exposure_tables
+from otarchguard.explorer_html import (
+    CSS,
+    EXPOSURE_TABLE_CSS,
+    SiteWriter,
+    escape,
+    link,
+    structured_value,
+    table,
+)
 from otarchguard.exposure import exposure_architecture
 from otarchguard.ingestion.project import _no_links
 from otarchguard.ingestion.reconciliation import catalog
@@ -84,6 +93,7 @@ class ExploreOptions:
     traces: tuple[tuple[str, str], ...] = ()
     check: bool = False
     scenarios: tuple[str, ...] = ()
+    compact_prototype: bool = False
 
 
 class Explorer:
@@ -130,6 +140,21 @@ class Explorer:
         for key, fields in self.native.items():
             self._references(key, fields)
         self.candidates = catalog(provenance.catalog.sources) if provenance else {}
+        self.candidate_labels: dict[str, str] = {}
+        for candidate_key, (sid, candidate) in self.candidates.items():
+            fields = {field.field: field.normalized_value for field in candidate.fields}
+            description = fields.get("name") or fields.get("id") or fields.get("address")
+            if not description and isinstance(candidate, StructuredCandidate):
+                description = candidate.location.record
+            self.candidate_labels[candidate_key] = (
+                candidate.entity.capitalize()
+                + " candidate · "
+                + (description or "Unlabelled")[:80]
+                + " · "
+                + sid
+            )
+        self._distinct_labels(self.candidate_labels)
+        self.connector_labels: dict[str, str] = {}
         self.document_candidates: dict[tuple[str, str], list[str]] = defaultdict(list)
         self.document_origins: dict[tuple[str, str], tuple[str, str]] = {}
         if provenance:
@@ -178,9 +203,24 @@ class Explorer:
                 if graph:
                     for edge in graph.edges:
                         target = path("connector", [source.id, edge.scope_id, edge.element_id])
+                        self.connector_labels[target] = (
+                            f"Documented only · {edge.source or 'Unresolved'} — "
+                            f"{edge.destination or 'Unresolved'} · {edge.direction} · "
+                            f"{edge.element_id}" + (" · " + edge.label[:80] if edge.label else "")
+                        )
                         for endpoint in (edge.source, edge.destination):
                             if endpoint is not None:
                                 self.graph_edges[source.id, edge.scope_id, endpoint].append(target)
+        self._distinct_labels(self.connector_labels)
+
+    @staticmethod
+    def _distinct_labels(labels: dict[str, str]) -> None:
+        counts: dict[str, int] = defaultdict(int)
+        for label in labels.values():
+            counts[label] += 1
+        for key, label in labels.items():
+            if counts[label] > 1 or "Unlabelled" in label:
+                labels[key] += " · #" + page_id("label", key).partition("-")[2][:12]
 
     def _references(self, origin: tuple[str, str], value: object, field: str = "") -> None:
         if isinstance(value, dict):
@@ -203,12 +243,13 @@ class Explorer:
                 self.related[target].add(origin)
 
     def value(self, value: object, field: str = "") -> str:
-        if isinstance(value, dict):
-            return properties([(k, self.value(v, k)) for k, v in sorted(value.items())])
-        if isinstance(value, (tuple, list)):
-            return "<ul>" + "".join(f"<li>{self.value(v, field)}</li>" for v in value) + "</ul>"
+        if isinstance(value, (dict, tuple, list)):
+            return structured_value(value, self.value, sort_keys=True, field=field)
         target = self.native_paths.get((REFERENCES.get(field, ""), str(value)))
         return link(target, value) if target else escape("Not declared" if value is None else value)
+
+    def evidence(self, value: object) -> str:
+        return self.value(value)
 
     def listings(self, title: str, entries: list[tuple[str, str]], stem: str) -> str:
         """Paginate every unbounded collection, including reverse evidence references."""
@@ -325,7 +366,7 @@ class Explorer:
                 "Supporting origins and contradictory observations",
                 self.references(
                     "Source-qualified candidate observations",
-                    [(path("candidate", m), m) for m in members],
+                    [(path("candidate", m), self.candidate_labels[m]) for m in members],
                     [key, "evidence"],
                 )
                 if self.provenance
@@ -474,18 +515,7 @@ class Explorer:
                     [asdict(query)],
                 )
                 queries.append((target, f"{query.source_asset_id} → {query.service_id}"))
-            body = (
-                "<p>Existing exposure engine; origin assumptions, not comprom"
-                "ise or live traffic observations.</p>"
-            )
-            body += self.value(
-                {k: v for k, v in asdict(exposure).items() if k not in {"queries", "intent_checks"}}
-            )
-            body += self.references("Evaluated scenario queries", queries, ["exposure", scenario])
-            # Preserve independent intent outcomes from the existing exposure engine.
-            body += section(
-                "Independent intent outcomes", self.value(asdict(exposure.intent_checks))
-            )
+            body = exposure_tables(exposure, self.value, queries)
             self.writer.page(name, f"Exposure scenario · {scenario}", body)
 
     def query_page(
@@ -585,7 +615,7 @@ class Explorer:
             )
             body += self.references(
                 "Group members",
-                [(path("candidate", m), m) for m in group.members],
+                [(path("candidate", m), self.candidate_labels[m]) for m in group.members],
                 ["group", group.group_id],
             )
             resolution = conflict_resolutions.get(group.group_id)
@@ -603,7 +633,7 @@ class Explorer:
             )
             body += self.references(
                 "Partition members and original aliases",
-                [(path("candidate", m), m) for m in decision.members],
+                [(path("candidate", m), self.candidate_labels[m]) for m in decision.members],
                 ["decision", sorted(decision.members)],
             )
             first = decision.members[0]
@@ -719,7 +749,9 @@ class Explorer:
                         )
                         + "</p>"
                     )
-            self.writer.page(path("candidate", candidate_key), f"Candidate · {candidate_key}", body)
+            self.writer.page(
+                path("candidate", candidate_key), self.candidate_labels[candidate_key], body
+            )
         source_entries = []
         for source in p.catalog.sources:
             name = path("source", source.id)
@@ -739,7 +771,7 @@ class Explorer:
                 "try and styles are excluded.</p>"
             )
             entries = [
-                (path("candidate", key) + "#observation", key)
+                (path("candidate", key) + "#observation", self.candidate_labels[key])
                 for key, (sid, _) in self.candidates.items()
                 if sid == source.id
             ]
@@ -770,7 +802,7 @@ class Explorer:
                     ]
                     observation_body += self.references(
                         "Explicitly mapped candidates",
-                        [(path("candidate", key), key) for key in mapped],
+                        [(path("candidate", key), self.candidate_labels[key]) for key in mapped],
                         [source.id, observation.observation_id, "mapped"],
                     )
                     self.writer.page(
@@ -789,7 +821,7 @@ class Explorer:
                     node_key = (source.id, node.scope_id, node.element_id)
                     target = path("node", node_key)
                     nodes.append((target, f"{node.scope_id} · {node.element_id} · {node.label}"))
-                    node_body = self.value(
+                    node_body = self.evidence(
                         {
                             "source": source.id,
                             "scope": node.scope_id,
@@ -805,15 +837,15 @@ class Explorer:
                     )
                     node_body += self.references(
                         "Mapped node candidates",
-                        [(path("candidate", c), c) for c in self.graph_candidates[node_key]],
+                        [
+                            (path("candidate", c), self.candidate_labels[c])
+                            for c in self.graph_candidates[node_key]
+                        ],
                         ["node", node_key, "candidates"],
                     )
                     node_body += self.references(
                         "Documented only connectors",
-                        [
-                            (c, "Documentary connector " + c.removesuffix(".html"))
-                            for c in self.graph_edges[node_key]
-                        ],
+                        [(c, self.connector_labels[c]) for c in self.graph_edges[node_key]],
                         ["node", node_key, "edges"],
                     )
                     self.writer.page(
@@ -824,7 +856,7 @@ class Explorer:
                 for edge in graph.edges:
                     edge_key = [source.id, edge.scope_id, edge.element_id]
                     target = path("connector", edge_key)
-                    connectors.append((target, f"{edge.element_id} · {edge.label}"))
+                    connectors.append((target, self.connector_labels[target]))
                     edge_body = (
                         "<p>Documented only. No corresponding native edge is inferred"
                         "; communication is unknown from this evidence.</p>"
@@ -851,7 +883,7 @@ class Explorer:
                         "documentary",
                         "Documentary connector; direction is graphical evidence",
                     )
-                    self.writer.page(target, f"Documented only · {edge.element_id}", edge_body)
+                    self.writer.page(target, self.connector_labels[target], edge_body)
                 body += self.references(
                     "Graphical nodes and containers", nodes, [source.id, "nodes"]
                 )
@@ -892,7 +924,10 @@ class Explorer:
             if self.provenance
             else set()
         )
-        self.writer.write("assets.css", CSS.encode("utf-8"))
+        self.writer.write(
+            "assets.css",
+            (CSS + (EXPOSURE_TABLE_CSS if options.scenarios else "")).encode("utf-8"),
+        )
         self.render_analysis(options)
         self.render_native()
         self.render_evidence()
@@ -925,11 +960,14 @@ class Explorer:
             )
         summary = diagram_summary(self.validated)
         svg = spatial_svg(
-            self.validated, summary["mode"] == "summary", escape, namespace="overview"
+            self.validated,
+            summary["mode"] == "summary",
+            escape,
+            namespace="overview",
+            forwarding_dashed=False,
         )
         # In Explorer, dashed relationship lines are reserved for documentary evidence.
-        # Keep the accepted layout/geometry while rendering native forwarding solid.
-        svg = svg.replace(' stroke-dasharray="8 4"', "")
+        # The serializer keeps both the native style and its legend consistent.
         body = (
             "<p>"
             + escape(self.model.suc.name)

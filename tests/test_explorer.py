@@ -375,7 +375,7 @@ def test_complete_link_integrity_manifest_and_semantic_structure(evidence_site: 
         assert any(t == "nav" and a.get("aria-label") for t, a in parser.tags)
         assert not {"script", "button", "input", "img", "iframe"} & set(tags)
         assert tags.count("table") == tags.count("caption")
-        assert all(a.get("scope") == "col" for t, a in parser.tags if t == "th")
+        assert all(a.get("scope") in {"col", "row"} for t, a in parser.tags if t == "th")
         assert all(a.get("tabindex") == "0" for t, a in parser.tags if a.get("class") == "scroll")
         assert all(a.get("role") == "img" for t, a in parser.tags if t == "svg")
         for svg in re.findall(r"<svg\b.*?</svg>", text, re.DOTALL):

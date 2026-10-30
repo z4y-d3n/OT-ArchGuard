@@ -72,7 +72,7 @@ def test_overview_counts_match_canonical_records_and_keep_declarations_distinct(
         ("Model-comparison flow findings", len(comparison["findings"])),
         ("Declared services not observed", len(comparison["declared_services_not_observed"])),
     ):
-        assert f"<dt>{label}</dt><dd>{value}</dd>" in html
+        assert f"<dt>{label}: </dt><dd>{value}</dd>" in html
     rows = _Rows()
     rows.feed(html)
     assert sum(int(row[1]) for row in rows.rows[1:] if row[2] == "Directed aggregates") == len(
@@ -125,7 +125,7 @@ def test_coverage_has_readable_empty_state_counts_and_visible_scope_limits() -> 
     observations, comparison = evidence("supported")
     html = coverage_view(observations, comparison)
     for name in ("Decoded", "Unsupported", "Malformed", "Truncated", "Fragmented"):
-        assert f"<dt>{name}</dt><dd>{observations['coverage'][name.lower()]}</dd>" in html
+        assert f"<dt>{name}: </dt><dd>{observations['coverage'][name.lower()]}</dd>" in html
     assert "No additional capture-container limitations were recorded." in html
     assert "full sensor coverage or complete capture visibility" in html
     assert "Scoped to this finite capture" in html
@@ -142,7 +142,7 @@ def test_capture_interfaces_and_full_hash_remain_available_without_raw_json() ->
     capture = observations["capture"]
     html = capture_metadata(capture)
     assert "Capture interfaces" in html
-    assert f"<dt>File bytes</dt><dd>{capture['size_bytes']}</dd>" in html
+    assert f"<dt>File bytes: </dt><dd>{capture['size_bytes']}</dd>" in html
     assert "<details" in html and capture["sha256"] in html
     assert capture["sha256"][:12] + "…" in html
     assert "interface-level snapshot limit; product budgets still apply" in html

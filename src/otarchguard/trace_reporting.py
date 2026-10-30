@@ -13,7 +13,7 @@ def trace_json(result: TraceResult) -> bytes:
     )
 
 
-def trace_html(result: TraceResult) -> bytes:
+def trace_html(result: TraceResult, *, compact_prototype: bool = False) -> bytes:
     sections = (
         ("scope", "Service binding and finite scope"),
         ("intervals", "Exact destination-port intervals"),
@@ -50,10 +50,22 @@ def trace_html(result: TraceResult) -> bytes:
         "establish neither a unique root cause nor a minimal cut or guaranteed fix.</p>"
         + _query_evidence(_query_rows(query))
         + '</section><section id="policy"><h2>Optional policy evidence</h2>'
-        + _table("Finite diagnostic scope and findings", [payload["policy_evidence"]])
+        + _table(
+            "Finite diagnostic scope and findings",
+            [payload["policy_evidence"]],
+            compact_prototype=compact_prototype,
+        )
         + '</section><section id="work"><h2>Evaluation work</h2>'
-        + _table("Trace evaluator counters (additional policy work is separate)", [payload["work"]])
-        + _table("Accepted resource ceilings for this run", [payload["resource_ceilings"]])
+        + _table(
+            "Trace evaluator counters (additional policy work is separate)",
+            [payload["work"]],
+            compact_prototype=compact_prototype,
+        )
+        + _table(
+            "Accepted resource ceilings for this run",
+            [payload["resource_ceilings"]],
+            compact_prototype=compact_prototype,
+        )
         + '</section><section id="interpretation"><h2>Interpretation and unassessed conditions</h2>'
         f"<p>{escape(result.interpretation)}</p>"
         "<p>Asset ownership and interface placement are distinct declarations. Unmodeled paths "
@@ -67,7 +79,8 @@ def trace_html(result: TraceResult) -> bytes:
         '<meta name="viewport" content="width=device-width, initial-scale=1">'
         '<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; '
         'style-src &#39;unsafe-inline&#39;; base-uri &#39;none&#39;; form-action &#39;none&#39;">'
-        f"<title>OT-ArchGuard exact trace</title><style>{_STYLE}</style></head><body>"
+        f"<title>OT-ArchGuard exact trace</title><style>{_STYLE}"
+        + "</style></head><body>"
         + body
         + "</body></html>\n"
     ).encode("utf-8")

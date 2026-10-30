@@ -18,7 +18,7 @@ from otarchguard.explorer_html import (
     escape,
     identity_details,
     link,
-    properties,
+    structured_value,
     table,
 )
 from otarchguard.ingestion.project import _no_links
@@ -106,14 +106,10 @@ def _json_value(value: object) -> str:
 
 def _value(value: object) -> str:
     """Readable values retain nesting, every item and inert source text."""
-    if isinstance(value, dict):
-        return properties([(k.replace("_", " "), _value(v)) for k, v in sorted(value.items())])
-    if isinstance(value, (list, tuple)):
-        return (
-            "<ul>" + "".join("<li>" + _value(v) + "</li>" for v in value) + "</ul>"
-            if value
-            else '<p class="muted">No values recorded.</p>'
-        )
+    if isinstance(value, (list, tuple)) and not value:
+        return '<p class="muted">No values recorded.</p>'
+    if isinstance(value, (dict, list, tuple)):
+        return structured_value(value, lambda item, _: _value(item), sort_keys=True)
     if value is None:
         return "<code>null</code>"
     if isinstance(value, bool):
@@ -433,7 +429,12 @@ def _render_quality(writer: SiteWriter, report: dict[str, Any]) -> None:
 
 
 def _render_comparison(
-    writer: SiteWriter, report: dict[str, Any], baseline: Path, proposed: Path
+    writer: SiteWriter,
+    report: dict[str, Any],
+    baseline: Path,
+    proposed: Path,
+    *,
+    compact_prototype: bool = False,
 ) -> None:
     layer_summary = _comparison_summary(report)
     change_rows: dict[str, list[tuple[str, ...]]] = {
@@ -515,8 +516,13 @@ def _render_comparison(
                     )
                 rows.append((escape(kind), link(name, identity)))
         summary = diagram_summary(snapshot)
-        svg = spatial_svg(snapshot, summary["mode"] == "summary", escape, namespace=side + "-")
-        svg = svg.replace(' stroke-dasharray="8 4"', "")
+        svg = spatial_svg(
+            snapshot,
+            summary["mode"] == "summary",
+            escape,
+            namespace=side + "-",
+            forwarding_dashed=False,
+        )
         diagram = (
             '<h2>Declared architecture</h2><figure><div class="scroll" tabindex="0" '
             'role="region" aria-label="Declared architecture diagram">'
@@ -634,6 +640,7 @@ def generate_review(
     proposed_profile: Path | None = None,
     mapping: Path | None = None,
     queries: tuple[ReviewQuery, ...] = (),
+    compact_prototype: bool = False,
 ) -> dict[str, Any]:
     """Publish JSON and static human views as one bounded, audited fresh directory."""
     started = time.perf_counter()
@@ -701,7 +708,9 @@ def generate_review(
             data = canonical(report)
             writer.write("review.json", data)
             if proposed:
-                _render_comparison(writer, report, architecture, proposed)
+                _render_comparison(
+                    writer, report, architecture, proposed, compact_prototype=compact_prototype
+                )
             else:
                 _render_quality(writer, report)
             result = writer.finish(

@@ -99,6 +99,8 @@ jobs:
           python -m tools.evidence_history_walkthrough --output output/evidence-history-walkthrough
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python -m tools.drift_walkthrough --output output/drift-walkthrough
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m tools.historical_explorer_walkthrough --output output/historical-explorer-walkthrough
       - name: Verify installed sdist and project walkthrough offline
         env:
           OTARCHGUARD_OFFLINE_CHECK: '1'
@@ -124,6 +126,8 @@ jobs:
           python -m tools.capture_walkthrough --output output/capture-walkthrough
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python -m tools.drift_walkthrough --output output/sdist-drift-walkthrough
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m tools.historical_explorer_walkthrough --output output/sdist-historical-explorer-walkthrough
       - name: Record exact revision and candidate source identity
         run: |
           python -c "import hashlib,json,os,pathlib,platform,subprocess; r=pathlib.Path('.'); files={n:hashlib.sha256((r/n).read_bytes()).hexdigest() for n in (r/'tools/public-files.txt').read_text().splitlines()}; pathlib.Path('output/ci-revision.json').write_text(json.dumps({'tested_commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'pr_head':os.getenv('PR_HEAD'),'run_id':os.getenv('GITHUB_RUN_ID'),'run_attempt':os.getenv('GITHUB_RUN_ATTEMPT'),'platform':platform.platform(),'python':platform.python_version(),'public_source_sha256':hashlib.sha256(json.dumps(files,sort_keys=True,separators=(',',':')).encode()).hexdigest()},sort_keys=True,indent=2))"
@@ -152,6 +156,8 @@ jobs:
             output/evidence-history-walkthrough/walkthrough.json
             output/drift-walkthrough/walkthrough.json
             output/sdist-drift-walkthrough/walkthrough.json
+            output/historical-explorer-walkthrough/walkthrough.json
+            output/sdist-historical-explorer-walkthrough/walkthrough.json
             output/ci-revision.json
             output/native-compatibility/comparison.json
             output/native-compatibility/command-*.stdout

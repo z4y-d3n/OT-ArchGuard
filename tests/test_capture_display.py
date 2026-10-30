@@ -159,15 +159,15 @@ def test_semantic_display_escapes_nested_fields_and_never_serializes_json() -> N
     rendered = render_value(value)
     assert value == before
     assert "<dl" in rendered and "<dt>" in rendered and "<dd>" in rendered
-    assert "<ul>" in rendered and "<li>" in rendered
-    assert "None recorded." in rendered and "Not available." in rendered
-    assert "[]" not in rendered and "{&quot;" not in rendered
+    assert '<ul class="evidence-values">' in rendered and "<li>" in rendered
+    assert "[]" in rendered and "Not available." in rendered
+    assert "{&quot;" not in rendered
     assert "&lt;script&gt;" in rendered and "&lt;svg" in rendered
     assert "A &amp; &quot;B&quot;" in rendered
     parser = _Elements()
     parser.feed(rendered)
-    assert set(parser.tags) <= {"dl", "dt", "dd", "ul", "li", "p"}
-    assert all(name == "class" for name, _ in parser.attributes)
+    assert set(parser.tags) <= {"div", "section", "h4", "code", "dl", "dt", "dd", "ul", "li", "p"}
+    assert all(name in {"class", "aria-label"} for name, _ in parser.attributes)
 
 
 def test_list_properties_and_identity_adapters_escape_raw_inputs() -> None:

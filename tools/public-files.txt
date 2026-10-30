@@ -12,6 +12,8 @@ benchmarks/documents.py
 benchmarks/drift.py
 benchmarks/evidence_history.py
 benchmarks/explorer.py
+benchmarks/historical_explorer.py
+benchmarks/historical_regression.py
 benchmarks/history_performance.py
 benchmarks/profile.py
 benchmarks/projects.py
@@ -81,6 +83,8 @@ docs/development/v14-02p-handoff-es.md
 docs/development/v14-02p-performance.md
 docs/development/v14-03-audit.md
 docs/development/v14-03-handoff-es.md
+docs/development/v14-04-handoff-es.md
+docs/development/v14-04-visual-remediation-es.md
 docs/development/v14-analysis-revisions-adr.md
 docs/development/v14-architecture.md
 docs/development/v14-drift-contract.md
@@ -114,6 +118,7 @@ docs/release-publication-1.1.0.md
 docs/release-publication-1.2.0.md
 docs/reporting.md
 docs/requirements.md
+docs/semantic-html-presentation.md
 docs/testing-strategy.md
 docs/trace.md
 docs/v1.1/gate-v11-1.md
@@ -125,6 +130,7 @@ docs/v1.1/gate-v11-6.md
 docs/v1.1/public-contract-inventory.md
 docs/v14-drift.md
 docs/v14-foundation.md
+docs/v14-historical-explorer.md
 docs/v14-history.md
 docs/verification.md
 docs/yaml-schema-v1.md
@@ -221,6 +227,9 @@ src/otarchguard/drift/communications.py
 src/otarchguard/drift/comparability.py
 src/otarchguard/drift/contract.py
 src/otarchguard/drift/engine.py
+src/otarchguard/drift/explorer.py
+src/otarchguard/drift/explorer_bundle.py
+src/otarchguard/drift/explorer_render.py
 src/otarchguard/drift/protocols.py
 src/otarchguard/drift/reports.py
 src/otarchguard/evidence/__init__.py
@@ -236,6 +245,7 @@ src/otarchguard/evidence/validation.py
 src/otarchguard/evidence/workspace.py
 src/otarchguard/explorer.py
 src/otarchguard/explorer_data.py
+src/otarchguard/explorer_exposure.py
 src/otarchguard/explorer_html.py
 src/otarchguard/exposure.py
 src/otarchguard/flows.py
@@ -335,6 +345,7 @@ tests/test_capture_ux_integrity.py
 tests/test_capture_views.py
 tests/test_check_cli.py
 tests/test_cli.py
+tests/test_compact_evidence_prototype.py
 tests/test_comparison_properties.py
 tests/test_console_resolution.py
 tests/test_contract.py
@@ -353,12 +364,18 @@ tests/test_evidence_reviews.py
 tests/test_evidence_revisions.py
 tests/test_evidence_v142_audit.py
 tests/test_evidence_workspace.py
+tests/test_exposure_tables_prototype.py
 tests/test_explorer.py
 tests/test_explorer_compact.py
 tests/test_exposure_compare_cli.py
 tests/test_exposure_comparison.py
 tests/test_final_release.py
 tests/test_fixtures.py
+tests/test_historical_explorer.py
+tests/test_historical_explorer_bundle.py
+tests/test_historical_explorer_layout.py
+tests/test_historical_explorer_render.py
+tests/test_historical_explorer_walkthrough.py
 tests/test_history_lifecycle_performance.py
 tests/test_history_path_performance.py
 tests/test_history_performance.py
@@ -381,6 +398,7 @@ tests/test_policy_evidence.py
 tests/test_preparation.py
 tests/test_presentation.py
 tests/test_product_presentation.py
+tests/test_presentation_remediation.py
 tests/test_protocol_corpus.py
 tests/test_protocol_enip_s7.py
 tests/test_protocol_enrichment.py
@@ -398,6 +416,7 @@ tests/test_release_transition.py
 tests/test_reporting.py
 tests/test_resource_envelope.py
 tests/test_review_bundle.py
+tests/test_semantic_presentation.py
 tests/test_source_checkout.py
 tests/test_summaries.py
 tests/test_trace.py
@@ -426,6 +445,7 @@ tools/evidence_identity.py
 tools/evidence_walkthrough.py
 tools/explorer_walkthrough.py
 tools/freeze_capture_contracts.py
+tools/historical_explorer_walkthrough.py
 tools/history_performance_worker.py
 tools/independent_capture_corpus.py
 tools/offline/sitecustomize.py

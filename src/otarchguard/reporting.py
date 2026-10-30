@@ -19,6 +19,7 @@ from otarchguard.diagrams import (
     serialize_svg,
     validate_zone_order,
 )
+from otarchguard.explorer_html import SEMANTIC_CSS, structured_value
 from otarchguard.exposure import ExposureResult
 from otarchguard.intents import CheckResult
 from otarchguard.summaries import explain_comparison, summarize_exposure
@@ -61,8 +62,8 @@ padding:1rem;margin:1rem 0;border:1px solid #ccd6df}.table-scroll{overflow-x:aut
 max-width:100%;margin:1rem 0}table{border-collapse:collapse;min-width:100%;width:max-content}
 th,td{border:1px solid #ccd6df;padding:.6rem;text-align:left;vertical-align:top;
 min-width:10ch;max-width:36rem;word-break:normal;overflow-wrap:normal}
-th{background:#e8f0f5;white-space:nowrap}td pre{min-width:22rem;max-width:36rem;
-max-height:18rem;overflow:auto;margin:0}pre{white-space:pre-wrap;overflow-wrap:break-word;
+th{background:#e8f0f5;white-space:nowrap}td pre{min-width:0;max-width:100%;
+margin:0}pre{white-space:pre-wrap;overflow-wrap:anywhere;
 font-size:.85rem}details{margin:1rem 0}summary{cursor:pointer;font-weight:bold;padding:.6rem;
 background:#e8f0f5}figure{margin:1rem 0}figcaption{font-weight:bold;padding:.6rem 0}
 .finding{padding:1rem;border-left:5px solid #a12121}.alert{border:3px solid
@@ -91,6 +92,8 @@ details::details-content{content-visibility:visible}.architecture-canvas{overflo
 svg{width:100%;min-width:0;height:auto}figure{break-inside:avoid}
 a{color:black}a::after{content:""}}
 """
+
+_STYLE += SEMANTIC_CSS
 
 
 def json_report(report: dict[str, Any]) -> bytes:
@@ -214,28 +217,26 @@ def _value(value: Any) -> str:
     return value if isinstance(value, str) else json.dumps(value, sort_keys=True, ensure_ascii=True)
 
 
-def _table(caption: str, rows: list[dict[str, Any]]) -> str:
+def _table(caption: str, rows: list[dict[str, Any]], *, compact_prototype: bool = False) -> str:
     if not rows:
         return f"<p>{escape(caption)}: none.</p>"
-    keys = list(dict.fromkeys(key for row in rows for key in row))
-
-    def cell(value: Any) -> str:
-        if isinstance(value, (dict, tuple, list)):
-            return "<pre>" + escape(json.dumps(value, sort_keys=True, indent=2)) + "</pre>"
-        return escape(_value(value))
-
     return (
-        '<div class="table-scroll" role="region" tabindex="0" '
-        f'aria-label="{escape(caption)} — scroll horizontally for all columns">'
-        f"<table><caption>{escape(caption)}</caption><thead><tr>"
-        + "".join(f'<th scope="col">{escape(key)}</th>' for key in keys)
-        + "</tr></thead><tbody>"
-        + "".join(
-            "<tr>" + "".join(f"<td>{cell(row.get(key))}</td>" for key in keys) + "</tr>"
-            for row in rows
+        "<h3>"
+        + escape(caption)
+        + "</h3>"
+        + structured_value(
+            rows,
+            lambda value, _: _field_values(value),
+            field="permitted_steps" if "steps" in caption.lower() else caption,
         )
-        + "</tbody></table></div>"
     )
+
+
+def _field_values(value: Any) -> str:
+    """Native escaping stays distinct from source-minimizing Explorer escaping."""
+    if isinstance(value, (dict, list, tuple)):
+        return structured_value(value, lambda item, _: _field_values(item))
+    return "<code>" + escape(_value(value)) + "</code>"
 
 
 def _intent_rows(value: Any, side: str = "architecture") -> list[dict[str, Any]]:
@@ -315,7 +316,7 @@ def _analysis_summary(result: dict[str, Any]) -> str:
         "noncomparable_service_ids",
     ):
         if key in result:
-            parts.append(f"<p>{escape(key)}: {escape(_value(result[key]))}</p>")
+            parts.append(f"<h3>{escape(key)}</h3>" + _field_values(result[key]))
     for key in (
         "observations",
         "destination_assets",
@@ -486,9 +487,11 @@ def html_report(
         "</ul><p>Counts describe evaluated records only. Absence of findings does not establish "
         "universal security. Baseline and proposed outcomes remain independent.</p>",
         *(
-            f"<p><strong>INTRODUCED prohibited violation</strong> · {escape(item['intent_id'])}: "
-            f"{escape(_value(item['flow']))} · "
-            '<a href="#prohibited-changes">Full interval evidence</a></p>'
+            "<div><p><strong>INTRODUCED prohibited violation</strong> · "
+            + escape(item["intent_id"])
+            + "</p>"
+            + _field_values(item["flow"])
+            + '<p><a href="#prohibited-changes">Full interval evidence</a></p></div>'
             for item in introduced
         ),
         "</section>",
@@ -501,13 +504,14 @@ def html_report(
     for index, (entry, snapshot) in enumerate(zip(report["snapshots"], snapshots, strict=True)):
         model = entry["model"]
         layout = calculate_layout(snapshot, entry["diagram"]["mode"] == "summary", zone_order)
+        preference = "Automatic" if zone_order is None else " · ".join(zone_order)
         body += [
             f'<article class="snapshot" id="snapshot-{index}">',
             f"<h3>{escape(entry['role'])}: {escape(model['architecture_id'])}</h3>",
             f"<p>SHA-256: <code>{escape(snapshot.sha256)}</code></p>",
-            f"<p>Presentation preference: {escape(_value(zone_order))}. "
-            f"Effective zone order: {escape(_value(layout.effective_order))}. "
-            f"Visible order: {escape(_value(tuple(z.zone_id for z in layout.zones)))}. "
+            f"<p>Presentation preference: {escape(preference)}. "
+            f"Effective zone order: {escape(' · '.join(layout.effective_order))}. "
+            f"Visible order: {escape(' · '.join(z.zone_id for z in layout.zones))}. "
             f'<a href="#inventory-{index}">Full {escape(entry["role"])} '
             "declarations and attachments</a>; "
             f'<a href="#omissions-{index}">omissions and limitations</a>.</p>',
@@ -535,7 +539,7 @@ def html_report(
                 "SUC declarations (owner assertions)",
                 [{"field": k, "value": v} for k, v in model["suc"].items()],
             ),
-            f"<p>Diagram omissions: {escape(_value(entry['diagram']['omitted_from_diagram']))}</p>",
+            "<h4>Diagram omissions</h4>" + _field_values(entry["diagram"]["omitted_from_diagram"]),
             _table(
                 "Device-to-interface attachment map (same asset ID = one logical device)",
                 [asdict(item) for item in layout.device_map],
@@ -547,7 +551,7 @@ def html_report(
             f"{layout.omissions.attachment_cards}; assets: {len(layout.omissions.asset_ids)}; "
             f"interfaces: {len(layout.omissions.interface_ids)}; transitions: "
             f"{len(layout.omissions.edge_ids)}; zones: {len(layout.omissions.zone_ids)}.</p>",
-            f"<p>Exact omissions: {escape(_value(entry['diagram']['omitted_from_diagram']))}</p>",
+            "<h4>Exact omissions</h4>" + _field_values(entry["diagram"]["omitted_from_diagram"]),
             "<p>Summary membership retains the first 12 canonical zone IDs; presentation "
             "preferences reorder that subset only. Omitted connections are not absent connections. "
             "All declarations and findings remain in full inventory and JSON; "
@@ -558,9 +562,8 @@ def html_report(
         ]
         if any(entry["diagram"]["omitted_from_diagram"].values()):
             body.append(
-                "<p>Diagram omissions: "
-                + escape(_value(entry["diagram"]["omitted_from_diagram"]))
-                + "</p>"
+                "<h4>Diagram omissions</h4>"
+                + _field_values(entry["diagram"]["omitted_from_diagram"])
             )
         for collection in (
             "zones",

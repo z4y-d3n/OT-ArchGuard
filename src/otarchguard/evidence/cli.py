@@ -11,6 +11,7 @@ from typer.core import TyperCommand, TyperGroup
 
 from otarchguard.contract import DiagnosticCategory, ExitCode
 from otarchguard.diagnostics import Diagnostic, ModelError
+from otarchguard.drift.explorer import generate_explorer, verify_explorer
 from otarchguard.drift.reports import (
     generate_report,
     inspect_report,
@@ -279,6 +280,31 @@ def drift_verify(
 ) -> None:
     """Reproduce a report and separately resolve current baseline approval."""
     _execute(lambda: verify_report(workspace, report))
+
+
+@drift_app.command("explore", cls=EvidenceCommand)
+def drift_explore(
+    workspace: Annotated[Path, typer.Argument(help="Exact existing workspace-v2 source.")],
+    report: Annotated[Path, typer.Argument(help="Exact existing standalone drift-v1 report.")],
+    output: Annotated[Path, typer.Argument(help="Fresh offline site outside the workspace.")],
+    page_size: Annotated[int, typer.Option(help="Static records per page: 5..200.")] = 50,
+) -> None:
+    """Reproduce sources and publish offline HTML with canonical drift metadata.
+
+    Example: otarchguard evidence drift explore WORKSPACE REPORT OUTPUT_DIRECTORY
+    """
+    _execute(lambda: generate_explorer(workspace, report, output, page_size=page_size))
+
+
+@drift_app.command("explore-verify", cls=EvidenceCommand)
+def drift_explore_verify(
+    output: Annotated[Path, typer.Argument(help="Existing historical Explorer directory.")],
+    workspace: Annotated[
+        Path | None, typer.Option(help="Fresh source reproduction and current approval check.")
+    ] = None,
+) -> None:
+    """Check bundle integrity; --workspace adds analytical reproduction, without rewriting."""
+    _execute(lambda: verify_explorer(output, workspace=workspace))
 
 
 @drift_app.command("inspect", cls=EvidenceCommand)

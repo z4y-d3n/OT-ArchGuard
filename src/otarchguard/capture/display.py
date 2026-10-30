@@ -12,7 +12,7 @@ from collections.abc import Iterable, Mapping
 from datetime import UTC, datetime, timedelta
 from fractions import Fraction
 
-from otarchguard.explorer_html import escape, identity_details, properties
+from otarchguard.explorer_html import escape, identity_details, properties, structured_value
 
 _RATIONAL = re.compile(r"-?\d+/[1-9]\d*\Z")
 _EPOCH = datetime(1970, 1, 1, tzinfo=UTC)
@@ -118,18 +118,24 @@ def property_list(rows: Iterable[tuple[object, object]], *, empty: str = "None r
 
 
 def render_value(value: object, *, empty: str = "None recorded.") -> str:
-    """Recursively display ordinary evidence fields with escaped text and HTML lists."""
-    if value is None:
-        return empty_state("Not available.")
-    if isinstance(value, str) and not value:
-        return empty_state("Not recorded.")
-    if isinstance(value, bool):
-        return "Yes" if value else "No"
+    """Display retained records through the shared semantic evidence renderer."""
+
+    def scalar(item: object, field: str) -> str:
+        if item is None:
+            return empty_state("Not available.")
+        if isinstance(item, str) and not item:
+            return empty_state("Not recorded.")
+        if isinstance(item, bool):
+            return "Yes" if item else "No"
+        return escape(item)
+
     if isinstance(value, Mapping):
-        return property_list(value.items(), empty=empty)
-    if isinstance(value, (list, tuple)):
-        return bullet_list(value, empty=empty)
-    return escape(value)
+        value = dict(value)
+    return (
+        structured_value(value, scalar)
+        if isinstance(value, (dict, list, tuple))
+        else scalar(value, "")
+    )
 
 
 def identity(label: str, value: str) -> str:
