@@ -17,7 +17,16 @@ claim of physical disconnection. An online-index installation
 is not inferred from it. Published downloads, hashes and release assets are not
 modified or silently rebuilt.
 
-Candidate execution receipts will be consolidated in [acceptance](v15-01-acceptance.md).
+Executed clean source: `b3bc51271c94a67d01aa8328aa215d4dbea45673`.
+Archive audit, regular wheel, build-isolated sdist and preinstalled-backend sdist
+all passed. Each environment imported its own site-packages, matched all 97
+runtime module hashes, passed dependency consistency/version/help/validate, and
+generated its first Explorer outside the checkout from the extracted fictional
+example. The actual extracted sdist passed all 16 new regressions and all three
+historical CLI walkthroughs. See [acceptance](v15-01-acceptance.md) and the
+[concise receipt](v15-01-evidence.json). The full sdist suite and an online-index
+install were not executed. The initial ensurepip temporary-directory failure and
+successful retry into fresh environments remain in the raw package receipt.
 Original `.venv-v146-*` environments are preserved; old producer-source revisions
 are not rehashed and approvals are not transferred. Existing version-transition
 tests distinguish object-integrity verification from compatible analytical replay.
@@ -37,6 +46,8 @@ The current structured-inventory install command now points to v1.4.0; explicit
 historical references remain historical. Three historical guides explain source/
 sdist tools, installed interpreter, parent creation and fresh output directories.
 
-Real browser observations and outstanding keyboard/200% zoom/narrow viewport/
-IPv6/long-identity/print/screen-reader checks will be recorded in acceptance.
-Static markup alone does not establish those properties.
+The browser tool rejected the local `file:` URL under its access policy. No
+browser/keyboard/200% zoom/narrow viewport/IPv6/long-identity/print/screen-reader
+PASS is claimed. Static checks and complete generated-link audits remain useful
+but do not establish those properties; owner steps are in the
+[Spanish handoff](v15-01-handoff-es.md).

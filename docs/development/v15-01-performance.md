@@ -34,7 +34,8 @@ The actual raw driver/command/hash are retained in
 `output/v15-01/performance/measure.py` and its receipt. The reviewed typed driver
 `benchmarks/foundation.py` preserves the workloads and adds durable per-trial
 checkpoints, honest pending/error status and explicit optional allocation skips.
-Repeat from a source/sdist root with a regular installed runtime:
+Repeat from the reviewed **Git checkout root**, containing this driver and its
+matching source, with a regular installed runtime and Git available:
 
 ```console
 python -m benchmarks.foundation --output output/v15-01-repeat
@@ -45,6 +46,15 @@ sum of untraced medians because fixture preparation, output hashing and separate
 allocation tracing are outside the timed scopes. Do not confuse tracing latency
 with normal user latency. Raw local sites/logs remain ignored under
 `output/v15-01/performance/`.
+
+The full benchmark requires checkout metadata. Archive-only replay is not
+supported by this driver; do not run an extracted copy inside another repository
+and attribute its ancestor's Git identity to that copy. The three historical
+tutorials are separately tested from the extracted sdist. The typed driver's
+Ruff/format/strict-mypy and CLI help checks passed; unknown allocation names and
+`-O` were rejected with exit 2 before creating output. Its complete matrix was
+not rerun after typing/checkpoint refinements; the receipt identifies the actual
+original measured script, and Agent E independently reviewed correspondence.
 
 Historical scale 1/64/512 means the existing fictional producer scale from
 `tools.drift_walkthrough.prepare`, not 512 collections or an engine maximum.

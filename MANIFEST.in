@@ -121,6 +121,7 @@ include docs/development/v14-protocol-corpus.md
 include docs/development/v14-protocol-performance.md
 include docs/development/v14-version-identity-adr.md
 include docs/development/v15-01-acceptance.md
+include docs/development/v15-01-evidence.json
 include docs/development/v15-01-findings.md
 include docs/development/v15-01-handoff-es.md
 include docs/development/v15-01-installation-ux.md
