@@ -1,6 +1,6 @@
 # Import Studio
 
-Import Studio is included in [stable v1.3.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0).
+Import Studio is included in [stable v1.4.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.4.0).
 It supports reviewed CSV/TSV, restricted XLSX, explicit JSON inventories, a
 versioned offline NetBox export subset, bounded GraphML and diagrams.net evidence.
 Single-source drafts take
@@ -20,13 +20,13 @@ mapped candidates require separate partition/field review and model confirmation
 See the [document tutorial](../examples/import-studio/documents/README.md) and
 [format/security/review reference](development/v12-06-document-evidence-and-explorer.md).
 Imports remain evidence until the owner confirms declarations. No connectivity or
-permission is inferred. Install the published `1.3.0` distribution using the
+permission is inferred. Install the published `1.4.0` distribution using the
 [installation guide](installation.md). Historical V12 records describe when the
 adapters were introduced; they do not make the current implementation unreleased.
 
 ## First architecture from a synthetic inventory
 
-Use a regular installed v1.3.0 wheel or sdist and the synthetic files in
+Use a regular installed v1.4.0 wheel or sdist and the synthetic files in
 [`examples/import-studio`](../examples/import-studio). They are shipped in the
 published source distribution, so these commands work outside a Git checkout.
 Create an empty working directory, copy the three example files into it, and
@@ -359,7 +359,7 @@ secret concealed in an otherwise allowed scalar.
 The shipped `industrial.drawio`, compressed two-page `multipage.drawio`,
 `directed.graphml` and `undirected.graphml` are synthetic industrial topologies.
 Copy the source, matching profile and `model-context.yaml` into a working folder
-outside the checkout. With a regular installed v1.3.0 distribution:
+outside the checkout. With a regular installed v1.4.0 distribution:
 
 ```text
 otarchguard import inspect industrial.drawio

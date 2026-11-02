@@ -12,8 +12,9 @@ between declarations and finite observations.
 Analysis reads local files; it does not scan devices or capture live traffic.
 Reports open locally without a server, JavaScript or remote rendering service.
 
-**Published stable: [v1.3.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0).**
-This branch prepares the **unpublished v1.4.0 candidate** described below.
+**Latest published stable: [v1.4.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.4.0), November 2, 2026.**
+[v1.3.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0) remains the
+previous stable release and a recovery option.
 Distribution/CLI: `1.4.0`; frozen native engine: `1.3.0`; native YAML schema: `1`.
 Python 3.12 and 3.14 form the Windows, Ubuntu and macOS CI matrix; metadata admits
 Python >=3.12 without claiming every interpreter version has been tested.
@@ -76,21 +77,16 @@ Try a fictional declared remote-support architecture and open its **Architecture
 Explorer**. This first report needs no capture, account or baseline decisions.
 Five minutes is an approximate onboarding label, not a measured guarantee.
 
-**Choose the installation source first:**
+Download `otarchguard-1.4.0-py3-none-any.whl` and `otarchguard-1.4.0.tar.gz`
+from the [published v1.4.0 release](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.4.0).
+Put them in `artifacts/` inside a fresh folder, together with the published
+[manifest](https://github.com/z4y-d3n/OT-ArchGuard/releases/download/v1.4.0/release-manifest.json)
+and [checksums](https://github.com/z4y-d3n/OT-ArchGuard/releases/download/v1.4.0/SHA256SUMS.txt).
+[Verify all four assets](docs/installation.md#obtain-and-verify-assets) before
+installation or extraction. For recovery, retain the
+[previous v1.3.0 first-run path](docs/installation.md#stable-v130-first-run).
 
-- **Stable v1.3.0:** obtain its wheel and source archive from the
-  [published release](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0).
-  Use the [stable first-run instructions](docs/installation.md#stable-v130-first-run).
-- **Local v1.4.0 candidate:** obtain the four local audited assets from the owner,
-  put them in `artifacts/` inside a fresh folder, and
-  [verify the complete checksum list](docs/installation.md#obtain-and-verify-assets).
-  Repository reviewers can use the source-bound assets identified in the latest
-  [documentation handoff](docs/development/v14-06-public-documentation-es.md).
-- **Future stable v1.4.0:** use its actual release assets only after publication
-  and acceptance of the integrated source. There is no published v1.4 download
-  destination to use yet.
-
-With **Python >=3.12** available as `python`, run this candidate sequence in
+With **Python >=3.12** available as `python`, run this sequence in
 **Windows PowerShell**, from the fresh folder containing `artifacts/`:
 
 ```powershell
@@ -115,7 +111,7 @@ Installation may download dependencies. For disconnected installation use a
 [prepared wheelhouse](docs/installation.md#optional-completely-offline-setup).
 Analysis and report navigation need no network service. Choose a new report
 directory on a repeat run. Linux/macOS use the same inputs and CLI arguments
-with `.venv/bin/`; see [platform instructions](docs/installation.md#candidate-first-report-on-linuxmacos).
+with `.venv/bin/`; see [platform instructions](docs/installation.md#published-first-report-on-linuxmacos).
 
 ## What it does / What it does not do
 
@@ -197,18 +193,18 @@ Read the [comprehensive limitations](docs/limitations.md),
 | Source/package integrity | [Packaging audit](docs/development/v14-06-packaging-audit.md), [local source-bound handoff](docs/development/v14-06-handoff-es.md) |
 | Release acceptance | [Release checklist](docs/release-checklist.md), [Spanish publication runbook](docs/development/v14-06-publication-runbook-es.md) |
 | Security and trust assumptions | [Scope and limitations](docs/limitations.md), [bounded internal security review](docs/development/v14-06-security-audit.md) |
-| Release details | [Unpublished v1.4.0 notes](docs/release-notes-1.4.0.md), [published v1.3.0 notes](docs/release-notes-1.3.0.md), [changelog](CHANGELOG.md) |
+| Release details | [Published stable v1.4.0 notes](docs/release-notes-1.4.0.md), [previous v1.3.0 notes](docs/release-notes-1.3.0.md), [changelog](CHANGELOG.md) |
 | Visual provenance | [Current and historical diagram previews](docs/images/README.md) |
 
-The owner reports six successful Windows/Ubuntu/macOS × Python 3.12/3.14 hosted
-jobs for V14-06 checkpoint `5c70ae09904687070ecce9374546aff8ae806588`
-on [Draft PR #24](https://github.com/z4y-d3n/OT-ArchGuard/pull/24).
-Those results apply to that SHA. A later documentation commit needs its own
-hosted CI; final acceptance of integrated `main`, artifact reconstruction,
-tagging and stable publication remain separate owner gates. See the
-[documentation verification handoff](docs/development/v14-06-public-documentation-es.md)
-for the preceding local checks; [visual provenance](docs/images/README.md)
-records the subsequently supplied owner screenshot.
+Published source: `7d6b158f863308dfcd7d10b673bfbe2692f29b8b`, retained by the
+annotated `v1.4.0` tag after integration of PRs #17–#24.
+[Final main CI run 40991511467](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40991511467)
+passed all six Windows/Ubuntu/macOS × Python 3.12/3.14 jobs for that exact SHA.
+Current `main` may advance with documentation or development; it does not change
+the tagged source or published assets. Later commits need their own hosted CI.
+The [documentation verification handoff](docs/development/v14-06-public-documentation-es.md)
+retains historical checkpoint results; [visual provenance](docs/images/README.md)
+records the subsequently supplied owner screenshot and its actual review limits.
 
 Project code and documentation use [Apache-2.0](LICENSE); dependencies retain
 their [licenses and notices](THIRD_PARTY_NOTICES.md). This independent project

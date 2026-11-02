@@ -1,6 +1,6 @@
 # Offline Architecture Explorer walkthrough
 
-All files in this tutorial are fictional. Install the verified published v1.3.0
+All files in this tutorial are fictional. Install the verified published v1.4.0
 wheel following the [installation guide](../../docs/installation.md), then check
 the selected console:
 
@@ -8,7 +8,7 @@ the selected console:
 otarchguard --version
 ```
 
-Copy `examples/import-studio/projects/mixed/` from the verified v1.3.0 source distribution
+Copy `examples/import-studio/projects/mixed/` from the verified v1.4.0 source distribution
 into a new working directory **outside the checkout**. It contains an XLSX asset/
 zone inventory, JSON interfaces, CSV metadata, a draw.io drawing, profiles, explicit
 native context and `tutorial-decisions.json`. Those owner choices apply only to

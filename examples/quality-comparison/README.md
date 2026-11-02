@@ -1,6 +1,6 @@
 # Quality and before/after review, entirely offline
 
-Use a regular installed v1.3.0 distribution, verified with the
+Use a regular installed v1.4.0 distribution, verified with the
 [installation guide](../../docs/installation.md). From the matching source
 distribution or tutorial checkout run:
 

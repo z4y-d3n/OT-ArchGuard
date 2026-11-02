@@ -1,7 +1,7 @@
-# PCAP Evidence Studio — v1.3.0
+# PCAP Evidence Studio — preserved v1.3 contract in v1.4.0
 
 This guide preserves the published capture-observation/reconciliation contract.
-The unpublished v1.4 candidate adds separate
+Published stable [v1.4.0](release-notes-1.4.0.md) adds separate
 [bounded industrial header enrichment](v14-foundation.md),
 [historical evidence](v14-history.md), [drift](v14-drift.md) and
 [Historical Explorer](v14-historical-explorer.md). Those features do not turn the
@@ -13,8 +13,9 @@ initiating network communications. It answers what was observed, which owner-rev
 identities and declarations can be compared, and which uncertainties need review.
 Observed traffic is not permission. Unobserved traffic is not evidence of blocking.
 
-It is part of [published stable v1.3.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0),
-whose immutable release commit is `10d7de6c416ec6f0ee364c671ebe9292ee69e672`.
+It was introduced in [previous stable v1.3.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0),
+whose immutable release commit is `10d7de6c416ec6f0ee364c671ebe9292ee69e672`,
+and remains supported in v1.4.0. The following acceptance paragraph records v1.3.0.
 Native YAML remains schema 1. Capture, association, comparison, protocol catalog
 and site contracts remain version 1; observations use version 2 to retain explicit
 ARP identities and host eligibility. See the

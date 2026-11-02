@@ -1,9 +1,9 @@
 # Installation, parallel upgrade and offline use
 
-**Published stable is [v1.3.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0).**
-This guide also prepares a separate **v1.4.0 local release-candidate environment**.
-The candidate is not a published stable release. Python metadata requires `>=3.12`;
-the required hosted matrix is Windows/Ubuntu/macOS × Python 3.12/3.14. It is not
+**Latest published stable is [v1.4.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.4.0), released November 2, 2026.**
+Keep [v1.3.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0) as the
+previous stable/recovery option. Python metadata requires `>=3.12`;
+the verified hosted matrix is Windows/Ubuntu/macOS × Python 3.12/3.14. It is not
 a claim that every future Python release has been tested.
 
 [Assets](#obtain-and-verify-assets) · [Install](#parallel-installation) ·
@@ -12,26 +12,40 @@ a claim that every future Python release has been tested.
 
 ## Obtain and verify assets
 
-Stable users can download the four assets from the published v1.3.0 release page.
-For candidate review, obtain the four **local** files identified by the exact-source
-documentation handoff. Repository reviewers find the new documentation-source
-assets in `output/v146-docs/release-assets/` after its source-bound rehearsal.
-See the [documentation handoff](development/v14-06-public-documentation-es.md).
-The earlier `output/v146/release-assets/` set is preserved historical evidence
-for the preceding source; its hashes do not describe the new documentation commit.
-Copy all four matching files to `artifacts/` in a review directory:
+Download the four named assets from the
+[published v1.4.0 release](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.4.0),
+using its **Assets** list rather than GitHub's automatically generated source
+archives. Copy all four matching files to `artifacts/` in a fresh working directory:
 
-| Candidate file | Purpose |
+| Published file | Purpose |
 |---|---|
 | `otarchguard-1.4.0-py3-none-any.whl` | Recommended regular installation |
 | `otarchguard-1.4.0.tar.gz` | Source distribution, including examples, docs and verification tools |
-| `release-manifest.json` | Source commit/tree, source inventory and archive audit |
-| `SHA256SUMS.txt` | SHA-256 for the two distributions and manifest |
+| [`release-manifest.json`](https://github.com/z4y-d3n/OT-ArchGuard/releases/download/v1.4.0/release-manifest.json) | Source commit/tree, source inventory and archive audit |
+| [`SHA256SUMS.txt`](https://github.com/z4y-d3n/OT-ArchGuard/releases/download/v1.4.0/SHA256SUMS.txt) | SHA-256 for the two distributions and manifest |
 
-There is no download link to a future v1.4 release. Following owner-authorized
-publication, obtain assets from the actual published release and compare their
-source/checksums with its acceptance record. Local candidate hashes do not accept
-a later integration build merely because its filenames are the same.
+The annotated `v1.4.0` tag fixes published source
+`7d6b158f863308dfcd7d10b673bfbe2692f29b8b`. The manifest records that source,
+distribution `1.4.0` and frozen native engine `1.3.0`. Its assembly-time acceptance
+wording is historical; final publication and CI are recorded in the
+[release checklist](release-checklist.md). Later `main` commits do not change
+these assets. Do not rebuild and substitute files under the same release identity.
+
+Compare downloads with GitHub's published SHA-256 digests (also recorded here):
+
+| Published file | SHA-256 |
+|---|---|
+| `otarchguard-1.4.0-py3-none-any.whl` | `fdaaa37e920c63ed0d0b5fc6b07361de9f4df6957bf885c4e9f8a6ac59051abf` |
+| `otarchguard-1.4.0.tar.gz` | `1636ebc32aa009becaeb1b21d02cc7942588f5872070949d52a38581626778f2` |
+| `release-manifest.json` | `a8b0ccf323589c554ba2fa3e8f88f34621ae540e795c0eb7807216add5ef89aa` |
+| `SHA256SUMS.txt` | `a7474178f5472acb646eeef0c7b5c1f94ec657644bf376ca9cde0afa0ab351f8` |
+
+First verify the checksum file itself in PowerShell:
+
+```powershell
+$ChecksumHash = (Get-FileHash -LiteralPath artifacts/SHA256SUMS.txt -Algorithm SHA256 -ErrorAction Stop).Hash
+if ($ChecksumHash -ine 'a7474178f5472acb646eeef0c7b5c1f94ec657644bf376ca9cde0afa0ab351f8') { throw 'Checksum file mismatch' }
+```
 
 Verify the complete checksum list before installation or extraction:
 
@@ -51,10 +65,12 @@ foreach ($Line in Get-Content artifacts/SHA256SUMS.txt -ErrorAction Stop) {
 if ($SeenFiles.Count -ne $ExpectedFiles.Count) { throw 'Incomplete checksum list' }
 ```
 
-On Linux, run `sha256sum --check SHA256SUMS.txt` from `artifacts/`; on macOS use
-`shasum -a 256 -c SHA256SUMS.txt`. Require all three expected entries and retain
-all four files. Hashes establish byte identity, not authorship or authenticity;
-obtain the files and acceptance record through a trusted source.
+On Linux, first compare `sha256sum artifacts/SHA256SUMS.txt` with the table;
+on macOS use `shasum -a 256 artifacts/SHA256SUMS.txt`. Stop on any mismatch.
+Then run `sha256sum --check SHA256SUMS.txt` from `artifacts/` on Linux, or
+`shasum -a 256 -c SHA256SUMS.txt` on macOS. Require all three expected entries
+and retain all four files. Hashes establish byte identity, not authorship or
+authenticity; obtain the files and publication record through a trusted source.
 
 For known-good v1.3.0 recovery, the published distribution SHA-256 values are:
 
@@ -71,9 +87,9 @@ Keep the known-good v1.3.0 environment, declaration inputs and development
 workspaces. Select an installed interpreter explicitly and confirm Python >=3.12:
 
 ```powershell
-$CandidatePython = (Get-Command python -ErrorAction Stop).Source
-& $CandidatePython --version
-& $CandidatePython -m venv .venv-otarchguard-1.4.0
+$InstallPython = (Get-Command python -ErrorAction Stop).Source
+& $InstallPython --version
+& $InstallPython -m venv .venv-otarchguard-1.4.0
 $EnvPython = (Resolve-Path .venv-otarchguard-1.4.0/Scripts/python.exe).Path
 ```
 
@@ -102,14 +118,21 @@ python3.12 -m venv .venv-otarchguard-1.4.0
 ```
 
 Python 3.14 can be selected instead. Python 3.13 is admitted by package metadata,
-but is not part of the six-job hosted matrix. Consult the exact candidate handoff
-for actual additional interpreter checks; do not infer unexecuted results.
+but is not part of the six-job hosted matrix. See the
+[published-source CI record](release-notes-1.4.0.md#verification-and-owner-gates);
+do not infer unexecuted interpreter/platform checks.
 
 ## Optional completely offline setup
 
-The release ships no dependency wheelhouse. Before disconnecting, prepare a
-reviewed complete wheelhouse for the target OS/CPU/Python containing compatible
-runtime dependencies and their transitive closure. With application assets in
+The release ships no dependency wheelhouse. Ordinary installation may download
+dependencies; the application wheel alone is insufficient if they are missing.
+Before disconnecting, use the target OS/CPU/Python to prepare a complete wheelhouse:
+
+```powershell
+& $EnvPython -m pip download --only-binary=:all: --dest wheelhouse artifacts/otarchguard-1.4.0-py3-none-any.whl
+```
+
+Review and retain the downloaded dependency closure. With application assets in
 `artifacts/` and dependency wheels in `wheelhouse/`:
 
 ```powershell
@@ -117,8 +140,15 @@ runtime dependencies and their transitive closure. With application assets in
 & $EnvPython -m pip check
 ```
 
-For offline sdist installation, install the build backend from that wheelhouse
-first, then build without isolation:
+For the optional offline sdist path, also download its build backend **before
+disconnecting**:
+
+```powershell
+& $EnvPython -m pip download --only-binary=:all: --dest wheelhouse 'setuptools>=77'
+```
+
+After disconnecting, install that backend from the wheelhouse first, then build
+without isolation:
 
 ```powershell
 & $EnvPython -m pip install --no-index --find-links wheelhouse 'setuptools>=77'
@@ -136,14 +166,15 @@ physical air-gap guarantee.
 ## Verify declarations and reports
 
 For a first report from a wheel and matching source archive, use the
-[candidate Quick Start](../README.md#quick-start--5-minutes). The source archive
+[published v1.4.0 Quick Start](../README.md#quick-start--5-minutes). The source archive
 contains the fictional models; the wheel contains the runtime application.
 Extracting examples does not install the source or require Git. Choose fresh
 environment and report directories.
 
 ### Stable v1.3.0 first run
 
-Obtain and verify the published v1.3.0 wheel and source archive using that
+This is the **previous stable release and rollback path**. Obtain and verify the
+published v1.3.0 wheel and source archive using that
 release's manifest and `SHA256SUMS.txt`. In a fresh folder with both archives
 under `artifacts/`, use Python >=3.12 and Windows PowerShell:
 
@@ -157,13 +188,15 @@ tar -xf artifacts/otarchguard-1.3.0.tar.gz
 Invoke-Item .\stable-report\index.html
 ```
 
-This uses the existing published release, not the v1.4 candidate. Expected
+This uses the previous published release. Expected
 `--version` output: `1.3.0`. The native `explore` command produces a local
 declared-model browser; it does not evaluate all operational intents.
 
-### Candidate first report on Linux/macOS
+<a id="candidate-first-report-on-linuxmacos"></a>
 
-After obtaining and verifying the local candidate assets as above, use a fresh
+### Published first report on Linux/macOS
+
+After downloading and verifying the published v1.4.0 assets as above, use a fresh
 folder and an installed Python 3.12 (or select Python 3.14 explicitly):
 
 ```bash
@@ -176,10 +209,9 @@ tar -xf artifacts/otarchguard-1.4.0.tar.gz
 ```
 
 Open `report/index.html` in a local browser: `open report/index.html` on macOS
-or `xdg-open report/index.html` on a Linux desktop. The Windows candidate
-sequence is executed in the documentation handoff; these POSIX equivalents
-require native hosted verification for the new source. They are not a claim
-of a local Linux/macOS run. All report resources are local.
+or `xdg-open report/index.html` on a Linux desktop. These are POSIX equivalents
+of the Windows Quick Start. Published-source CI passed on both platforms;
+that does not establish a manual local-browser review. All report resources are local.
 
 ### Further native checks
 
@@ -198,7 +230,7 @@ expect `1.3.0` from native engine and historical `__version__`. The import must
 resolve inside the selected environment's `site-packages`, not the checkout's
 `src/`. Schema-1 native models need no migration.
 
-Start the following example in the verified candidate checkout or extracted
+Start the following example in the verified tagged checkout or extracted
 sdist root containing `examples/`. Wheels do not include models/examples;
 wheel-only users must provide their own supported model and declared IDs.
 
@@ -251,13 +283,13 @@ compatible source environment with evidence that requires reproduction.
 
 ## Revert or uninstall
 
-If evaluation fails, preserve inputs, outputs and logs, stop using the candidate
+If evaluation fails, preserve inputs, outputs and logs, stop using the new v1.4.0
 environment and invoke the retained v1.3.0 executable by its full path. Do not
 feed a new historical workspace to an older release and assume compatibility.
 To recreate known-good v1.3.0, use its original published assets and a separate
 environment, then verify its version, dependency closure and expected examples.
 
-To uninstall only the candidate application:
+To uninstall only the selected v1.4.0 application:
 
 ```powershell
 & $EnvPython -m pip uninstall otarchguard

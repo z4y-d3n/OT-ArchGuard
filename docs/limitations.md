@@ -3,13 +3,13 @@
 OT-ArchGuard distinguishes declared architecture analysis, imported documentary
 evidence and passive capture observations. These sources have different trust
 boundaries. The published scope is summarized in the
-[v1.3.0 release notes](release-notes-1.3.0.md); the
+[stable v1.4.0 release notes](release-notes-1.4.0.md); the
 [PCAP guide](pcap-evidence-studio.md) specifies capture observations separately
 from the native evaluator.
 
-This branch additionally prepares the unpublished [v1.4 candidate](release-notes-1.4.0.md)
-with bounded industrial metadata, historical lifecycle, drift and its offline
-Explorer. The limits below apply alongside those feature-specific guides.
+Published v1.4.0 includes bounded industrial metadata, historical lifecycle, drift
+and its offline Explorer. The limits below apply alongside those feature-specific
+guides; stable publication does not remove evidence or validation limits.
 
 ## Import Studio and Architecture Explorer
 
@@ -107,7 +107,7 @@ an OS-enforced memory cap.
 The published release passed Windows, Ubuntu and macOS CI with Python 3.12/3.14.
 Python 3.13 and combinations outside that matrix, fresh-OS/physical-air-gap
 deployment and broader browser/print/assistive-technology coverage are not implied.
-See the [release verification](release-notes-1.3.0.md#release-verification-and-human-acceptance).
+See the [release verification](release-notes-1.4.0.md#verification-and-owner-gates).
 The [v1.0.1 verification summary](verification.md) remains historical evidence.
 
 ## Quality and architecture comparison
@@ -123,8 +123,8 @@ coverage denominators, query comparability, resource ceilings and compact views.
 
 ## V1.4 historical and industrial boundaries
 
-Historical lifecycle, coverage-aware drift and Historical Explorer are implemented
-in the unpublished v1.4 candidate, beyond the published v1.3.0 scope. A changed
+Historical lifecycle, coverage-aware drift and Historical Explorer are included
+in published stable v1.4.0, extending the previous v1.3.0 scope. A changed
 decoder interpretation does not prove a physical change. Incomplete, unsupported,
 unaligned or incomparable sources retain explicit qualification. No observed
 evidence, no declared path, explicit denial and unsupported evaluation differ.

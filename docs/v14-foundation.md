@@ -1,20 +1,18 @@
 # v1.4 protocol metadata and evidence foundation
 
-This branch prepares the unpublished v1.4 release candidate, package/CLI `1.4.0`.
+Published stable [v1.4.0](release-notes-1.4.0.md) provides package/CLI `1.4.0`.
 The unchanged native engine retains identity `1.3.0` to preserve frozen evidence.
 The legacy Python `__version__` remains that engine alias; use
 `DISTRIBUTION_VERSION`, installed distribution metadata or `--version` for the
 distribution identity.
-Published stable remains v1.3.0; local candidate preparation does not publish it.
 The following operations are implemented. V14-02 adds explicit migration,
 analytical revisions and scoped local baseline review in the
 [historical evidence workflow](v14-history.md). V14-03 adds the separate
 [historical comparison workflow](v14-drift.md). The implemented
 [Historical Explorer](v14-historical-explorer.md) presents source-reproduced
 comparisons and independently verifies portable publication bundles.
-V14-04 semantic HTML received owner visual acceptance, and the exact V14-05
-parent passed six hosted jobs; neither accepts a changed V14-06 commit by itself.
-See [candidate release notes](release-notes-1.4.0.md).
+V14-04 semantic HTML received owner visual acceptance. The published integrated
+source passed all six hosted jobs; see [stable release notes](release-notes-1.4.0.md).
 
 The final distribution transition changes exact producer source identity.
 Preserve development environments/workspaces for old analytical replay;
@@ -65,7 +63,7 @@ IEC-104. DLT_NULL and Linux SLL are unsupported; TCP stream reassembly is absent
 The corpus registry separates original fictional fixtures, local-analysis-approved
 external references and unapproved candidates. Analysis approval does not grant
 redistribution rights or establish collection authenticity. No third-party capture
-bytes are distributed with the candidate, and laboratory references do not claim
+bytes are distributed with the release, and laboratory references do not claim
 validation against a production plant.
 
 ## Immutable snapshot import
@@ -116,15 +114,16 @@ The workspace-v1 snapshot workflow described here imports observations only.
 Enrichment attachments, reviewed associations, native comparisons and explicit
 baselines use the later workspace-v2 contracts; historical comparisons use the
 separate drift-report contract linked above. No association is automatically
-carried across capture periods. Portable bundles remain a later milestone.
+carried across capture periods. Portable comparison bundles use the separate
+[Historical Explorer](v14-historical-explorer.md) workflow.
 
 See [architecture decisions](development/v14-architecture.md),
 [corpus provenance](development/v14-protocol-corpus.md) and
-[remaining acceptance work](development/v14-progress.md).
+[historical acceptance record](development/v14-progress.md).
 
 ## Reproduce the original fictional demonstration
 
-After installing the current local wheel, run from this source checkout:
+After installing the published wheel, run from the matching extracted sdist root:
 
 ```console
 python -m tools.evidence_walkthrough --output output/evidence-walkthrough

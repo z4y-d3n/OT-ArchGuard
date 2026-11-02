@@ -6,9 +6,9 @@ CSV, XLSX and draw.io disagree about the engineering workstation's zone. None
 of these documents supplies network permission. The native model context declares
 no transport, forwarding, rules or services.
 
-Use the regular installed v1.3.0 console from the
+Use the regular installed v1.4.0 console from the
 [installation guide](../../../docs/installation.md). Obtain `mixed` from the
-verified v1.3.0 source distribution and copy it to a writable working directory
+verified v1.4.0 source distribution and copy it to a writable working directory
 and run these commands from inside that copy. Every output must have a new name.
 
 1. Inspect `project.json`. It registers four explicit source paths, each adapter

@@ -2,8 +2,8 @@
 
 This released example uses generated documentation addresses and traffic, not
 real equipment or an operational capture. Obtain these files from the verified
-[published v1.3.0 source distribution](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0)
-or an already obtained checkout at tag `v1.3.0`:
+[published v1.4.0 source distribution](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.4.0)
+or an already obtained checkout at tag `v1.4.0`:
 
 - `plant.pcap` and `plant.pcapng`: equivalent ten-record teaching captures.
 - `architecture.yaml`: five fictional assets and two declared services.

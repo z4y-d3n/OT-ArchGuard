@@ -1,6 +1,6 @@
 # Historical evidence and explicit baseline review
 
-This offline v1.4 candidate workflow preserves one physical collection for
+This published v1.4.0 offline workflow preserves one physical collection for
 each exact capture SHA, several immutable analytical interpretations, and
 separate local human assertions. These lifecycle commands prepare the inputs for
 the separate [V14-03 historical comparison workflow](v14-drift.md).

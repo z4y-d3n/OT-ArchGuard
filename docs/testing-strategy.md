@@ -1,23 +1,25 @@
 # Verification strategy
 
-## V1.4 release-candidate evidence
+## V1.4 published-release evidence
 
-For the public-documentation pass, the owner reports that checkpoint
-`5c70ae09904687070ecce9374546aff8ae806588` on Draft PR #24 passed all six hosted
-jobs. That supplied report is not a new remote query or acceptance of the later
-documentation commit. The [documentation handoff](development/v14-06-public-documentation-es.md)
-records focused local onboarding, link and source/package checks, plus the
-outstanding genuine browser capture. The earlier engineering evidence follows
-with its original source identities.
+Stable [v1.4.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.4.0) was
+published November 2, 2026 from `7d6b158f863308dfcd7d10b673bfbe2692f29b8b`.
+[Integrated main run 40991511467](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40991511467)
+passed all six Windows/Ubuntu/macOS × Python 3.12/3.14 jobs for that SHA.
+Distribution/CLI is `1.4.0`; native engine and historical `__version__` remain
+`1.3.0`. The annotated tag and four published assets remain fixed as `main` advances.
 
-The current local candidate distribution/CLI is `1.4.0`; native engine and the
-historical `__version__` alias remain `1.3.0`. The exact V14-05 parent
-`ac893bc3174f0a7ace67454d19ad6e61116425af` passed
-[push run 40880668115](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40880668115),
-six Windows/Ubuntu/macOS × Python 3.12/3.14 jobs. Candidate results, actual skips
-and exact package identities belong in the
-[V14-06 handoff](development/v14-06-handoff-es.md); parent results do not validate
-the child source or the eventual integrated release source.
+The [V14-06 handoff](development/v14-06-handoff-es.md) and
+[documentation handoff](development/v14-06-public-documentation-es.md) retain
+historical candidate source/package identities, executed checks and actual skips.
+Their pending wording describes those checkpoints. The owner subsequently supplied
+the [genuine screenshot](images/README.md). None of these records establishes
+unexecuted external protocol or browser/accessibility checks.
+
+For a documentation-only change, run focused Markdown/link, inventory and affected
+presentation/compatibility checks. Do not automatically repeat the entire analytical
+suite locally when production modules are untouched. The new PR still requires
+all six hosted CI jobs for its own SHA. Published-source CI does not validate it.
 
 At candidate freeze, run the complete suite once against the frozen source and
 again using independently regular-installed wheel and sdist payloads. Keep
@@ -39,11 +41,13 @@ Historical analytical revisions independently bind exact producer source. A
 distribution source change does not authorize rewriting their hashes or approval
 chains. Test the explicit [development-workspace upgrade boundary](installation.md#historical-workspaces-and-upgrade).
 
-After committing the complete reviewed public inventory, rehearse four-asset
-assembly with `python -m tools.prepare_release --output NEW_DIRECTORY` and reopen
-it with `--verify`. Confirm clean source, exact commit/tree, audited wheel/sdist
-members, installed payload equality and all three checksum entries. Do not claim
-byte-identical archives unless a separate build comparison demonstrated it.
+For a future authorized release, rehearse four-asset assembly from its clean
+committed public inventory with `python -m tools.prepare_release --output NEW_DIRECTORY`
+and reopen it with `--verify`. Confirm exact commit/tree, audited wheel/sdist
+members, installed payload equality and all three checksum entries. For post-release
+documentation work, verify existing v1.4.0 downloads against their tagged source;
+do not rebuild or replace the published assets. Do not claim byte-identical
+archives unless a separate build comparison demonstrated it.
 
 V14-04 semantic HTML already received owner visual acceptance, including high-zoom
 inspection. Unchanged renderer bytes let that acceptance remain relevant; static
