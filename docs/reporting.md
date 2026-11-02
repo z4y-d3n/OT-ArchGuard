@@ -13,7 +13,7 @@ This page specifies native single-file reports, not the separate
 [PCAP evidence site](pcap-evidence-studio.md). For the native renderer's design
 origin and historical verification, see [Gate V11-2](v1.1/gate-v11-2.md).
 Current published-release acceptance is summarized in the
-[v1.3.0 release notes](release-notes-1.3.0.md). Analytical report JSON remains version 1.
+[v1.4.0 release notes](release-notes-1.4.0.md). Analytical report JSON remains version 1.
 
 The native `validate`, `check`, `exposure` and `compare` commands retain their
 existing deterministic JSON stdout and native exit codes. Add `--report PATH`

@@ -6,11 +6,11 @@ Service labels/ports identify synthetic listeners; no actual protocol behavior,
 authentication, return traffic, compromise or process impact is verified.
 Owner criticality and completeness assertions are descriptive only.
 
-Run from the verified source distribution or matching candidate checkout root
+Run from the verified v1.4.0 source distribution or matching tagged checkout root
 after installing its regular package with the [installation guide](../docs/installation.md).
 The commands below assume the selected environment is named `.venv`; substitute
 your actual environment's full executable path if it has another name (for
-example `.venv-otarchguard-1.4.0` for parallel candidate evaluation):
+example `.venv-otarchguard-1.4.0` for parallel installation):
 
 ```powershell
 .\.venv\Scripts\python.exe examples/run_examples.py
@@ -108,7 +108,7 @@ runtime tests complement, but do not replace, human offline visual review.
 
 The original synthetic [trace cell](trace/communication.yaml) declares one
 directed transition and a disconnected listener. Run these with the installed
-v1.3.0 console:
+v1.4.0 console:
 
 ```console
 otarchguard trace examples/trace/communication.yaml --source eng --service svc_allowed

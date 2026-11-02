@@ -5,9 +5,10 @@ source-dependent reproduction against an existing workspace-v2. It creates no
 baseline, approval or analytical comparison. Native engine `1.3.0` and drift
 engine `1.4.0-drift.1` retain their accepted semantics.
 
-The v1.4 candidate includes the owner-accepted V14-04 semantic presentation.
-Previous browser acceptance applies to the reviewed presentation, while candidate
-source/package checks and eventual integrated-source acceptance remain separate.
+Published v1.4.0 includes the owner-accepted V14-04 semantic presentation.
+Browser acceptance applies to that reviewed presentation; the
+[stable release record](release-notes-1.4.0.md#verification-and-owner-gates)
+separately identifies successful integrated-source CI and published assets.
 
 ```console
 otarchguard evidence drift explore WORKSPACE REPORT.json NEW_DIRECTORY

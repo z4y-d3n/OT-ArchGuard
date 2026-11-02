@@ -1,11 +1,13 @@
 # Changelog
 
-## 1.4.0 — release candidate preparation (unpublished)
+## 1.4.0 — 2026-11-02 (stable)
 
-Published stable remains [v1.3.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0).
-This entry describes the local v1.4 candidate, not an authorized tag or release.
-See the [candidate notes](docs/release-notes-1.4.0.md) and
-[source-bound handoff](docs/development/v14-06-handoff-es.md) for exact acceptance.
+Published [v1.4.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.4.0)
+is the latest stable release, from integration commit
+`7d6b158f863308dfcd7d10b673bfbe2692f29b8b`, retained by its annotated tag.
+See the [stable release notes](docs/release-notes-1.4.0.md) and
+[publication record](docs/release-checklist.md) for source, CI and asset identities.
+The previous stable release, v1.3.0, remains available for recovery.
 
 - Industrial metadata: seven bounded header subsets for Modbus TCP, PROFINET DCP,
   EtherNet/IP/limited CIP, classic S7comm, IEC-104, OPC UA Binary and DNP3/TCP.
@@ -35,15 +37,17 @@ See the [candidate notes](docs/release-notes-1.4.0.md) and
 Bounded headers do not prove command success. External positive Modbus/DCP/IEC-104
 coverage remains incomplete; DLT_NULL, Linux SLL and TCP reassembly are unsupported.
 Review labels remain local unauthenticated assertions under a single-writer model.
-The V14-05 parent passed six hosted jobs; V14-06 and final integrated-source
-acceptance remain separate gates. No industrial certification or external pentest
-is claimed.
+The final integrated release source passed all six Windows/Ubuntu/macOS ×
+Python 3.12/3.14 jobs in
+[run 40991511467](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40991511467).
+No industrial certification or external pentest is claimed. Later `main` commits
+do not change the tagged source or published assets.
 
 ## Historical v1.4 development checkpoint notes
 
 The entries below preserve their original milestone context. Their then-pending
-browser/CI wording does not describe the current candidate: V14-04 visual
-acceptance and the exact V14-05 six-job parent run have since completed.
+browser/CI wording does not describe current publication status: V14-04 visual
+acceptance, integrated-source CI and stable v1.4.0 publication have since completed.
 
 - V14-04 adds the source-reproduced offline Historical Evidence & Drift Explorer,
   complete static domain/finding/evidence navigation, accessible pagination,

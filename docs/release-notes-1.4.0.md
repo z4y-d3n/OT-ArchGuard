@@ -1,10 +1,11 @@
-# OT-ArchGuard 1.4.0 — local release candidate
+# OT-ArchGuard 1.4.0 — stable release
 
-**Unpublished candidate. Published stable remains
-[v1.3.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0).**
-Local preparation, a version string and a green parent run do not authorize a tag,
-merge or publication. The [Spanish owner handoff](development/v14-06-handoff-es.md)
-records candidate source/package identities, executed results and remaining gates.
+**[Published November 2, 2026](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.4.0).**
+The annotated `v1.4.0` tag retains source commit
+`7d6b158f863308dfcd7d10b673bfbe2692f29b8b`, integrating development PRs #17–#24.
+[v1.3.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0) remains the
+previous stable release and recovery option. Historical V14-06 reports retain
+their original candidate identities and then-pending gates.
 
 ## Main capabilities
 
@@ -60,15 +61,16 @@ historical-workspace downgrade has not been demonstrated. Follow
 
 ## Installation and first run
 
-Use the audited local candidate assets identified by the handoff:
+Download the four assets from the
+[published release](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.4.0):
 `otarchguard-1.4.0-py3-none-any.whl`, `otarchguard-1.4.0.tar.gz`,
-`release-manifest.json` and `SHA256SUMS.txt`. No future download URL is presented
-as a published release. Verify all checksums and source identity, then install
+`release-manifest.json` and `SHA256SUMS.txt`. Verify all four published digests,
+the complete checksum list and tagged source identity, then install
 one distribution into a new environment alongside the known-good v1.3.0 environment.
 See [wheel/sdist/offline installation](installation.md) and the
 [README first run](../README.md#quick-start--5-minutes).
 
-Python metadata is `>=3.12`. The required hosted matrix is Windows, Ubuntu and
+Python metadata is `>=3.12`. The verified hosted matrix is Windows, Ubuntu and
 macOS with Python 3.12/3.14. Admission by metadata is distinct from testing every
 interpreter, OS or future version. Installation requires compatible dependencies
 and, for source builds, an available `setuptools>=77` backend. Runtime operations
@@ -102,38 +104,37 @@ See the [protocol guide](v14-foundation.md), [history](v14-history.md),
 
 ## Verification and owner gates
 
-The exact V14-05 parent `ac893bc3174f0a7ace67454d19ad6e61116425af` passed
-[push run 40880668115](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40880668115),
-six Windows/Ubuntu/macOS × Python 3.12/3.14 jobs. These results belong to the parent.
-For V14-06, the owner reports six successful hosted jobs for
-`5c70ae09904687070ecce9374546aff8ae806588` on Draft PR #24. The later
-[documentation pass](development/v14-06-public-documentation-es.md) requires CI
-for its own exact SHA; the supplied checkpoint status was not queried remotely
-during that local-only pass.
+[Final integrated main run 40991511467](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40991511467)
+completed successfully for exact release source
+`7d6b158f863308dfcd7d10b673bfbe2692f29b8b`: Windows, Ubuntu and macOS, each with
+Python 3.12 and 3.14, all six jobs successful. The stable release and its four
+assets are published. The [publication record](release-checklist.md) identifies
+the annotated tag and digests.
+
+The [V14-06 handoff](development/v14-06-handoff-es.md) and
+[documentation pass](development/v14-06-public-documentation-es.md) preserve
+engineering checks and candidate acceptance at their original source identities.
+Their pending wording is historical, not the current stable publication status.
 V14-04 semantic HTML received owner visual acceptance, including high-zoom review.
 Static automated checks alone do not establish browser, keyboard, focus or print
 acceptance; materially changed pages require renewed targeted human inspection.
 
-The V14-06 handoff records actual unique tests, wheel/sdist runs, quality checks,
-offline workflows, historical verifier results, performance evidence and skips.
-Repeated executions are not additional unique tests. Do not infer final candidate
-CI results from parent CI or final merged-source acceptance from a Draft PR.
-
-The owner must review the local documentation candidate, authorize its push to
-the existing V14-06 Draft PR, verify six hosted jobs for its exact SHA, integrate
-the stack, accept the exact resulting release
-source and rebuild/audit its assets before separately authorizing tag/publication.
-See the [release checklist](release-checklist.md).
+Repeated source/wheel/sdist executions are not additional unique tests. Stable
+publication does not imply completion of unexecuted browser, external protocol
+or production-plant checks. Later documentation commits need their own relevant
+checks and six-job hosted CI; they do not change the previously published source
+or distribution. See the [reusable checklist](release-checklist.md#reusable-exact-source-checks).
 
 ## Reproduction and recovery
 
 Retain the exact source commit/tree, reviewed public inventory, package-member and
 installed-module identities, verification receipts and checksums together.
-`python -m tools.prepare_release --output NEW_DIRECTORY` rehearses local assembly
-from clean committed source; add `--verify` to reopen/audit that asset set.
-It does not publish or create a tag. Archive byte reproducibility is not asserted
-unless independently demonstrated; source-byte and installed-payload equality
-are different claims.
+Use the tagged release source for published-artifact verification. Current `main`
+can advance independently; building from a later documentation commit would
+produce a different source-bound asset set and must not replace v1.4.0 files.
+The published manifest's assembly-purpose/acceptance text records the builder's
+original scope, not a later publication log. Archive byte reproducibility is not
+asserted; source-byte and installed-payload equality are different claims.
 
 For rollback, invoke the retained v1.3.0 executable by full path or reinstall its
 original verified asset into a separate environment. Preserve new workspaces and
