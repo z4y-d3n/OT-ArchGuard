@@ -20,6 +20,7 @@ from otarchguard.capture.reconciliation import compare_capture, mapping_template
 from otarchguard.diagnostics import ModelError
 from otarchguard.evidence import lifecycle
 from otarchguard.evidence.history import add_collection, initialize_history
+from tools.walkthrough_cli import fresh_output
 
 
 def canonical(value: object) -> bytes:
@@ -474,7 +475,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
-    receipt = scenario(args.output.absolute())
+    receipt = scenario(fresh_output(parser, args.output))
     print(
         json.dumps({"status": receipt["status"], "drift_id": receipt["drift_id"]}, sort_keys=True)
     )

@@ -10,6 +10,7 @@ from otarchguard.drift.engine import compare
 from otarchguard.drift.explorer import generate_explorer, verify_explorer
 from otarchguard.evidence import lifecycle
 from tools.drift_walkthrough import canonical, comparison_context, prepare
+from tools.walkthrough_cli import fresh_output
 
 
 def _inventory(root: Path) -> dict[str, str]:
@@ -100,7 +101,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
-    result = scenario(args.output.absolute())
+    result = scenario(fresh_output(parser, args.output))
     print(json.dumps({"status": result["status"], "scenarios": sorted(result["scenarios"])}))
 
 

@@ -18,6 +18,7 @@ import yaml
 from otarchguard.evidence.history import read_history
 from otarchguard.evidence.revisions import build_semantics
 from tools.capture_workloads import plant_model, write_pcap
+from tools.walkthrough_cli import fresh_output
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -410,7 +411,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
-    result = walkthrough(args.output)
+    result = walkthrough(fresh_output(parser, args.output))
     print(
         json.dumps(
             {"status": result["status"], "verification": result["verification"]}, sort_keys=True

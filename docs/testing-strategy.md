@@ -1,5 +1,14 @@
 # Verification strategy
 
+## Current development: V15-01
+
+The [V15-01 acceptance record](development/v15-01-acceptance.md) separates local
+development verification from the published-release evidence below. The branch
+adds historical tutorial diagnostics and v15 push coverage; it does not change
+runtime modules, immutable references or the supported six-job matrix. Run
+`python -m pytest tests/test_v15_foundation.py` for the new destination and CI
+regressions. Hosted results for earlier commits do not validate this gate.
+
 ## V1.4 published-release evidence
 
 Stable [v1.4.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.4.0) was

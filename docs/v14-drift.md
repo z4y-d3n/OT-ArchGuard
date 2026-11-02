@@ -12,6 +12,12 @@ comparability, source authority, report reproduction and resource ceilings.
 From the audited repository root, run the complete fictional example with the
 runtime supplied by a regular installed package:
 
+Create the output parent first (`New-Item -ItemType Directory -Force output` in
+PowerShell, or `mkdir -p output` on POSIX). Run from the source or extracted,
+verified sdist root using the installed environment's Python. The wheel alone
+does not include `tools`. Choose a fresh output destination on each run;
+existing evidence is retained.
+
 ```text
 python -m tools.drift_walkthrough --output output/my-drift-walkthrough
 ```

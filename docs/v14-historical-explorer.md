@@ -98,6 +98,13 @@ size changes presentation identity but never analytical counts.
 
 ## Fictional walkthrough and owner review
 
+Run from the source or extracted, verified sdist root with a regular installed
+package and that environment's Python; the wheel alone does not include `tools`
+or `benchmarks`. Create the output parent first
+(`New-Item -ItemType Directory -Force output` in PowerShell, or `mkdir -p output`
+on POSIX). Choose a fresh
+destination for each walkthrough and benchmark; existing results are retained.
+
 ```console
 python -m tools.historical_explorer_walkthrough --output output/my-historical-explorer
 python -m benchmarks.historical_explorer --output output/my-explorer-benchmark
