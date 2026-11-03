@@ -127,6 +127,7 @@ docs/development/v15-01-handoff-es.md
 docs/development/v15-01-installation-ux.md
 docs/development/v15-01-performance.md
 docs/development/v15-01-plan.md
+docs/development/v15-02-major-limitations-ux.md
 docs/domain-model.md
 docs/images/README.md
 docs/images/architecture-explorer-overview.png
