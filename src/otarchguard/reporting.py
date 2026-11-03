@@ -649,6 +649,7 @@ def write_report(path: Path, data: bytes, inputs: tuple[Path, ...]) -> None:
             )
         )
     temporary: str | None = None
+    write_failed = cleanup_failed = False
     try:
         with tempfile.NamedTemporaryFile(
             dir=path.parent, prefix=".otarchguard-", delete=False
@@ -657,14 +658,21 @@ def write_report(path: Path, data: bytes, inputs: tuple[Path, ...]) -> None:
             f.write(data)
         os.replace(temporary, path)
     except OSError:
-        raise ModelError(
-            Diagnostic(
-                DiagnosticCategory.IO_ERROR,
-                "REPORT_IO_ERROR",
-                "$",
-                "Could not write the local report; no new report is available.",
-            )
-        ) from None
+        write_failed = True
     finally:
         if temporary is not None:
-            Path(temporary).unlink(missing_ok=True)
+            try:
+                Path(temporary).unlink(missing_ok=True)
+            except OSError:
+                cleanup_failed = True
+    if write_failed or cleanup_failed:
+        message = (
+            "Could not write the local report; no new report is available."
+            if write_failed
+            else "The local report was written, but temporary-file cleanup could not be confirmed."
+        )
+        if write_failed and cleanup_failed:
+            message += " Temporary-file cleanup also failed; a temporary file may remain."
+        raise ModelError(
+            Diagnostic(DiagnosticCategory.IO_ERROR, "REPORT_IO_ERROR", "$", message)
+        ) from None

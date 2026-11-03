@@ -315,7 +315,11 @@ def _identity(files: dict[str, bytes], identity: dict[str, Any]) -> None:
             fail("HISTORICAL_IDENTITY", "$", "Malformed source digest.")
     if (
         identity["renderer_version"]
-        not in {"1.4.0-historical-explorer.1", "1.4.0-historical-explorer.2"}
+        not in {
+            "1.4.0-historical-explorer.1",
+            "1.4.0-historical-explorer.2",
+            "1.5.0.dev1-historical-explorer.1",
+        }
         or identity["report_sha256"] != hashlib.sha256(files["report.json"]).hexdigest()
         or type(identity["report_bytes"]) is not int
         or identity["report_bytes"] != len(files["report.json"])

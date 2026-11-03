@@ -1,13 +1,21 @@
 # Verification strategy
 
-## Current development: V15-01
+## Current development: V15-02
 
-The [V15-01 acceptance record](development/v15-01-acceptance.md) separates local
-development verification from the published-release evidence below. The branch
-adds historical tutorial diagnostics and v15 push coverage; it does not change
-runtime modules, immutable references or the supported six-job matrix. Run
-`python -m pytest tests/test_v15_foundation.py` for the new destination and CI
-regressions. Hosted results for earlier commits do not validate this gate.
+The [V15-02 acceptance record](development/v15-02-acceptance.md) separates local
+development verification from published-release evidence below. Distribution
+`1.5.0.dev1` uses a separate exact-source transition policy and preserves the
+original historical verifier. Four reviewed runtime changes correct Historical
+Explorer presentation and report diagnostic precedence. The supported six-job
+matrix remains unchanged. Run the V15 transition, renderer and report reliability
+tests plus the full suite. Hosted results for earlier commits do not validate
+this gate. The [V15-01 record](development/v15-01-acceptance.md) remains historical.
+
+V15-02 local development acceptance uses one complete regular-wheel suite,
+exact 97-module regular-sdist equivalence, affected regressions and extracted
+sdist workflows. The full sdist suite was not repeated locally; hosted CI still
+requires it. The broader release-freeze guidance below is a separate release
+requirement, not a claim that this local gate executed three complete suites.
 
 ## V1.4 published-release evidence
 
@@ -265,3 +273,14 @@ Create output parents and use fresh destinations. The capture walkthrough uses
 fictional data and explicit fixture-author decisions, not real owner approvals.
 The corpus and its finite interoperability limits are documented in the
 [PCAP guide](pcap-evidence-studio.md#capture-corpus-and-use-policy).
+# V15-02 development source evolution
+
+For the `1.5.0.dev1` candidate, run `python -I tools/verify_v15_transition.py
+--output output/v15-transition` against a regular installation. It checks the
+exact reviewed 97-module policy, protected predecessor evidence, installed source
+and renderer identity; runs the unchanged V14 verifier on an isolated historical
+predecessor; then compares exact candidate native outputs and tests real
+cross-producer rejection/recovery. Historical V14 PASS retains its original
+meaning. The V15 check is a separate versioned authorization boundary, not a
+mutable historical allowlist. Git objects for pinned references are required.
+

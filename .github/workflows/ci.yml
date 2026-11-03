@@ -67,12 +67,12 @@ jobs:
           OTARCHGUARD_OFFLINE_CHECK: '1'
           PYTHONPATH: '${{ github.workspace }}/tools/offline'
         run: python -m pytest --basetemp=.pytest_tmp --tb=short --junitxml=output/full-suite.xml
-      - name: Reproduce immutable v1.2 native compatibility offline
+      - name: Verify immutable historical predecessor and exact V15 transition offline
         env:
           OTARCHGUARD_OFFLINE_CHECK: '1'
           PYTHONPATH: '${{ github.workspace }}/tools/offline'
           PIP_NO_INDEX: '1'
-        run: python -m tools.verify_legacy_candidate --output output/native-compatibility
+        run: python -I tools/verify_v15_transition.py --output output/native-compatibility
       - name: Validate frozen read-only evidence consumers offline
         env:
           OTARCHGUARD_OFFLINE_CHECK: '1'
@@ -162,11 +162,16 @@ jobs:
             output/sdist-historical-explorer-walkthrough/walkthrough.json
             output/ci-revision.json
             output/v145-corpus.json
-            output/native-compatibility/comparison.json
+            output/native-compatibility/transition.json
+            output/native-compatibility/commands.json
             output/native-compatibility/command-*.stdout
             output/native-compatibility/command-*.stderr
-            output/native-compatibility/baseline/*
-            output/native-compatibility/candidate/*
+            output/native-compatibility/historical-v14/comparison.json
+            output/native-compatibility/historical-v14/command-*.stdout
+            output/native-compatibility/historical-v14/command-*.stderr
+            output/native-compatibility/historical-v14/baseline/*
+            output/native-compatibility/historical-v14/candidate/*
+            output/native-compatibility/candidate-native/*
             output/evidence-consumer-*.json
             tests/fixtures/capture-contract-v2/manifest.json
             tests/fixtures/capture-interoperability/manifest.json
