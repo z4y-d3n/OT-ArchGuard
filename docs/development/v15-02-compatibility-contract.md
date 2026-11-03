@@ -1,0 +1,76 @@
+# V15-02 compatibility contract — policy 1
+
+The authorization boundary is review of this gate's verifier and exact changed
+source digests. SHA-256 receipts are not signatures or authenticated provenance.
+An actor replacing both policy and tests can redefine a local check; independent
+review of policy changes is required. Candidate-generated hashes cannot authorize
+candidate source.
+
+## Immutable references
+
+Native: `f52c792b683cb499dc7de765b65b5cc897a96854`.
+V14 presentation: `117318393ead604a023a24bad7d53eb429faa13f`.
+Published v1.4.0 source: `7d6b158f863308dfcd7d10b673bfbe2692f29b8b`.
+Reviewed predecessor: `867516be2c274a12d251c89bc0310a441b91da45`.
+Merged predecessor: `b3adcc9de21dfff6ad58946028a241844ff88294`.
+The last two have identical trees. Existing V14 verifier and recorded acceptance
+retain their original meaning; they are executed on the predecessor, never
+relabeled as accepting changed V15 source.
+
+## Permitted transition
+
+Exactly four of 97 Python modules change, without additions/removals:
+
+| Module | Purpose | Invariants |
+|---|---|---|
+| `__init__.py` | Distribution `1.5.0.dev1` | Engine/alias `1.3.0` |
+| `drift/explorer_render.py` | Vertical seven-item list, new renderer revision | Findings, escaping, bounds, links |
+| `drift/explorer_bundle.py` | Accept exact new revision alongside old `.1`/`.2` | Strict inert bundle validation |
+| `reporting.py` | Primary/secondary I/O diagnostic precedence | Atomic replacement, input protection, old bytes |
+
+The verifier records predecessor and approved candidate hashes for each module,
+and the complete unchanged inventory. Existing tests/fixtures and native schema
+are independently read from predecessor Git, with only exact current-version
+literal changes in `test_v141_identity.py` and `test_release_candidate.py`.
+Analytical expectations and the original historical tools remain byte-identical.
+Package project metadata permits exactly its distribution-version literal change.
+
+Native reachability, deny precedence, intents, exposure, trace, witness,
+comparison and resource rejection semantics remain unchanged. Unsupported or
+resource-rejected evaluation never means successful unreachability. All seven
+passive industrial subsets and malformed/truncated/unsupported distinctions
+remain unchanged. Independent predecessor captures must match native HTML,
+JSON, stdout, stderr and exits exactly; the report writer's source digest change
+does not permit output differences.
+
+## Producer and renderer boundaries
+
+`evidence/revisions.py` binds 34 installed sources, including `__init__.py`.
+The development distribution therefore creates a new analytical producer and
+new revision identities despite unchanged native semantics. No old revision,
+physical collection, baseline membership, review, approval or revocation is
+rewritten. Old producer replay fails closed with `EVIDENCE_REVISION`; the original
+regular runtime/source environment is the recovery path. New producer trust
+requires new review. An interpretation change is not physical traffic change.
+
+Renderer identity is `1.5.0.dev1-historical-explorer.1`; its installed five-file
+source digest is independently checked. Old `1.4.0-historical-explorer.1` and `.2`
+retain portable structural/integrity acceptance. Unknown revisions fail closed.
+Portable integrity establishes neither analytical replay nor authenticated
+approval. Old bundles remain unchanged and require their original compatible
+runtime for exact replay. New bundles require the matching producer and renderer
+for deterministic source reproduction. A rehashed false HTML claim can be
+internally consistent and still fail source reproduction.
+
+## Positive, negative and future policy
+
+Positive verification binds checkout, regular installation, package metadata,
+renderer digest and immutable native-output oracles. Negative tests reject
+unauthorized edits/additions/removals, changed schema/expectations/oracle tools,
+rehashed forged fixtures, unapproved renderer source, mismatched installation
+and metadata. Existing adversarial bundle, producer and archive tests remain.
+
+Future gates must add a separately versioned reviewed transition and independent
+evidence. Do not update this gate's hashes to admit later changes. Unsupported
+cross-producer replay has no universal migration guarantee. No published v1.4
+tag/assets or historical verifier acceptance is reassigned to this candidate.

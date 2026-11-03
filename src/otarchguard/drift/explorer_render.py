@@ -23,7 +23,7 @@ from otarchguard.explorer_html import (
     table,
 )
 
-RENDERER_VERSION = "1.4.0-historical-explorer.2"
+RENDERER_VERSION = "1.5.0.dev1-historical-explorer.1"
 # Leave space for the canonical report, verification receipt and completion manifest.
 MAX_PAGES = 4090
 MAX_PAGE_BYTES = 2 * 1024 * 1024
@@ -114,6 +114,10 @@ code{font-family:ui-monospace,Consolas,monospace;font-size:.9em}
 dd,dt,td,th,p,li,h1,h2,h3,a,summary{overflow-wrap:break-word}
 code,.properties a{overflow-wrap:anywhere;word-break:normal}
 ul{padding-left:1.4rem}details{margin:.65rem 0}summary{cursor:pointer;font-weight:650}
+.major-limitations{display:block;list-style:disc outside;padding-left:1.4rem;
+margin:.65rem 0;min-width:0;max-width:100%;white-space:normal}
+.major-limitations>li{display:list-item;margin:.5rem 0;white-space:normal;
+overflow-wrap:anywhere;word-break:normal}
 .scroll{overflow:auto;max-width:100%;border:1px solid #9aadb5;background:white}
 .finding-table,.pair-table{min-width:0;max-width:100%}
 .finding-table table{table-layout:fixed;min-width:60rem}
@@ -607,7 +611,11 @@ class _Renderer:
                 for domain, title in DOMAINS.items()
             ],
         )
-        body += "<h2>Major limitations</h2>" + _value(self.report["limitations"])
+        limitations = self.report["limitations"]
+        if type(limitations) is not list or any(type(item) is not str for item in limitations):
+            fail("HISTORICAL_DISPLAY", "$", "Limitations must be a list of text statements.")
+        body += '<h2>Major limitations</h2><ul class="major-limitations">'
+        body += "".join("<li>" + escape(item) + "</li>" for item in limitations) + "</ul>"
         self.put("index.html", "Historical comparison overview", body)
 
     def pair_table(self) -> str:

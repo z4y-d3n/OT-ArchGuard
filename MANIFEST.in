@@ -27,6 +27,7 @@ include benchmarks/receipts/v14-03-windows.json
 include benchmarks/receipts/v14-05-windows.json
 include benchmarks/receipts/v15-01-windows.json
 include benchmarks/run.py
+include benchmarks/v15_transition.py
 include benchmarks/workloads.py
 include docs/algorithms.md
 include docs/benchmarks/README.md
@@ -127,7 +128,13 @@ include docs/development/v15-01-handoff-es.md
 include docs/development/v15-01-installation-ux.md
 include docs/development/v15-01-performance.md
 include docs/development/v15-01-plan.md
+include docs/development/v15-02-acceptance.md
+include docs/development/v15-02-compatibility-contract.md
+include docs/development/v15-02-handoff-es.md
 include docs/development/v15-02-major-limitations-ux.md
+include docs/development/v15-02-plan.md
+include docs/development/v15-02-renderer-ux.md
+include docs/development/v15-02-report-reliability.md
 include docs/domain-model.md
 include docs/images/README.md
 include docs/images/architecture-explorer-overview.png
@@ -475,6 +482,9 @@ include tests/test_v146_version_gate.py
 include tests/test_v14_independent_audit.py
 include tests/test_v14_integration.py
 include tests/test_v15_foundation.py
+include tests/test_v15_renderer_ux.py
+include tests/test_v15_report_reliability.py
+include tests/test_v15_transition.py
 include tests/test_validate_cli.py
 include tests/test_validation.py
 include tools/__init__.py
@@ -514,4 +524,5 @@ include tools/verification-requirements.txt
 include tools/verify_environment.py
 include tools/verify_legacy_candidate.py
 include tools/verify_source_checkout.py
+include tools/verify_v15_transition.py
 include tools/walkthrough_cli.py

@@ -299,3 +299,14 @@ This removes the installed distribution; it does not migrate or delete workspace
 inputs or generated reports, and pip may retain dependency packages. Keep those
 data independently backed up. Never remove the retained known-good environment
 or alter historical release archives as part of rollback.
+# V15 development candidate
+
+The current development branch identifies distribution/CLI `1.5.0.dev1` and
+native engine `1.3.0` (YAML schema `1`). Published stable v1.4.0 installation
+instructions below remain historical stable guidance. Development artifacts
+must be built and audited locally; they are not published v1.4.0 assets.
+Changing the distribution source creates a distinct source-bound historical
+producer. Keep the original runtime for exact replay of old analytical revisions;
+portable bundle integrity alone does not establish that replay or transfer review
+authority. See [V15-02 contract](development/v15-02-compatibility-contract.md).
+
