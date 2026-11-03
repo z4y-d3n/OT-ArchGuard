@@ -1,7 +1,10 @@
 """Independent mutations of exact V15 source authorization and installed identity."""
 
 import importlib.metadata as metadata
+import importlib.util
 import shutil
+import sys
+import types
 from pathlib import Path
 from typing import Any
 
@@ -156,3 +159,31 @@ def test_rejects_forged_distribution_metadata(
     monkeypatch.setattr(metadata, "distribution", lambda _: Forged())
     with pytest.raises(ValueError, match="Installed candidate"):
         policy.check_installation(policy.expected_modules(predecessor))
+
+
+def test_reference_bootstrap_does_not_trust_mutable_oracle_imports(
+    predecessor: dict[str, bytes],
+    candidate: Path,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # Regression for the independent auditor's demonstrated parser bypass.
+    # A forged legacy helper offers a self-consistent unauthorized api.py.
+    forged = dict(predecessor)
+    forged["src/otarchguard/api.py"] += b"\n# unauthorized\n"
+    helper = types.ModuleType("tools.verify_legacy_candidate")
+    helper_api: Any = helper
+    helper_api._archive_files = lambda _: forged
+    helper_api._module_hashes = policy._module_hashes
+    monkeypatch.setitem(sys.modules, "tools.verify_legacy_candidate", helper)
+    spec = importlib.util.spec_from_file_location("independent_v15_policy", policy.__file__)
+    assert spec and spec.loader
+    isolated = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(isolated)
+    actual = isolated.reference()
+    assert actual == predecessor
+    root = tmp_path / "forged-candidate"
+    shutil.copytree(candidate, root)
+    (root / "src/otarchguard/api.py").write_bytes(forged["src/otarchguard/api.py"])
+    with pytest.raises(ValueError, match="exact reviewed"):
+        isolated.check_source(root, actual)

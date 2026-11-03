@@ -1,13 +1,15 @@
 # Verification strategy
 
-## Current development: V15-01
+## Current development: V15-02
 
-The [V15-01 acceptance record](development/v15-01-acceptance.md) separates local
-development verification from the published-release evidence below. The branch
-adds historical tutorial diagnostics and v15 push coverage; it does not change
-runtime modules, immutable references or the supported six-job matrix. Run
-`python -m pytest tests/test_v15_foundation.py` for the new destination and CI
-regressions. Hosted results for earlier commits do not validate this gate.
+The [V15-02 acceptance record](development/v15-02-acceptance.md) separates local
+development verification from published-release evidence below. Distribution
+`1.5.0.dev1` uses a separate exact-source transition policy and preserves the
+original historical verifier. Four reviewed runtime changes correct Historical
+Explorer presentation and report diagnostic precedence. The supported six-job
+matrix remains unchanged. Run the V15 transition, renderer and report reliability
+tests plus the full suite. Hosted results for earlier commits do not validate
+this gate. The [V15-01 record](development/v15-01-acceptance.md) remains historical.
 
 ## V1.4 published-release evidence
 

@@ -10,15 +10,13 @@ import importlib.metadata as metadata
 import io
 import json
 import os
+import shutil
 import subprocess
 import sys
 import sysconfig
 import tarfile
 from pathlib import Path
 from typing import Any
-
-from tools.compare_versioned_contract import compare_captures
-from tools.verify_legacy_candidate import _archive_files, _module_hashes
 
 ROOT = Path(__file__).resolve().parents[1]
 PREDECESSOR = "b3adcc9de21dfff6ad58946028a241844ff88294"
@@ -42,7 +40,24 @@ def reference() -> dict[str, bytes]:
     ]
     if trees != [b"b2a2ec908d02cc36339a7a3d2d3cd736671db3e0"] * 2:
         raise ValueError("Unexpected immutable predecessor tree")
-    return _archive_files(subprocess.check_output(["git", "archive", PREDECESSOR], cwd=ROOT))
+    raw = subprocess.check_output(["git", "archive", PREDECESSOR], cwd=ROOT)
+    files = {}
+    with tarfile.open(fileobj=io.BytesIO(raw)) as archive:
+        for member in archive.getmembers():
+            if member.isfile():
+                stream = archive.extractfile(member)
+                if stream is None:
+                    raise ValueError("Unreadable immutable Git archive member")
+                files[member.name] = stream.read()
+    return files
+
+
+def _module_hashes(files: dict[str, bytes]) -> dict[str, str]:
+    return {
+        name.removeprefix("src/otarchguard/"): hashlib.sha256(data).hexdigest()
+        for name, data in files.items()
+        if name.startswith("src/otarchguard/") and name.endswith(".py")
+    }
 
 
 def expected_modules(before: dict[str, bytes]) -> dict[str, str]:
@@ -146,6 +161,9 @@ def check_installation(expected: dict[str, str]) -> dict[str, Any]:
 def verify(output: Path) -> dict[str, Any]:
     before = reference()
     source = check_source(ROOT, before)
+    # Oracle tools become trusted only after byte validation against Git.
+    from tools.compare_versioned_contract import compare_captures
+
     installed = check_installation(expected_modules(before))
     output.mkdir(parents=True, exist_ok=False)
     commands: list[dict[str, Any]] = []
@@ -196,7 +214,25 @@ def verify(output: Path) -> dict[str, Any]:
     )
     if not site.resolve().is_relative_to(env_path.resolve()):
         raise ValueError("Reference environment escaped its reserved directory")
-    (site / "approved-dependencies.pth").write_text(sysconfig.get_path("purelib") + "\n")
+    # The unchanged historical verifier creates another generation of venvs.
+    # A .pth pointing at this site's .pth would not recursively load dependencies.
+    # Copy the already installed, approved dependency files locally, excluding
+    # candidate production code and scripts outside site-packages. No network.
+    dependency_site = Path(sysconfig.get_path("purelib")).resolve()
+    for dependency in metadata.distributions():
+        if dependency.metadata["Name"].lower() == "otarchguard":
+            continue
+        for member in dependency.files or ():
+            original = Path(str(dependency.locate_file(member))).resolve()
+            if (
+                not original.is_relative_to(dependency_site)
+                or not original.is_file()
+                or original.suffix == ".pyc"
+            ):
+                continue
+            target = site / original.relative_to(dependency_site)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(original, target)
     run(
         [
             str(python),
