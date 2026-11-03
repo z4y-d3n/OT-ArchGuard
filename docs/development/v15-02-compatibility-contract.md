@@ -39,6 +39,28 @@ Exactly four of 97 Python modules change, without additions/removals:
 | `drift/explorer_bundle.py` | Accept exact new revision alongside old `.1`/`.2` | Strict inert bundle validation |
 | `reporting.py` | Primary/secondary I/O diagnostic precedence | Atomic replacement, input protection, old bytes |
 
+Reviewed SHA-256 inventory (before → candidate):
+
+- `__init__.py`:
+  `dfea43564e1416d2996e5007a29da17f2d97603f5883c48c9c3aec9f70a8289c` →
+  `91cd2607f08d671a1468ee9919cd64617cd0fe86a3dcd5828c9d3c047ffa8626`.
+  Protected by distribution/engine separation tests and real producer rejection/recovery.
+- `drift/explorer_render.py`:
+  `1b78f6ac1c10cb43d90009808b99deb6a211538a290ccf21872e771aa017f6ba` →
+  `992d28705eaf4ccb0035016ac743b3a95955d0760851d54dd748503f456868d0`.
+  Protected by the literal seven-statement oracle, predecessor HTML comparison,
+  escaping/bounds/layout tests and exact source replay.
+- `drift/explorer_bundle.py`:
+  `06f2d8d9851e8a7323759d6d0440055c98f539c16701fb2e84f0f619e9bb2a0c` →
+  `107c20d7d1eb3bf22c8b4f6184dda9de5fed4fdfec14161c5a77e89948b75ad4`.
+  Protected by the explicit old/new/unknown revision matrix and retained adversarial
+  bundle/publication/source-reproduction tests.
+- `reporting.py`:
+  `df801098089626078c2326e4ef9b4e86c8ec3c316fd81106f38046c4b5da41a4` →
+  `1354cd77579e36911b59ab0618ee173fa687fff96ef410219d60d8d78136c85d`.
+  Protected by ten new deterministic I/O cases, preserved reporting/security tests
+  and exact predecessor native HTML/JSON/console output.
+
 The verifier records predecessor and approved candidate hashes for each module,
 and the complete unchanged inventory. Existing tests/fixtures and native schema
 are independently read from predecessor Git, with only exact current-version

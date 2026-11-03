@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased — V15-02 controlled development transition
+
+- Establish distribution/CLI `1.5.0.dev1`, retaining native engine `1.3.0` and
+  YAML schema `1`; published stable remains v1.4.0.
+- Add an isolated, exact-source V15 verifier while preserving the original
+  historical verifier, independent native outputs and producer replay boundaries.
+- Display Historical Explorer Major limitations as a local vertical semantic
+  bullet list with an explicit new renderer identity.
+- Preserve controlled report-writing diagnostics when temporary cleanup also fails.
+- Record adversarial audit, installed package, regression and paired timing
+  evidence in the [V15-02 dossier](docs/development/v15-02-plan.md).
+
 ## Unreleased — V15-01 development foundation
 
 - Historical tutorial CLIs explain missing output parents and occupied

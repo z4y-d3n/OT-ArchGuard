@@ -11,6 +11,12 @@ matrix remains unchanged. Run the V15 transition, renderer and report reliabilit
 tests plus the full suite. Hosted results for earlier commits do not validate
 this gate. The [V15-01 record](development/v15-01-acceptance.md) remains historical.
 
+V15-02 local development acceptance uses one complete regular-wheel suite,
+exact 97-module regular-sdist equivalence, affected regressions and extracted
+sdist workflows. The full sdist suite was not repeated locally; hosted CI still
+requires it. The broader release-freeze guidance below is a separate release
+requirement, not a claim that this local gate executed three complete suites.
+
 ## V1.4 published-release evidence
 
 Stable [v1.4.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.4.0) was
