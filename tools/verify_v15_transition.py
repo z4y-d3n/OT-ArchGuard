@@ -4,17 +4,23 @@ This policy is reviewed code, not a signature. Never read authorization hashes
 from candidate receipts. Later gates require a new versioned policy.
 """
 
+import sys
+
+if __name__ == "__main__" and not sys.flags.isolated:
+    raise SystemExit("Use python -I tools/verify_v15_transition.py for authoritative verification.")
+
 import argparse
 import hashlib
 import importlib.metadata as metadata
+import importlib.util
 import io
 import json
 import os
 import shutil
 import subprocess
-import sys
 import sysconfig
 import tarfile
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -33,14 +39,18 @@ CHANGED = {
 RENDERER_SHA256 = "442d13378cd61586664e19f51ea6834537b0155c07e48ff5a6173628c5d6ca6b"
 
 
+def git_output(*args: str) -> bytes:
+    executable = shutil.which("git")
+    if executable is None or Path(executable).resolve().is_relative_to(ROOT):
+        raise ValueError("Verification requires trusted Git outside the candidate checkout")
+    return subprocess.check_output([str(Path(executable).resolve()), *args], cwd=ROOT)
+
+
 def reference() -> dict[str, bytes]:
-    trees = [
-        subprocess.check_output(["git", "rev-parse", ref + "^{tree}"], cwd=ROOT).strip()
-        for ref in (PREDECESSOR, REVIEWED)
-    ]
+    trees = [git_output("rev-parse", ref + "^{tree}").strip() for ref in (PREDECESSOR, REVIEWED)]
     if trees != [b"b2a2ec908d02cc36339a7a3d2d3cd736671db3e0"] * 2:
         raise ValueError("Unexpected immutable predecessor tree")
-    raw = subprocess.check_output(["git", "archive", PREDECESSOR], cwd=ROOT)
+    raw = git_output("archive", PREDECESSOR)
     files = {}
     with tarfile.open(fileobj=io.BytesIO(raw)) as archive:
         for member in archive.getmembers():
@@ -151,21 +161,30 @@ def check_source(root: Path, before: dict[str, bytes]) -> dict[str, Any]:
 
 
 def check_installation(expected: dict[str, str]) -> dict[str, Any]:
+    distribution = metadata.distribution("otarchguard")
+    module = Path(str(distribution.locate_file("otarchguard"))).resolve()
+    direct = json.loads(distribution.read_text("direct_url.json") or "{}")
+    spec = importlib.util.find_spec("otarchguard")
+    if (
+        distribution.version != VERSION
+        or module.is_relative_to(ROOT / "src")
+        or direct.get("dir_info", {}).get("editable", False)
+        or spec is None
+        or spec.origin is None
+        or Path(spec.origin).resolve() != module / "__init__.py"
+        or module_hashes(module) != expected
+    ):
+        raise ValueError("Installed candidate differs from exact reviewed V15-02 identity")
+    # Only approved physical source may execute. Importing first would let a
+    # forged __init__ replace hashing functions before its own identity check.
     import otarchguard
     from otarchguard.drift import explorer
 
-    distribution = metadata.distribution("otarchguard")
-    module = Path(otarchguard.__file__).resolve().parent
-    direct = json.loads(distribution.read_text("direct_url.json") or "{}")
     if (
-        distribution.version != VERSION
+        Path(otarchguard.__file__).resolve().parent != module
         or otarchguard.DISTRIBUTION_VERSION != VERSION
         or otarchguard.NATIVE_ENGINE_VERSION != "1.3.0"
         or otarchguard.__version__ != "1.3.0"
-        or module != Path(str(distribution.locate_file("otarchguard"))).resolve()
-        or module.is_relative_to(ROOT / "src")
-        or direct.get("dir_info", {}).get("editable", False)
-        or module_hashes(module) != expected
         or explorer.RENDERER_VERSION != RENDERER
         or explorer._renderer_identity() != RENDERER_SHA256
     ):
@@ -184,7 +203,16 @@ def verify(output: Path) -> dict[str, Any]:
     before = reference()
     source = check_source(ROOT, before)
     # Oracle tools become trusted only after byte validation against Git.
-    from tools.compare_versioned_contract import compare_captures
+    oracle: dict[str, Any] = {"__name__": "v15_verified_compare"}
+    # Compile immutable Git bytes directly; never load a checkout .pyc.
+    exec(
+        compile(
+            before["tools/compare_versioned_contract.py"],
+            "immutable-compare_versioned_contract.py",
+            "exec",
+        ),
+        oracle,
+    )
 
     installed = check_installation(expected_modules(before))
     output.mkdir(parents=True, exist_ok=False)
@@ -196,14 +224,14 @@ def verify(output: Path) -> dict[str, Any]:
         "PIP_NO_INDEX": "1",
         "PIP_DISABLE_PIP_VERSION_CHECK": "1",
         "OTARCHGUARD_OFFLINE_CHECK": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPYCACHEPREFIX": str(output / "child-cache"),
     }
 
     def run(command: list[str], cwd: Path, *, historical_git: bool = False) -> bytes:
         env = {**environment, "PYTHONPATH": str(cwd / "tools/offline")}
         if historical_git:
-            env["GIT_DIR"] = subprocess.check_output(
-                ["git", "rev-parse", "--absolute-git-dir"], cwd=ROOT, text=True
-            ).strip()
+            env["GIT_DIR"] = git_output("rev-parse", "--absolute-git-dir").decode().strip()
         result = subprocess.run(command, cwd=cwd, env=env, capture_output=True, timeout=1200)
         number = len(commands) + 1
         commands.append({"command": command, "cwd": str(cwd), "exit": result.returncode})
@@ -216,7 +244,7 @@ def verify(output: Path) -> dict[str, Any]:
 
     predecessor = output / "predecessor-source"
     predecessor.mkdir()
-    raw = subprocess.check_output(["git", "archive", PREDECESSOR], cwd=ROOT)
+    raw = git_output("archive", PREDECESSOR)
     with tarfile.open(fileobj=io.BytesIO(raw)) as archive:
         archive.extractall(predecessor, filter="data")
     env_path = output / "predecessor-env"
@@ -283,8 +311,19 @@ def verify(output: Path) -> dict[str, Any]:
         historical_git=True,
     )
     candidate = output / "candidate-native"
-    run([sys.executable, "-m", "tools.capture_contract", str(candidate)], ROOT)
-    native = compare_captures(
+    run(
+        [
+            sys.executable,
+            "-I",
+            "-B",
+            "-X",
+            f"pycache_prefix={output / 'capture-cache'}",
+            str(ROOT / "tools/capture_contract.py"),
+            str(candidate),
+        ],
+        ROOT,
+    )
+    native = oracle["compare_captures"](
         historical / "candidate",
         candidate,
         old="1.3.0",
@@ -382,19 +421,36 @@ def verify(output: Path) -> dict[str, Any]:
     return result
 
 
+def _main(args: argparse.Namespace) -> str:
+    if args.source_only:
+        result = check_source(ROOT, reference())
+        result["installed"] = check_installation(expected_modules(reference()))
+        result["verification_scope"] = "source_and_installation_only"
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        args.output.write_text(json.dumps(result, sort_keys=True, indent=2) + "\n")
+        return "V15-02 source/installation identity PASS; historical/native replay not run"
+    else:
+        verify(args.output.resolve())
+        return "V15-02 exact reviewed transition PASS"
+
+
 def main() -> None:
+    # A valid source digest must not authorize attacker-supplied cached bytecode.
+    # The fresh reserved prefix prevents reading installed/checkout caches.
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--source-only", action="store_true")
     args = parser.parse_args()
-    if args.source_only:
-        result = check_source(ROOT, reference())
-        result["installed"] = check_installation(expected_modules(reference()))
-        args.output.parent.mkdir(parents=True, exist_ok=True)
-        args.output.write_text(json.dumps(result, sort_keys=True, indent=2) + "\n")
-    else:
-        verify(args.output.resolve())
-    print("V15-02 exact reviewed transition PASS")
+    parent = args.output.resolve().parent
+    parent.mkdir(parents=True, exist_ok=True)
+    prefix, write = sys.pycache_prefix, sys.dont_write_bytecode
+    with tempfile.TemporaryDirectory(prefix="otarchguard-v15-verified-", dir=parent) as cache:
+        sys.pycache_prefix, sys.dont_write_bytecode = cache, True
+        try:
+            message = _main(args)
+        finally:
+            sys.pycache_prefix, sys.dont_write_bytecode = prefix, write
+    print(message)
 
 
 if __name__ == "__main__":

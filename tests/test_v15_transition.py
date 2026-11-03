@@ -2,7 +2,9 @@
 
 import importlib.metadata as metadata
 import importlib.util
+import os
 import shutil
+import subprocess
 import sys
 import types
 from pathlib import Path
@@ -187,3 +189,60 @@ def test_reference_bootstrap_does_not_trust_mutable_oracle_imports(
     (root / "src/otarchguard/api.py").write_bytes(forged["src/otarchguard/api.py"])
     with pytest.raises(ValueError, match="exact reviewed"):
         isolated.check_source(root, actual)
+
+
+@pytest.mark.parametrize("isolated", [False, True])
+def test_authoritative_cli_rejects_checkout_stdlib_shadowing(
+    candidate: Path,
+    tmp_path: Path,
+    isolated: bool,
+) -> None:
+    root = tmp_path / "shadow-candidate"
+    shutil.copytree(candidate, root)
+    script = root / "tools/verify_v15_transition.py"
+    shutil.copyfile(Path(policy.__file__), script)
+    target = root / "src/otarchguard/api.py"
+    target.write_bytes(target.read_bytes() + b"\n# unauthorized\n")
+    (root / "hashlib.py").write_text("raise SystemExit('SHADOW_EXECUTED')\n")
+    environment = {
+        **os.environ,
+        "GIT_DIR": policy.git_output("rev-parse", "--absolute-git-dir").decode().strip(),
+    }
+    command = [
+        sys.executable,
+        *(["-I"] if isolated else []),
+        str(script),
+        "--source-only",
+        "--output",
+        str(tmp_path / "receipt.json"),
+    ]
+    result = subprocess.run(command, cwd=root, env=environment, capture_output=True, timeout=60)
+    assert result.returncode != 0
+    assert b"SHADOW_EXECUTED" not in result.stderr
+    assert (b"exact reviewed V15-02 modules" if isolated else b"Use python -I") in result.stderr
+
+
+def test_installed_source_is_hashed_before_untrusted_package_import(tmp_path: Path) -> None:
+    site = tmp_path / "site-packages"
+    package = site / "otarchguard"
+    shutil.copytree(
+        Path(otarchguard.__file__).parent, package, ignore=shutil.ignore_patterns("__pycache__")
+    )
+    marker = tmp_path / "untrusted-import-executed"
+    init = package / "__init__.py"
+    init.write_bytes(
+        init.read_bytes() + f"\nopen({str(marker)!r}, 'w').write('executed')\n".encode()
+    )
+    info = site / "otarchguard-1.5.0.dev1.dist-info"
+    info.mkdir()
+    (info / "METADATA").write_text("Name: otarchguard\nVersion: 1.5.0.dev1\n")
+    script = (
+        "import importlib.util,sys;"
+        f"sys.path.insert(0,{str(site)!r});"
+        f"s=importlib.util.spec_from_file_location('trusted_policy',{policy.__file__!r});"
+        "m=importlib.util.module_from_spec(s);s.loader.exec_module(m);"
+        "m.check_installation(m.expected_modules(m.reference()))"
+    )
+    result = subprocess.run([sys.executable, "-I", "-c", script], capture_output=True, timeout=60)
+    assert result.returncode != 0 and b"Installed candidate differs" in result.stderr
+    assert not marker.exists(), "Unreviewed installed source executed before its identity check"

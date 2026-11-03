@@ -6,6 +6,17 @@ An actor replacing both policy and tests can redefine a local check; independent
 review of policy changes is required. Candidate-generated hashes cannot authorize
 candidate source.
 
+Authoritative entry is `python -I tools/verify_v15_transition.py`: Python isolated
+mode excludes checkout/user import shadowing. Normal CLI invocation is rejected
+before non-builtin imports. Oracle helpers are loaded by their validated absolute
+paths only after checking predecessor bytes; candidate capture also runs isolated.
+Installed metadata, import location and all 97 physical module hashes are checked
+before runtime code may execute. Fresh cache prefixes prevent unreviewed cached
+bytecode from replacing approved source; the comparator compiles immutable Git
+bytes directly. Git is resolved outside the candidate checkout. Unit-level imported API checks
+assume their caller already has a trusted interpreter; they are not a substitute
+for the isolated command.
+
 ## Immutable references
 
 Native: `f52c792b683cb499dc7de765b65b5cc897a96854`.

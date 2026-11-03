@@ -269,7 +269,7 @@ The corpus and its finite interoperability limits are documented in the
 [PCAP guide](pcap-evidence-studio.md#capture-corpus-and-use-policy).
 # V15-02 development source evolution
 
-For the `1.5.0.dev1` candidate, run `python -m tools.verify_v15_transition
+For the `1.5.0.dev1` candidate, run `python -I tools/verify_v15_transition.py
 --output output/v15-transition` against a regular installation. It checks the
 exact reviewed 97-module policy, protected predecessor evidence, installed source
 and renderer identity; runs the unchanged V14 verifier on an isolated historical

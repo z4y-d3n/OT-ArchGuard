@@ -72,7 +72,7 @@ jobs:
           OTARCHGUARD_OFFLINE_CHECK: '1'
           PYTHONPATH: '${{ github.workspace }}/tools/offline'
           PIP_NO_INDEX: '1'
-        run: python -m tools.verify_v15_transition --output output/native-compatibility
+        run: python -I tools/verify_v15_transition.py --output output/native-compatibility
       - name: Validate frozen read-only evidence consumers offline
         env:
           OTARCHGUARD_OFFLINE_CHECK: '1'
