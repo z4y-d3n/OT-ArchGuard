@@ -158,6 +158,11 @@ def test_legacy_header_exception_preserves_full_verifier_guards(
     mutation: str | None,
 ) -> None:
     raw, files = pinned_legacy_files
+    reviewed_files = legacy._archive_files(
+        subprocess.check_output(
+            ["git", "archive", "7d6b158f863308dfcd7d10b673bfbe2692f29b8b"], cwd=ROOT
+        )
+    )
     root = tmp_path / "candidate"
     names = {name for name in files if name.startswith("tests/")}
     names.update({"docs/yaml-schema-v1.md", "src/otarchguard/contract.py", "pyproject.toml"})
@@ -174,7 +179,7 @@ def test_legacy_header_exception_preserves_full_verifier_guards(
             "tests/test_product_presentation.py",
         }
         target.write_bytes(
-            (ROOT / name).read_bytes()
+            reviewed_files[name]
             if name in reviewed or not name.startswith("tests/")
             else files[name]
         )

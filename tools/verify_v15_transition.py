@@ -105,6 +105,28 @@ def check_source(root: Path, before: dict[str, bytes]) -> dict[str, Any]:
         if protected[name].count(old) != 1:
             raise ValueError("Unexpected predecessor distribution assertion")
         protected[name] = protected[name].replace(old, old.replace(b"1.4.0", VERSION.encode()), 1)
+    name = "tests/test_v141_identity.py"
+    fixture_changes = (
+        (
+            b"    raw, files = pinned_legacy_files\n",
+            b"    raw, files = pinned_legacy_files\n"
+            b"    reviewed_files = legacy._archive_files(\n"
+            b"        subprocess.check_output(\n"
+            b'            ["git", "archive", "7d6b158f863308dfcd7d10b673bfbe2692f29b8b"], '
+            b"cwd=ROOT\n"
+            b"        )\n    )\n",
+        ),
+        (
+            b"            (ROOT / name).read_bytes()\n"
+            b'            if name in reviewed or not name.startswith("tests/")\n',
+            b"            reviewed_files[name]\n"
+            b'            if name in reviewed or not name.startswith("tests/")\n',
+        ),
+    )
+    for old, new in fixture_changes:
+        if protected[name].count(old) != 1:
+            raise ValueError("Unexpected predecessor historical fixture setup")
+        protected[name] = protected[name].replace(old, new, 1)
     for name, data in protected.items():
         path = root / name
         if path.is_symlink() or not path.is_file() or path.read_bytes() != data:

@@ -32,6 +32,10 @@ The verifier records predecessor and approved candidate hashes for each module,
 and the complete unchanged inventory. Existing tests/fixtures and native schema
 are independently read from predecessor Git, with only exact current-version
 literal changes in `test_v141_identity.py` and `test_release_candidate.py`.
+The former also sources its synthetic historical-verifier fixture from the
+immutable published v1.4 source, rather than copying current development
+metadata. This exact fixture-only adaptation preserves every original guard
+and assertion; its full byte transformation is reviewed in V15 policy.
 Analytical expectations and the original historical tools remain byte-identical.
 Package project metadata permits exactly its distribution-version literal change.
 
