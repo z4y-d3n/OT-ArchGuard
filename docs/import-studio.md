@@ -204,11 +204,12 @@ The following records preserve the earlier design context:
 
 The shipped synthetic examples cover all three new adapters. Copy the relevant
 source, profile and context from `examples/import-studio` into a writable folder.
-Use a regular `1.3.0` installation, with no additional runtime dependencies.
+Use the current [regular stable installation](installation.md#parallel-installation),
+with no additional runtime dependencies.
 For an approved local wheel and existing runtime wheels, offline installation is:
 
 ```text
-python -m pip install --no-index --find-links /approved/wheelhouse otarchguard-1.3.0-py3-none-any.whl
+python -m pip install --no-index --find-links /approved/wheelhouse otarchguard-1.4.0-py3-none-any.whl
 ```
 
 The wheelhouse must contain the existing Typer, PyYAML, Pydantic dependencies and

@@ -124,6 +124,13 @@ a distinct proposal. There is no mutable global current-baseline pointer.
 
 After installing the current package, run from the source repository:
 
+Create the output parent first (`New-Item -ItemType Directory -Force output` in
+PowerShell, or `mkdir -p output` on POSIX). The same commands work from the root
+of an extracted, verified sdist; the installed wheel alone does not include
+the `tools` tutorials. Use that environment's Python and choose a fresh output
+destination on each run. An existing destination is retained; select another
+name rather than deleting prior evidence.
+
 ```console
 python -m tools.evidence_history_walkthrough --output output/my-history-walkthrough
 python -m benchmarks.evidence_history --output output/my-history-benchmark

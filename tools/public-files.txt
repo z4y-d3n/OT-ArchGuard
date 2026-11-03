@@ -12,6 +12,7 @@ benchmarks/documents.py
 benchmarks/drift.py
 benchmarks/evidence_history.py
 benchmarks/explorer.py
+benchmarks/foundation.py
 benchmarks/historical_explorer.py
 benchmarks/historical_regression.py
 benchmarks/history_performance.py
@@ -24,6 +25,7 @@ benchmarks/receipts/v14-02p-scaling.png
 benchmarks/receipts/v14-02p-windows.json
 benchmarks/receipts/v14-03-windows.json
 benchmarks/receipts/v14-05-windows.json
+benchmarks/receipts/v15-01-windows.json
 benchmarks/run.py
 benchmarks/workloads.py
 docs/algorithms.md
@@ -118,6 +120,14 @@ docs/development/v14-progress.md
 docs/development/v14-protocol-corpus.md
 docs/development/v14-protocol-performance.md
 docs/development/v14-version-identity-adr.md
+docs/development/v15-01-acceptance.md
+docs/development/v15-01-evidence.json
+docs/development/v15-01-findings.md
+docs/development/v15-01-handoff-es.md
+docs/development/v15-01-installation-ux.md
+docs/development/v15-01-performance.md
+docs/development/v15-01-plan.md
+docs/development/v15-02-major-limitations-ux.md
 docs/domain-model.md
 docs/images/README.md
 docs/images/architecture-explorer-overview.png
@@ -464,6 +474,7 @@ tests/test_v146_security_audit.py
 tests/test_v146_version_gate.py
 tests/test_v14_independent_audit.py
 tests/test_v14_integration.py
+tests/test_v15_foundation.py
 tests/test_validate_cli.py
 tests/test_validation.py
 tools/__init__.py
@@ -503,3 +514,4 @@ tools/verification-requirements.txt
 tools/verify_environment.py
 tools/verify_legacy_candidate.py
 tools/verify_source_checkout.py
+tools/walkthrough_cli.py

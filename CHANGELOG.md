@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased — V15-01 development foundation
+
+- Historical tutorial CLIs explain missing output parents and occupied
+  destinations with actionable usage errors, preserving existing data.
+- Document tutorial setup from a source archive and current stable installation.
+- Include `codex/v15-*` pushes in the existing six-job verification matrix.
+- Record independent audits, performance characterization and installation
+  evidence in the [V15-01 dossier](docs/development/v15-01-plan.md).
+
+These tooling changes are unpublished. Distribution/CLI stays `1.4.0`; native
+engine stays `1.3.0`. Runtime source and frozen compatibility pins are unchanged;
+the next development identity requires an explicit compatibility transition.
+
 ## 1.4.0 — 2026-11-02 (stable)
 
 Published [v1.4.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.4.0)

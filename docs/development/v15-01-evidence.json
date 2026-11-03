@@ -1,0 +1,241 @@
+{
+  "baseline_commit": "c5ada13871043ed52cd43557bc7b222399f7b7eb",
+  "browser": "SKIP: browser policy rejects file URLs; real keyboard/zoom/viewport/print/assistive-technology review pending owner",
+  "distribution": "1.4.0",
+  "final_identity": "Final documentation/evidence/inventory commit and archives are recorded locally in output/v15-01/final-packages; full test receipts bind the implementation commit above.",
+  "focused_regressions": {
+    "extracted_sdist": {
+      "error": 0,
+      "fail": 0,
+      "pass": 16,
+      "skip": 0
+    },
+    "fresh_wheel": {
+      "error": 0,
+      "fail": 0,
+      "pass": 16,
+      "skip": 0
+    },
+    "overlap": "Same16 tests; repetitions are not additional unique tests",
+    "unique_new_tests": 16
+  },
+  "full_wheel_suite": {
+    "collected": 4388,
+    "error": 0,
+    "fail": 0,
+    "pass": 4387,
+    "skip": 1,
+    "skip_reasons": {
+      "Operating system does not grant junction creation": 1
+    },
+    "suite_attributes": [
+      {
+        "errors": "0",
+        "failures": "0",
+        "hostname": "DESKTOP-8VDPGBR",
+        "name": "pytest",
+        "skipped": "1",
+        "tests": "4388",
+        "time": "823.449",
+        "timestamp": "2026-11-02T15:39:19.360858-03:00"
+      }
+    ],
+    "unique": 4388
+  },
+  "gate": "V15-01",
+  "hosted_ci": "All6 exact-final-head jobs pending; no remote modification",
+  "independent_review": "NO_BLOCKING_FINDINGS at tested implementation; output/v15-01/audit/final.json",
+  "junction_focused_rerun": {
+    "command": "output/v15-01/packaging/env-wheel-retry/Scripts/python.exe -m pytest tests/test_historical_explorer_bundle.py::test_actual_windows_junction_is_rejected --basetemp=output/v15-01/pytest-junction --junitxml=output/v15-01/junction.xml --tb=short -q",
+    "error": 0,
+    "exit": 0,
+    "fail": 0,
+    "junit": "junction.xml",
+    "method": "Scoped unsandboxed execution after inspection: temporary actual/junction paths both under output/v15-01/pytest-junction",
+    "pass": 1,
+    "scope": "Focused rerun of the one full-suite skipped test; same unique testcase, not additional coverage count",
+    "skip": 0,
+    "tested_commit": "b3bc51271c94a67d01aa8328aa215d4dbea45673"
+  },
+  "native_compatibility": {
+    "analytical_artifact_count": 110,
+    "baseline_commit": "f52c792b683cb499dc7de765b65b5cc897a96854",
+    "count": 124,
+    "historical_html_bytes_identical": false,
+    "historical_test_files": 54,
+    "html_json_appendices_compared": 13,
+    "presentation_reference_commit": "117318393ead604a023a24bad7d53eb429faa13f",
+    "status": "PASS"
+  },
+  "native_engine": "1.3.0",
+  "native_html_note": "Native-v1.2 historical HTML is not byte-identical to approved v1.4 semantic presentation; existing approved presentation comparison passed. No pins/allowlists changed.",
+  "native_schema": 1,
+  "packaging": {
+    "archives": {
+      "otarchguard-1.4.0-py3-none-any.whl": {
+        "bytes": 362681,
+        "sha256": "523e19db6c21e3abc80e6cc394967ea9fe4704a56d85bc73a6913f3da64b5130"
+      },
+      "otarchguard-1.4.0.tar.gz": {
+        "bytes": 2317589,
+        "sha256": "66322946bb2e55daa0cb37b63832f6abc76995723109f33dc5f9903dc28bad36"
+      }
+    },
+    "clean_install_scenarios": [
+      "regular wheel",
+      "build-isolated sdist from local wheelhouse",
+      "prepared-backend sdist without isolation"
+    ],
+    "commands_exit0": 40,
+    "commands_nonzero": 1,
+    "full_sdist_suite": "NOT_EXECUTED",
+    "historical_packaged_tutorials": "Three PASS",
+    "module_equivalence": {
+      "modules": 97,
+      "status": "PASS"
+    },
+    "online_index_install": "NOT_EXECUTED; complete local dependency resolution executed",
+    "public_source_sha256": "84475e753c15cab9a653c3e202ad3d0ebdf914a7e56380b8882e58703f36fc9a",
+    "recovery": "Initial ensurepip failed writing sandbox redirect temp; retained logs. Retry uses explicitly writable task temp and new fresh environment paths. A resume-driver initialization NameError was corrected before successful retry; product/source unaffected.",
+    "source_commit": "b3bc51271c94a67d01aa8328aa215d4dbea45673"
+  },
+  "performance": {
+    "console_child_memory": "UNMEASURED",
+    "optimization_claim": false,
+    "paired_runtime_comparison": "NOT_EXECUTED;97runtime modules remain identical",
+    "receipt": "benchmarks/receipts/v15-01-windows.json",
+    "separate_allocation_trials": 22,
+    "sha256": "58720b42fd06b8f8009457aaf68ff71ae5c81f66ce3e87564f5e0eb0cfa7a51b",
+    "source_commit": "c5ada13871043ed52cd43557bc7b222399f7b7eb",
+    "timed_executions": 120,
+    "typed_harness_full_matrix": "NOT_RERUN; static/smoke verified and operation mapping independently reviewed",
+    "workloads": 24
+  },
+  "published_source": "7d6b158f863308dfcd7d10b673bfbe2692f29b8b",
+  "scope": "Local development foundation; no release authorization",
+  "tested_implementation_commit": "b3bc51271c94a67d01aa8328aa215d4dbea45673",
+  "tested_public_source_sha256": "84475e753c15cab9a653c3e202ad3d0ebdf914a7e56380b8882e58703f36fc9a",
+  "tested_working_tree": "",
+  "verification_commands": [
+    {
+      "command": [
+        "C:\\Users\\PC\\Desktop\\OT-ArchGuard-CLEAN\\output\\v15-01\\packaging\\env-wheel-retry\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "tests/test_v15_foundation.py",
+        "--basetemp=output/v15-01/pytest-focused",
+        "--junitxml=output/v15-01/focused.xml",
+        "--tb=short",
+        "-q"
+      ],
+      "exit": 0,
+      "name": "focused",
+      "wall_seconds": 7.747636599931866
+    },
+    {
+      "command": [
+        "C:\\Users\\PC\\Desktop\\OT-ArchGuard-CLEAN\\output\\v15-01\\packaging\\env-wheel-retry\\Scripts\\python.exe",
+        "-m",
+        "ruff",
+        "check",
+        "."
+      ],
+      "exit": 0,
+      "name": "ruff-check",
+      "wall_seconds": 0.15228860010392964
+    },
+    {
+      "command": [
+        "C:\\Users\\PC\\Desktop\\OT-ArchGuard-CLEAN\\output\\v15-01\\packaging\\env-wheel-retry\\Scripts\\python.exe",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "exit": 0,
+      "name": "ruff-format",
+      "wall_seconds": 0.1374856000766158
+    },
+    {
+      "command": [
+        "C:\\Users\\PC\\Desktop\\OT-ArchGuard-CLEAN\\output\\v15-01\\packaging\\env-wheel-retry\\Scripts\\python.exe",
+        "-m",
+        "mypy"
+      ],
+      "exit": 0,
+      "name": "mypy",
+      "wall_seconds": 1.9815818001516163
+    },
+    {
+      "command": [
+        "C:\\Users\\PC\\Desktop\\OT-ArchGuard-CLEAN\\output\\v15-01\\packaging\\env-wheel-retry\\Scripts\\python.exe",
+        "-m",
+        "pip",
+        "check"
+      ],
+      "exit": 0,
+      "name": "dependencies",
+      "wall_seconds": 0.8459910999517888
+    },
+    {
+      "command": [
+        "C:\\Users\\PC\\Desktop\\OT-ArchGuard-CLEAN\\output\\v15-01\\packaging\\env-wheel-retry\\Scripts\\python.exe",
+        "tools/verify_environment.py",
+        "--output",
+        "output/v15-01/candidate-environment.json"
+      ],
+      "exit": 0,
+      "name": "environment",
+      "wall_seconds": 1.5800512998830527
+    },
+    {
+      "command": [
+        "C:\\Users\\PC\\Desktop\\OT-ArchGuard-CLEAN\\output\\v15-01\\packaging\\env-wheel-retry\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "--basetemp=output/v15-01/pytest-full",
+        "--junitxml=output/v15-01/full-suite.xml",
+        "--tb=short",
+        "-q"
+      ],
+      "exit": 0,
+      "name": "full-suite",
+      "wall_seconds": 825.5336194999982
+    },
+    {
+      "command": [
+        "C:\\Users\\PC\\Desktop\\OT-ArchGuard-CLEAN\\output\\v15-01\\packaging\\env-wheel-retry\\Scripts\\python.exe",
+        "-m",
+        "tools.verify_legacy_candidate",
+        "--output",
+        "output/v15-01/native-compatibility"
+      ],
+      "exit": 0,
+      "name": "native-compatibility",
+      "wall_seconds": 133.79421279998496
+    },
+    {
+      "command": [
+        "C:\\Users\\PC\\Desktop\\OT-ArchGuard-CLEAN\\output\\v15-01\\packaging\\env-wheel-retry\\Scripts\\python.exe",
+        "-m",
+        "tools.read_capture_evidence",
+        "tests/fixtures/capture-contract-v2/supported"
+      ],
+      "exit": 0,
+      "name": "frozen-evidence-supported",
+      "wall_seconds": 0.17962190019898117
+    },
+    {
+      "command": [
+        "C:\\Users\\PC\\Desktop\\OT-ArchGuard-CLEAN\\output\\v15-01\\packaging\\env-wheel-retry\\Scripts\\python.exe",
+        "-m",
+        "tools.read_capture_evidence",
+        "tests/fixtures/capture-contract-v2/limited"
+      ],
+      "exit": 0,
+      "name": "frozen-evidence-limited",
+      "wall_seconds": 0.17442069994285703
+    }
+  ]
+}

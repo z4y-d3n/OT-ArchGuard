@@ -2,7 +2,7 @@ name: Python verification
 
 on:
   push:
-    branches: ['v1.2', 'codex/v12-08-final-release-hardening', 'codex/release-1.2.0-preparation', 'codex/v13-*', 'codex/v14-*', 'main']
+    branches: ['v1.2', 'codex/v12-08-final-release-hardening', 'codex/release-1.2.0-preparation', 'codex/v13-*', 'codex/v14-*', 'codex/v15-*', 'main']
   pull_request:
     branches: ['v1.2', 'main']
   workflow_dispatch:
