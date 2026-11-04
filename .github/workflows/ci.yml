@@ -116,7 +116,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python tools/verify_environment.py --output output/installed-sdist.json
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python -m pytest tests --ignore=tests/test_v15_transition.py --basetemp=output/sdist-tmp --tb=short --junitxml=output/sdist-suite.xml
+          python -m pytest tests --basetemp=output/sdist-tmp --ignore=tests/test_v15_transition.py --tb=short --junitxml=output/sdist-suite.xml
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python -m tools.project_walkthrough --output output/project-walkthrough
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
