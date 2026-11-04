@@ -55,7 +55,7 @@ SECONDARY_NAV = (
 CAPTURE_CSS = (
     CSS
     + """
-nav a[aria-current=page]{font-weight:750;border-bottom:3px solid #375b75;
+nav a[aria-current]{font-weight:750;border-bottom:3px solid #375b75;
 text-decoration-thickness:.18em}.secondary-nav{font-size:.95rem}
 .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));
 gap:.6rem}.metrics>div{padding:.75rem;background:white;border:1px solid #657b8b}
@@ -133,7 +133,13 @@ def _document(title: str, body: str, capture_hash: str, filename: str = "index.h
                 '<li><a href="'
                 + path
                 + '"'
-                + (' aria-current="page"' if path == current else "")
+                + (
+                    ' aria-current="page"'
+                    if path == filename
+                    else ' aria-current="true"'
+                    if path == current
+                    else ""
+                )
                 + ">"
                 + escape(label)
                 + "</a></li>"
@@ -162,7 +168,7 @@ def _document(title: str, body: str, capture_hash: str, filename: str = "index.h
         + navigation(NAV)
         + '</nav><nav class="secondary-nav" aria-label="Related evidence views">'
         + navigation(SECONDARY_NAV)
-        + '</nav><main id="main">'
+        + '</nav><main id="main" tabindex="-1">'
         + body
         + "</main><footer><p>Capture site contract 1. No original capture or payload copied. "
         "No JavaScript, server or network resources required. Hashes bind bytes and decisions; "
@@ -319,6 +325,30 @@ def _page_name(stem: str, page: int) -> str:
     if stem == "evidence" and page:
         return f"evidenceindex-{page + 1}.html"
     return stem + (f"-{page + 1}" if page else "") + ".html"
+
+
+def _pagination(stem: str, page: int, records: int, size: int, *, details: bool = False) -> str:
+    """Navigate exact documents without confusing an evidence index with its details."""
+    count = max(1, (records + size - 1) // size)
+
+    def destination(index: int) -> str:
+        return f"evidence-{index + 1}.html" if details else _page_name(stem, index)
+
+    label = "Evidence detail pages" if details else "Table pages"
+    start, end = min(page * size + 1, records), min((page + 1) * size, records)
+    choices = []
+    if page:
+        choices.append(link(destination(page - 1), "Previous page"))
+    if page + 1 < count:
+        choices.append(link(destination(page + 1), "Next page"))
+    return (
+        '<nav aria-label="'
+        + label
+        + '"><p aria-current="page">'
+        + f"Page {page + 1} of {count} · Records {start}–{end} of {records}</p><p>"
+        + " · ".join(choices)
+        + "</p></nav>"
+    )
 
 
 def _targets(
@@ -614,13 +644,7 @@ def generate_site(
                 count = max(1, (len(records) + size - 1) // size)
                 check_limit("capture_site_files", count, limits.pages)
                 for p in range(count):
-                    nav = '<p aria-label="Table pages">'
-                    if p:
-                        nav += link(_page_name(stem, p - 1), "Previous page") + " · "
-                    nav += f"Page {p + 1} of {count} · {len(records)} records"
-                    if p + 1 < count:
-                        nav += " · " + link(_page_name(stem, p + 1), "Next page")
-                    nav += "</p>"
+                    nav = _pagination(stem, p, len(records), size)
                     rows = [
                         render(r, i)
                         for i, r in enumerate(records[p * size : (p + 1) * size], p * size)
@@ -1122,7 +1146,8 @@ def generate_site(
                 page(
                     f"evidence-{start // size + 1}.html",
                     "Evidence details with communication context",
-                    "".join(detail(f) for f in flows[start : start + size]),
+                    _pagination("evidence", start // size, len(flows), size, details=True)
+                    + "".join(detail(f) for f in flows[start : start + size]),
                 )
             audit = audit_site(stage)
             _no_links(output)
