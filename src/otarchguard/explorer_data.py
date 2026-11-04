@@ -115,10 +115,10 @@ def page_id(kind: str, identity: object) -> str:
     return kind + "-" + digest([kind, identity])
 
 
+_UNSUPPORTED_TEXT = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f-\x9f\ud800-\udfff]")
+
+
 def check_text(value: str) -> None:
     check_limit("explorer_text_characters", len(value), EXPLORER_LIMITS.text_characters)
-    if any(
-        (ord(c) < 32 and c not in "\t\r\n") or 127 <= ord(c) <= 159 or 0xD800 <= ord(c) <= 0xDFFF
-        for c in value
-    ):
+    if _UNSUPPORTED_TEXT.search(value) is not None:
         fail("EXPLORER_TEXT", "$", "Unsupported control or surrogate character in display text.")

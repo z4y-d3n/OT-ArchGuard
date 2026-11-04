@@ -12,6 +12,7 @@ include benchmarks/documents.py
 include benchmarks/drift.py
 include benchmarks/evidence_history.py
 include benchmarks/explorer.py
+include benchmarks/explorer_performance.py
 include benchmarks/foundation.py
 include benchmarks/historical_explorer.py
 include benchmarks/historical_regression.py
@@ -143,6 +144,14 @@ include docs/development/v15-03-navigation-contract.md
 include docs/development/v15-03-performance.md
 include docs/development/v15-03-plan.md
 include docs/development/v15-03-ux-findings.md
+include docs/development/v15-04-acceptance.md
+include docs/development/v15-04-compatibility.md
+include docs/development/v15-04-handoff-es.md
+include docs/development/v15-04-optimizations.md
+include docs/development/v15-04-plan.md
+include docs/development/v15-04-profiling.md
+include docs/development/v15-04-scalability.md
+include docs/development/v15-04-workloads.md
 include docs/domain-model.md
 include docs/images/README.md
 include docs/images/architecture-explorer-overview.png
@@ -491,6 +500,8 @@ include tests/test_v14_independent_audit.py
 include tests/test_v14_integration.py
 include tests/test_v15_03_navigation.py
 include tests/test_v15_03_transition.py
+include tests/test_v15_04_text.py
+include tests/test_v15_04_transition.py
 include tests/test_v15_foundation.py
 include tests/test_v15_renderer_ux.py
 include tests/test_v15_report_reliability.py
@@ -535,5 +546,6 @@ include tools/verify_environment.py
 include tools/verify_legacy_candidate.py
 include tools/verify_source_checkout.py
 include tools/verify_v15_03_transition.py
+include tools/verify_v15_04_transition.py
 include tools/verify_v15_transition.py
 include tools/walkthrough_cli.py

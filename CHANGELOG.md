@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased — V15-04 profile-guided performance
+
+- Advance the reviewed development distribution to `1.5.0.dev3`, preserving
+  native engine `1.3.0`, YAML schema `1` and published stable v1.4.0.
+- Replace Explorer's Python character scan with an equivalent fixed regex;
+  local larger-workload median improves approximately 6.1% with exact output bytes.
+- Add an independently challenged source transition, preserving old policies,
+  immutable native references and historical producer/replay boundaries.
+- Record controlled timing, allocation, resource, package and full-suite evidence
+  in the [V15-04 acceptance record](docs/development/v15-04-acceptance.md).
+
 ## Unreleased — V15-02 controlled development transition
 
 - Establish distribution/CLI `1.5.0.dev1`, retaining native engine `1.3.0` and
