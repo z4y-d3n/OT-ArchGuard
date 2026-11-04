@@ -1,5 +1,6 @@
 """Adversarial authorization tests; immutable predecessor expectations stay unchanged."""
 
+import hashlib
 import importlib.metadata as metadata
 import json
 import os
@@ -45,6 +46,51 @@ def test_exact_two_modules_and_unchanged_historical_renderer(predecessor: dict[s
     assert installed["renderer_sha256"] == (
         "442d13378cd61586664e19f51ea6834537b0155c07e48ff5a6173628c5d6ca6b"
     )
+
+
+@pytest.mark.parametrize(
+    "mutation", [None, "allowed-helper", "protected-module", "init", "missing", "extra", "artifact"]
+)
+def test_native_manifest_delta_requires_exact_authorized_source_and_output(
+    predecessor: dict[str, bytes], tmp_path: Path, mutation: str | None
+) -> None:
+    original = {
+        n.removeprefix("src/otarchguard/"): hashlib.sha256(data).hexdigest()
+        for n, data in predecessor.items()
+        if n.startswith("src/otarchguard/") and n.endswith(".py")
+    }
+    for name, modules in (("before", original), ("after", policy.expected_modules(predecessor))):
+        directory = tmp_path / name
+        directory.mkdir()
+        raw = b'{"engine_version": "1.3.0", "value": 1}\n'
+        if name == "after" and mutation == "artifact":
+            raw = raw.replace(b'"value": 1', b'"value": 2')
+        (directory / "result.json").write_bytes(raw)
+        manifest: dict[str, Any] = {
+            "python": "fictional-test",
+            "platform": "fictional-test",
+            "production_sha256": {n: h for n, h in modules.items() if "/" not in n},
+            "inputs": {"input.yaml": "0" * 64},
+            "exits": {"validate": 0},
+            "artifacts": {"result.json": hashlib.sha256(raw).hexdigest()},
+        }
+        if name == "after" and mutation in {"allowed-helper", "protected-module"}:
+            module = "explorer_data.py" if mutation == "allowed-helper" else "reachability.py"
+            manifest["production_sha256"][module] = "f" * 64
+        elif name == "after" and mutation == "init":
+            manifest["production_sha256"]["__init__.py"] = "f" * 64
+        elif name == "after" and mutation == "missing":
+            del manifest["production_sha256"]["explorer_data.py"]
+        elif name == "after" and mutation == "extra":
+            manifest["production_sha256"]["unexpected.py"] = "f" * 64
+        (directory / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+    if mutation is not None:
+        with pytest.raises(ValueError):
+            policy.compare_native(predecessor, tmp_path / "before", tmp_path / "after")
+    else:
+        result = policy.compare_native(predecessor, tmp_path / "before", tmp_path / "after")
+        assert result["allowed_module_changes"] == ["explorer_data.py"]
+        assert result["artifacts"]["result.json"] == "EXACT_BYTES"
 
 
 @pytest.mark.parametrize(

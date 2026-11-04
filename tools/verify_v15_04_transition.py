@@ -128,6 +128,34 @@ def check_installation(before: dict[str, bytes]) -> dict[str, Any]:
     return trusted_helpers(before)["check_installation"](expected_modules(before))  # type: ignore[no-any-return]
 
 
+def compare_native(before: dict[str, bytes], baseline: Path, candidate: Path) -> dict[str, Any]:
+    """Pin both captured source maps before allowing the reviewed helper delta."""
+    original = {
+        name.removeprefix("src/otarchguard/"): hashlib.sha256(data).hexdigest()
+        for name, data in before.items()
+        if name.startswith("src/otarchguard/") and name.endswith(".py")
+    }
+    for directory, expected in ((baseline, original), (candidate, expected_modules(before))):
+        observed = json.loads((directory / "manifest.json").read_bytes())["production_sha256"]
+        if observed != {n: h for n, h in expected.items() if "/" not in n}:
+            raise ValueError("Native capture source identity differs from reviewed modules")
+    oracle: dict[str, Any] = {"__name__": "immutable_native_oracle"}
+    exec(
+        compile(before["tools/compare_versioned_contract.py"], "immutable-comparator", "exec"),
+        oracle,
+    )
+    native: dict[str, Any] = oracle["compare_captures"](
+        baseline,
+        candidate,
+        old="1.3.0",
+        new="1.3.0",
+        allowed_module_changes=frozenset({"explorer_data.py"}),
+    )
+    if any(v != "EXACT_BYTES" for n, v in native["artifacts"].items() if n != "manifest.json"):
+        raise ValueError("Canonical native result changed")
+    return native
+
+
 def verify(output: Path) -> dict[str, Any]:
     before = reference()
     source = check_source(ROOT, before)
@@ -251,20 +279,7 @@ def verify(output: Path) -> dict[str, Any]:
         ],
         ROOT,
     )
-    oracle: dict[str, Any] = {"__name__": "immutable_native_oracle"}
-    exec(
-        compile(before["tools/compare_versioned_contract.py"], "immutable-comparator", "exec"),
-        oracle,
-    )
-    native = oracle["compare_captures"](
-        historical / "candidate-native",
-        candidate,
-        old="1.3.0",
-        new="1.3.0",
-        allowed_module_changes=frozenset(),
-    )
-    if any(v != "EXACT_BYTES" for n, v in native["artifacts"].items() if n != "manifest.json"):
-        raise ValueError("Canonical native result changed")
+    native = compare_native(before, historical / "candidate-native", candidate)
     cross = output / "old-producer"
     script = (
         "import json;from pathlib import Path;"

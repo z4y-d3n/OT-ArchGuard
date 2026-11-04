@@ -44,3 +44,17 @@ change follows from a producer-version difference.
 Execution outcomes and installed wheel/sdist identities are recorded in the final
 acceptance record. Raw evidence: `output/v15-04/transition/`, including Agent E's
 independent read-only plan and the final command-by-command historical chain.
+
+The native capture manifest inventories 33 top-level source modules. V15-04 pins
+both complete captured maps (including `__init__.py`) to immutable dev2 and exact
+authorized dev3 hashes, then permits only the reviewed `explorer_data.py` source
+delta in the unchanged native comparator. Every non-manifest artifact must still
+be `EXACT_BYTES`. Seven regression cases challenge forged allowed-helper/init or
+native-module hashes, missing/extra modules, and self-rehashed changed output.
+
+The first full transition attempt stopped because its native source allowlist was
+empty despite the declared helper change. Both historical gates had passed and
+an independent inspection found all 123 native artifacts identical, but that
+diagnosis did not authorize acceptance. The failed attempt remains under
+`output/v15-04/transition/full/`; the corrected complete rerun is recorded
+separately. Neither old policy nor immutable comparator was changed.
