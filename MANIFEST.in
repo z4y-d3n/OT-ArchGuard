@@ -135,6 +135,14 @@ include docs/development/v15-02-major-limitations-ux.md
 include docs/development/v15-02-plan.md
 include docs/development/v15-02-renderer-ux.md
 include docs/development/v15-02-report-reliability.md
+include docs/development/v15-03-acceptance.md
+include docs/development/v15-03-accessibility.md
+include docs/development/v15-03-compatibility.md
+include docs/development/v15-03-handoff-es.md
+include docs/development/v15-03-navigation-contract.md
+include docs/development/v15-03-performance.md
+include docs/development/v15-03-plan.md
+include docs/development/v15-03-ux-findings.md
 include docs/domain-model.md
 include docs/images/README.md
 include docs/images/architecture-explorer-overview.png
@@ -481,6 +489,8 @@ include tests/test_v146_security_audit.py
 include tests/test_v146_version_gate.py
 include tests/test_v14_independent_audit.py
 include tests/test_v14_integration.py
+include tests/test_v15_03_navigation.py
+include tests/test_v15_03_transition.py
 include tests/test_v15_foundation.py
 include tests/test_v15_renderer_ux.py
 include tests/test_v15_report_reliability.py
@@ -524,5 +534,6 @@ include tools/verification-requirements.txt
 include tools/verify_environment.py
 include tools/verify_legacy_candidate.py
 include tools/verify_source_checkout.py
+include tools/verify_v15_03_transition.py
 include tools/verify_v15_transition.py
 include tools/walkthrough_cli.py

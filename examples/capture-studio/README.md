@@ -26,7 +26,10 @@ otarchguard capture analyze plant.pcapng --output observed
 otarchguard capture map plant.pcapng --model architecture.yaml --output pending.json
 ~~~
 
-Require version `1.3.0`. `inspect` reports container/interface/record metadata;
+For the published workflow above, require distribution version `1.4.0`.
+Development checkouts report their distinct development distribution version;
+the native analytical engine remains `1.3.0`.
+`inspect` reports container/interface/record metadata;
 `analyze` produces `observations.json` and an offline evidence site.
 `map` writes proposals, all awaiting explicit owner review. No identity or
 network authorization is accepted automatically.

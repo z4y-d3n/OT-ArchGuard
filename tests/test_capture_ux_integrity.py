@@ -512,8 +512,13 @@ def test_primary_and_secondary_navigation_exposes_all_evidence_families_and_curr
     for name, page in pages.items():
         nav_links = [node for node in page.links() if any(p.tag == "nav" for p in node.ancestors())]
         assert required <= {str(n.attrs["href"]).split(".", 1)[0] for n in nav_links}
-        active = [node for node in nav_links if node.attrs.get("aria-current") == "page"]
-        assert active, name
+        active = [node for node in nav_links if node.attrs.get("aria-current") in {"page", "true"}]
+        assert len(active) == 1, name
+        assert all(
+            node.attrs["href"] == name
+            for node in nav_links
+            if node.attrs.get("aria-current") == "page"
+        ), name
         family = re.sub(r"-\d+$", "", name[:-5])
         if name.startswith(("evidence-", "evidenceindex-")):
             family = "evidence"
