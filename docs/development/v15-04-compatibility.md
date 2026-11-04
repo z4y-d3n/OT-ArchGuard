@@ -58,3 +58,16 @@ an independent inspection found all 123 native artifacts identical, but that
 diagnosis did not authorize acceptance. The failed attempt remains under
 `output/v15-04/transition/full/`; the corrected complete rerun is recorded
 separately. Neither old policy nor immutable comparator was changed.
+
+## Executed corrected transition
+
+`transition/full-retry/transition.json` PASS; unchanged archived dev2/dev1 suites
+24/30PASS without skips; independent native123artifact comparison exact across
+45cases and both33module source maps pinned. Old bundle portable verification
+explicitly reports analytical_reproductionFalse; current producer rejects old
+workspace with EVIDENCE_REVISION, original runtime recovers same bundle ID and
+all71historical files remain byte-identical. Approval transfer is false.
+Both current4499-case suites pass with one identical sandbox skip each, resolved
+by the unchanged real junction test passing outside sandbox in both runtimes.
+No runtime/source-producer/renderer byte changes occur in documentation closure;
+its package/source identities are recorded independently in final/freeze.json.

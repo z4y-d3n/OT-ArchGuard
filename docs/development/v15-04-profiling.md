@@ -75,3 +75,21 @@ measurements. RSS mode now requires one case per fresh process. Symmetric
 B3→A3→A3→B3 balances mean sample position and gives six trials per runtime.
 Independent across-runtime inventories and immutable Unicode diagnostics are
 required. Raw note: `output/v15-04/benchmarks/agent-d-review.md`.
+
+## Independent normal historical components and final controls
+
+Candidate producer scale512, one warmup + three untraced samples per operation:
+generation17.507562s (MAD.251725), report source replay5.111295s, pure render1.603012s,
+link/markup audit3.222572s, portable integrity4.583296s, full source-bundle replay
+16.384226s. Components overlap; do not sum or compare these normal numbers with
+cProfile totals. Workspace input inventory stayed unchanged. No historical
+cross-version speedup is inferred. Raw `profiles/historical/wall-512/receipt.json`.
+
+Capture control medians supported.234291→.219505s, limited.262319→.249705s,
+dense1301.951754→1.934180s; no material-regression trigger. Independent physical
+audit verifies36sites/3444files/3300HTML/123372links with exact evidence IDs and
+canonical/frozen values. These controls do not establish capture speedup.
+
+After the policy-only native provenance correction, all97 runtime hashes remain
+identical to the benchmarked candidate. No source-dependent validation was removed.
+See acceptance for corrected full verification and the preserved failed attempt.

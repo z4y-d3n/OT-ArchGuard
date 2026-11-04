@@ -30,3 +30,26 @@ Rollback: restore only the local T1/version candidate edits from the fixed
 predecessor bytes, retaining failed experiments and measurements. Never reset
 unrelated work or change remote history. Final decision and measurements are
 recorded in the acceptance record and Spanish handoff.
+
+## Final T1 decision
+
+ACCEPTED for this local milestone. Balanced six-sample larger medians33.318590→
+31.271646s (−6.1435%); candidate-first five-sample confirmation34.703024→32.584346s
+(−6.1052%). Both exceed the recorded3% exception for a tiny low-risk change;
+15% remained aspirational. All5 confirmation candidate times are below all5
+baseline times. The43.908725s original trial is retained; no timing was removed.
+
+Original medians small1.174949→1.177159s (+.1881%), medium9.978064→9.235999s,
+hostile10.665843→9.279541s. Exact byte inventories across76sites, exhaustive
+Unicode/error oracles and current/historical suites pass. Python allocation peak
+174062151→174062312bytes; fresh process lifetime RSS229732352→228876288bytes,
+with no isolated-RSS or memory-speedup claim. No second target was implemented.
+
+The first full native source comparison failed because its empty source-exception
+set contradicted the declared helper delta. This was a verifier omission, not an
+accepted analytical difference. The corrected new policy pins both33module maps
+and permits only the fixed helper hash; all123 analytical artifacts remain exact.
+Seven source/artifact forgery regressions plus independent mutations pass, and
+the entire transition rerun passed. Prior policies/oracles remain immutable.
+Raw failed attempt and initial archives are retained separately from accepted
+`verified-retry` and final documentation closure packages.

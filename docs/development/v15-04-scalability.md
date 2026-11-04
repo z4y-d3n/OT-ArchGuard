@@ -29,3 +29,27 @@ Unicode codepoint with immutable dev2, mixed strings, 4,096/4,097 boundaries and
 exact diagnostic precedence. Existing output-destination, publication failure,
 missing-dependency, source freshness, forged report and approval revocation tests
 remain applicable. Final acceptance links actual executed suites and any gaps.
+
+## Executed resource controls
+
+Larger architecture total43170895bytes, largestHTML180569bytes, largestSVG7048bytes;
+2448files/2446HTML,71180links,12028anchors. Before/after bytes and all76audited
+sites match. Separate Python allocation peaks174062151/174062312bytes; separate
+fresh-worker lifetime PeakWorkingSet229732352/228876288bytes. No child-memory
+substitute and no isolated workload-RSS claim.
+
+Existing native NFR benchmark: routine/sparse/deny-heavy complete; dense-policy
+rejects edge_rule_atom_checks60000000>50000000, interval-heavy rejects
+state_edge_visits52800000>50000000. These are controlled resource rejections,
+never successful/blocked/unreachable analytical results. Quality comparison's
+three sizes each retain8comparison records,3byte-identical repeated sites and
+zero exact analytical queries in this constructor; native analytical coverage
+comes separately from the immutable45-case oracle and full tests.
+
+Capture benchmark9cases: repeated1k/10k/100k/250k, cardinality1k, skew10k,
+maxframe64 and metadata-sections256 complete; cardinality-rejection correctly
+rejects aggregation67108996>67108864bytes. Tracing is enabled in that existing
+driver: its elapsed times are not normal latency measurements. Source and limits
+are unchanged. Both full4499-case suites and real junction rejection pass in
+their documented contexts; no source freshness/publication/replay assertion was
+disabled. Measured points and bounded budget tests are not maximum capacity.

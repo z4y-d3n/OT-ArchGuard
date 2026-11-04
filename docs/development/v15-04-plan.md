@@ -59,3 +59,15 @@ Hosted candidate six-job CI remains pending owner publication.
 If a stop condition in the execution prompt is demonstrated, stop the affected
 implementation, continue safe independent work, preserve failures, and report the
 actual incomplete or blocked state. Never manufacture an optimization or a PASS.
+
+## Executed closure
+
+All phases completed with six specialists dispatched within four active slots.
+Only T1 was implemented. Balanced and quiet confirmation medians improved ~6.1%,
+above the predeclared low-complexity 3% threshold; the 15% aspiration was not met.
+Every current/historical correctness, package and bounded resource check passed,
+with sandbox junction coverage recovered by the unchanged test outside sandbox.
+The initial native provenance allowlist error was retained, corrected and fully
+rerun. Implementation `3410924` and documentation-only closure are separated in
+the acceptance record; all runtime hashes stay identical across that closure.
+Hosted six-job candidate CI and owner source-policy review remain pending.
