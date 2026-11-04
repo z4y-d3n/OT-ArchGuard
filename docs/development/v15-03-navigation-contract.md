@@ -4,7 +4,8 @@ Capture family entrypoints keep their original filenames. `aria-current=page`
 on a link means its href names the containing document exactly. A main/related
 family entrypoint uses `aria-current=true` on another document in that family;
 it denotes the current navigation item, never an exact page or approval.
-Each family navigation set has exactly one active item. A separately labelled
+A page has exactly one active family entrypoint across the main/related groups.
+A separately labelled
 pager identifies its current page with a non-link paragraph. Main has `id=main` and
 `tabindex=-1` for the existing skip link; this adds no sequential Tab stop.
 

@@ -11,6 +11,17 @@ All other 95 modules are exact predecessor bytes; no additions/removals/resource
 Native engine/alias 1.3.0, YAML schema 1, capture/drift analytical schemas unchanged.
 Project metadata permits only the distribution-version literal replacement.
 
+Reviewed candidate SHA-256:
+
+| Runtime module | SHA-256 |
+|---|---|
+| `__init__.py` | `537061f2c8798181dbcef27787531b620d459455c9786557521df4d808123228` |
+| `capture/explorer.py` | `3370880ed45688b8d2c084b135d465316cd3ef580922671524a817e3a5a24c3b` |
+
+Capture has no separately versioned renderer revision. Its site contract remains 1:
+filenames, evidence, data and security contracts are unchanged. New distribution
+and exact source digest identify this presentation implementation.
+
 Historical renderer remains `1.5.0.dev1-historical-explorer.1`, digest
 `442d13378cd61586664e19f51ea6834537b0155c07e48ff5a6173628c5d6ca6b`.
 None of its five bound source files changes. A distribution version change is not
@@ -47,3 +58,7 @@ forged installed metadata, pre-import malicious source, unchecked malicious pyc,
 stdlib shadowing, wrong existing page/record links, duplicate/missing anchors,
 pagination and omitted evidence. Published v1.4 references/assets remain untouched.
 Future gates require another reviewed policy; these hashes must not be widened.
+An independent output-only experiment also points a finding at a different valid
+existing flow: graph/anchor checks and canonical JSON remain valid, while the
+unchanged contextual-identity test rejects the semantic join. This demonstrates
+why valid links alone cannot establish authentic evidence relationships.
