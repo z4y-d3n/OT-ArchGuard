@@ -17,6 +17,31 @@ NAMES = (
 )
 
 
+def test_backend_argv_mutation_cannot_redirect_the_sdist(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Independent tiny backend emulates setuptools' documented argv side effect.
+    # Archive parsing is exercised separately with real wheel/sdist mutations.
+    (tmp_path / "setuptools.py").write_text(
+        "import sys\nfrom pathlib import Path\n"
+        "class Backend:\n"
+        " def build_wheel(self, destination):\n"
+        "  Path(destination, 'otarchguard-1.5.0-py3-none-any.whl').write_bytes(b'wheel')\n"
+        "  sys.argv = ['setup', 'bdist_wheel']\n"
+        " def build_sdist(self, destination):\n"
+        "  Path(destination, 'otarchguard-1.5.0.tar.gz').write_bytes(b'sdist')\n"
+        "build_meta = Backend()\n"
+    )
+    source = {"tested_commit": "a" * 40, "tree": "b" * 40, "files": {}}
+    monkeypatch.setattr(release, "_authorized_source", lambda root: source)
+    monkeypatch.setattr(release, "audit", lambda wheel, sdist, root: {"status": "passed"})
+    output = tmp_path / "assets"
+    release.prepare(output, tmp_path)
+    assert {p.name for p in output.iterdir()} == set(NAMES)
+    assert (output / NAMES[0]).read_bytes() == b"wheel"
+    assert (output / NAMES[1]).read_bytes() == b"sdist"
+
+
 @pytest.mark.parametrize("mutation", [None, "claim", "unknown", "boolean_version", "duplicate_key"])
 def test_rehashed_manifest_cannot_invent_acceptance_or_change_types(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, mutation: str | None

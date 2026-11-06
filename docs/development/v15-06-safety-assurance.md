@@ -63,6 +63,14 @@ was a test-contract correction, not a product fix or weakened assertion.
 The first batch also encountered a missing pytest temporary parent; its interrupted
 log is retained and excluded from passing counts. Both issues were corrected.
 
+The first assembler rehearsal exposed a packaging-tool defect: using `sys.argv[1]`
+again after `setuptools.build_meta.build_wheel` used its rewritten argv as the
+sdist destination. The audit rejected the missing expected archive and published
+no four-asset set. The tool now captures the destination before either build;
+an independent tiny backend that mutates argv reproduces the defect and verifies
+the correction. The complete suite was interrupted for this correction and
+restarted after stabilization; interrupted counts are not reported as acceptance.
+
 Receipts: `output/v15-06/safety/baseline.xml` (925 passed), `p1.xml`,
 `stable.xml`, and final complete-suite XML under `output/v15-06/final/`.
 Overlapping executions are not summed. See [acceptance](v15-06-acceptance.md)

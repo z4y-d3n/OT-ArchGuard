@@ -49,8 +49,8 @@ def prepare(output: Path, root: Path = ROOT) -> dict[str, Any]:
             [
                 sys.executable,
                 "-c",
-                "import sys;from setuptools import build_meta;"
-                "build_meta.build_wheel(sys.argv[1]);build_meta.build_sdist(sys.argv[1])",
+                "import sys;from setuptools import build_meta;destination=sys.argv[1];"
+                "build_meta.build_wheel(destination);build_meta.build_sdist(destination)",
                 str(staging.resolve()),
             ],
             cwd=root,
