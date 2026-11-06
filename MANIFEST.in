@@ -152,6 +152,9 @@ include docs/development/v15-04-plan.md
 include docs/development/v15-04-profiling.md
 include docs/development/v15-04-scalability.md
 include docs/development/v15-04-workloads.md
+include docs/development/v15-05-acceptance.md
+include docs/development/v15-05-handoff-es.md
+include docs/development/v15-05-installation-matrix.md
 include docs/domain-model.md
 include docs/images/README.md
 include docs/images/architecture-explorer-overview.png

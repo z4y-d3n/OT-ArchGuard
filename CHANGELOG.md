@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased — V15-05 installation and distribution documentation
+
+- Clarify stable v1.4.0 versus local `1.5.0.dev3` installation, regular wheel/sdist
+  verification, first report, offline prerequisites and historical recovery.
+- Synchronize explicit public-source inventories and record focused package
+  acceptance in the [V15-05 record](docs/development/v15-05-acceptance.md).
+- Preserve all 97 production modules, native engine `1.3.0`, schema `1`,
+  source authorization policies and separately versioned historical renderer.
+
 ## Unreleased — V15-04 profile-guided performance
 
 - Advance the reviewed development distribution to `1.5.0.dev3`, preserving
@@ -32,9 +41,10 @@
 - Record independent audits, performance characterization and installation
   evidence in the [V15-01 dossier](docs/development/v15-01-plan.md).
 
-These tooling changes are unpublished. Distribution/CLI stays `1.4.0`; native
-engine stays `1.3.0`. Runtime source and frozen compatibility pins are unchanged;
-the next development identity requires an explicit compatibility transition.
+At the V15-01 checkpoint, these tooling changes were unpublished and
+distribution/CLI remained `1.4.0`; native engine remained `1.3.0`. Runtime source
+and frozen compatibility pins were unchanged at that checkpoint. The later
+explicit development transitions are recorded above; this is historical wording.
 
 ## 1.4.0 — 2026-11-02 (stable)
 

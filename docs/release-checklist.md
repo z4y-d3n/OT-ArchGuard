@@ -10,6 +10,23 @@ The checklist below is reusable for a **new exact source or documentation commit
 unchecked boxes are not outstanding gates for the already published release.
 Preparation alone authorizes no remote operation, tag or publication.
 
+## V15 development and final-release boundary
+
+V15-05 keeps distribution `1.5.0.dev3`, native engine `1.3.0`, schema `1` and
+all 97 production modules unchanged. Its [local acceptance](development/v15-05-acceptance.md)
+and [installation matrix](development/v15-05-installation-matrix.md) do not certify
+a stable v1.5.0 release. Build development archives with `setuptools.build_meta`
+and audit them with `tools/audit_release.py` against exact committed public source.
+Do not relax `tools/prepare_release.py`'s historical v1.4.0 guard for development.
+
+V15-06 must separately authorize stable `1.5.0` source/version changes, accept the
+exact integrated source, audit/install both final distributions, verify historical
+replay compatibility, assemble manifest/checksums with a reviewed stable-release
+procedure, complete six hosted jobs on the final SHA and finalize release notes.
+Owner approval must precede publication; subsequently verify the published tag
+and downloaded assets. Hash integrity does not authenticate authorship. The
+[Spanish V15-05 handoff](development/v15-05-handoff-es.md) records the remaining work.
+
 ## Completed v1.4.0 publication record
 
 | Publication fact | Verified identity |

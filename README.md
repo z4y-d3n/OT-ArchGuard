@@ -19,6 +19,10 @@ Distribution/CLI: `1.4.0`; frozen native engine: `1.3.0`; native YAML schema: `1
 Python 3.12 and 3.14 form the Windows, Ubuntu and macOS CI matrix; metadata admits
 Python >=3.12 without claiming every interpreter version has been tested.
 
+Current development is unpublished `1.5.0.dev3` (native engine `1.3.0`, schema `1`).
+Reviewers should use the [local build/install procedure](docs/installation.md#v15-development-candidate);
+the Quick Start below continues to use published v1.4.0 assets.
+
 [See it in action](#see-it-in-action) · [Quick Start](#quick-start--5-minutes) ·
 [Capabilities and limits](#what-it-does--what-it-does-not-do) ·
 [Documentation & verification](#documentation--verification)

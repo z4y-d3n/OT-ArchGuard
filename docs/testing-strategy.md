@@ -1,6 +1,18 @@
 # Verification strategy
 
-## Current development: V15-02
+## Current development: V15-05
+
+Distribution remains `1.5.0.dev3`, native engine `1.3.0`, YAML schema `1`.
+The [V15-05 acceptance](development/v15-05-acceptance.md) covers documentation,
+exact committed public source, audited archives, two regular installations and
+focused first-report checks. It preserves all 97 V15-04 modules and policies;
+use `python -I tools/verify_v15_04_transition.py --source-only` before runtime
+imports. The [V15-04 record](development/v15-04-acceptance.md) retains full-suite
+and historical-chain evidence. V15-05 does not repeat those expensive unchanged
+suites locally. Its own six-job hosted matrix remains required after publication
+of the branch. The older development checkpoints below remain historical.
+
+## Historical development checkpoint: V15-02
 
 The [V15-02 acceptance record](development/v15-02-acceptance.md) separates local
 development verification from published-release evidence below. Distribution
@@ -58,7 +70,10 @@ Historical analytical revisions independently bind exact producer source. A
 distribution source change does not authorize rewriting their hashes or approval
 chains. Test the explicit [development-workspace upgrade boundary](installation.md#historical-workspaces-and-upgrade).
 
-For a future authorized release, rehearse four-asset assembly from its clean
+For a future authorized release, first review the stable-version/source boundary
+and release-tool guard. `tools/prepare_release.py` currently accepts only its
+historical v1.4.0 source/version contract; it is not a dev3 assembler. V15-06 must
+authorize the v1.5.0 assembly procedure independently. Then rehearse from its clean
 committed public inventory with `python -m tools.prepare_release --output NEW_DIRECTORY`
 and reopen it with `--verify`. Confirm exact commit/tree, audited wheel/sdist
 members, installed payload equality and all three checksum entries. For post-release

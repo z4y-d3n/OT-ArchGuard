@@ -23,3 +23,8 @@ Exact verification pins are in tools/verification-requirements.txt. Ranges do no
 prove every combination. Full tested closure and embedded-component notices are in
 [THIRD_PARTY_NOTICES](../THIRD_PARTY_NOTICES.md). Dependencies are installed separately,
 not vendored. Offline redistribution retains complete upstream licenses.
+
+Offline analysis does not install dependencies. A wheelhouse must contain the
+complete runtime/transitive closure for the target OS, CPU and Python; source
+installation also needs its build backend. See the [offline installation procedure](installation.md#optional-completely-offline-setup)
+for `--no-index`, `--find-links`, `pip check` and the limits of `--no-deps`.
