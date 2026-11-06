@@ -1,5 +1,10 @@
 # Dependencies and licenses
 
+The unpublished `1.5.0` candidate adds no runtime or verification dependency.
+V15-06 transition/assembly reuse the standard library and approved build tools.
+Offline installation still requires a wheelhouse matching the target OS and
+interpreter; local Windows dependencies do not validate other platforms.
+
 Runtime: Typer for CLI, PyYAML for bounded parsing, Pydantic for strict records.
 The standard library provides addressing, hashing, graphs, intervals and serialization.
 There are no mandatory cloud, telemetry, scanning, browser or LLM dependencies.

@@ -1,5 +1,28 @@
 # Verification strategy
 
+## Current stable candidate: V15-06
+
+Distribution/CLI is unpublished `1.5.0`; native engine `1.3.0`, schema `1`.
+Run focused independent reachability, metamorphic, capture/import/report and
+historical checks first, then the complete applicable regular-install suite
+after implementation stabilizes. Reuse existing finite seeded corpora/oracles.
+The [safety matrix](development/v15-06-safety-assurance.md) identifies assertions;
+[acceptance](development/v15-06-acceptance.md) records actual results.
+
+`python -I tools/verify_v15_06_transition.py` authorizes source and installed
+bytes before runtime import. Its full mode installs archived dev3, runs unchanged
+V15-04 policy/tests there and recursively reuses V15-03/V15-02. Stable full-suite
+exclusions are exactly `tests/test_v15_transition.py`,
+`tests/test_v15_03_transition.py` and `tests/test_v15_04_transition.py`; each runs
+in its original version context. Do not widen historical policies.
+The six-job CI matrix uses this same chain.
+
+`python -I tools/prepare_v15_release.py --output FRESH_DIRECTORY` assembles stable
+assets; `--verify` independently reopens them. The v1.4 assembler is unchanged.
+Retain exact source identities, commands, installed paths and unique test IDs.
+Repeated wheel/sdist/focused executions overlap; never add them as unique tests.
+The sections below retain their historical V15-05 and earlier context.
+
 ## Current development: V15-05
 
 Distribution remains `1.5.0.dev3`, native engine `1.3.0`, YAML schema `1`.

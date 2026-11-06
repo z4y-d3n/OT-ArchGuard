@@ -155,6 +155,10 @@ docs/development/v15-04-workloads.md
 docs/development/v15-05-acceptance.md
 docs/development/v15-05-handoff-es.md
 docs/development/v15-05-installation-matrix.md
+docs/development/v15-06-acceptance.md
+docs/development/v15-06-compatibility.md
+docs/development/v15-06-handoff-es.md
+docs/development/v15-06-safety-assurance.md
 docs/domain-model.md
 docs/images/README.md
 docs/images/architecture-explorer-overview.png
@@ -173,6 +177,7 @@ docs/release-notes-1.2.0.md
 docs/release-notes-1.3-draft.md
 docs/release-notes-1.3.0.md
 docs/release-notes-1.4.0.md
+docs/release-notes-1.5.0.md
 docs/release-publication-1.1.0.md
 docs/release-publication-1.2.0.md
 docs/reporting.md
@@ -505,6 +510,9 @@ tests/test_v15_03_navigation.py
 tests/test_v15_03_transition.py
 tests/test_v15_04_text.py
 tests/test_v15_04_transition.py
+tests/test_v15_06_assembly.py
+tests/test_v15_06_safety.py
+tests/test_v15_06_transition.py
 tests/test_v15_foundation.py
 tests/test_v15_renderer_ux.py
 tests/test_v15_report_reliability.py
@@ -530,6 +538,7 @@ tools/history_performance_worker.py
 tools/independent_capture_corpus.py
 tools/offline/sitecustomize.py
 tools/prepare_release.py
+tools/prepare_v15_release.py
 tools/project_walkthrough.py
 tools/protocol_corpus.py
 tools/protocol_external.py
@@ -550,5 +559,6 @@ tools/verify_legacy_candidate.py
 tools/verify_source_checkout.py
 tools/verify_v15_03_transition.py
 tools/verify_v15_04_transition.py
+tools/verify_v15_06_transition.py
 tools/verify_v15_transition.py
 tools/walkthrough_cli.py

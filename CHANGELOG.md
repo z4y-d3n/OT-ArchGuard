@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased — V15-06 stable candidate and final safety assurance
+
+- Transition distribution/CLI `1.5.0.dev3` to `1.5.0` with an independent pinned
+  source policy. Preserve native engine `1.3.0`, schema `1`, the other 96 runtime
+  modules, historical renderer identity and predecessor policies.
+- Add independent alternative-route and rejection/model-negative propagation
+  regressions; reuse existing bounded parser, protocol and historical oracles.
+- Add a v1.5-only four-asset assembler, retaining the v1.4 guard.
+- Publication and integrated-source acceptance require separate owner review.
+  See [release notes](docs/release-notes-1.5.0.md) and
+  [acceptance](docs/development/v15-06-acceptance.md).
+
 ## Unreleased — V15-05 installation and distribution documentation
 
 - Clarify stable v1.4.0 versus local `1.5.0.dev3` installation, regular wheel/sdist
