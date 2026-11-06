@@ -1,6 +1,7 @@
 # V15-06 — local acceptance and source freeze
 
-Status is finalized from the receipts below; publication remains pending.
+**READY_FOR_OWNER_REVIEW**. Required local safety, compatibility and package
+checks pass; candidate hosted CI, integration and publication remain pending.
 This dossier distinguishes local gate acceptance, exact integrated-source
 acceptance and explicit owner publication authorization.
 
@@ -27,18 +28,33 @@ is made. Source/payload equivalence is checked independently.
 | Initial focused safety/current dev3 | 925 passed; `safety/baseline.xml` |
 | New stable policy, propagation and manifest regressions | 49 passed initial campaign; `safety/stable.xml`; superseded by expanded P1/full runs |
 | Expanded protocols/imports/validation/Explorer and stable regressions | 734 passed; `safety/p1.xml` |
-| Ruff lint/format, strict mypy, dependencies | Final logs in `final/checks.json` and command logs |
-| Complete applicable regularly installed wheel suite | `final/full-suite.xml`; historical exact-version exclusions only |
-| Archived dev3 and recursive dev2/dev1/v1.4 policies/tests | `compatibility/verified/transition.json` and recursive XML/command receipts |
-| Independent native byte comparison and producer isolation/recovery | Same transition receipt; frozen capture/protocol tests and installed walkthroughs |
+| Final source/assembly/safety supplement | 56 passed; `safety/final-frozen.xml`; includes five new unique source/cache/entry controls |
+| Ruff lint/format, strict mypy, dependencies | PASS; strict mypy 283 source files; final logs and `final/checks.json` |
+| Complete applicable regularly installed wheel suite | 4515 passed, 1 skipped; `final/full-suite.xml`; historical exact-version exclusions only |
+| Archived dev3 / dev2 / dev1 policy tests | 34 / 24 / 30 passed in matching runtimes, plus unchanged recursive native-v1.4/v1.2 chain; `compatibility/verified/` |
+| Independent native byte comparison and producer isolation/recovery | PASS: 123 analytical artifacts EXACT_BYTES plus verified manifest; dev3 recovery, stable EVIDENCE_REVISION, unchanged historical files and no approval transfer |
 | Four-asset assembly, reopen audit, source/inventory, wheel/sdist installs | `final/checks.json`, `final/freeze.json`, `packages/` |
 | Installed fictional native/Architecture/Capture/Historical/Drift walkthroughs | `final/checks.json` and `packages/walkthroughs/` |
 | Documentation links, inventories and final source policy | `final/checks.json` |
 
 All paths in the table are beneath ignored `output/v15-06/`. The final freeze
 records unique collected node IDs and counts; focused/repeated runs overlap and
-are not added to the complete-suite total. Failed setup/exploratory attempts are
-retained separately and are not acceptance evidence.
+are not added to the complete-suite total. Final unique collection is 4521
+identities: 4520 passed and one skipped across the complete suite and final
+supplement. Five new controls are absent from the earlier 4516-node collection;
+the other supplement cases overlap it. The full campaign ran from functional
+commit `1f23f36c12e97a228f225477c2c5000abe8f7db8`, tree
+`441398ca802497e1fe1a7db3803d49633bba230a`. Subsequent changes refine new
+three-zone/propagation tests and harden only the new assembler; all affected
+V15-06 suites run again on the final frozen Python bytes. Their hash inventory
+is `safety/final-supplement-source.json`. The full suite is not falsely reported
+as a second execution on the final documentation commit.
+
+The sole skip is `test_historical_explorer_bundle.py:560`: this Windows account
+cannot create junctions. Junction traversal behavior is not locally certified;
+normal bundle/path rejection and other source negative checks still run. This
+skip remains explicit for owner/hosted review. Failed setup/exploratory attempts
+are retained separately and are not acceptance evidence.
 
 The safety matrix documents actual assertions and the two added high-value
 relations. No unresolved production P0/P1 defect was demonstrated. Declared
@@ -62,6 +78,25 @@ member with the committed public inventory, metadata, entry point, notices,
 runtime modules, RECORD and generated source inventory. Extra assets, unsafe/
 duplicate members, changed data, forged manifest acceptance claims, dirty source
 and reused output are rejected. The original v1.4 assembler is unchanged.
+
+Both regular installations passed source authorization, environment/CLI/help
+and dependency checks. Audits cover 104 wheel members, 572 sdist members and
+564 public source files. The independent sdist focused suite passed 33 cases;
+the full sdist suite is left to hosted CI. All project, document, quality,
+capture, evidence, history, drift and Historical Explorer walkthroughs passed,
+including extracted-sdist native/Architecture Explorer, fictional examples,
+supported/limited capture consumers and original/v1.4 protocol corpora.
+The final committed assembly is rebuilt/reopened and reinstalled after dossier
+freeze; its four final hashes live in `final/freeze.json`. Earlier
+`rehearsal/functional-assets/` and `functional-hashes.json` describe their own
+functional commit, not final documentation source or eventual integration.
+
+Two assembly issues were resolved: the backend's argv mutation redirected the
+first sdist (audit refused publication), and mutable helper caches could execute
+before authorization. The stable assembler captures its destination, requires
+isolated source execution, loads its reviewed policy from source and compiles
+reused primitives from authenticated Git bytes. Independent negative controls
+verify both corrections. No production semantics changed.
 
 ## Pending or unexecuted
 

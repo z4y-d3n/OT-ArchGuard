@@ -13,7 +13,7 @@ Preparation alone authorizes no remote operation, tag or publication.
 ## V15 development and final-release boundary
 
 V15-06 now provides a separately pinned stable `1.5.0` source policy and
-`python -m tools.prepare_v15_release --output FRESH_DIRECTORY`, followed by
+`python -I tools/prepare_v15_release.py --output FRESH_DIRECTORY`, followed by
 the same command with `--verify`. The original v1.4 tool/policies remain fixed.
 See [current acceptance](development/v15-06-acceptance.md) and the
 [Spanish owner procedure](development/v15-06-handoff-es.md) for exact local

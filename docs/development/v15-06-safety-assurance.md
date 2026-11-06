@@ -14,7 +14,7 @@ Exact node IDs/counts/outcomes are in the JUnit receipts cited below.
 
 | Case / priority | Classification / input and mutation | Contract / independent oracle | Result / evidence |
 |---|---|---|---|
-| P0-A | COVERAGE_GAP closed: boundary-device IT→FW→DMZ, denied direct crossing and explicit access records | Existing raw `oracle` per port and `replay_raw` witness; direct deny cannot erase the other permitted route | PASS: `test_v15_06_safety.py::test_alternate_multihop_route_and_critical_forwarding` |
+| P0-A | COVERAGE_GAP closed: boundary-device IT→gateway→DMZ→second gateway→OT, denied direct crossing and explicit access records | Existing raw `oracle` per port and `replay_raw` witness; direct deny cannot erase the other permitted route | PASS: `test_v15_06_safety.py::test_alternate_multihop_route_and_critical_forwarding` |
 | P0-B | EXISTING_VERIFIED: boundary-device interfaces, absent/reverse forwarding, protocol and selector changes | Every directed transport/forwarding edge needs allow; applicable deny wins regardless of specificity/order; interfaces never imply forwarding | PASS: reachability T04/T05/T06/B02–B08/T09, oracle and policy suites |
 | P0-C | COVERAGE_GAP closed: deny critical `f_it_dmz`, restore it, allow direct alternative, remove original declaration | True→false→true and surviving independent witness; general allow cannot defeat specific deny | PASS: same new relation; minimal witness replay independently reads original edge/rule declarations |
 | P0-D | EXISTING_VERIFIED / CONTRACT_DEPENDENT: unknown reference, interface placement, unsupported policy, document conflicts, stale review | Validation rejects invalid supported declarations; review never implicitly approves candidates; finite validated subsets retain owner completeness qualification | PASS: validation, ingestion projects/documents, reporting and new propagation tests |
@@ -70,6 +70,15 @@ no four-asset set. The tool now captures the destination before either build;
 an independent tiny backend that mutates argv reproduces the defect and verifies
 the correction. The complete suite was interrupted for this correction and
 restarted after stabilization; interrupted counts are not reported as acceptance.
+
+Assembly review also identified an avoidable trust gap in importing protected
+predecessor helpers before checking them: an unchecked helper `.pyc` could execute
+before source authorization. The new assembler compiles authenticated Git bytes
+for reused checkout/audit/assembly primitives directly. A benign marker payload
+in an unchecked helper cache never executes; an unsafe-import mutation does
+execute it, demonstrating regression sensitivity. No predecessor tool or policy
+was changed. Final assembly and safety refinements receive a focused supplement;
+the complete runtime suite is not counted twice.
 
 Receipts: `output/v15-06/safety/baseline.xml` (925 passed), `p1.xml`,
 `stable.xml`, and final complete-suite XML under `output/v15-06/final/`.

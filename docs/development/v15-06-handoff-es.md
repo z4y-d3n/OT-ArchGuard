@@ -1,5 +1,19 @@
 # V15-06 — entrega al propietario
 
+**READY_FOR_OWNER_REVIEW**. Suite completa: 4515 PASS y un SKIP por falta de
+permisos Windows para crear junctions. Suplemento final: 56 PASS; cubre cinco
+casos nuevos y refinamientos de las mismas pruebas. Colección actual única:
+4520 PASS / 1 SKIP, sin sumar repeticiones. Suites históricas compatibles:
+34 / 24 / 30 PASS; 123 artefactos analíticos idénticos. Ruff, formato, mypy
+estricto y dependencias aprobados. Wheel/sdist regulares, 33 pruebas focalizadas
+del sdist, corpus y walkthroughs documentados aprobados. CI del candidato pendiente.
+
+Se corrigieron dos defectos del ensamblador nuevo: argv mutable del backend y
+ejecución de cachés de helpers antes de autenticarlos. Los ensayos negativos
+demuestran ambas correcciones. El ensamblador se ejecuta con `python -I` y
+compila su política y las primitivas autenticadas directamente desde bytes.
+No se cambió semántica productiva ni autoridad histórica.
+
 El candidato local cambia distribución/CLI `1.5.0.dev3` → `1.5.0`; no está
 publicado. Motor nativo `1.3.0`, esquema YAML `1`, límites, formatos de evidencia
 y semántica analítica se conservan. Solo cambia el literal de distribución en
@@ -96,9 +110,9 @@ $ReleasePython = (Resolve-Path .venv-v15-final/Scripts/python.exe).Path
 & $ReleasePython -m pip install -r tools/verification-requirements.txt
 if ($LASTEXITCODE -ne 0) { throw 'Dependencias fallaron' }
 $FinalAssets = "output/v15-final-$IntegratedSha"
-& $ReleasePython -m tools.prepare_v15_release --output $FinalAssets
+& $ReleasePython -I tools/prepare_v15_release.py --output $FinalAssets
 if ($LASTEXITCODE -ne 0) { throw 'Ensamblado falló' }
-& $ReleasePython -m tools.prepare_v15_release --verify --output $FinalAssets
+& $ReleasePython -I tools/prepare_v15_release.py --verify --output $FinalAssets
 if ($LASTEXITCODE -ne 0) { throw 'Auditoría independiente falló' }
 Get-ChildItem -LiteralPath $FinalAssets -File | Get-FileHash -Algorithm SHA256
 & $ReleasePython -m pip install --no-index --no-deps "$FinalAssets/otarchguard-1.5.0-py3-none-any.whl"

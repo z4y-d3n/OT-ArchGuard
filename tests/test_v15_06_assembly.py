@@ -2,6 +2,11 @@
 
 import hashlib
 import json
+import os
+import py_compile
+import shutil
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -15,6 +20,16 @@ NAMES = (
     "release-manifest.json",
     "SHA256SUMS.txt",
 )
+
+
+def test_assembly_entry_requires_isolated_source_execution(tmp_path: Path) -> None:
+    result = subprocess.run(
+        [sys.executable, release.__file__, "--help"],
+        cwd=tmp_path,
+        capture_output=True,
+        timeout=30,
+    )
+    assert result.returncode != 0 and b"Use python -I" in result.stderr
 
 
 def test_backend_argv_mutation_cannot_redirect_the_sdist(
@@ -40,6 +55,53 @@ def test_backend_argv_mutation_cannot_redirect_the_sdist(
     assert {p.name for p in output.iterdir()} == set(NAMES)
     assert (output / NAMES[0]).read_bytes() == b"wheel"
     assert (output / NAMES[1]).read_bytes() == b"sdist"
+
+
+@pytest.mark.parametrize("unsafe_import_mutation", [False, True])
+@pytest.mark.parametrize("helper", ["audit_release", "verify_v15_06_transition"])
+def test_mutable_predecessor_helper_cache_never_executes(
+    tmp_path: Path, unsafe_import_mutation: bool, helper: str
+) -> None:
+    root = Path(release.__file__).resolve().parents[1]
+    candidate = tmp_path / "candidate"
+    for name in (root / "tools/public-files.txt").read_text(encoding="utf-8").splitlines():
+        target = candidate / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(root / name, target)
+    if unsafe_import_mutation:
+        # Negative control: reintroduce the dangerous preauthorization import.
+        tool = candidate / "tools/prepare_v15_release.py"
+        raw = tool.read_text(encoding="utf-8")
+        tool.write_text(
+            raw.replace("import argparse\n", f"import tools.{helper}\nimport argparse\n", 1)
+        )
+    marker = tmp_path / "untrusted-cache-executed"
+    evil = tmp_path / "evil.py"
+    evil.write_text(f"from pathlib import Path\nPath({str(marker)!r}).write_text('executed')\n")
+    cached = candidate / "tools/__pycache__" / f"{helper}.{sys.implementation.cache_tag}.pyc"
+    cached.parent.mkdir()
+    py_compile.compile(
+        str(evil),
+        cfile=str(cached),
+        invalidation_mode=py_compile.PycInvalidationMode.UNCHECKED_HASH,
+    )
+    git_dir = subprocess.check_output(
+        ["git", "rev-parse", "--absolute-git-dir"], cwd=root, text=True
+    ).strip()
+    script = (
+        f"import runpy,sys;sys.path.insert(0,{str(candidate)!r});"
+        "sys.argv=['prepare_v15_release','--verify','--output','missing-assets'];"
+        "runpy.run_module('tools.prepare_v15_release',run_name='__main__')"
+    )
+    result = subprocess.run(
+        [sys.executable, "-I", "-c", script],
+        cwd=candidate,
+        env={**os.environ, "GIT_DIR": git_dir},
+        capture_output=True,
+        timeout=60,
+    )
+    assert result.returncode != 0
+    assert marker.exists() is unsafe_import_mutation
 
 
 @pytest.mark.parametrize("mutation", [None, "claim", "unknown", "boolean_version", "duplicate_key"])

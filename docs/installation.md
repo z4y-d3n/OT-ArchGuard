@@ -309,9 +309,9 @@ From clean committed V15-06 source, using fresh output/environment paths:
 python -m venv .venv-v15-review
 $CandidatePython = (Resolve-Path .venv-v15-review/Scripts/python.exe).Path
 & $CandidatePython -m pip install -r tools/verification-requirements.txt
-& $CandidatePython -m tools.prepare_v15_release --output output/v15-candidate-assets
+& $CandidatePython -I tools/prepare_v15_release.py --output output/v15-candidate-assets
 if ($LASTEXITCODE -ne 0) { throw 'Assembly failed' }
-& $CandidatePython -m tools.prepare_v15_release --verify --output output/v15-candidate-assets
+& $CandidatePython -I tools/prepare_v15_release.py --verify --output output/v15-candidate-assets
 if ($LASTEXITCODE -ne 0) { throw 'Asset verification failed' }
 & $CandidatePython -m pip install --no-index --no-deps output/v15-candidate-assets/otarchguard-1.5.0-py3-none-any.whl
 if ($LASTEXITCODE -ne 0) { throw 'Install failed' }

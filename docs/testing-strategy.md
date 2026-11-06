@@ -17,7 +17,7 @@ exclusions are exactly `tests/test_v15_transition.py`,
 in its original version context. Do not widen historical policies.
 The six-job CI matrix uses this same chain.
 
-`python -m tools.prepare_v15_release --output FRESH_DIRECTORY` assembles stable
+`python -I tools/prepare_v15_release.py --output FRESH_DIRECTORY` assembles stable
 assets; `--verify` independently reopens them. The v1.4 assembler is unchanged.
 Retain exact source identities, commands, installed paths and unique test IDs.
 Repeated wheel/sdist/focused executions overlap; never add them as unique tests.

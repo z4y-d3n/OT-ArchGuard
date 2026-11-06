@@ -6,6 +6,11 @@ Merged V15-05 predecessor is dynamically verified PR #30 integration:
 The PR head is `9c4bb795a6ec1426aec4f902bd21e7b027148e6b`; it is not the
 predecessor pin. Its six final-candidate jobs passed in run 42138952966.
 Raw API merge/run/job evidence is `output/v15-06/preflight/github.json`.
+The final PR head and merged predecessor have the same exact tree
+`e2c40a52a3f5d9370d2053474d9f2aab1d1463b4`; `git diff` between them is empty.
+Those six successful jobs therefore cover the integrated predecessor's source
+bytes. The separate post-merge run 42143670810 is retained in
+`preflight/merged-main-jobs.json`; its status is not substituted for candidate CI.
 
 ## Reviewed stable authorization
 
@@ -32,6 +37,14 @@ evidence, forged native manifests/artifacts, malformed/duplicate metadata,
 forged entry points/dependencies and editable installs are rejected. The policy
 is reviewed authorization, not a cryptographic authorship signature; a receipt
 cannot authorize the source that generated it.
+
+The v1.5 assembler also reuses predecessor checkout/audit/assembly primitives by
+compiling authenticated Git bytes directly. Protected mutable helper source or
+unchecked helper bytecode cannot run before its source check. Positive/negative
+cache-injection controls verify that boundary; the original v1.4 tool is intact.
+Invoke the assembler as `python -I tools/prepare_v15_release.py`; nonisolated
+entry is rejected. Its reviewed V15-06 policy is also compiled directly from
+source, avoiding both policy and predecessor helper caches.
 
 ## Analytical and historical evidence
 

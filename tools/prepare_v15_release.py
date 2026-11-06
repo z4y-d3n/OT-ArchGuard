@@ -1,27 +1,86 @@
 """Assemble exactly four stable v1.5 assets from clean, authorized committed source."""
 
+import sys
+
+if __name__ == "__main__" and not sys.flags.isolated:
+    raise SystemExit("Use python -I tools/prepare_v15_release.py")
+
 import argparse
 import hashlib
 import json
 import subprocess
-import sys
 import tempfile
+from functools import cache
 from pathlib import Path
-from typing import Any
-
-from tools.audit_release import audit
-from tools.prepare_release import _manifest, _names, _source, verify_checksums
-from tools.verify_v15_06_transition import VERSION, check_source, reference
+from typing import Any, cast
 
 ROOT = Path(__file__).resolve().parents[1]
+_policy: dict[str, Any] = {
+    "__name__": "reviewed_v15_06_policy",
+    "__file__": str(ROOT / "tools/verify_v15_06_transition.py"),
+}
+# The reviewed entry point and policy are trusted source, never mutable .pyc.
+exec(
+    compile((ROOT / "tools/verify_v15_06_transition.py").read_bytes(), "reviewed-policy", "exec"),
+    _policy,
+)
+VERSION = cast(str, _policy["VERSION"])
+
+
+def reference() -> dict[str, bytes]:
+    return cast(dict[str, bytes], _policy["reference"]())
+
+
+def check_source(root: Path, before: dict[str, bytes]) -> dict[str, Any]:
+    return cast(dict[str, Any], _policy["check_source"](root, before))
+
+
+@cache
+def _primitives() -> dict[str, Any]:
+    """Execute authenticated predecessor helpers directly, never checkout caches."""
+    before = reference()
+    check_source(ROOT, before)
+    namespace: dict[str, Any] = {
+        "__name__": "immutable_v15_assembly",
+        "__file__": str(ROOT / "tools/prepare_release.py"),
+    }
+    for name in ("verify_source_checkout.py", "audit_release.py", "prepare_release.py"):
+        raw = before["tools/" + name]
+        if name == "prepare_release.py":
+            for statement in (
+                b"from tools.audit_release import audit\n",
+                b"from tools.verify_source_checkout import verify\n",
+            ):
+                if raw.count(statement) != 1:
+                    raise ValueError("Unexpected authenticated release helper imports")
+                raw = raw.replace(statement, b"", 1)
+        exec(compile(raw, "immutable-" + name, "exec"), namespace)
+    return namespace
+
+
+def audit(wheel: Path, sdist: Path, root: Path) -> dict[str, Any]:
+    return cast(dict[str, Any], _primitives()["audit"](wheel, sdist, root))
+
+
+def _manifest(
+    source: dict[str, Any], observed: dict[str, Any], version: str, engine: str
+) -> dict[str, Any]:
+    return cast(dict[str, Any], _primitives()["_manifest"](source, observed, version, engine))
+
+
+def _names(version: str) -> tuple[str, str, str, str]:
+    return cast(tuple[str, str, str, str], _primitives()["_names"](version))
+
+
+def verify_checksums(folder: Path, names: tuple[str, str, str, str]) -> None:
+    _primitives()["verify_checksums"](folder, names)
 
 
 def _authorized_source(root: Path) -> dict[str, Any]:
-    source = _source(root)
     # Distribution, engine, complete runtime inventory and historical policies
     # must match the independent V15-06 authorization, not a build receipt.
     check_source(root, reference())
-    return source
+    return cast(dict[str, Any], _primitives()["_source"](root))
 
 
 def verify_assets(folder: Path, root: Path = ROOT) -> dict[str, Any]:
@@ -82,7 +141,7 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--verify", action="store_true")
     args = parser.parse_args()
-    (verify_assets if args.verify else prepare)(args.output.resolve())
+    (verify_assets if args.verify else prepare)(args.output.absolute())
     print("Four local v1.5.0 assets verified; publication requires owner authorization")
 
 
