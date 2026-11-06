@@ -299,9 +299,55 @@ This removes the installed distribution; it does not migrate or delete workspace
 inputs or generated reports, and pip may retain dependency packages. Keep those
 data independently backed up. Never remove the retained known-good environment
 or alter historical release archives as part of rollback.
+## v1.5.0 unpublished stable candidate
+
+Current source identifies distribution/CLI `1.5.0`, native engine `1.3.0`, schema
+`1`. It is unpublished. Published v1.4.0 instructions above remain valid.
+From clean committed V15-06 source, using fresh output/environment paths:
+
+```powershell
+python -m venv .venv-v15-review
+$CandidatePython = (Resolve-Path .venv-v15-review/Scripts/python.exe).Path
+& $CandidatePython -m pip install -r tools/verification-requirements.txt
+& $CandidatePython -m tools.prepare_v15_release --output output/v15-candidate-assets
+if ($LASTEXITCODE -ne 0) { throw 'Assembly failed' }
+& $CandidatePython -m tools.prepare_v15_release --verify --output output/v15-candidate-assets
+if ($LASTEXITCODE -ne 0) { throw 'Asset verification failed' }
+& $CandidatePython -m pip install --no-index --no-deps output/v15-candidate-assets/otarchguard-1.5.0-py3-none-any.whl
+if ($LASTEXITCODE -ne 0) { throw 'Install failed' }
+& $CandidatePython -I tools/verify_v15_06_transition.py --source-only --output output/v15-candidate-authorized.json
+if ($LASTEXITCODE -ne 0) { throw 'Source authorization failed' }
+& $CandidatePython tools/verify_environment.py --output output/v15-candidate-environment.json
+& $CandidatePython -m pip check
+& .venv-v15-review/Scripts/otarchguard.exe --version
+& .venv-v15-review/Scripts/otarchguard.exe --help
+& .venv-v15-review/Scripts/otarchguard.exe validate examples/remote-support/proposed.yaml
+& .venv-v15-review/Scripts/otarchguard.exe explore examples/remote-support/proposed.yaml --output output/v15-first-report
+```
+
+Stop on every failed command. Dependencies are installed first; for a prepared
+offline target add `--no-index --find-links wheelhouse` to their installation.
+Independently install the matching `otarchguard-1.5.0.tar.gz` in another fresh
+environment with the same dependencies and `--no-index --no-deps
+--no-build-isolation`, then repeat authorization/environment/CLI checks.
+Helpers/examples come from reviewed source or the matching extracted sdist;
+wheels contain runtime modules only. Open the generated local `index.html`.
+
+For Linux/macOS select `python3.12` or `python3.14`, use `bin/python` and
+`bin/otarchguard`, and adapt shell syntax. Local Windows results do not validate
+these platforms. The exact candidate and integrated source need six hosted jobs.
+Use the new V15-06 policy/assembler; the old V15-04 policy and v1.4 assembler
+intentionally reject stable source and must not be relaxed.
+
+Stable source is a distinct historical producer. Preserve original environments
+and workspaces; old approvals never transfer automatically. Portable integrity
+and compatible-source replay remain separate. Consult the
+[compatibility record](development/v15-06-compatibility.md) and
+[owner procedure](development/v15-06-handoff-es.md).
+
 ## V15 development candidate
 
-Current development distribution/CLI is **`1.5.0.dev3`**; native engine remains
+At the historical V15-05 checkpoint distribution/CLI was **`1.5.0.dev3`**; native engine remains
 `1.3.0`, YAML schema `1`. This is unpublished development verification. The
 v1.4.0 instructions above continue to describe the published stable release.
 Use the exact reviewed committed source, not merely a moving branch name. Record

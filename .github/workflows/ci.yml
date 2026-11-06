@@ -53,7 +53,7 @@ jobs:
       - name: Install the exact audited candidate wheel
         run: python -m pip install --force-reinstall --no-index --no-deps --no-build-isolation "output/artifacts/$env:OTARCHGUARD_WHEEL"
       - name: Authorize installed source before candidate runtime imports
-        run: python -I tools/verify_v15_04_transition.py --source-only --output output/authorized-runtime.json
+        run: python -I tools/verify_v15_06_transition.py --source-only --output output/authorized-runtime.json
       - name: Verify installed distribution, imports and native console
         run: python tools/verify_environment.py --output output/environment-${{ matrix.os }}-${{ matrix.python }}.json
       - name: Ruff lint
@@ -68,14 +68,14 @@ jobs:
         env:
           OTARCHGUARD_OFFLINE_CHECK: '1'
           PYTHONPATH: '${{ github.workspace }}/tools/offline'
-        # Exact-dev1/dev2 policy tests run unchanged in archived predecessor environments below.
-        run: python -m pytest --ignore=tests/test_v15_transition.py --ignore=tests/test_v15_03_transition.py --basetemp=.pytest_tmp --tb=short --junitxml=output/full-suite.xml
-      - name: Verify V15-04 and unchanged historical V15-03/V15-02 transitions offline
+        # Exact-dev1/dev2/dev3 policy tests run unchanged in archived predecessor environments below.
+        run: python -m pytest --ignore=tests/test_v15_transition.py --ignore=tests/test_v15_03_transition.py --ignore=tests/test_v15_04_transition.py --basetemp=.pytest_tmp --tb=short --junitxml=output/full-suite.xml
+      - name: Verify stable V15-06 and unchanged V15-04/V15-03/V15-02 transitions offline
         env:
           OTARCHGUARD_OFFLINE_CHECK: '1'
           PYTHONPATH: '${{ github.workspace }}/tools/offline'
           PIP_NO_INDEX: '1'
-        run: python -I tools/verify_v15_04_transition.py --output output/native-compatibility
+        run: python -I tools/verify_v15_06_transition.py --output output/native-compatibility
       - name: Validate frozen read-only evidence consumers offline
         env:
           OTARCHGUARD_OFFLINE_CHECK: '1'
@@ -114,11 +114,11 @@ jobs:
         run: |
           python -m pip install --force-reinstall --no-index --no-deps --no-build-isolation "output/artifacts/$env:OTARCHGUARD_SDIST"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python -I tools/verify_v15_04_transition.py --source-only --output output/authorized-sdist.json
+          python -I tools/verify_v15_06_transition.py --source-only --output output/authorized-sdist.json
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python tools/verify_environment.py --output output/installed-sdist.json
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python -m pytest tests --basetemp=output/sdist-tmp --ignore=tests/test_v15_transition.py --ignore=tests/test_v15_03_transition.py --tb=short --junitxml=output/sdist-suite.xml
+          python -m pytest tests --basetemp=output/sdist-tmp --ignore=tests/test_v15_transition.py --ignore=tests/test_v15_03_transition.py --ignore=tests/test_v15_04_transition.py --tb=short --junitxml=output/sdist-suite.xml
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python -m tools.project_walkthrough --output output/project-walkthrough
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -174,21 +174,27 @@ jobs:
             output/native-compatibility/command-*.stdout
             output/native-compatibility/command-*.stderr
             output/native-compatibility/historical-tests.xml
-            output/native-compatibility/v15-03/transition.json
-            output/native-compatibility/v15-03/commands.json
-            output/native-compatibility/v15-03/command-*.stdout
-            output/native-compatibility/v15-03/command-*.stderr
-            output/native-compatibility/v15-03/historical-tests.xml
-            output/native-compatibility/v15-03/candidate-native/*
-            output/native-compatibility/v15-03/v15-02/transition.json
-            output/native-compatibility/v15-03/v15-02/commands.json
-            output/native-compatibility/v15-03/v15-02/command-*.stdout
-            output/native-compatibility/v15-03/v15-02/command-*.stderr
-            output/native-compatibility/v15-03/v15-02/historical-v14/comparison.json
-            output/native-compatibility/v15-03/v15-02/historical-v14/command-*.stdout
-            output/native-compatibility/v15-03/v15-02/historical-v14/command-*.stderr
-            output/native-compatibility/v15-03/v15-02/historical-v14/baseline/*
-            output/native-compatibility/v15-03/v15-02/historical-v14/candidate/*
+            output/native-compatibility/v15-04/v15-03/transition.json
+            output/native-compatibility/v15-04/v15-03/commands.json
+            output/native-compatibility/v15-04/v15-03/command-*.stdout
+            output/native-compatibility/v15-04/v15-03/command-*.stderr
+            output/native-compatibility/v15-04/v15-03/historical-tests.xml
+            output/native-compatibility/v15-04/v15-03/candidate-native/*
+            output/native-compatibility/v15-04/v15-03/v15-02/transition.json
+            output/native-compatibility/v15-04/v15-03/v15-02/commands.json
+            output/native-compatibility/v15-04/v15-03/v15-02/command-*.stdout
+            output/native-compatibility/v15-04/v15-03/v15-02/command-*.stderr
+            output/native-compatibility/v15-04/v15-03/v15-02/historical-v14/comparison.json
+            output/native-compatibility/v15-04/v15-03/v15-02/historical-v14/command-*.stdout
+            output/native-compatibility/v15-04/v15-03/v15-02/historical-v14/command-*.stderr
+            output/native-compatibility/v15-04/v15-03/v15-02/historical-v14/baseline/*
+            output/native-compatibility/v15-04/v15-03/v15-02/historical-v14/candidate/*
+            output/native-compatibility/v15-04/transition.json
+            output/native-compatibility/v15-04/commands.json
+            output/native-compatibility/v15-04/command-*.stdout
+            output/native-compatibility/v15-04/command-*.stderr
+            output/native-compatibility/v15-04/historical-tests.xml
+            output/native-compatibility/v15-04/candidate-native/*
             output/native-compatibility/candidate-native/*
             output/evidence-consumer-*.json
             tests/fixtures/capture-contract-v2/manifest.json

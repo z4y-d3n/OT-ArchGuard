@@ -155,6 +155,10 @@ include docs/development/v15-04-workloads.md
 include docs/development/v15-05-acceptance.md
 include docs/development/v15-05-handoff-es.md
 include docs/development/v15-05-installation-matrix.md
+include docs/development/v15-06-acceptance.md
+include docs/development/v15-06-compatibility.md
+include docs/development/v15-06-handoff-es.md
+include docs/development/v15-06-safety-assurance.md
 include docs/domain-model.md
 include docs/images/README.md
 include docs/images/architecture-explorer-overview.png
@@ -173,6 +177,7 @@ include docs/release-notes-1.2.0.md
 include docs/release-notes-1.3-draft.md
 include docs/release-notes-1.3.0.md
 include docs/release-notes-1.4.0.md
+include docs/release-notes-1.5.0.md
 include docs/release-publication-1.1.0.md
 include docs/release-publication-1.2.0.md
 include docs/reporting.md
@@ -505,6 +510,9 @@ include tests/test_v15_03_navigation.py
 include tests/test_v15_03_transition.py
 include tests/test_v15_04_text.py
 include tests/test_v15_04_transition.py
+include tests/test_v15_06_assembly.py
+include tests/test_v15_06_safety.py
+include tests/test_v15_06_transition.py
 include tests/test_v15_foundation.py
 include tests/test_v15_renderer_ux.py
 include tests/test_v15_report_reliability.py
@@ -530,6 +538,7 @@ include tools/history_performance_worker.py
 include tools/independent_capture_corpus.py
 include tools/offline/sitecustomize.py
 include tools/prepare_release.py
+include tools/prepare_v15_release.py
 include tools/project_walkthrough.py
 include tools/protocol_corpus.py
 include tools/protocol_external.py
@@ -550,5 +559,6 @@ include tools/verify_legacy_candidate.py
 include tools/verify_source_checkout.py
 include tools/verify_v15_03_transition.py
 include tools/verify_v15_04_transition.py
+include tools/verify_v15_06_transition.py
 include tools/verify_v15_transition.py
 include tools/walkthrough_cli.py
