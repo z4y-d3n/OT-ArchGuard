@@ -9,10 +9,10 @@ reproduction procedure. Exact commands, exits and environments are retained unde
 | Scenario | Platform | Source | Actual result |
 |---|---|---|---|
 | Published stable installation | Windows/POSIX | Published v1.4.0 record in [release checklist](../release-checklist.md#completed-v140-publication-record) | NOT_TESTED in this gate; historical stable evidence retained |
-| Development wheel | Windows x64 / Python 3.14.5 | Locally audited dev3 wheel | Pending local campaign |
-| Development sdist | Windows x64 / Python 3.14.5 | Locally audited dev3 sdist | Pending local campaign |
-| Offline wheelhouse | Windows x64 / Python 3.14.5 | Existing target-compatible local closure/backend | Pending local campaign; physical disconnection NOT_TESTED |
-| First Explorer | Both regular installations | Fictional model from extracted matching sdist | Pending local campaign |
+| Development wheel | Windows x64 / Python 3.14.5 | Locally audited dev3 wheel | PASS: regular install, pre-import authorization, 97 exact modules, CLI/help/validate, pip check |
+| Development sdist | Windows x64 / Python 3.14.5 | Locally audited dev3 sdist | PASS: regular install with preinstalled backend and no build isolation; same identity/smokes |
+| Offline wheelhouse | Windows x64 / Python 3.14.5 | Existing target-compatible local closure/backend | PASS: both installs with no index and local wheels; physical disconnection NOT_TESTED |
+| First Explorer | Both regular installations | Fictional model from extracted matching sdist | PASS: each report has 54 files, 52 HTML pages, 781 audited links, zero broken links |
 | Historical recovery | Original compatible producer | [V15-04 executed boundary](v15-04-compatibility.md#executed-corrected-transition) | NOT_TESTED anew; historical evidence retained |
 | Development Linux/macOS commands | POSIX / Python 3.12 or 3.14 | Same guide and source | Static review only; execution NOT_TESTED locally |
 
@@ -26,3 +26,12 @@ new browser/keyboard/zoom acceptance or a new online-index installation. Prepari
 a closure requires connectivity or a separately supplied complete local mirror.
 Preserve original historical environments/workspaces and approvals for replay;
 portable bundle integrity does not establish compatible analytical reproduction.
+
+Functional campaign source: `f9d5c15dd287643f67dc3c292e2eb74b75fbfa15`.
+Its archives, imports, 42 focused tests and command exits are in
+`output/v15-05/candidate/`. The final documentation closure is rebuilt, audited
+and regularly reinstalled with the same approved 97 modules; its identities are
+in `output/v15-05/final/`. No second full analytical suite is claimed.
+Stable release metadata/digests were rechecked through GitHub's read-only API
+and match the retained guide (`output/v15-05/stable-assets.json`); that check
+is not a fresh stable installation.

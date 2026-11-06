@@ -1,7 +1,7 @@
 # V15-05 — Entrega de instalación y distribución
 
-Estado inicial: candidato documental preparado; pendiente cerrar los resultados
-locales de paquetes antes de emitir el veredicto de aceptación.
+**READY_FOR_OWNER_REVIEW**. Verificación local requerida completada; quedan la
+revisión del propietario y las seis configuraciones hosted del SHA candidato.
 
 Inicio: `b62f816a88d8cf61e2798c368e8b277621b5d5bc`, árbol
 `e2c4d35f57c4a2e8c0b6cf09f3aa93301ae9b8e4`. SHA/árbol finales y hashes de
@@ -27,6 +27,24 @@ V15-04 pasó las seis configuraciones ([run 41918807010](https://github.com/z4y-
 el CI del nuevo SHA queda pendiente. No confundir revisión estática POSIX con
 ejecución, resolución local sin índice con desconexión física, ni guía estable
 con una reinstalación estable recién realizada.
+
+Wheel y sdist: auditoría PASS, 104/562 miembros, 554 archivos públicos. Dos
+entornos regulares nuevos Windows x64/Python 3.14.5 resuelven desde wheelhouse
+local sin índice; sdist con backend preinstalado y sin aislamiento de build.
+Cada instalación autoriza sus 97 módulos antes de importar, confirma su propio
+site-packages, versiones, `pip check`, ayuda, validación y primer Explorer.
+Cada reporte tiene 54 archivos, 52 HTML y 781 enlaces sin roturas.
+
+Pruebas focalizadas existentes: **42 PASS**, cero fallos/errores/skips; enlaces y
+anchors: **167 PASS**; sintaxis: 16 bloques PowerShell y tres bash (`-n`). La
+suite integral y replay histórico no se repiten para este alcance documental.
+Recibos funcionales: `output/v15-05/candidate/`, commit
+`f9d5c15dd287643f67dc3c292e2eb74b75fbfa15`. Cierre documental: nuevos archivos
+auditados/reinstalados bajo `output/v15-05/final/`; sus hashes finales pertenecen
+a `freeze.json` y `receipt.json`, evitando autorreferencias. Se preservan intentos
+fallidos del runner y cache de pip con sus correcciones locales; no hay P0/P1
+abiertos. Los límites pendientes son CI, aceptación humana y escenarios
+NOT_TESTED de la matriz; no hay una garantía de desconexión física.
 
 ## Revisión y publicación de rama por el propietario
 
