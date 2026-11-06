@@ -299,14 +299,143 @@ This removes the installed distribution; it does not migrate or delete workspace
 inputs or generated reports, and pip may retain dependency packages. Keep those
 data independently backed up. Never remove the retained known-good environment
 or alter historical release archives as part of rollback.
-# V15 development candidate
+## V15 development candidate
 
-The current development branch identifies distribution/CLI `1.5.0.dev1` and
-native engine `1.3.0` (YAML schema `1`). Published stable v1.4.0 installation
-instructions below remain historical stable guidance. Development artifacts
-must be built and audited locally; they are not published v1.4.0 assets.
-Changing the distribution source creates a distinct source-bound historical
-producer. Keep the original runtime for exact replay of old analytical revisions;
-portable bundle integrity alone does not establish that replay or transfer review
-authority. See [V15-02 contract](development/v15-02-compatibility-contract.md).
+Current development distribution/CLI is **`1.5.0.dev3`**; native engine remains
+`1.3.0`, YAML schema `1`. This is unpublished development verification. The
+v1.4.0 instructions above continue to describe the published stable release.
+Use the exact reviewed committed source, not merely a moving branch name. Record
+its SHA/tree with the archives; same-version development archives can differ.
+
+### Build and audit the committed development source
+
+From a clean Git checkout of the reviewed V15-05 commit, with Python >=3.12,
+PowerShell and Git available:
+
+```powershell
+git status --short --branch
+git rev-parse HEAD
+git rev-parse 'HEAD^{tree}'
+python -m venv .venv-dev-build
+$BuildPython = (Resolve-Path .venv-dev-build/Scripts/python.exe).Path
+& $BuildPython -m pip install -r tools/verification-requirements.txt
+New-Item -ItemType Directory -Force output/dev-candidate | Out-Null
+& $BuildPython tools/verify_source_checkout.py --output output/dev-candidate/source.json
+& $BuildPython -c "from setuptools import build_meta; build_meta.build_wheel('output/dev-candidate'); build_meta.build_sdist('output/dev-candidate')"
+& $BuildPython tools/audit_release.py output/dev-candidate/otarchguard-1.5.0.dev3-py3-none-any.whl output/dev-candidate/otarchguard-1.5.0.dev3.tar.gz --source-root . --output output/dev-candidate/audit.json
+Get-FileHash output/dev-candidate/otarchguard-1.5.0.dev3* -Algorithm SHA256
+```
+
+Stop on any failed command; choose fresh environment/artifact paths on repeats.
+Dependency installation may use the Internet. For a prepared target-specific
+wheelhouse, add `--no-index --find-links wheelhouse` to that pip command.
+Do not use `tools/prepare_release.py` for dev3: its v1.4.0 guard is intentional.
+These archives are local acceptance artifacts, not a stable release assembly.
+
+### Install and make the first development report
+
+Use one regular installation alternative in a new environment. Test the wheel
+and sdist separately when accepting both distributions:
+
+```powershell
+python -m venv .venv-dev-review
+$DevPython = (Resolve-Path .venv-dev-review/Scripts/python.exe).Path
+$DevCli = Join-Path (Split-Path $DevPython -Parent) 'otarchguard.exe'
+& $DevPython -m pip install output/dev-candidate/otarchguard-1.5.0.dev3-py3-none-any.whl
+# OR, in a separate fresh environment:
+# & $DevPython -m pip install output/dev-candidate/otarchguard-1.5.0.dev3.tar.gz
+& $DevPython -I tools/verify_v15_04_transition.py --source-only --output output/dev-candidate/authorized.json
+& $DevPython tools/verify_environment.py --output output/dev-candidate/environment.json
+& $DevPython -m pip check
+& $DevCli --version
+& $DevCli --help
+& $DevPython -c "import sys,importlib.metadata as m,otarchguard; print(sys.executable); print(m.version('otarchguard')); print(otarchguard.__file__); print(otarchguard.NATIVE_ENGINE_VERSION)"
+New-Item -ItemType Directory -Force output/dev-examples | Out-Null
+tar -xf output/dev-candidate/otarchguard-1.5.0.dev3.tar.gz -C output/dev-examples
+$DevModel = 'output/dev-examples/otarchguard-1.5.0.dev3/examples/remote-support/proposed.yaml'
+& $DevCli validate $DevModel
+& $DevCli explore $DevModel --output output/dev-first-report
+Invoke-Item output/dev-first-report/index.html
+```
+
+Expect metadata/console `1.5.0.dev3`, native engine `1.3.0`, imports from this
+environment's `site-packages` and validation/Explorer exits 0. Authorization runs
+before importing candidate runtime. The unchanged V15-04 policy compares all 97
+physical modules to its approved source, independently of the new archive hashes.
+Do not accept an editable install or an import from checkout `src/`.
+
+The model above comes from the extracted matching **sdist**. Wheels contain no
+tutorial data. The reviewed repository's `examples/` is another explicit source.
+Continue with the existing [capture example](../examples/capture-studio/README.md)
+and [historical walkthrough](v14-historical-explorer.md#fictional-walkthrough-and-owner-review);
+their `tools` helpers run from the repository or extracted sdist, using the
+selected installed Python, existing output parents and fresh destinations.
+
+### Linux and macOS development equivalent
+
+In the same clean reviewed checkout, select `python3.12` (or `python3.14`), create
+`.venv-dev-build`, and use `.venv-dev-build/bin/python` for the same dependency,
+source-verification, `build_meta` and archive-audit commands above. Replace
+PowerShell's directory creation with `mkdir -p output/dev-candidate`. Then:
+
+```bash
+python3.12 -m venv .venv-dev-review
+.venv-dev-review/bin/python -m pip install output/dev-candidate/otarchguard-1.5.0.dev3-py3-none-any.whl
+# Alternative in a separate environment: install the matching .tar.gz instead.
+.venv-dev-review/bin/python -I tools/verify_v15_04_transition.py --source-only --output output/dev-candidate/authorized.json
+.venv-dev-review/bin/python tools/verify_environment.py --output output/dev-candidate/environment.json
+.venv-dev-review/bin/python -m pip check
+.venv-dev-review/bin/otarchguard --version
+.venv-dev-review/bin/otarchguard --help
+.venv-dev-review/bin/python -c "import sys,importlib.metadata as m,otarchguard; print(sys.executable); print(m.version('otarchguard')); print(otarchguard.__file__); print(otarchguard.NATIVE_ENGINE_VERSION)"
+mkdir -p output/dev-examples
+tar -xf output/dev-candidate/otarchguard-1.5.0.dev3.tar.gz -C output/dev-examples
+.venv-dev-review/bin/otarchguard validate output/dev-examples/otarchguard-1.5.0.dev3/examples/remote-support/proposed.yaml
+.venv-dev-review/bin/otarchguard explore output/dev-examples/otarchguard-1.5.0.dev3/examples/remote-support/proposed.yaml --output output/dev-first-report
+```
+
+Open with `open output/dev-first-report/index.html` on macOS or
+`xdg-open output/dev-first-report/index.html` on a Linux desktop. These commands
+receive static review here; executed platform results are in the
+[V15-05 matrix](development/v15-05-installation-matrix.md).
+
+For offline dev3, substitute the matching local dev3 archive in the
+[wheelhouse procedure](#optional-completely-offline-setup). For sdists, preinstall
+the backend from that wheelhouse and use `--no-build-isolation`; retain
+`--no-index --find-links wheelhouse` for runtime dependency resolution. Run
+`pip check` afterwards. This does not prove installation on another target or
+physical air-gap isolation.
+
+### Development evidence recovery
+
+Dev1, dev2 and dev3 analytical producers have distinct source identities; a
+distribution source change can affect analytical revisions even if native
+semantics stay equivalent. V15-05 changes only documentation/inventories and
+preserves dev3 runtime bytes, so it introduces no new analytical producer.
+Historical renderer identity remains separately versioned as
+`1.5.0.dev1-historical-explorer.1` because its bound sources are unchanged.
+
+Keep the original compatible environment, exact source and untouched workspace,
+including approvals. A newer runtime rejecting replay does not mean evidence is
+lost. Use the original runtime for replay; create and explicitly review new
+producer-dependent revisions separately. There is no automatic cross-producer
+migration or inherited approval. Portable integrity proves neither authorship nor
+compatible analytical replay. See [V15-04 compatibility](development/v15-04-compatibility.md)
+and the [original V15-02 contract](development/v15-02-compatibility-contract.md).
+
+## First-run recovery
+
+| Problem | Recovery |
+|---|---|
+| Python version mismatch | Check the selected interpreter's `--version`; recreate the environment with Python >=3.12. Do not bypass `Requires-Python`. |
+| Missing runtime dependency | Install through that environment's `python -m pip`, with the archive and complete dependency closure; run `pip check`. |
+| Missing build backend | For source installs, allow build isolation to obtain `setuptools>=77`, or preinstall it from the prepared wheelhouse before `--no-build-isolation`. |
+| Wrong environment or editable import | Check `sys.executable`, metadata, module path and the full console path; use a fresh regular installation. Activation alone is insufficient evidence. |
+| Wheel-only install lacks examples | Extract the matching verified sdist or use the reviewed repository; do not expect `examples/` in `site-packages`. |
+| Occupied output directory | Preserve it and choose a fresh destination; do not treat a previous report as the new run's result. |
+| Missing output parent | Create the parent first; leave the report destination itself absent. |
+| Invalid model | Run `validate`, inspect its diagnostics and correct the declaration against the [schema](yaml-schema-v1.md); do not suppress errors. |
+| Unsupported capture | Check supported linktypes/formats and limits in [PCAP Evidence Studio](pcap-evidence-studio.md); retain unsupported/limited status, never infer blocking or absence. |
+| Offline install cannot resolve a package | Prepare the missing target-compatible wheels while connected, including transitive dependencies/backend; retry in a fresh environment. `--no-deps` cannot repair the closure. |
+| Wrong source-bound historical runtime | Preserve workspace/approvals and select the retained exact producer for replay; portable verification alone cannot authorize replay in a newer producer. |
 
