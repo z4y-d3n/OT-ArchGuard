@@ -90,7 +90,7 @@ provides:
 - `SHA256SUMS.txt`
 
 Use the published files and hashes, not earlier candidate archives with the same
-versioned filenames. Follow the [installation guide](installation.md) for checksum
+versioned filenames. Follow the [v1.3.0 installation guide](installation.md#stable-v130-first-run) for checksum
 verification, a fresh regular environment, `pip check` and version confirmation.
 The [fictional capture tutorial](../examples/capture-studio/README.md) explains
 the packaged ten-record samples and the extended twelve-record walkthrough.
