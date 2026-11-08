@@ -1,6 +1,15 @@
 # Changelog
 
-## Unreleased — V15-06 stable candidate and final safety assurance
+## 1.5.0 — 2026-11-06 (stable)
+
+[v1.5.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.5.0) publishes
+the V15-01 through V15-06 milestones below. The exact tagged source passed all six
+hosted CI jobs. The [publication record](docs/release-checklist.md#completed-v150-publication-record)
+records independent verification of the four published assets against that
+source. See the [stable release notes](docs/release-notes-1.5.0.md) and
+[installation guide](docs/installation.md).
+
+### V15-06 — Stable-source authorization and final safety assurance
 
 - Transition distribution/CLI `1.5.0.dev3` to `1.5.0` with an independent pinned
   source policy. Preserve native engine `1.3.0`, schema `1`, the other 96 runtime
@@ -8,11 +17,11 @@
 - Add independent alternative-route and rejection/model-negative propagation
   regressions; reuse existing bounded parser, protocol and historical oracles.
 - Add a v1.5-only four-asset assembler, retaining the v1.4 guard.
-- Publication and integrated-source acceptance require separate owner review.
-  See [release notes](docs/release-notes-1.5.0.md) and
-  [acceptance](docs/development/v15-06-acceptance.md).
+- Retain the original [candidate acceptance](docs/development/v15-06-acceptance.md)
+  and [safety assurance](docs/development/v15-06-safety-assurance.md) as checkpoint
+  evidence.
 
-## Unreleased — V15-05 installation and distribution documentation
+### V15-05 — Installation and distribution documentation
 
 - Clarify stable v1.4.0 versus local `1.5.0.dev3` installation, regular wheel/sdist
   verification, first report, offline prerequisites and historical recovery.
@@ -21,10 +30,11 @@
 - Preserve all 97 production modules, native engine `1.3.0`, schema `1`,
   source authorization policies and separately versioned historical renderer.
 
-## Unreleased — V15-04 profile-guided performance
+### V15-04 — Profile-guided performance
 
 - Advance the reviewed development distribution to `1.5.0.dev3`, preserving
-  native engine `1.3.0`, YAML schema `1` and published stable v1.4.0.
+  native engine `1.3.0` and YAML schema `1`. At that point v1.4.0 was the
+  published stable release.
 - Replace Explorer's Python character scan with an equivalent fixed regex;
   local larger-workload median improves approximately 6.1% with exact output bytes.
 - Add an independently challenged source transition, preserving old policies,
@@ -32,10 +42,17 @@
 - Record controlled timing, allocation, resource, package and full-suite evidence
   in the [V15-04 acceptance record](docs/development/v15-04-acceptance.md).
 
-## Unreleased — V15-02 controlled development transition
+### V15-03 — Evidence-centered navigation
+
+- Improve navigation from PCAP reconciliation and Explorer findings to retained
+  evidence. Distinguish recorded historical decisions from current review
+  authority while preserving source-bound replay and approval identities.
+  See the [V15-03 acceptance record](docs/development/v15-03-acceptance.md).
+
+### V15-02 — Controlled development transition
 
 - Establish distribution/CLI `1.5.0.dev1`, retaining native engine `1.3.0` and
-  YAML schema `1`; published stable remains v1.4.0.
+  YAML schema `1`. Published stable was still v1.4.0 at this checkpoint.
 - Add an isolated, exact-source V15 verifier while preserving the original
   historical verifier, independent native outputs and producer replay boundaries.
 - Display Historical Explorer Major limitations as a local vertical semantic
@@ -44,7 +61,7 @@
 - Record adversarial audit, installed package, regression and paired timing
   evidence in the [V15-02 dossier](docs/development/v15-02-plan.md).
 
-## Unreleased — V15-01 development foundation
+### V15-01 — Development foundation
 
 - Historical tutorial CLIs explain missing output parents and occupied
   destinations with actionable usage errors, preserving existing data.

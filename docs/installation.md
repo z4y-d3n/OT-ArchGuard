@@ -1,10 +1,9 @@
 # Installation, parallel upgrade and offline use
 
-**Latest published stable is [v1.4.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.4.0), released November 2, 2026.**
-Keep [v1.3.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0) as the
-previous stable/recovery option. Python metadata requires `>=3.12`;
-the verified hosted matrix is Windows/Ubuntu/macOS × Python 3.12/3.14. It is not
-a claim that every future Python release has been tested.
+**Latest published stable is [v1.5.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.5.0), released November 6, 2026.**
+Python `>=3.12` is required. The verified hosted matrix is Windows/Ubuntu/macOS
+× Python 3.12/3.14. Keep [v1.4.0](#previous-stable-v140) for previous-stable
+recovery and [v1.3.0](#stable-v130-first-run) for older environments.
 
 [Assets](#obtain-and-verify-assets) · [Install](#parallel-installation) ·
 [Offline](#optional-completely-offline-setup) · [First run](#verify-declarations-and-reports) ·
@@ -12,21 +11,37 @@ a claim that every future Python release has been tested.
 
 ## Obtain and verify assets
 
-Download the four named assets from the
-[published v1.4.0 release](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.4.0),
-using its **Assets** list rather than GitHub's automatically generated source
-archives. Copy all four matching files to `artifacts/` in a fresh working directory:
+Download the four named uploads from the
+[published v1.5.0 release](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.5.0).
+Save them to `artifacts/` in a fresh working directory. GitHub lists its
+automatically generated source archives separately.
 
 | Published file | Purpose |
 |---|---|
-| `otarchguard-1.4.0-py3-none-any.whl` | Recommended regular installation |
-| `otarchguard-1.4.0.tar.gz` | Source distribution, including examples, docs and verification tools |
-| [`release-manifest.json`](https://github.com/z4y-d3n/OT-ArchGuard/releases/download/v1.4.0/release-manifest.json) | Source commit/tree, source inventory and archive audit |
-| [`SHA256SUMS.txt`](https://github.com/z4y-d3n/OT-ArchGuard/releases/download/v1.4.0/SHA256SUMS.txt) | SHA-256 for the two distributions and manifest |
+| [`otarchguard-1.5.0-py3-none-any.whl`](https://github.com/z4y-d3n/OT-ArchGuard/releases/download/v1.5.0/otarchguard-1.5.0-py3-none-any.whl) | Recommended regular installation |
+| [`otarchguard-1.5.0.tar.gz`](https://github.com/z4y-d3n/OT-ArchGuard/releases/download/v1.5.0/otarchguard-1.5.0.tar.gz) | Source distribution, including examples, docs and verification tools |
+| [`release-manifest.json`](https://github.com/z4y-d3n/OT-ArchGuard/releases/download/v1.5.0/release-manifest.json) | Source commit/tree, source inventory and archive audit |
+| [`SHA256SUMS.txt`](https://github.com/z4y-d3n/OT-ArchGuard/releases/download/v1.5.0/SHA256SUMS.txt) | SHA-256 for the two distributions and manifest |
 
-The annotated `v1.4.0` tag fixes published source
-`7d6b158f863308dfcd7d10b673bfbe2692f29b8b`. The manifest records that source,
-distribution `1.4.0` and frozen native engine `1.3.0`. Its assembly-time acceptance
+Run this PowerShell block in the fresh directory to download all four.
+
+```powershell
+$ReleaseAssets = 'https://github.com/z4y-d3n/OT-ArchGuard/releases/download/v1.5.0'
+$AssetNames = @(
+    'otarchguard-1.5.0-py3-none-any.whl'
+    'otarchguard-1.5.0.tar.gz'
+    'release-manifest.json'
+    'SHA256SUMS.txt'
+)
+New-Item -ItemType Directory -Path artifacts -ErrorAction Stop | Out-Null
+foreach ($AssetName in $AssetNames) {
+    Invoke-WebRequest -UseBasicParsing -Uri "$ReleaseAssets/$AssetName" -OutFile "artifacts/$AssetName" -ErrorAction Stop
+}
+```
+
+The annotated `v1.5.0` tag fixes published source
+`14732d12f0a5dde5acf97ca1b552d69cfb12f1e0`. The manifest records that source,
+distribution `1.5.0` and frozen native engine `1.3.0`. Its assembly-time acceptance
 wording is historical; final publication and CI are recorded in the
 [release checklist](release-checklist.md). Later `main` commits do not change
 these assets. Do not rebuild and substitute files under the same release identity.
@@ -35,22 +50,22 @@ Compare downloads with GitHub's published SHA-256 digests (also recorded here):
 
 | Published file | SHA-256 |
 |---|---|
-| `otarchguard-1.4.0-py3-none-any.whl` | `fdaaa37e920c63ed0d0b5fc6b07361de9f4df6957bf885c4e9f8a6ac59051abf` |
-| `otarchguard-1.4.0.tar.gz` | `1636ebc32aa009becaeb1b21d02cc7942588f5872070949d52a38581626778f2` |
-| `release-manifest.json` | `a8b0ccf323589c554ba2fa3e8f88f34621ae540e795c0eb7807216add5ef89aa` |
-| `SHA256SUMS.txt` | `a7474178f5472acb646eeef0c7b5c1f94ec657644bf376ca9cde0afa0ab351f8` |
+| `otarchguard-1.5.0-py3-none-any.whl` | `ad113d3573f877e29839bc311fa3dd2c47ebad085cc135f3de35ece93b479701` |
+| `otarchguard-1.5.0.tar.gz` | `b645d10774e5fc73bdeeaf9744fadfadc1b7a1a24f1993b72319bfc70c54c94d` |
+| `release-manifest.json` | `a88ffa7035586f7de4f58e7463d80d4daba8b351acca5de678335b289a664da4` |
+| `SHA256SUMS.txt` | `00fe2983421081cb1221f3a532f3ccff823597fd71318e1674df06cb1b616a99` |
 
 First verify the checksum file itself in PowerShell:
 
 ```powershell
 $ChecksumHash = (Get-FileHash -LiteralPath artifacts/SHA256SUMS.txt -Algorithm SHA256 -ErrorAction Stop).Hash
-if ($ChecksumHash -ine 'a7474178f5472acb646eeef0c7b5c1f94ec657644bf376ca9cde0afa0ab351f8') { throw 'Checksum file mismatch' }
+if ($ChecksumHash -ine '00fe2983421081cb1221f3a532f3ccff823597fd71318e1674df06cb1b616a99') { throw 'Checksum file mismatch' }
 ```
 
 Verify the complete checksum list before installation or extraction:
 
 ```powershell
-$ExpectedFiles = @('otarchguard-1.4.0-py3-none-any.whl', 'otarchguard-1.4.0.tar.gz', 'release-manifest.json')
+$ExpectedFiles = @('otarchguard-1.5.0-py3-none-any.whl', 'otarchguard-1.5.0.tar.gz', 'release-manifest.json')
 $SeenFiles = @()
 foreach ($Line in Get-Content artifacts/SHA256SUMS.txt -ErrorAction Stop) {
     if ($Line -notmatch '^([0-9a-f]{64})  ([A-Za-z0-9._-]+)$') { throw 'Invalid checksum entry' }
@@ -72,36 +87,34 @@ Then run `sha256sum --check SHA256SUMS.txt` from `artifacts/` on Linux, or
 and retain all four files. Hashes establish byte identity, not authorship or
 authenticity; obtain the files and publication record through a trusted source.
 
-For known-good v1.3.0 recovery, the published distribution SHA-256 values are:
-
-| Archive | SHA-256 |
-|---|---|
-| `otarchguard-1.3.0-py3-none-any.whl` | `ae3ae1f27afeb705ae6b85269d3c451597598184585aa6723f8e5f2ddac5adc3` |
-| `otarchguard-1.3.0.tar.gz` | `23313908bfb2f6f2ead24f558562123864532fb2ea72c35b10889b15c50454b8` |
-
-These hashes describe published v1.3.0 assets only. Do not relabel another archive.
-
 ## Parallel installation
 
-Keep the known-good v1.3.0 environment, declaration inputs and development
+Keep any known-good older environment, declaration inputs and development
 workspaces. Select an installed interpreter explicitly and confirm Python >=3.12:
 
 ```powershell
 $InstallPython = (Get-Command python -ErrorAction Stop).Source
 & $InstallPython --version
-& $InstallPython -m venv .venv-otarchguard-1.4.0
-$EnvPython = (Resolve-Path .venv-otarchguard-1.4.0/Scripts/python.exe).Path
+& $InstallPython -m venv .venv-otarchguard-1.5.0
+if ($LASTEXITCODE -ne 0) { throw 'Virtual environment creation failed' }
+$EnvPython = (Resolve-Path .venv-otarchguard-1.5.0/Scripts/python.exe).Path
 ```
 
-Use a fresh environment path; activation is optional. Run **one** installation
-alternative, using the already verified files:
+Use a fresh environment path. Install the verified wheel and check the
+dependency closure and CLI version.
 
 ```powershell
-& $EnvPython -m pip install artifacts/otarchguard-1.4.0-py3-none-any.whl
-# OR install independently from the source distribution:
-& $EnvPython -m pip install artifacts/otarchguard-1.4.0.tar.gz
+& $EnvPython -m pip install artifacts/otarchguard-1.5.0-py3-none-any.whl
+if ($LASTEXITCODE -ne 0) { throw 'Wheel installation failed' }
+& $EnvPython -m pip check
+if ($LASTEXITCODE -ne 0) { throw 'Dependency check failed' }
+$Otarchguard = Join-Path (Split-Path $EnvPython -Parent) 'otarchguard.exe'
+& $Otarchguard --version
 ```
 
+Expect `1.5.0`. To install from source in a separate fresh environment, use
+`& $EnvPython -m pip install artifacts/otarchguard-1.5.0.tar.gz` with that
+environment's Python, then repeat the dependency and version checks.
 Source installation uses pip build isolation and may obtain `setuptools>=77`.
 Both alternatives may obtain compatible runtime and transitive dependencies.
 For an extracted, verified sdist, `& $EnvPython -m pip install .` from its
@@ -111,15 +124,15 @@ uncommitted checkout is not the accepted release source.
 Equivalent POSIX commands use `bin/`:
 
 ```bash
-python3.12 -m venv .venv-otarchguard-1.4.0
-.venv-otarchguard-1.4.0/bin/python -m pip install artifacts/otarchguard-1.4.0-py3-none-any.whl
-.venv-otarchguard-1.4.0/bin/python -m pip check
-.venv-otarchguard-1.4.0/bin/otarchguard --version
+python3.12 -m venv .venv-otarchguard-1.5.0
+.venv-otarchguard-1.5.0/bin/python -m pip install artifacts/otarchguard-1.5.0-py3-none-any.whl
+.venv-otarchguard-1.5.0/bin/python -m pip check
+.venv-otarchguard-1.5.0/bin/otarchguard --version
 ```
 
 Python 3.14 can be selected instead. Python 3.13 is admitted by package metadata,
 but is not part of the six-job hosted matrix. See the
-[published-source CI record](release-notes-1.4.0.md#verification-and-owner-gates);
+[published-source CI record](release-checklist.md#completed-v150-publication-record);
 do not infer unexecuted interpreter/platform checks.
 
 ## Optional completely offline setup
@@ -129,14 +142,14 @@ dependencies; the application wheel alone is insufficient if they are missing.
 Before disconnecting, use the target OS/CPU/Python to prepare a complete wheelhouse:
 
 ```powershell
-& $EnvPython -m pip download --only-binary=:all: --dest wheelhouse artifacts/otarchguard-1.4.0-py3-none-any.whl
+& $EnvPython -m pip download --only-binary=:all: --dest wheelhouse artifacts/otarchguard-1.5.0-py3-none-any.whl
 ```
 
 Review and retain the downloaded dependency closure. With application assets in
 `artifacts/` and dependency wheels in `wheelhouse/`:
 
 ```powershell
-& $EnvPython -m pip install --no-index --find-links wheelhouse artifacts/otarchguard-1.4.0-py3-none-any.whl
+& $EnvPython -m pip install --no-index --find-links wheelhouse artifacts/otarchguard-1.5.0-py3-none-any.whl
 & $EnvPython -m pip check
 ```
 
@@ -152,7 +165,7 @@ without isolation:
 
 ```powershell
 & $EnvPython -m pip install --no-index --find-links wheelhouse 'setuptools>=77'
-& $EnvPython -m pip install --no-index --find-links wheelhouse --no-build-isolation artifacts/otarchguard-1.4.0.tar.gz
+& $EnvPython -m pip install --no-index --find-links wheelhouse --no-build-isolation artifacts/otarchguard-1.5.0.tar.gz
 & $EnvPython -m pip check
 ```
 
@@ -165,47 +178,35 @@ physical air-gap guarantee.
 
 ## Verify declarations and reports
 
-For a first report from a wheel and matching source archive, use the
-[published v1.4.0 Quick Start](../README.md#quick-start--5-minutes). The source archive
-contains the fictional models; the wheel contains the runtime application.
-Extracting examples does not install the source or require Git. Choose fresh
-environment and report directories.
-
-### Stable v1.3.0 first run
-
-This is the **previous stable release and rollback path**. Obtain and verify the
-published v1.3.0 wheel and source archive using that
-release's manifest and `SHA256SUMS.txt`. In a fresh folder with both archives
-under `artifacts/`, use Python >=3.12 and Windows PowerShell:
+After the wheel installation, extract the matching sdist and use its fictional
+model from the same fresh directory. Run these PowerShell steps from the
+[Quick Start](../README.md#quick-start--5-minutes) with the environment above.
 
 ```powershell
-python -m venv .venv-stable
-.\.venv-stable\Scripts\python.exe -m pip install artifacts/otarchguard-1.3.0-py3-none-any.whl
-.\.venv-stable\Scripts\python.exe -m pip check
-.\.venv-stable\Scripts\otarchguard.exe --version
-tar -xf artifacts/otarchguard-1.3.0.tar.gz
-.\.venv-stable\Scripts\otarchguard.exe explore otarchguard-1.3.0/examples/remote-support/proposed.yaml --output stable-report
-Invoke-Item .\stable-report\index.html
+tar -xf artifacts/otarchguard-1.5.0.tar.gz
+if ($LASTEXITCODE -ne 0) { throw 'Source archive extraction failed' }
+& $Otarchguard explore otarchguard-1.5.0/examples/remote-support/proposed.yaml --output report
+if ($LASTEXITCODE -ne 0) { throw 'Explorer report generation failed' }
+Invoke-Item .\report\index.html
 ```
 
-This uses the previous published release. Expected
-`--version` output: `1.3.0`. The native `explore` command produces a local
-declared-model browser; it does not evaluate all operational intents.
+The source archive provides examples, documentation and source. Extracting it
+requires only the archive and `tar`. Use a fresh report path for each run.
 
 <a id="candidate-first-report-on-linuxmacos"></a>
 
 ### Published first report on Linux/macOS
 
-After downloading and verifying the published v1.4.0 assets as above, use a fresh
+After downloading and verifying the published v1.5.0 assets as above, use a fresh
 folder and an installed Python 3.12 (or select Python 3.14 explicitly):
 
 ```bash
 python3.12 -m venv .venv
-.venv/bin/python -m pip install artifacts/otarchguard-1.4.0-py3-none-any.whl
+.venv/bin/python -m pip install artifacts/otarchguard-1.5.0-py3-none-any.whl
 .venv/bin/python -m pip check
 .venv/bin/otarchguard --version
-tar -xf artifacts/otarchguard-1.4.0.tar.gz
-.venv/bin/otarchguard explore otarchguard-1.4.0/examples/remote-support/proposed.yaml --output report
+tar -xf artifacts/otarchguard-1.5.0.tar.gz
+.venv/bin/otarchguard explore otarchguard-1.5.0/examples/remote-support/proposed.yaml --output report
 ```
 
 Open `report/index.html` in a local browser: `open report/index.html` on macOS
@@ -225,7 +226,7 @@ $Otarchguard = Join-Path (Split-Path $EnvPython -Parent) 'otarchguard.exe'
 & $EnvPython -c "import importlib.metadata as m,otarchguard; print(m.version('otarchguard')); print(otarchguard.DISTRIBUTION_VERSION); print(otarchguard.NATIVE_ENGINE_VERSION); print(otarchguard.__version__); print(otarchguard.__file__)"
 ```
 
-Expect `1.4.0` from the console, distribution metadata and `DISTRIBUTION_VERSION`;
+Expect `1.5.0` from the console, distribution metadata and `DISTRIBUTION_VERSION`;
 expect `1.3.0` from native engine and historical `__version__`. The import must
 resolve inside the selected environment's `site-packages`, not the checkout's
 `src/`. Schema-1 native models need no migration.
@@ -264,18 +265,18 @@ Native schema-1 declarations remain supported. Workspace-v1 snapshot migration
 to workspace-v2 is explicit and preserves source snapshot bytes. It does not
 create analytical revisions or approve a baseline.
 
-Existing `1.4.0.dev1` analytical revisions bind the producer's exact source,
-including `__init__.py`. The distribution-only transition to `1.4.0` therefore
-makes those revisions incompatible with this producer. Whole-workspace validation
-rejects an unknown implementation even when the underlying native semantics are
-unchanged. Do not rewrite hashes, analysis IDs, reviews or approvals to bypass it.
+Stable `1.5.0` is a distinct source-bound historical producer. Original
+`1.5.0.dev3` analytical revisions require their compatible source for replay.
+The same boundary applies to older producers, including the earlier
+`1.4.0.dev1` to `1.4.0` transition. Whole-workspace validation rejects an unknown
+implementation even where native semantics are equivalent.
 
-Preserve the exact old environment and an untouched copy of its workspace for
-inspection/replay. For new `1.4.0` work, create a fresh workspace-v2, import retained
+Preserve the original environment and an untouched workspace for inspection
+and replay. For new `1.5.0` analysis, create a fresh workspace-v2, import retained
 validated observations, attach the required authorized sources, create new
-analytical revisions and explicitly review a new baseline. Retain the old
-workspace as historical evidence. There is no automatic cross-source approval
-migration or demonstrated safe downgrade of historical data.
+analytical revisions and explicitly review a new baseline. Approvals remain
+bound to the original revisions. Preserve their IDs and digests.
+See the [V15-06 compatibility record](development/v15-06-compatibility.md).
 
 Portable Explorer integrity verification does not establish source-dependent
 replay compatibility, analytical truth or authenticated authorship. Keep the
@@ -283,13 +284,13 @@ compatible source environment with evidence that requires reproduction.
 
 ## Revert or uninstall
 
-If evaluation fails, preserve inputs, outputs and logs, stop using the new v1.4.0
-environment and invoke the retained v1.3.0 executable by its full path. Do not
-feed a new historical workspace to an older release and assume compatibility.
-To recreate known-good v1.3.0, use its original published assets and a separate
-environment, then verify its version, dependency closure and expected examples.
+If evaluation fails, preserve inputs, outputs and logs. For supported inputs,
+select the retained [v1.4.0 environment](#previous-stable-v140) by its full
+executable path. Preserve the exact producer for historical replay, including
+older v1.3.0 environments where applicable. Historical workspaces have no
+demonstrated safe downgrade path.
 
-To uninstall only the selected v1.4.0 application:
+To uninstall only the selected v1.5.0 application:
 
 ```powershell
 & $EnvPython -m pip uninstall otarchguard
@@ -299,57 +300,73 @@ This removes the installed distribution; it does not migrate or delete workspace
 inputs or generated reports, and pip may retain dependency packages. Keep those
 data independently backed up. Never remove the retained known-good environment
 or alter historical release archives as part of rollback.
-## v1.5.0 unpublished stable candidate
 
-Current source identifies distribution/CLI `1.5.0`, native engine `1.3.0`, schema
-`1`. It is unpublished. Published v1.4.0 instructions above remain valid.
-From clean committed V15-06 source, using fresh output/environment paths:
+## Previous stable v1.4.0
+
+For recovery, save the four original [v1.4.0 assets](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.4.0)
+under `artifacts/` in a fresh folder. Compare each file's SHA-256 to the
+[v1.4.0 publication record](release-checklist.md#completed-v140-publication-record).
+Use the following PowerShell sequence with Python `>=3.12`.
 
 ```powershell
-python -m venv .venv-v15-review
-$CandidatePython = (Resolve-Path .venv-v15-review/Scripts/python.exe).Path
-& $CandidatePython -m pip install -r tools/verification-requirements.txt
-& $CandidatePython -I tools/prepare_v15_release.py --output output/v15-candidate-assets
-if ($LASTEXITCODE -ne 0) { throw 'Assembly failed' }
-& $CandidatePython -I tools/prepare_v15_release.py --verify --output output/v15-candidate-assets
-if ($LASTEXITCODE -ne 0) { throw 'Asset verification failed' }
-& $CandidatePython -m pip install --no-index --no-deps output/v15-candidate-assets/otarchguard-1.5.0-py3-none-any.whl
-if ($LASTEXITCODE -ne 0) { throw 'Install failed' }
-& $CandidatePython -I tools/verify_v15_06_transition.py --source-only --output output/v15-candidate-authorized.json
-if ($LASTEXITCODE -ne 0) { throw 'Source authorization failed' }
-& $CandidatePython tools/verify_environment.py --output output/v15-candidate-environment.json
-& $CandidatePython -m pip check
-& .venv-v15-review/Scripts/otarchguard.exe --version
-& .venv-v15-review/Scripts/otarchguard.exe --help
-& .venv-v15-review/Scripts/otarchguard.exe validate examples/remote-support/proposed.yaml
-& .venv-v15-review/Scripts/otarchguard.exe explore examples/remote-support/proposed.yaml --output output/v15-first-report
+python -m venv .venv-v140
+.\.venv-v140\Scripts\python.exe -m pip install artifacts/otarchguard-1.4.0-py3-none-any.whl
+.\.venv-v140\Scripts\python.exe -m pip check
+.\.venv-v140\Scripts\otarchguard.exe --version
+tar -xf artifacts/otarchguard-1.4.0.tar.gz
+.\.venv-v140\Scripts\otarchguard.exe explore otarchguard-1.4.0/examples/remote-support/proposed.yaml --output report
+Invoke-Item .\report\index.html
 ```
 
-Stop on every failed command. Dependencies are installed first; for a prepared
-offline target add `--no-index --find-links wheelhouse` to their installation.
-Independently install the matching `otarchguard-1.5.0.tar.gz` in another fresh
-environment with the same dependencies and `--no-index --no-deps
---no-build-isolation`, then repeat authorization/environment/CLI checks.
-Helpers/examples come from reviewed source or the matching extracted sdist;
-wheels contain runtime modules only. Open the generated local `index.html`.
+Expect distribution/CLI `1.4.0`, native engine `1.3.0` and YAML schema `1`.
+The [pre-closure installation guide](https://github.com/z4y-d3n/OT-ArchGuard/blob/v1.5.0/docs/installation.md#parallel-installation)
+preserves the optional v1.4.0 sdist, POSIX and offline installation commands.
 
-For Linux/macOS select `python3.12` or `python3.14`, use `bin/python` and
-`bin/otarchguard`, and adapt shell syntax. Local Windows results do not validate
-these platforms. The exact candidate and integrated source need six hosted jobs.
-Use the new V15-06 policy/assembler; the old V15-04 policy and v1.4 assembler
-intentionally reject stable source and must not be relaxed.
+### Stable v1.3.0 first run
 
-Stable source is a distinct historical producer. Preserve original environments
-and workspaces; old approvals never transfer automatically. Portable integrity
-and compatible-source replay remain separate. Consult the
-[compatibility record](development/v15-06-compatibility.md) and
-[owner procedure](development/v15-06-handoff-es.md).
+For older environments, obtain the wheel and source archive from the
+[v1.3.0 release](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0)
+and verify them against its published checksums and these distribution digests.
 
-## V15 development candidate
+| Archive | Published SHA-256 |
+|---|---|
+| `otarchguard-1.3.0-py3-none-any.whl` | `ae3ae1f27afeb705ae6b85269d3c451597598184585aa6723f8e5f2ddac5adc3` |
+| `otarchguard-1.3.0.tar.gz` | `23313908bfb2f6f2ead24f558562123864532fb2ea72c35b10889b15c50454b8` |
 
-At the historical V15-05 checkpoint distribution/CLI was **`1.5.0.dev3`**; native engine remains
-`1.3.0`, YAML schema `1`. This is unpublished development verification. The
-v1.4.0 instructions above continue to describe the published stable release.
+In a fresh folder with both archives under `artifacts/`, use Python `>=3.12`
+and Windows PowerShell.
+
+```powershell
+python -m venv .venv-stable
+.\.venv-stable\Scripts\python.exe -m pip install artifacts/otarchguard-1.3.0-py3-none-any.whl
+.\.venv-stable\Scripts\python.exe -m pip check
+.\.venv-stable\Scripts\otarchguard.exe --version
+tar -xf artifacts/otarchguard-1.3.0.tar.gz
+.\.venv-stable\Scripts\otarchguard.exe explore otarchguard-1.3.0/examples/remote-support/proposed.yaml --output stable-report
+Invoke-Item .\stable-report\index.html
+```
+
+Expected `--version` output: `1.3.0`. The native `explore` command produces a local
+declared-model browser; it does not evaluate all operational intents.
+
+<a id="v150-unpublished-stable-candidate"></a>
+
+## Historical V15-06 stable release rehearsal
+
+The [tagged V15-06 procedure](https://github.com/z4y-d3n/OT-ArchGuard/blob/v1.5.0/docs/installation.md#v150-unpublished-stable-candidate)
+preserves the original prepublication assembly and installed-package checks.
+See the [acceptance record](development/v15-06-acceptance.md) for the rehearsal
+results and the [publication record](release-checklist.md#completed-v150-publication-record)
+for the subsequent integrated CI and published asset verification.
+
+<a id="v15-development-candidate"></a>
+
+## Historical V15-05 development candidate
+
+
+At the V15-05 checkpoint, distribution/CLI was **`1.5.0.dev3`**, native engine
+`1.3.0` and YAML schema `1`. These instructions preserve the original development
+verification procedure for that checkpoint.
 Use the exact reviewed committed source, not merely a moving branch name. Record
 its SHA/tree with the archives; same-version development archives can differ.
 

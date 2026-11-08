@@ -1,6 +1,6 @@
 # Dependencies and licenses
 
-The unpublished `1.5.0` candidate adds no runtime or verification dependency.
+Published stable `1.5.0` adds no runtime or verification dependency.
 V15-06 transition/assembly reuse the standard library and approved build tools.
 Offline installation still requires a wheelhouse matching the target OS and
 interpreter; local Windows dependencies do not validate other platforms.

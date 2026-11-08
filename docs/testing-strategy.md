@@ -1,8 +1,10 @@
 # Verification strategy
 
-## Current stable candidate: V15-06
+## Published stable v1.5.0 verification
 
-Distribution/CLI is unpublished `1.5.0`; native engine `1.3.0`, schema `1`.
+Distribution/CLI is `1.5.0`, native engine `1.3.0`, YAML schema `1`.
+See the [publication record](release-checklist.md#completed-v150-publication-record)
+for the completed six-job tagged-source CI and independent asset verification.
 Run focused independent reachability, metamorphic, capture/import/report and
 historical checks first, then the complete applicable regular-install suite
 after implementation stabilizes. Reuse existing finite seeded corpora/oracles.
@@ -23,7 +25,7 @@ Retain exact source identities, commands, installed paths and unique test IDs.
 Repeated wheel/sdist/focused executions overlap; never add them as unique tests.
 The sections below retain their historical V15-05 and earlier context.
 
-## Current development: V15-05
+## Historical development checkpoint: V15-05
 
 Distribution remains `1.5.0.dev3`, native engine `1.3.0`, YAML schema `1`.
 The [V15-05 acceptance](development/v15-05-acceptance.md) covers documentation,
@@ -32,8 +34,8 @@ focused first-report checks. It preserves all 97 V15-04 modules and policies;
 use `python -I tools/verify_v15_04_transition.py --source-only` before runtime
 imports. The [V15-04 record](development/v15-04-acceptance.md) retains full-suite
 and historical-chain evidence. V15-05 does not repeat those expensive unchanged
-suites locally. Its own six-job hosted matrix remains required after publication
-of the branch. The older development checkpoints below remain historical.
+suites locally. At that checkpoint the branch still required its own six-job
+hosted matrix.
 
 ## Historical development checkpoint: V15-02
 
@@ -93,16 +95,12 @@ Historical analytical revisions independently bind exact producer source. A
 distribution source change does not authorize rewriting their hashes or approval
 chains. Test the explicit [development-workspace upgrade boundary](installation.md#historical-workspaces-and-upgrade).
 
-For a future authorized release, first review the stable-version/source boundary
-and release-tool guard. `tools/prepare_release.py` currently accepts only its
-historical v1.4.0 source/version contract; it is not a dev3 assembler. V15-06 must
-authorize the v1.5.0 assembly procedure independently. Then rehearse from its clean
-committed public inventory with `python -m tools.prepare_release --output NEW_DIRECTORY`
-and reopen it with `--verify`. Confirm exact commit/tree, audited wheel/sdist
-members, installed payload equality and all three checksum entries. For post-release
-documentation work, verify existing v1.4.0 downloads against their tagged source;
-do not rebuild or replace the published assets. Do not claim byte-identical
-archives unless a separate build comparison demonstrated it.
+The historical `tools/prepare_release.py` accepts only its v1.4.0
+source/version contract. V15-06 introduced the separately authorized v1.5.0
+assembler described above. Verify published downloads against their own tagged
+source using the corresponding tool in `--verify` mode. Preserve the original
+published assets. A claim of byte-identical rebuilt archives requires a
+separate build comparison.
 
 V14-04 semantic HTML already received owner visual acceptance, including high-zoom
 inspection. Unchanged renderer bytes let that acceptance remain relevant; static

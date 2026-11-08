@@ -67,8 +67,7 @@ Download the four assets from the
 `release-manifest.json` and `SHA256SUMS.txt`. Verify all four published digests,
 the complete checksum list and tagged source identity, then install
 one distribution into a new environment alongside the known-good v1.3.0 environment.
-See [wheel/sdist/offline installation](installation.md) and the
-[README first run](../README.md#quick-start--5-minutes).
+See [v1.4.0 installation, offline setup and first run](installation.md#previous-stable-v140).
 
 Python metadata is `>=3.12`. The verified hosted matrix is Windows, Ubuntu and
 macOS with Python 3.12/3.14. Admission by metadata is distinct from testing every

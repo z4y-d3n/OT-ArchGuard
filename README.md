@@ -12,17 +12,13 @@ between declarations and finite observations.
 Analysis reads local files; it does not scan devices or capture live traffic.
 Reports open locally without a server, JavaScript or remote rendering service.
 
-**Latest published stable: [v1.4.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.4.0), November 2, 2026.**
-[v1.3.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0) remains the
-previous stable release and a recovery option.
-Distribution/CLI: `1.4.0`; frozen native engine: `1.3.0`; native YAML schema: `1`.
-Python 3.12 and 3.14 form the Windows, Ubuntu and macOS CI matrix; metadata admits
-Python >=3.12 without claiming every interpreter version has been tested.
-
-Current source is the unpublished `1.5.0` stable candidate (native engine `1.3.0`, schema `1`).
-Reviewers should use the [candidate procedure](docs/installation.md#v150-unpublished-stable-candidate)
-and [release notes](docs/release-notes-1.5.0.md);
-the Quick Start below continues to use published v1.4.0 assets.
+**Latest published stable: [v1.5.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.5.0), November 6, 2026.**
+Distribution/CLI `1.5.0`, native engine `1.3.0`, native YAML schema `1`.
+Python `>=3.12` is required. The [tagged-source CI](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/42157555998)
+passed on Windows, Ubuntu and macOS with Python 3.12 and 3.14.
+[v1.4.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.4.0) is the previous
+stable release and a recovery option. [v1.3.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0)
+remains available for older environments.
 
 [See it in action](#see-it-in-action) · [Quick Start](#quick-start--5-minutes) ·
 [Capabilities and limits](#what-it-does--what-it-does-not-do) ·
@@ -82,32 +78,33 @@ Try a fictional declared remote-support architecture and open its **Architecture
 Explorer**. This first report needs no capture, account or baseline decisions.
 Five minutes is an approximate onboarding label, not a measured guarantee.
 
-Download `otarchguard-1.4.0-py3-none-any.whl` and `otarchguard-1.4.0.tar.gz`
-from the [published v1.4.0 release](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.4.0).
-Put them in `artifacts/` inside a fresh folder, together with the published
-[manifest](https://github.com/z4y-d3n/OT-ArchGuard/releases/download/v1.4.0/release-manifest.json)
-and [checksums](https://github.com/z4y-d3n/OT-ArchGuard/releases/download/v1.4.0/SHA256SUMS.txt).
+In a fresh folder, save these four v1.5.0 downloads under `artifacts/`.
+
+- [`otarchguard-1.5.0-py3-none-any.whl`](https://github.com/z4y-d3n/OT-ArchGuard/releases/download/v1.5.0/otarchguard-1.5.0-py3-none-any.whl)
+- [`otarchguard-1.5.0.tar.gz`](https://github.com/z4y-d3n/OT-ArchGuard/releases/download/v1.5.0/otarchguard-1.5.0.tar.gz)
+- [`release-manifest.json`](https://github.com/z4y-d3n/OT-ArchGuard/releases/download/v1.5.0/release-manifest.json)
+- [`SHA256SUMS.txt`](https://github.com/z4y-d3n/OT-ArchGuard/releases/download/v1.5.0/SHA256SUMS.txt)
+
 [Verify all four assets](docs/installation.md#obtain-and-verify-assets) before
-installation or extraction. For recovery, retain the
-[previous v1.3.0 first-run path](docs/installation.md#stable-v130-first-run).
+installation or extraction. See the [previous stable and recovery paths](docs/installation.md#previous-stable-v140).
 
 With **Python >=3.12** available as `python`, run this sequence in
 **Windows PowerShell**, from the fresh folder containing `artifacts/`:
 
 ```powershell
 python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install artifacts/otarchguard-1.4.0-py3-none-any.whl
+.\.venv\Scripts\python.exe -m pip install artifacts/otarchguard-1.5.0-py3-none-any.whl
 .\.venv\Scripts\python.exe -m pip check
 .\.venv\Scripts\otarchguard.exe --version
-tar -xf artifacts/otarchguard-1.4.0.tar.gz
-.\.venv\Scripts\otarchguard.exe explore otarchguard-1.4.0/examples/remote-support/proposed.yaml --output report
+tar -xf artifacts/otarchguard-1.5.0.tar.gz
+.\.venv\Scripts\otarchguard.exe explore otarchguard-1.5.0/examples/remote-support/proposed.yaml --output report
 Invoke-Item .\report\index.html
 ```
 
-The wheel supplies the installed application; the source archive supplies the
-fictional example. No Git checkout, development installation or GitHub CLI is
-required. Expected `--version` output: `1.4.0`; analysis exits **0** and
-creates `report/index.html` with local navigation. The diagram shows declarations,
+The wheel installs the application. The source distribution contains the
+fictional examples, documentation and source. The sequence runs from a regular
+user directory. Expect `--version` to print `1.5.0` and a successful
+`explore` to create `report/index.html` with local navigation. The diagram shows declarations,
 including a firewall placed in three zones; it does not prove physical
 connectivity or permitted traffic. `explore` generates a model browser and does
 not assert that all declared communication intents pass.
@@ -196,18 +193,15 @@ Read the [comprehensive limitations](docs/limitations.md),
 | Independent corpus evidence | [Interoperability](docs/development/v14-05-interoperability.md), [coverage gaps](docs/development/v14-05-corpus-coverage.md) |
 | Performance | [Matched measurements](docs/development/v14-05-performance.md), [candidate comparison](docs/development/v14-06-performance.md) |
 | Source/package integrity | [Packaging audit](docs/development/v14-06-packaging-audit.md), [local source-bound handoff](docs/development/v14-06-handoff-es.md) |
-| Release acceptance | [Release checklist](docs/release-checklist.md), [Spanish publication runbook](docs/development/v14-06-publication-runbook-es.md) |
+| Release acceptance | [Publication record](docs/release-checklist.md#completed-v150-publication-record), [V15-06 acceptance](docs/development/v15-06-acceptance.md), [final safety assurance](docs/development/v15-06-safety-assurance.md), [historical v1.4 publication runbook (Spanish)](docs/development/v14-06-publication-runbook-es.md) |
 | Security and trust assumptions | [Scope and limitations](docs/limitations.md), [bounded internal security review](docs/development/v14-06-security-audit.md) |
-| Release details | [Published stable v1.4.0 notes](docs/release-notes-1.4.0.md), [previous v1.3.0 notes](docs/release-notes-1.3.0.md), [changelog](CHANGELOG.md) |
+| Release details | [Published v1.5.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.5.0), [v1.5.0 notes](docs/release-notes-1.5.0.md), [installation](docs/installation.md), [previous v1.4.0 release](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.4.0), [v1.4.0 notes](docs/release-notes-1.4.0.md), [v1.3.0 notes](docs/release-notes-1.3.0.md), [changelog](CHANGELOG.md) |
 | Visual provenance | [Current and historical diagram previews](docs/images/README.md) |
 
-Published source: `7d6b158f863308dfcd7d10b673bfbe2692f29b8b`, retained by the
-annotated `v1.4.0` tag after integration of PRs #17–#24.
-[Final main CI run 40991511467](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/40991511467)
-passed all six Windows/Ubuntu/macOS × Python 3.12/3.14 jobs for that exact SHA.
-Current `main` may advance with documentation or development; it does not change
-the tagged source or published assets. Later commits need their own hosted CI.
-The [documentation verification handoff](docs/development/v14-06-public-documentation-es.md)
+The [annotated `v1.5.0` tag](https://github.com/z4y-d3n/OT-ArchGuard/tree/v1.5.0)
+identifies published source `14732d12f0a5dde5acf97ca1b552d69cfb12f1e0`.
+Later commits need their own hosted CI. The
+[v1.4 documentation verification handoff](docs/development/v14-06-public-documentation-es.md)
 retains historical checkpoint results; [visual provenance](docs/images/README.md)
 records the subsequently supplied owner screenshot and its actual review limits.
 

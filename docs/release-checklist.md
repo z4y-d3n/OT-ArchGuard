@@ -1,45 +1,69 @@
 # Release verification checklist
 
-Latest stable [v1.4.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.4.0)
-is published. Previous stable [v1.3.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0)
-remains available from `10d7de6c416ec6f0ee364c671ebe9292ee69e672` for recovery.
-Current documentation can improve after publication without changing either
-release's tag, source, wheel, sdist, manifest or checksums.
+Latest stable [v1.5.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.5.0)
+is published. Previous stable [v1.4.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.4.0)
+and older [v1.3.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.3.0)
+remain available for [recovery](installation.md#previous-stable-v140).
 
 The checklist below is reusable for a **new exact source or documentation commit**;
 unchecked boxes are not outstanding gates for the already published release.
 Preparation alone authorizes no remote operation, tag or publication.
 
-## V15 development and final-release boundary
+## Completed v1.5.0 publication record
 
-V15-06 now provides a separately pinned stable `1.5.0` source policy and
+| Publication fact | Verified identity |
+|---|---|
+| Publication | November 6, 2026 at 03:42:51 UTC (`2026-11-06T03:42:51Z`) |
+| GitHub Release | [OT-ArchGuard v1.5.0](https://github.com/z4y-d3n/OT-ArchGuard/releases/tag/v1.5.0), latest stable, public, neither draft nor prerelease |
+| Tagged commit | `14732d12f0a5dde5acf97ca1b552d69cfb12f1e0` |
+| Tagged tree | `fae5d241e10d3c838ea347641d7cca6a60bb9bfa` |
+| Annotated tag | `v1.5.0`, tag object `7468378077e64e321f58b101759d296688ed0a89` |
+| Integrated-source CI | [main push run 42157555998](https://github.com/z4y-d3n/OT-ArchGuard/actions/runs/42157555998), completed with six of six successful jobs for the tagged commit |
+| Matrix | Windows, Ubuntu and macOS × Python 3.12 and 3.14 |
+| Version identities | Distribution/CLI `1.5.0`, native engine `1.3.0`, native YAML schema `1`, Python `>=3.12` |
+
+GitHub listed exactly these four uploads. Its generated source archives are separate.
+
+| Asset | Bytes | Published and independently measured SHA-256 |
+|---|---:|---|
+| `otarchguard-1.5.0-py3-none-any.whl` | 362989 | `ad113d3573f877e29839bc311fa3dd2c47ebad085cc135f3de35ece93b479701` |
+| `otarchguard-1.5.0.tar.gz` | 2445125 | `b645d10774e5fc73bdeeaf9744fadfadc1b7a1a24f1993b72319bfc70c54c94d` |
+| `release-manifest.json` | 145234 | `a88ffa7035586f7de4f58e7463d80d4daba8b351acca5de678335b289a664da4` |
+| `SHA256SUMS.txt` | 280 | `00fe2983421081cb1221f3a532f3ccff823597fd71318e1674df06cb1b616a99` |
+
+**Independent download verification: PASS.** All four fresh downloads matched
+GitHub's sizes and digests. The checksum list covered exactly the wheel, sdist
+and manifest and matched their downloaded bytes. From a separate clean checkout
+of the annotated tag, `python -I tools/prepare_v15_release.py --verify --output ASSET_DIRECTORY`
+verified the canonical manifest, source inventory and package member digests
+against the tagged source. This check used the published bytes and establishes
+byte integrity and source correspondence. Cryptographic authorship remains
+unverified.
+
+Stable `1.5.0` is a distinct source-bound historical producer. Replay of
+original dev3 revisions requires their compatible source and approvals remain
+bound to those revisions. See the [compatibility record](development/v15-06-compatibility.md)
+and [release notes](release-notes-1.5.0.md) for scope and limits. Live OT,
+deployed enforcement, broader external protocol validation and a new owner
+browser/accessibility review remain outside this publication check. Later
+documentation commits require their own CI results.
+
+## Historical V15-06 candidate acceptance
+
+V15-06 introduced a separately pinned stable `1.5.0` source policy and
 `python -I tools/prepare_v15_release.py --output FRESH_DIRECTORY`, followed by
 the same command with `--verify`. The original v1.4 tool/policies remain fixed.
-See [current acceptance](development/v15-06-acceptance.md) and the
-[Spanish owner procedure](development/v15-06-handoff-es.md) for exact local
-receipts and the post-merge SHA/tree, six-job CI, final assembly, tag and upload
-gates. Candidate rehearsal does not authorize publication.
-After publication, independently verify all four downloaded assets against the
-tagged source, then update README's latest-stable/Quick Start and installation
-links/checksums in a separate documentation change. Record real source, date,
-sizes and digests; preserve v1.4 history and screenshot provenance.
+The [original acceptance record](development/v15-06-acceptance.md) and
+[Spanish handoff](development/v15-06-handoff-es.md) preserve the local
+rehearsal, skips, limits and then-outstanding gates. The publication record
+above reports the subsequent integrated-source and distribution checks.
 
-The following paragraphs describe the prior V15-05 preparation boundary.
-
-V15-05 keeps distribution `1.5.0.dev3`, native engine `1.3.0`, schema `1` and
-all 97 production modules unchanged. Its [local acceptance](development/v15-05-acceptance.md)
-and [installation matrix](development/v15-05-installation-matrix.md) do not certify
-a stable v1.5.0 release. Build development archives with `setuptools.build_meta`
-and audit them with `tools/audit_release.py` against exact committed public source.
-Do not relax `tools/prepare_release.py`'s historical v1.4.0 guard for development.
-
-V15-06 must separately authorize stable `1.5.0` source/version changes, accept the
-exact integrated source, audit/install both final distributions, verify historical
-replay compatibility, assemble manifest/checksums with a reviewed stable-release
-procedure, complete six hosted jobs on the final SHA and finalize release notes.
-Owner approval must precede publication; subsequently verify the published tag
-and downloaded assets. Hash integrity does not authenticate authorship. The
-[Spanish V15-05 handoff](development/v15-05-handoff-es.md) records the remaining work.
+The earlier V15-05 checkpoint kept distribution `1.5.0.dev3`, native engine
+`1.3.0`, schema `1` and all 97 production modules unchanged. Its
+[local acceptance](development/v15-05-acceptance.md),
+[installation matrix](development/v15-05-installation-matrix.md) and
+[Spanish handoff](development/v15-05-handoff-es.md) document that separate
+development source and its original verification boundary.
 
 ## Completed v1.4.0 publication record
 
@@ -63,7 +87,7 @@ automatically generated GitHub source archives are separate:
 | `release-manifest.json` | 131636 | `a8b0ccf323589c554ba2fa3e8f88f34621ae540e795c0eb7807216add5ef89aa` |
 | `SHA256SUMS.txt` | 280 | `a7474178f5472acb646eeef0c7b5c1f94ec657644bf376ca9cde0afa0ab351f8` |
 
-See [download verification and installation](installation.md#obtain-and-verify-assets).
+See [v1.4.0 download verification and installation](installation.md#previous-stable-v140).
 The manifest binds the tagged source and records assembly-time purpose/acceptance
 limits; publication does not rewrite that historical text. The checksum list has
 exactly three entries: wheel, sdist and manifest. Its own digest is recorded above.
